@@ -1,0 +1,31 @@
+{"timestamp":"2026-04-11T10:45:52.585Z","action":"ticket.deleted","details":{"ticketId":"mnswvng62fwr","title":"Fabrication Status Repeating"}}
+{"timestamp":"2026-04-11T14:07:54.604Z","action":"attendance.saved","details":{"date":"2026-04-11","count":27}}
+{"timestamp":"2026-04-11T14:22:53.115Z","action":"manpower-plan.saved","details":{"weekStart":"2026-04-05","type":"weekly"}}
+{"timestamp":"2026-04-11T15:05:43.927Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:45.778Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:46.912Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:47.482Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:48.063Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:48.284Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:51.565Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:52.279Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:55.317Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:55.836Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:56.507Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:57.262Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:05:57.967Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:06:02.404Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:06:03.918Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"timestamp":"2026-04-11T15:06:08.433Z","action":"project.updated","details":{"projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}}
+{"ts":"2026-04-11T15:47:44.029Z","event":"manpower-plan.saved","weekStart":"2026-04-05","type":"weekly"}
+{"ts":"2026-04-11T16:50:37.589Z","event":"worker.updated","workerId":"wi-elumalai-govindan","name":"Elumalai Govindan"}
+{"ts":"2026-04-11T16:51:00.052Z","event":"worker.updated","workerId":"wi-mariyappan-malayandi","name":"Mariyappan Malayandi @ Kuppsamy"}
+{"ts":"2026-04-11T16:55:50.362Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: BUDSSSF"}
+{"ts":"2026-04-11T16:58:45.718Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: Hello Test"}
+{"ts":"2026-04-11T16:59:56.558Z","event":"email.sent","to":"Alex Mac","subject":"New Task: Send Claims"}
+{"ts":"2026-04-11T17:02:09.937Z","event":"email.sent","to":"Jun Jie","subject":"New Task: Send DWG"}
+{"ts":"2026-04-11T17:09:25.448Z","event":"email.sent","to":"Chris","subject":"New Task: Test 001"}
+{"ts":"2026-04-11T17:14:04.974Z","event":"email.sent","to":"Chris","subject":"New Task: Test 002"}
+{"ts":"2026-04-11T17:16:00.049Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: TEST 005"}
+{"ts":"2026-04-11T17:17:56.730Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: Hallooo"}
+{"ts":"2026-04-11T17:18:18.407Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: Test 001"}
