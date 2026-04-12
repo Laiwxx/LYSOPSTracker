@@ -1,0 +1,19 @@
+{
+  "name": "lys-ops-tracker",
+  "version": "1.0.0",
+  "description": "LYS Operations Project Tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "migrate": "node migrate.js"
+  },
+  "dependencies": {
+    "@azure/msal-node": "^2.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^2.7.0",
+    "xlsx": "^0.18.5"
+  }
+}

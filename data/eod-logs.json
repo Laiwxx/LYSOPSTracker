@@ -1,0 +1,171 @@
+[
+  {
+    "id": "mnrajf4d",
+    "staffName": "Chris",
+    "date": "2026-04-09",
+    "submittedAt": "2026-04-09T09:44:52.813Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnrajf00",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnrajf02",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnrak6ie",
+    "staffName": "Chris",
+    "date": "2026-04-09",
+    "submittedAt": "2026-04-09T09:45:28.310Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnrak6eq",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnrak6er",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnrbzq4x",
+    "staffName": "Chris",
+    "date": "2026-04-09",
+    "submittedAt": "2026-04-09T10:25:33.201Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnrbzq2j",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnrbzq2n",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnrrvjst",
+    "staffName": "Chris",
+    "date": "2026-04-09",
+    "submittedAt": "2026-04-09T17:50:12.221Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnrrvjlf",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnrrvjlk",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnrs39yu",
+    "staffName": "Chris",
+    "date": "2026-04-09",
+    "submittedAt": "2026-04-09T17:56:12.726Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnrs39sh",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnrs39so",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnsafnmc",
+    "staffName": "Chris",
+    "date": "2026-04-10",
+    "submittedAt": "2026-04-10T02:29:43.380Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnsafnjq",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnsafnjt",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnseo5fu",
+    "staffName": "Chris",
+    "date": "2026-04-10",
+    "submittedAt": "2026-04-10T04:28:18.186Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnseo5cn",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnseo5cp",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnsi15um",
+    "staffName": "Chris",
+    "date": "2026-04-10",
+    "submittedAt": "2026-04-10T06:02:24.094Z",
+    "totalHours": 8.5,
+    "notes": "MC test EOD log",
+    "taskEntries": [
+      {
+        "taskId": "mnsi15f1",
+        "hours": 4,
+        "markDone": false
+      },
+      {
+        "taskId": "mnsi15fk",
+        "hours": 4.5,
+        "markDone": true
+      }
+    ]
+  },
+  {
+    "id": "mnuk37y4",
+    "staffName": "Lai Wei Xiang",
+    "date": "2026-04-11",
+    "submittedAt": "2026-04-11T16:35:31.708Z",
+    "totalHours": 0,
+    "notes": "",
+    "taskEntries": []
+  }
+]

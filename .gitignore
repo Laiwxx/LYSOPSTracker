@@ -1,0 +1,6 @@
+.env
+node_modules/
+data/projects.json
+config/admin.json
+public/uploads/
+*.log

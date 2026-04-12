@@ -1,0 +1,785 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Tasks — LYS OPS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ── Command Center ──────────────────────────────── */
+    .cc-section {
+      margin-bottom: 28px;
+    }
+    .cc-section-header {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cc-section-header .cc-count {
+      background: var(--bg3);
+      color: var(--text);
+      border-radius: 20px;
+      padding: 1px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .cc-section-header .cc-count.cc-count-red {
+      background: rgba(226,68,92,0.15);
+      color: var(--red);
+    }
+    /* Ack cards */
+    .ack-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .ack-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .ack-card-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .ack-badge {
+      background: rgba(253,171,61,0.15);
+      color: var(--amber);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .ack-due-red { color: var(--red); font-weight: 700; }
+    /* Workload rows */
+    .wl-row {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .wl-row:hover { border-color: var(--accent); }
+    .wl-name {
+      font-size: 13px;
+      font-weight: 600;
+      flex: 1;
+    }
+    .wl-stats {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .wl-stat {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg3);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+    .wl-stat.red  { color: var(--red);   background: rgba(226,68,92,0.12);  }
+    .wl-stat.blue { color: var(--accent); background: rgba(51,102,255,0.12); }
+    /* EOD chips */
+    .eod-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 6px;
+    }
+    .eod-row-name {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .eod-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+    .remind-btn {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(226,68,92,0.12);
+      color: var(--red);
+      border: 1px solid rgba(226,68,92,0.25);
+      border-radius: 6px;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .remind-btn:hover { background: rgba(226,68,92,0.22); }
+    /* All-good banners */
+    .all-good {
+      font-size: 13px;
+      color: var(--green);
+      font-weight: 600;
+      padding: 12px 16px;
+      background: rgba(0,200,117,0.08);
+      border: 1px solid rgba(0,200,117,0.2);
+      border-radius: var(--radius);
+    }
+    /* Kanban drag-over highlight */
+    .kanban-col-body.drag-over {
+      outline: 2px dashed var(--accent);
+      background: rgba(51,102,255,0.06);
+      border-radius: var(--radius);
+    }
+    /* Toast */
+    #cc-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    #cc-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title"><span>LYS</span> OPS · Tasks</div>
+  <div style="display:flex;gap:8px;align-items:center;"></div>
+</div>
+
+<div class="tasks-layout">
+
+  <!-- Left Sidebar -->
+  <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+    <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
+    </a>
+    <div class="tasks-sidebar-label">Views</div>
+    <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
+    </a>
+    <a href="/factory" id="sidebar-factory-link" class="staff-nav-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <span class="staff-initial">🏭</span><span>Factory</span>
+      <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+    </a>
+    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🔧</span><span>Installation</span>
+    </a>
+    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🛒</span><span>Procurement</span>
+    </a>
+    <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
+    </a>
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
+    </a>
+    <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+      <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+    </a>
+    <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+      <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+    </a>
+  </div>
+
+  <!-- Main panel -->
+  <div class="tasks-main">
+
+    <!-- Overview: Command Center -->
+    <div id="overview-panel">
+
+      <!-- Section 1: Pending Acknowledgement -->
+      <div class="cc-section">
+        <div class="cc-section-header">
+          Pending Acknowledgement
+          <span class="cc-count cc-count-red" id="ack-count">0</span>
+        </div>
+        <div id="ack-list"></div>
+      </div>
+
+      <!-- Section 2: EOD Not Submitted Today -->
+      <div class="cc-section">
+        <div class="cc-section-header">
+          EOD Not Submitted
+          <span class="cc-count cc-count-red" id="eod-missing-count">0</span>
+        </div>
+        <div id="eod-missing-list"></div>
+      </div>
+
+    </div>
+
+    <!-- Kanban panel (per staff) -->
+    <div id="kanban-panel" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <h2 id="kanban-title" style="font-size:16px;font-weight:700;"></h2>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm hist-btn" data-period="today">Today</button>
+          <button class="btn btn-ghost btn-sm hist-btn" data-period="week">This Week</button>
+          <button class="btn btn-ghost btn-sm hist-btn" data-period="month">This Month</button>
+        </div>
+      </div>
+
+      <div class="kanban-board">
+        <div class="kanban-col">
+          <div class="kanban-col-header">Pending</div>
+          <div class="kanban-col-body" id="col-pending" data-status="Pending"
+               ondragover="onDragOver(event)" ondrop="onDrop(event,'Pending')"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">In Progress</div>
+          <div class="kanban-col-body" id="col-inprogress" data-status="In Progress"
+               ondragover="onDragOver(event)" ondrop="onDrop(event,'In Progress')"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">Done ✅</div>
+          <div class="kanban-col-body" id="col-done" data-status="Done"
+               ondragover="onDragOver(event)" ondrop="onDrop(event,'Done')"></div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:24px;">Completion History</div>
+      <div id="history-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- New Task Modal -->
+<div id="new-task-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border-radius:12px;width:92%;max-width:460px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+    <div style="padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:15px;font-weight:700;">New Task</div>
+      <button id="nt-close" style="background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;padding:0 2px;">×</button>
+    </div>
+    <div style="padding:18px 22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;">
+      <div class="field" style="margin:0;">
+        <label>Title <span style="color:var(--red);">*</span></label>
+        <input type="text" id="nt-title" class="tbl-input" placeholder="What needs to be done…" autocomplete="off">
+      </div>
+      <div class="field" style="margin:0;">
+        <label>Assigned To</label>
+        <select id="nt-assignee" class="tbl-select"><option value="">Unassigned</option></select>
+      </div>
+      <div class="field" style="margin:0;">
+        <label>Requested By</label>
+        <select id="nt-requested-by" class="tbl-select"><option value="">—</option></select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field" style="margin:0;"><label>Due Date</label><input type="date" id="nt-due" class="tbl-input"></div>
+        <div class="field" style="margin:0;"><label>Priority</label>
+          <select id="nt-priority" class="tbl-select">
+            <option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin:0;">
+        <label>Project</label>
+        <select id="nt-project" class="tbl-select"><option value="">No project</option></select>
+      </div>
+      <div class="field" style="margin:0;">
+        <label>Description</label>
+        <textarea id="nt-desc" class="tbl-input" rows="3" placeholder="Optional details…" style="resize:vertical;"></textarea>
+      </div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;">
+      <button class="btn btn-ghost" id="nt-cancel">Cancel</button>
+      <button class="btn" id="nt-save" style="background:var(--accent);color:#fff;flex:1;font-weight:600;">Create Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="cc-toast"></div>
+
+<script>
+const DIRECTOR_NAME = 'Lai Wei Xiang';
+
+let STAFF = [];
+let ALL_TASKS = [];
+let kanbanData = {};
+let eodStatus = { submitted: [], missing: [] };
+let projectsList = [];
+let currentStaff = null;
+let draggedTaskId = null;
+
+// ── Helpers ────────────────────────────────────────────
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg, color) {
+  const t = document.getElementById('cc-toast');
+  t.textContent = msg;
+  t.style.color = color || 'var(--green)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function initials(name) {
+  return name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+}
+
+// ── Init ───────────────────────────────────────────────
+async function init() {
+  const raw = await fetch('/api/staff').then(r => r.json());
+  const seen = new Set();
+  STAFF = Object.values(raw)
+    .filter(s => s.name && !seen.has(s.name) && seen.add(s.name))
+    .map(s => s.name)
+    .sort();
+
+  const [tasks, kanban, eod, projects] = await Promise.all([
+    fetch('/api/tasks').then(r => r.json()),
+    fetch('/api/tasks/kanban').then(r => r.json()),
+    fetch('/api/eod-log').then(r => r.json()),
+    fetch('/api/projects').then(r => r.json())
+  ]);
+
+  ALL_TASKS    = tasks;
+  kanbanData   = kanban;
+  eodStatus    = eod;
+  projectsList = projects;
+
+  buildSidebarProjects(projectsList);
+  renderCommandCenter();
+  setupNewTask();
+}
+
+// ── Sidebar Projects ───────────────────────────────────
+function buildSidebarProjects(projects) {
+  const container = document.getElementById('sidebar-projects');
+  if (!container) return;
+  const statusDot = { 'On Track': '#00c875', 'Delayed': '#e2445c', 'On Hold': '#fdab3d', 'Completed': '#6b7294' };
+  const active = projects.filter(p => p.status !== 'Completed');
+  if (!active.length) { container.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:4px 8px;">No active projects</div>'; return; }
+  container.innerHTML = active.map(p =>
+    `<a href="/project.html?id=${esc(p.id)}" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="background:${statusDot[p.status]||'var(--border)'};font-size:9px;flex-shrink:0;">${esc((p.jobCode||'').slice(0,4))}</span>
+      <span style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.jobCode||p.name)}</span>
+    </a>`
+  ).join('');
+}
+
+// ── Sidebar ────────────────────────────────────────────
+function buildSidebarNav() {
+  const list = document.getElementById('staff-nav-list');
+  if (!list) return;
+  list.innerHTML = '';
+  STAFF.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'staff-nav-btn';
+    btn.dataset.staff = name;
+    const isMissing = eodStatus.missing && eodStatus.missing.includes(name);
+    btn.innerHTML = `
+      <span class="staff-initial">${initials(name)}</span>
+      <span class="nav-label">${esc(name.split(' ')[0])}</span>
+      ${isMissing ? '<span class="eod-flag" title="EOD not submitted"></span>' : ''}
+    `;
+    btn.onclick = () => selectStaff(name);
+    list.appendChild(btn);
+  });
+}
+
+// ── Views ──────────────────────────────────────────────
+function selectView(view) {
+  document.querySelectorAll('.staff-nav-btn').forEach(b => b.classList.remove('active'));
+  if (view === 'kanban') {
+    document.getElementById('overview-panel').style.display = 'none';
+    document.getElementById('kanban-panel').style.display = '';
+  } else {
+    document.getElementById('nav-overview').classList.add('active');
+    document.getElementById('overview-panel').style.display = '';
+    document.getElementById('kanban-panel').style.display = 'none';
+    currentStaff = null;
+  }
+}
+
+function selectStaff(name) {
+  currentStaff = name;
+  document.querySelectorAll('.staff-nav-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector('[data-staff="' + CSS.escape(name) + '"]');
+  if (btn) btn.classList.add('active');
+  document.getElementById('overview-panel').style.display = 'none';
+  document.getElementById('kanban-panel').style.display = '';
+  document.getElementById('kanban-title').textContent = name;
+  loadKanban(name);
+}
+
+// ── Command Center ─────────────────────────────────────
+function renderCommandCenter() {
+  renderPendingAck();
+  renderEODMissing();
+}
+
+// Section 1: Pending Acknowledgement
+function renderPendingAck() {
+  const today = new Date().toISOString().split('T')[0];
+  const unacked = ALL_TASKS.filter(t =>
+    t.assignedTo &&
+    (!t.acknowledgedAt || t.acknowledgedAt === '') &&
+    t.status !== 'Done'
+  );
+
+  document.getElementById('ack-count').textContent = unacked.length;
+
+  const el = document.getElementById('ack-list');
+  if (!unacked.length) {
+    el.innerHTML = '<div class="all-good">All tasks acknowledged ✓</div>';
+    document.getElementById('ack-count').className = 'cc-count';
+    return;
+  }
+
+  el.innerHTML = unacked.map(t => {
+    const overdue = t.dueDate && t.dueDate < today;
+    return `
+      <div class="ack-card">
+        <div style="flex:1;min-width:0;">
+          <div class="ack-card-title">${esc(t.title)} <span class="ack-badge">unacked</span></div>
+          <div class="ack-card-meta">
+            <span>Assigned to: <strong>${esc(t.assignedTo)}</strong></span>
+            ${t.requestedBy ? `<span>· Requested by: ${esc(t.requestedBy)}</span>` : ''}
+            ${t.dueDate ? `<span class="${overdue ? 'ack-due-red' : ''}">· Due ${esc(t.dueDate)}${overdue ? ' OVERDUE' : ''}</span>` : ''}
+            ${t.projectJobCode ? `<span>· ${esc(t.projectJobCode)}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Section 2: Team Workload
+function renderTeamWorkload() {
+  const today = new Date().toISOString().split('T')[0];
+  const el = document.getElementById('workload-list');
+
+  const rows = STAFF.map(name => {
+    const d = kanbanData[name] || { pending: [], inProgress: [], done: [] };
+    const total   = d.pending.length + d.inProgress.length + d.done.length;
+    const overdue = d.pending.filter(t => t.dueDate && t.dueDate < today).length
+                  + d.inProgress.filter(t => t.dueDate && t.dueDate < today).length;
+    const inProg  = d.inProgress.length;
+    return { name, total, overdue, inProg };
+  }).sort((a, b) => b.overdue - a.overdue || b.total - a.total);
+
+  el.innerHTML = rows.map(r => `
+    <div class="wl-row" onclick="location.href='/my-tasks'">
+      <span class="staff-initial" style="flex-shrink:0;">${initials(r.name)}</span>
+      <span class="wl-name">${esc(r.name)}</span>
+      <div class="wl-stats">
+        <span class="wl-stat">${r.total} task${r.total !== 1 ? 's' : ''}</span>
+        ${r.inProg  > 0 ? `<span class="wl-stat blue">${r.inProg} in progress</span>` : ''}
+        ${r.overdue > 0 ? `<span class="wl-stat red">${r.overdue} overdue</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Section 3: EOD Not Submitted Today
+function renderEODMissing() {
+  const missing = (eodStatus.missing || []).filter(n => n !== DIRECTOR_NAME && n !== 'Lai Weixiang');
+  document.getElementById('eod-missing-count').textContent = missing.length;
+
+  const el = document.getElementById('eod-missing-list');
+  if (!missing.length) {
+    el.innerHTML = '<div class="all-good">All EOD submitted today ✓</div>';
+    document.getElementById('eod-missing-count').className = 'cc-count';
+    return;
+  }
+
+  el.innerHTML = missing.map(name => `
+    <div class="eod-row">
+      <div class="eod-row-name">
+        <span class="eod-dot"></span>
+        ${esc(name)}
+      </div>
+      <button class="remind-btn" onclick="sendReminder('${esc(name)}', this)">Send Reminder</button>
+    </div>
+  `).join('');
+}
+
+async function sendReminder(staffName, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    const res = await fetch('/api/remind-eod', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ staffName })
+    });
+    if (!res.ok) throw new Error('not ok');
+    showToast('Reminder sent to ' + staffName);
+  } catch {
+    showToast('Failed to send reminder to ' + staffName, 'var(--red)');
+    btn.disabled = false;
+    btn.textContent = 'Send Reminder';
+    return;
+  }
+  btn.textContent = 'Sent ✓';
+  btn.style.color = 'var(--green)';
+  btn.style.background = 'rgba(0,200,117,0.1)';
+  btn.style.borderColor = 'rgba(0,200,117,0.2)';
+}
+
+// ── Kanban ─────────────────────────────────────────────
+function loadKanban(staffName) {
+  const d = kanbanData[staffName] || { pending: [], inProgress: [], done: [] };
+  document.getElementById('col-pending').innerHTML = '';
+  document.getElementById('col-inprogress').innerHTML = '';
+  document.getElementById('col-done').innerHTML = '';
+
+  d.pending.forEach(t    => document.getElementById('col-pending').appendChild(buildKanbanCard(t)));
+  d.inProgress.forEach(t => document.getElementById('col-inprogress').appendChild(buildKanbanCard(t)));
+  d.done.forEach(t       => document.getElementById('col-done').appendChild(buildKanbanCard(t)));
+
+  loadHistory(staffName, 'week');
+}
+
+function buildKanbanCard(task) {
+  const card = document.createElement('div');
+  const typeClass = {
+    'Self Task':      'type-self',
+    'Client Request': 'type-client',
+    'Directive':      'type-directive',
+    'Project Task':   ''
+  }[task.taskType] || '';
+
+  card.className = 'kanban-card ' + typeClass;
+  card.draggable = true;
+  card.dataset.id = task.id;
+
+  const today = new Date().toISOString().split('T')[0];
+  const overdue = task.dueDate && task.dueDate < today && task.status !== 'Done';
+  const unacked = task.assignedTo && !task.acknowledgedAt && task.status !== 'Done';
+
+  const priBadgeColors = {
+    'Low':    ['#6b7294','rgba(107,114,148,0.15)'],
+    'Medium': ['#3366ff','rgba(51,102,255,0.12)'],
+    'High':   ['#e2445c','rgba(226,68,92,0.12)']
+  };
+  const [priColor, priBg] = priBadgeColors[task.priority] || priBadgeColors['Low'];
+  const priorityBadge = task.priority
+    ? `<span style="font-size:10px;font-weight:700;color:${priColor};background:${priBg};border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">${esc(task.priority)}</span>`
+    : '';
+  const descSnippet = task.description
+    ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">${esc(task.description.slice(0,80))}${task.description.length > 80 ? '…' : ''}</div>`
+    : '';
+
+  card.innerHTML =
+    '<div class="kanban-card-actions">' +
+      '<button class="btn btn-xs btn-danger del-task-btn" data-id="' + task.id + '" title="Delete task" style="padding:2px 6px;font-size:11px;">✕</button>' +
+    '</div>' +
+    '<div class="kanban-card-title" style="padding-right:20px;">' + esc(task.title) +
+      (unacked ? ' <span style="font-size:10px;font-weight:700;color:var(--amber);background:rgba(253,171,61,0.15);border-radius:4px;padding:1px 5px;vertical-align:middle;">unacked</span>' : '') +
+      priorityBadge +
+    '</div>' +
+    '<div class="kanban-card-meta">' +
+      (task.projectId && task.projectJobCode
+        ? `<a href="/project.html?id=${esc(task.projectId)}" style="color:var(--accent);text-decoration:none;font-weight:600;" title="Go to project">${esc(task.projectJobCode)} →</a> · `
+        : task.projectJobCode ? `<span style="color:var(--accent);">${esc(task.projectJobCode)}</span> · ` : '') +
+      esc(task.taskType || 'Task') +
+      (task.dueDate ? ' · Due ' + task.dueDate : '') +
+      (overdue ? ' <span style="color:var(--red);font-weight:700;">OVERDUE</span>' : '') +
+    '</div>' +
+    descSnippet +
+    (task.requestedBy ? `<div style="font-size:11px;color:var(--text-muted);margin-top:3px;">Requested by: ${esc(task.requestedBy)}</div>` : '');
+
+  card.querySelector('.del-task-btn').addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!confirm('Delete "' + task.title + '"? This cannot be undone.')) return;
+    const isDirector = currentStaff === DIRECTOR_NAME;
+    let reason = '';
+    if (!isDirector) {
+      reason = prompt('Why are you deleting this task? (required)');
+      if (reason === null) return;
+      if (!reason.trim()) { alert('A reason is required to delete a task.'); return; }
+    }
+    await fetch('/api/tasks/' + task.id, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deletedBy: currentStaff || 'Unknown', reason: reason.trim() })
+    });
+    kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
+    loadKanban(currentStaff);
+  });
+
+  card.addEventListener('dragstart', () => { draggedTaskId = task.id; });
+  return card;
+}
+
+function onDragOver(event) {
+  event.preventDefault();
+  event.currentTarget.classList.add('drag-over');
+}
+
+async function onDrop(event, newStatus) {
+  event.preventDefault();
+  event.currentTarget.classList.remove('drag-over');
+  document.querySelectorAll('.kanban-col-body').forEach(c => c.classList.remove('drag-over'));
+  if (!draggedTaskId) return;
+  await fetch('/api/tasks/' + draggedTaskId, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: newStatus })
+  });
+  draggedTaskId = null;
+  [ALL_TASKS, kanbanData] = await Promise.all([
+    fetch('/api/tasks').then(r => r.json()),
+    fetch('/api/tasks/kanban').then(r => r.json())
+  ]);
+  loadKanban(currentStaff);
+  renderPendingAck();
+  buildSidebarNav();
+}
+
+async function loadHistory(staffName, period) {
+  document.querySelectorAll('.hist-btn').forEach(b => b.classList.toggle('active', b.dataset.period === period));
+  const data = await fetch('/api/tasks/history?staffName=' + encodeURIComponent(staffName) + '&period=' + period).then(r => r.json());
+  const list = document.getElementById('history-list');
+  if (!data.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:8px 0;">No completed tasks in this period.</div>';
+    return;
+  }
+  list.innerHTML = data.map(t =>
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">' +
+      '<div>' +
+        '<div style="font-size:13px;font-weight:500;">' + esc(t.title) + '</div>' +
+        '<div style="font-size:11px;color:var(--text-muted);">' + esc(t.projectJobCode || '') + (t.projectJobCode ? ' · ' : '') + esc(t.taskType || '') + '</div>' +
+      '</div>' +
+      '<span style="font-size:11px;color:var(--green);">' + (t.completedAt ? t.completedAt.split('T')[0] : '') + '</span>' +
+    '</div>'
+  ).join('');
+}
+
+document.querySelectorAll('.hist-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (currentStaff) loadHistory(currentStaff, btn.dataset.period);
+  });
+});
+
+// ── New Task Modal ─────────────────────────────────────
+function setupNewTask() {
+  const modal = document.getElementById('new-task-modal');
+  const closeModal = () => modal.style.display = 'none';
+
+  document.getElementById('new-task-btn').onclick = () => {
+    const asel = document.getElementById('nt-assignee');
+    asel.innerHTML = '<option value="">Unassigned</option>';
+    STAFF.forEach(name => {
+      const o = document.createElement('option');
+      o.value = name; o.textContent = name;
+      asel.appendChild(o);
+    });
+    if (currentStaff) asel.value = currentStaff;
+    const rsel = document.getElementById('nt-requested-by');
+    rsel.innerHTML = '<option value="">—</option>';
+    STAFF.forEach(name => {
+      const o = document.createElement('option');
+      o.value = name; o.textContent = name;
+      rsel.appendChild(o);
+    });
+    const psel = document.getElementById('nt-project');
+    psel.innerHTML = '<option value="">No project</option>';
+    projectsList.forEach(p => {
+      const o = document.createElement('option');
+      o.value = p.id; o.textContent = p.jobCode || p.name;
+      psel.appendChild(o);
+    });
+    document.getElementById('nt-title').value = '';
+    document.getElementById('nt-desc').value = '';
+    document.getElementById('nt-due').value = '';
+    document.getElementById('nt-priority').value = 'Medium';
+    document.getElementById('nt-requested-by').value = '';
+    modal.style.display = 'flex';
+    setTimeout(() => document.getElementById('nt-title').focus(), 50);
+  };
+
+  document.getElementById('nt-close').onclick = closeModal;
+  document.getElementById('nt-cancel').onclick = closeModal;
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+  document.getElementById('nt-save').onclick = async () => {
+    const title = document.getElementById('nt-title').value.trim();
+    if (!title) { document.getElementById('nt-title').focus(); return; }
+    const pid  = document.getElementById('nt-project').value;
+    const proj = projectsList.find(p => p.id === pid);
+    await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title,
+        taskType:       'Project Task',
+        projectId:      pid,
+        projectJobCode: proj ? (proj.jobCode || '') : '',
+        projectName:    proj ? (proj.name   || '') : '',
+        assignedTo:     document.getElementById('nt-assignee').value,
+        requestedBy:    document.getElementById('nt-requested-by').value,
+        dueDate:        document.getElementById('nt-due').value,
+        priority:       document.getElementById('nt-priority').value,
+        description:    document.getElementById('nt-desc').value,
+        createdBy:      document.getElementById('nt-requested-by').value
+      })
+    });
+    closeModal();
+    ALL_TASKS  = await fetch('/api/tasks').then(r => r.json());
+    kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
+    buildSidebarNav();
+    if (currentStaff) loadKanban(currentStaff);
+    else renderCommandCenter();
+  };
+}
+
+// ── Archive ────────────────────────────────────────────
+function setupArchive() {
+  document.getElementById('archive-btn').onclick = async () => {
+    if (!confirm('Archive all Done tasks from previous weeks?')) return;
+    const res = await fetch('/api/tasks/archive-week', { method: 'POST' }).then(r => r.json());
+    alert('Archived ' + res.archived + ' tasks.');
+    ALL_TASKS  = await fetch('/api/tasks').then(r => r.json());
+    kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
+    buildSidebarNav();
+    if (currentStaff) loadKanban(currentStaff);
+    else renderCommandCenter();
+  };
+}
+
+init();
+</script>
+</body>
+</html>

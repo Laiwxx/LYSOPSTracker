@@ -1,0 +1,1242 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Team Tasks — LYS OPS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ── Shared task card styles (personal view) ── */
+    .task-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 10px;
+      border-left: 4px solid var(--accent);
+    }
+    .task-card.status-done     { border-left-color: var(--green); opacity: 0.7; }
+    .task-card.status-blocked  { border-left-color: var(--red); }
+    .task-card.overdue         { border-left-color: var(--red); }
+    .task-title  { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .task-meta   { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+    .task-project { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+    .task-status-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .status-btn {
+      padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); cursor: pointer; color: var(--text);
+    }
+    .status-btn.active-pending    { background: var(--amber);  color: #fff; border-color: var(--amber); }
+    .status-btn.active-inprogress { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .status-btn.active-done       { background: var(--green);  color: #fff; border-color: var(--green); }
+    .status-btn.active-blocked    { background: var(--red);    color: #fff; border-color: var(--red); }
+    .due-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .due-overdue  { background: rgba(220,38,38,0.1);   color: var(--red); }
+    .due-today    { background: rgba(217,119,6,0.1);   color: var(--amber); }
+    .due-upcoming { background: rgba(51,102,255,0.08); color: var(--accent); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
+
+    /* ── Mode 1: Team Overview Grid ── */
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 14px;
+      padding: 4px 0;
+    }
+    .staff-grid-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 16px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transition: box-shadow 0.15s, transform 0.12s, border-color 0.15s;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+    .staff-grid-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .staff-grid-card.no-tasks {
+      opacity: 0.45;
+      border-style: dashed;
+    }
+    .staff-grid-card.no-tasks:hover {
+      opacity: 0.65;
+      border-color: var(--border);
+    }
+    .staff-avatar-lg {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      letter-spacing: 0.5px;
+    }
+    .staff-card-name {
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .staff-card-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      justify-content: center;
+      min-height: 20px;
+    }
+    .staff-card-stats {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      width: 100%;
+      padding-top: 10px;
+      justify-content: center;
+    }
+    .staff-card-stat { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+    .staff-card-stat .val { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1; }
+    .staff-card-stat .lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .no-tasks-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 20px 0 8px;
+      grid-column: 1 / -1;
+    }
+
+    /* ── Mode 2: Personal view header ── */
+    .personal-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .personal-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .personal-title {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .personal-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 16px;
+      transition: color 0.1s, border-color 0.1s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ── Personal view full width ── */
+    .personal-view-wrap {
+      max-width: 720px;
+    }
+
+    /* ── Grid section label ── */
+    .grid-section-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 18px 0 8px;
+    }
+    .overview-header {
+      margin-bottom: 18px;
+    }
+    .overview-header h2 { font-size: 18px; font-weight: 700; }
+    .overview-header p  { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── EOD section ── */
+    .eod-section {
+      margin-top: 24px;
+      border-top: 2px solid var(--border);
+      padding-top: 18px;
+    }
+    .eod-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .eod-warning-card {
+      background: rgba(217,119,6,0.08);
+      border: 1px solid rgba(217,119,6,0.35);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .eod-warning-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--amber);
+      margin-bottom: 14px;
+    }
+    .eod-submitted-card {
+      background: rgba(0,200,117,0.07);
+      border: 1px solid rgba(0,200,117,0.3);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .eod-submitted-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+    .eod-submitted-summary {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .eod-form-field { margin-bottom: 12px; }
+    .eod-form-field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+    .eod-form-field textarea,
+    .eod-form-field input[type="number"] {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .eod-form-field textarea { resize: vertical; min-height: 72px; }
+    .eod-form-field input[type="number"] { width: 100px; }
+    .eod-submit-btn {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 9px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .eod-submit-btn:hover { filter: brightness(1.1); }
+    /* EOD badge on team grid cards */
+    .eod-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 14px;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title"><span>LYS</span> OPS · Team</div>
+</div>
+
+<div class="tasks-layout">
+
+  <!-- Left Sidebar -->
+  <div class="tasks-sidebar" id="main-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+    <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
+    </a>
+    <div class="tasks-sidebar-label">Views</div>
+    <a href="/my-tasks" class="staff-nav-btn active" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
+    </a>
+    <a href="/factory" id="sidebar-factory-link" class="staff-nav-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <span class="staff-initial">🏭</span><span>Factory</span>
+      <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+    </a>
+    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🔧</span><span>Installation</span>
+    </a>
+    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🛒</span><span>Procurement</span>
+    </a>
+    <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
+    </a>
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
+    </a>
+    <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+      <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+    </a>
+    <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+      <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="tasks-main" id="tasks-main">
+    <div id="view-root"></div>
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+<!-- New Task Modal -->
+<div id="new-task-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border-radius:12px;width:92%;max-width:480px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+    <div style="padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:15px;font-weight:700;">New Task</div>
+      <button id="nt-close" style="background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;padding:0 2px;">×</button>
+    </div>
+    <div style="padding:18px 22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;">
+
+      <!-- Task Type — controls which fields show -->
+      <div class="field" style="margin:0;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px;">Task Type <span style="color:var(--red);">*</span></label>
+        <div style="display:flex;gap:8px;">
+          <button class="nt-type-btn" data-type="Self Task"
+            style="flex:1;padding:8px 4px;border-radius:8px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all 0.15s;">
+            👤 Self
+          </button>
+          <button class="nt-type-btn" data-type="Requested Task"
+            style="flex:1;padding:8px 4px;border-radius:8px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all 0.15s;">
+            📋 Requested
+          </button>
+          <button class="nt-type-btn" data-type="Ticket Task"
+            style="flex:1;padding:8px 4px;border-radius:8px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all 0.15s;">
+            🎫 Ticket
+          </button>
+        </div>
+      </div>
+
+      <!-- Ticket picker (Ticket Task only) -->
+      <div id="nt-ticket-row" class="field" style="margin:0;display:none;">
+        <label>Ticket <span style="color:var(--red);">*</span></label>
+        <select id="nt-ticket" class="tbl-select"><option value="">Loading…</option></select>
+        <div id="nt-ticket-preview" style="margin-top:6px;font-size:12px;color:var(--text-muted);line-height:1.5;display:none;background:var(--bg3);border-radius:6px;padding:8px 10px;"></div>
+      </div>
+
+      <!-- Title (hidden for Ticket Task) -->
+      <div id="nt-title-row" class="field" style="margin:0;">
+        <label>Title <span style="color:var(--red);">*</span></label>
+        <input type="text" id="nt-title" class="tbl-input" placeholder="What needs to be done…" autocomplete="off">
+      </div>
+
+      <div class="field" style="margin:0;">
+        <label>Assigned To</label>
+        <select id="nt-assignee" class="tbl-select"><option value="">Unassigned</option></select>
+      </div>
+
+      <!-- Requested By (Requested Task only) -->
+      <div id="nt-req-row" class="field" style="margin:0;display:none;">
+        <label>Requested By <span style="color:var(--red);">*</span></label>
+        <select id="nt-requested-by" class="tbl-select"><option value="">—</option></select>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field" style="margin:0;"><label>Due Date</label><input type="date" id="nt-due" class="tbl-input"></div>
+        <div class="field" style="margin:0;"><label>Priority</label>
+          <select id="nt-priority" class="tbl-select">
+            <option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Project (hidden for Ticket Task) -->
+      <div id="nt-project-row" class="field" style="margin:0;">
+        <label>Project</label>
+        <select id="nt-project" class="tbl-select"><option value="">No project</option></select>
+      </div>
+
+      <!-- Description (hidden for Ticket Task — auto-filled) -->
+      <div id="nt-desc-row" class="field" style="margin:0;">
+        <label>Description</label>
+        <textarea id="nt-desc" class="tbl-input" rows="3" placeholder="Optional details…" style="resize:vertical;"></textarea>
+      </div>
+
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;">
+      <button class="btn btn-ghost" id="nt-cancel">Cancel</button>
+      <button class="btn" id="nt-save" style="background:var(--accent);color:#fff;flex:1;font-weight:600;">Create Task</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const todayStr = new Date().toISOString().split('T')[0];
+let allTasks = [];
+let staffList = [];
+let projectsList = [];
+
+// ── Avatar color palette (deterministic by name) ──────────────────────────
+const AVATAR_COLORS = [
+  '#3366ff','#a25ddc','#00c875','#fdab3d','#e2445c',
+  '#00d4c8','#ff7575','#6b7294','#5c9cff','#c84bc8'
+];
+function avatarColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff;
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+function initials(name) {
+  if (!name || name === 'Unassigned') return '—';
+  return name.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+}
+
+// ── Hash routing ──────────────────────────────────────────────────────────
+function getHashName() {
+  return decodeURIComponent(window.location.hash.slice(1)).trim().toLowerCase() || null;
+}
+function resolveStaffByHash(hash) {
+  if (!hash) return null;
+  return staffList.find(name => {
+    const lower = name.toLowerCase();
+    return lower === hash || lower.split(/\s+/)[0] === hash;
+  }) || null;
+}
+
+function applyHashView() {
+  const hash    = getHashName();
+  const matched = resolveStaffByHash(hash);
+  const sidebar = document.getElementById('main-sidebar');
+
+  if (matched) {
+    document.title = matched.split(' ')[0] + "'s Tasks — LYS OPS";
+    if (sidebar) sidebar.style.display = '';
+    renderPersonalView(matched);
+  } else {
+    document.title = 'Team Tasks — LYS OPS';
+    if (sidebar) sidebar.style.display = '';
+    renderTeamGrid();
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+async function init() {
+  const [staffRaw, tasks, projects] = await Promise.all([
+    fetch('/api/staff').then(r => r.json()),
+    fetch('/api/tasks').then(r => r.json()),
+    fetch('/api/projects').then(r => r.json())
+  ]);
+
+  const seen = new Set();
+  const staffArr = Array.isArray(staffRaw) ? staffRaw : Object.values(staffRaw);
+  staffList = staffArr
+    .filter(s => s && s.name && !seen.has(s.name) && seen.add(s.name))
+    .map(s => s.name)
+    .sort();
+
+  allTasks    = tasks;
+  projectsList = projects;
+
+  buildSidebarProjects(projects);
+
+  // Bind FIRST so hash navigation works regardless of what follows
+  window.addEventListener('popstate',   applyHashView);
+  window.addEventListener('hashchange', applyHashView);
+
+  applyHashView();
+  setupModalHandlers();
+}
+
+async function reloadAndRender() {
+  allTasks = await fetch('/api/tasks').then(r => r.json());
+  applyHashView();
+}
+
+// ── MODE 1: Team Overview Grid ────────────────────────────────────────────
+async function renderTeamGrid() {
+  const root = document.getElementById('view-root');
+  root.innerHTML = '';
+
+  // Group tasks by assignedTo
+  const groups = {};
+  allTasks.forEach(t => {
+    const name = t.assignedTo || 'Unassigned';
+    if (!groups[name]) groups[name] = [];
+    groups[name].push(t);
+  });
+
+  const total = allTasks.filter(t => t.status !== 'Done').length;
+  const totalAll = allTasks.length;
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'overview-header';
+  hdr.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px;">' +
+      '<h2 style="margin:0;">Team Overview</h2>' +
+      '<button id="new-task-btn" class="btn" style="background:var(--accent);color:#fff;font-size:12px;font-weight:600;padding:6px 16px;border:none;border-radius:var(--radius);cursor:pointer;flex-shrink:0;">+ New Task</button>' +
+    '</div>' +
+    '<p>' + staffList.length + ' team members · ' + totalAll + ' task' + (totalAll !== 1 ? 's' : '') + ' · ' + total + ' active</p>';
+  root.appendChild(hdr);
+  hdr.querySelector('#new-task-btn').onclick = () => openNewTaskModal('');
+
+  // Fetch EOD status for all staff in parallel
+  const eodMap = {};
+  await Promise.all(staffList.map(async name => {
+    try {
+      const res = await fetch('/api/eod-log?staffName=' + encodeURIComponent(name) + '&date=' + todayStr);
+      const data = await res.json();
+      eodMap[name] = Array.isArray(data) && data.length > 0;
+    } catch (e) {
+      eodMap[name] = false;
+    }
+  }));
+
+  // Build staff data
+  const withTasks = [];
+  const noTasks   = [];
+
+  staffList.forEach(name => {
+    const tasks = groups[name] || [];
+    const overdue = tasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < todayStr).length;
+    const unacked = tasks.filter(t => t.status !== 'Done' && !t.acknowledgedAt && t.assignedTo && t.assignedTo !== 'Unassigned').length;
+    const inProg  = tasks.filter(t => t.status === 'In Progress').length;
+    const data = { name, tasks, overdue, unacked, inProg };
+    if (tasks.length > 0) withTasks.push(data);
+    else noTasks.push(data);
+  });
+
+  // Sort by overdue desc, then total tasks desc
+  withTasks.sort((a, b) => b.overdue - a.overdue || b.tasks.length - a.tasks.length);
+
+  const grid = document.createElement('div');
+  grid.className = 'staff-grid';
+
+  function makeCard(data) {
+    const card = document.createElement('a');
+    card.className = 'staff-grid-card' + (data.tasks.length === 0 ? ' no-tasks' : '');
+    card.href = '/my-tasks#' + data.name.split(/\s+/)[0].toLowerCase();
+
+    const avatarEl = document.createElement('div');
+    avatarEl.className = 'staff-avatar-lg';
+    avatarEl.style.background = data.tasks.length === 0 ? 'var(--border)' : avatarColor(data.name);
+    avatarEl.textContent = initials(data.name);
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'staff-card-name';
+    nameEl.textContent = data.name;
+
+    const badgesEl = document.createElement('div');
+    badgesEl.className = 'staff-card-badges';
+    if (data.overdue > 0)
+      badgesEl.innerHTML += '<span class="pill pill-red" style="font-size:10px;">' + data.overdue + ' overdue</span>';
+    if (data.unacked > 0)
+      badgesEl.innerHTML += '<span class="pill pill-amber" style="font-size:10px;">' + data.unacked + ' Pending Review</span>';
+
+    // EOD badge
+    const eodBadge = document.createElement('div');
+    eodBadge.className = 'eod-badge';
+    eodBadge.title = eodMap[data.name] ? 'EOD submitted today' : 'EOD not submitted today';
+    eodBadge.textContent = eodMap[data.name] ? '✅' : '⚠️';
+    card.appendChild(eodBadge);
+
+    card.appendChild(avatarEl);
+    card.appendChild(nameEl);
+    card.appendChild(badgesEl);
+
+    if (data.tasks.length > 0) {
+      const statsEl = document.createElement('div');
+      statsEl.className = 'staff-card-stats';
+      statsEl.innerHTML =
+        '<div class="staff-card-stat"><span class="val">' + data.tasks.length + '</span><span class="lbl">Total</span></div>' +
+        '<div class="staff-card-stat"><span class="val" style="color:var(--accent);">' + data.inProg + '</span><span class="lbl">Active</span></div>';
+      card.appendChild(statsEl);
+    } else {
+      const noEl = document.createElement('div');
+      noEl.style.cssText = 'font-size:11px;color:var(--text-muted);';
+      noEl.textContent = 'No tasks';
+      card.appendChild(noEl);
+    }
+
+    return card;
+  }
+
+  withTasks.forEach(d => grid.appendChild(makeCard(d)));
+  noTasks.forEach(d => grid.appendChild(makeCard(d)));
+
+  if (staffList.length === 0) {
+    root.innerHTML += '<div class="empty-state">No staff found.</div>';
+    return;
+  }
+
+  root.appendChild(grid);
+}
+
+// ── MODE 2: Personal View ─────────────────────────────────────────────────
+async function renderPersonalView(name) {
+  const root = document.getElementById('view-root');
+  root.innerHTML = '';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'personal-view-wrap';
+
+  // Back button
+  const back = document.createElement('a');
+  back.className = 'back-btn';
+  back.href = '/my-tasks';
+  back.innerHTML = '← Team';
+  wrap.appendChild(back);
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'personal-header';
+
+  const av = document.createElement('div');
+  av.className = 'personal-avatar';
+  av.style.background = avatarColor(name);
+  av.textContent = initials(name);
+
+  const hdrText = document.createElement('div');
+
+  const myTasks    = allTasks.filter(t => t.assignedTo === name);
+  const overdue    = myTasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < todayStr);
+  const active     = myTasks.filter(t => t.status === 'In Progress').length;
+  const unacked    = myTasks.filter(t => t.status !== 'Done' && !t.acknowledgedAt && t.assignedTo && t.assignedTo !== 'Unassigned').length;
+
+  const badgeParts = [];
+  if (overdue.length) badgeParts.push('<span class="pill pill-red" style="font-size:10px;vertical-align:middle;">' + overdue.length + ' overdue</span>');
+  if (unacked)        badgeParts.push('<span class="pill pill-amber" style="font-size:10px;vertical-align:middle;">' + unacked + ' Pending Review</span>');
+
+  hdrText.innerHTML =
+    '<div class="personal-title">' + esc(name.split(' ')[0]) + "'s Tasks" +
+      (badgeParts.length ? ' &nbsp;' + badgeParts.join(' ') : '') +
+    '</div>' +
+    '<div class="personal-subtitle">' + myTasks.length + ' task' + (myTasks.length !== 1 ? 's' : '') +
+      (active ? ' · ' + active + ' in progress' : '') +
+    '</div>';
+
+  const addTaskBtn = document.createElement('button');
+  addTaskBtn.className = 'btn';
+  addTaskBtn.textContent = '+ Add Task';
+  addTaskBtn.style.cssText = 'background:var(--accent);color:#fff;font-size:12px;font-weight:600;padding:6px 16px;border:none;border-radius:var(--radius);cursor:pointer;margin-left:auto;flex-shrink:0;';
+  addTaskBtn.onclick = () => openNewTaskModal(name);
+
+  hdr.appendChild(av);
+  hdr.appendChild(hdrText);
+  hdr.appendChild(addTaskBtn);
+  wrap.appendChild(hdr);
+
+  // Sort tasks: overdue first, then by due date asc, then no date
+  const overdueList = myTasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < todayStr);
+  const rest        = myTasks.filter(t => !(t.status !== 'Done' && t.dueDate && t.dueDate < todayStr));
+  rest.sort((a, b) => {
+    if (!a.dueDate && !b.dueDate) return 0;
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
+    return a.dueDate < b.dueDate ? -1 : 1;
+  });
+  const sorted = [...overdueList, ...rest];
+
+  if (sorted.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'No tasks assigned to ' + name + '.';
+    wrap.appendChild(empty);
+  } else {
+    sorted.forEach(t => wrap.appendChild(buildTaskCard(t)));
+  }
+
+  // ── Focus List (3 most urgent upcoming tasks) ──────────────────────────
+  const focusTasks = myTasks
+    .filter(t => t.status !== 'Done' && t.dueDate)
+    .sort((a, b) => a.dueDate < b.dueDate ? -1 : 1)
+    .slice(0, 3);
+
+  if (focusTasks.length > 0) {
+    const focusCard = document.createElement('div');
+    focusCard.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-top:20px;border-top:3px solid var(--accent);';
+    const focusTitle = document.createElement('div');
+    focusTitle.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);margin-bottom:12px;';
+    focusTitle.textContent = 'Focus List — Work on These Now';
+    focusCard.appendChild(focusTitle);
+
+    focusTasks.forEach(t => {
+      const now = new Date();
+      const due = new Date(t.dueDate + 'T00:00:00');
+      const diffDays = Math.round((due - now) / 86400000);
+      const isOverdue = diffDays < 0;
+      const daysLabel = isOverdue
+        ? Math.abs(diffDays) + 'd overdue'
+        : diffDays === 0 ? 'Due today'
+        : diffDays + 'd left';
+      const daysColor = isOverdue ? 'var(--red)' : diffDays <= 2 ? 'var(--amber)' : 'var(--text-muted)';
+
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);';
+      row.innerHTML =
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(t.title) + '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + esc(t.projectJobCode || t.projectName || 'No project') + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0;">' +
+          '<div style="font-size:11px;font-weight:700;color:' + daysColor + ';">' + daysLabel + '</div>' +
+          '<div style="font-size:10px;color:var(--text-muted);">' + t.dueDate + '</div>' +
+        '</div>';
+      focusCard.appendChild(row);
+    });
+
+    // Remove last border
+    const rows = focusCard.querySelectorAll('div[style*="border-bottom"]');
+    if (rows.length) rows[rows.length - 1].style.borderBottom = 'none';
+
+    wrap.appendChild(focusCard);
+  }
+
+  // EOD section — always at the bottom
+  const eodSection = await buildEodSection(name);
+  wrap.appendChild(eodSection);
+
+  root.appendChild(wrap);
+}
+
+// ── Full task card (personal view) ────────────────────────────────────────
+function buildTaskCard(task) {
+  const card = document.createElement('div');
+  const isOverdue = task.status !== 'Done' && task.dueDate && task.dueDate < todayStr;
+  const statusClass = 'status-' + task.status.toLowerCase().replace(/\s+/g, '');
+  card.className = 'task-card ' + statusClass + (isOverdue ? ' overdue' : '');
+
+  let dueBadge = '';
+  if (task.dueDate) {
+    if (task.dueDate < todayStr)
+      dueBadge = '<span class="due-badge due-overdue">Overdue · ' + task.dueDate + '</span>';
+    else if (task.dueDate === todayStr)
+      dueBadge = '<span class="due-badge due-today">Due Today</span>';
+    else
+      dueBadge = '<span class="due-badge due-upcoming">Due ' + task.dueDate + '</span>';
+  }
+
+  const activeStatus = {
+    'Pending': 'active-pending', 'In Progress': 'active-inprogress',
+    'Done': 'active-done', 'Blocked': 'active-blocked'
+  };
+  const typeStyles = {
+    'Self Task':      { color:'#00c875', bg:'rgba(0,200,117,0.1)',  icon:'👤' },
+    'Requested Task': { color:'#fdab3d', bg:'rgba(253,171,61,0.1)', icon:'📋' },
+    'Ticket Task':    { color:'#a25ddc', bg:'rgba(162,93,220,0.1)', icon:'🎫' },
+    'Project Task':   { color:'var(--accent)', bg:'rgba(51,102,255,0.1)', icon:'' },
+  };
+  const ts = typeStyles[task.taskType] || { color:'var(--text-muted)', bg:'rgba(255,255,255,0.06)', icon:'' };
+  const typeBadge = '<span style="font-size:10px;font-weight:700;color:' + ts.color + ';background:' + ts.bg + ';border-radius:4px;padding:2px 7px;white-space:nowrap;">' + (ts.icon ? ts.icon + ' ' : '') + esc(task.taskType || 'Task') + '</span>';
+
+  const priBadgeColors = { 'Low': ['#6b7294','rgba(107,114,148,0.15)'], 'Medium': ['#3366ff','rgba(51,102,255,0.12)'], 'High': ['#e2445c','rgba(226,68,92,0.12)'] };
+  const [priColor, priBg] = priBadgeColors[task.priority] || priBadgeColors['Low'];
+  const priorityBadge = task.priority ? '<span style="font-size:10px;font-weight:700;color:' + priColor + ';background:' + priBg + ';border-radius:4px;padding:1px 6px;">' + esc(task.priority) + '</span>' : '';
+  const descSnippet = task.description ? '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;margin-bottom:6px;line-height:1.5;">' + esc(task.description.slice(0, 120)) + (task.description.length > 120 ? '…' : '') + '</div>' : '';
+
+  const ackHtml = task.acknowledgedAt
+    ? '<div style="font-size:11px;color:var(--green);margin-top:6px;display:flex;align-items:center;gap:8px;">✔ Marked as Seen by ' + esc(task.acknowledgedBy || task.assignedTo || '') + ' · ' + task.acknowledgedAt.split('T')[0] + '<button class="unack-btn" data-id="' + task.id + '" style="font-size:10px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-decoration:underline;">Undo</button></div>'
+    : '<button class="ack-btn" data-id="' + task.id + '" data-name="' + esc(task.assignedTo || 'Team') + '" style="margin-top:6px;padding:3px 10px;font-size:11px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;color:var(--text);">Mark as Seen</button>';
+
+  card.innerHTML =
+    (task.projectId
+      ? '<a class="task-project" href="/project.html?id=' + esc(task.projectId) + '" style="text-decoration:none;cursor:pointer;">' + esc(task.projectJobCode || '') + (task.projectJobCode && task.projectName ? ' · ' : '') + esc(task.projectName || '') + ' →</a>'
+      : '<div class="task-project">' + esc(task.projectJobCode || 'No project') + '</div>'
+    ) +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">' +
+      '<div class="task-title" style="margin:0;">' + esc(task.title) + '</div>' + typeBadge + priorityBadge +
+    '</div>' +
+    descSnippet +
+    '<div class="task-meta">' + dueBadge + (task.requestedBy ? ' <span style="font-size:11px;color:var(--text-muted);">· Requested by: ' + esc(task.requestedBy) + '</span>' : '') + '</div>' +
+    '<div class="task-status-row">' +
+      ['Pending', 'In Progress', 'Done'].map(s =>
+        '<button class="status-btn ' + (task.status === s ? activeStatus[s] : '') + '" data-status="' + s + '" data-id="' + task.id + '">' + s + '</button>'
+      ).join('') +
+      '<button class="status-btn del-task-btn" data-id="' + task.id + '" style="margin-left:auto;color:var(--red);border-color:rgba(226,68,92,0.3);font-size:11px;">🗑 Delete</button>' +
+    '</div>' +
+    ackHtml;
+
+  card.querySelectorAll('.status-btn[data-status]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await fetch('/api/tasks/' + btn.dataset.id, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: btn.dataset.status })
+      });
+      reloadAndRender();
+    });
+  });
+
+  card.querySelector('.del-task-btn').addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!confirm('Delete "' + task.title + '"? Cannot be undone.')) return;
+    const reason = prompt('Reason for deleting? (required)');
+    if (reason === null) return;
+    if (!reason.trim()) { alert('Reason is required.'); return; }
+    await fetch('/api/tasks/' + task.id, {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deletedBy: 'Team View', reason: reason.trim() })
+    });
+    reloadAndRender();
+  });
+
+  const ackBtn = card.querySelector('.ack-btn');
+  if (ackBtn) {
+    ackBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await fetch('/api/tasks/' + ackBtn.dataset.id + '/acknowledge', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: ackBtn.dataset.name })
+      });
+      reloadAndRender();
+    });
+  }
+
+  const unackBtn = card.querySelector('.unack-btn');
+  if (unackBtn) {
+    unackBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      await fetch('/api/tasks/' + unackBtn.dataset.id, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ acknowledgedAt: null, acknowledgedBy: null })
+      });
+      reloadAndRender();
+    });
+  }
+
+  return card;
+}
+
+// ── New Task modal ────────────────────────────────────────────────────────
+let _ntTaskType = 'Self Task';
+let _ntTickets  = [];
+
+function ntSetType(type) {
+  _ntTaskType = type;
+
+  // Update button styles
+  document.querySelectorAll('.nt-type-btn').forEach(function(btn) {
+    const active = btn.dataset.type === type;
+    btn.style.borderColor  = active ? 'var(--accent)' : 'var(--border)';
+    btn.style.background   = active ? 'rgba(51,102,255,0.15)' : 'var(--bg3)';
+    btn.style.color        = active ? 'var(--accent)' : 'var(--text-muted)';
+  });
+
+  // Show/hide fields
+  const show = function(id) { document.getElementById(id).style.display = ''; };
+  const hide = function(id) { document.getElementById(id).style.display = 'none'; };
+
+  if (type === 'Self Task') {
+    hide('nt-ticket-row');
+    show('nt-title-row');
+    hide('nt-req-row');
+    show('nt-project-row');
+    show('nt-desc-row');
+    document.getElementById('nt-desc').removeAttribute('readonly');
+    document.getElementById('nt-desc').placeholder = 'Optional details…';
+  } else if (type === 'Requested Task') {
+    hide('nt-ticket-row');
+    show('nt-title-row');
+    show('nt-req-row');
+    show('nt-project-row');
+    show('nt-desc-row');
+    document.getElementById('nt-desc').removeAttribute('readonly');
+    document.getElementById('nt-desc').placeholder = 'Optional details…';
+  } else if (type === 'Ticket Task') {
+    show('nt-ticket-row');
+    hide('nt-title-row');
+    hide('nt-req-row');
+    hide('nt-project-row');
+    show('nt-desc-row');
+    document.getElementById('nt-desc').setAttribute('readonly', true);
+    document.getElementById('nt-desc').placeholder = 'Auto-filled from ticket…';
+  }
+}
+
+function ntOnTicketChange() {
+  const sel     = document.getElementById('nt-ticket');
+  const preview = document.getElementById('nt-ticket-preview');
+  const ticketId = sel.value;
+  const ticket = _ntTickets.find(function(t) { return t.id === ticketId; });
+  if (ticket) {
+    // Auto-fill description: title then body
+    const parts = [];
+    const heading = ticket.subject || ticket.title || '';
+    if (heading) parts.push(heading);
+    const body = ticket.description || ticket.body || ticket.message || '';
+    if (body) parts.push(body);
+    document.getElementById('nt-desc').value = parts.join('\n\n');
+    // Preview label: Title — Type — by SubmittedBy
+    const previewParts = [
+      (ticket.subject || ticket.title || 'Ticket ' + ticketId).slice(0, 60),
+      ticket.type || ticket.category || '',
+      (ticket.submittedBy || ticket.submittedby || ticket.createdBy) ? 'by ' + (ticket.submittedBy || ticket.submittedby || ticket.createdBy) : ''
+    ].filter(Boolean);
+    preview.textContent = previewParts.join(' · ');
+    preview.style.display = '';
+  } else {
+    document.getElementById('nt-desc').value = '';
+    preview.style.display = 'none';
+  }
+}
+
+async function openNewTaskModal(prefilledAssignee) {
+  const modal = document.getElementById('new-task-modal');
+
+  // Detect personal view from URL hash if no explicit assignee given
+  if (!prefilledAssignee) {
+    const hashName = resolveStaffByHash(getHashName());
+    if (hashName) prefilledAssignee = hashName;
+  }
+
+  // ── Helper: populate a <select> from a names array ─────────────────────
+  function fillStaffSelect(selId, placeholder, names, selectedValue) {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">' + placeholder + '</option>';
+    names.forEach(function(n) {
+      const o = document.createElement('option');
+      o.value = n; o.textContent = n;
+      sel.appendChild(o);
+    });
+    if (selectedValue) sel.value = selectedValue;
+  }
+
+  // ── Step 1: Populate immediately from cached staffList ─────────────────
+  // staffList is already populated at init — no waiting
+  fillStaffSelect('nt-assignee',    'Unassigned', staffList, prefilledAssignee || '');
+  fillStaffSelect('nt-requested-by', '—',         staffList, '');
+
+  // Populate projects from cached projectsList
+  (function() {
+    const psel = document.getElementById('nt-project');
+    psel.innerHTML = '<option value="">No project</option>';
+    (projectsList || []).filter(function(p) { return p.status !== 'Completed'; })
+      .forEach(function(p) {
+        const o = document.createElement('option');
+        o.value = p.id; o.textContent = (p.jobCode || p.name || '');
+        psel.appendChild(o);
+      });
+  })();
+
+  // Reset other fields and show modal
+  document.getElementById('nt-title').value    = '';
+  document.getElementById('nt-desc').value     = '';
+  document.getElementById('nt-due').value      = '';
+  document.getElementById('nt-priority').value = 'Medium';
+  document.getElementById('nt-ticket').value   = '';
+  document.getElementById('nt-ticket-preview').style.display = 'none';
+  document.getElementById('nt-ticket').innerHTML = '<option value="">Loading tickets…</option>';
+  ntSetType('Self Task');
+  modal.style.display = 'flex';
+
+  // ── Step 2: Refresh staff + projects from API in background ────────────
+  fetch('/api/staff').then(function(r) { return r.json(); }).then(function(staffData) {
+    const staffArr = Array.isArray(staffData) ? staffData : Object.values(staffData);
+    const seen2 = new Set();
+    const freshNames = staffArr
+      .filter(function(s) { return s && s.name && !seen2.has(s.name) && seen2.add(s.name); })
+      .map(function(s) { return s.name; })
+      .sort();
+    if (freshNames.length > 0) {
+      // Update global cache too
+      staffList = freshNames;
+      const currentAssignee = document.getElementById('nt-assignee').value;
+      fillStaffSelect('nt-assignee',    'Unassigned', freshNames, currentAssignee || prefilledAssignee || '');
+      fillStaffSelect('nt-requested-by', '—',         freshNames, '');
+    }
+  }).catch(function(e) { console.warn('[LYS] Staff refresh error:', e); });
+
+  fetch('/api/projects').then(function(r) { return r.json(); }).then(function(projData) {
+    const allProjects = Array.isArray(projData) ? projData : [];
+    projectsList = allProjects;
+    const psel = document.getElementById('nt-project');
+    const currentProj = psel.value;
+    psel.innerHTML = '<option value="">No project</option>';
+    allProjects.filter(function(p) { return p.status !== 'Completed'; })
+      .forEach(function(p) {
+        const o = document.createElement('option');
+        o.value = p.id; o.textContent = (p.jobCode || p.name || '');
+        psel.appendChild(o);
+      });
+    if (currentProj) psel.value = currentProj;
+  }).catch(function(e) { console.warn('[LYS] Projects refresh error:', e); });
+
+  // Fetch tickets (New or In Review only) — non-blocking
+  const tsel = document.getElementById('nt-ticket');
+  fetch('/api/tickets').then(function(r) { return r.json(); }).then(function(data) {
+    const all = Array.isArray(data) ? data : (data.tickets || []);
+    _ntTickets = all.filter(function(t) {
+      return t.status === 'New' || t.status === 'In Review';
+    });
+    if (_ntTickets.length === 0) {
+      tsel.innerHTML = '<option value="">No open tickets</option>';
+      return;
+    }
+    tsel.innerHTML = '<option value="">— Select ticket —</option>';
+    _ntTickets.forEach(function(t) {
+      const o = document.createElement('option');
+      o.value = t.id;
+      // Format: "Title — Type — by SubmittedBy"
+      const label = [
+        (t.subject || t.title || t.description || 'Ticket').slice(0, 50),
+        t.type || t.category || '',
+        (t.submittedBy || t.submittedby || t.createdBy) ? 'by ' + (t.submittedBy || t.submittedby || t.createdBy) : ''
+      ].filter(Boolean).join(' — ');
+      o.textContent = label;
+      tsel.appendChild(o);
+    });
+  }).catch(function() {
+    _ntTickets = [];
+    tsel.innerHTML = '<option value="">Could not load tickets</option>';
+  });
+
+  setTimeout(function() {
+    const titleEl = document.getElementById('nt-title');
+    if (titleEl && titleEl.closest('[style*="display:none"]') === null) titleEl.focus();
+  }, 80);
+}
+
+function setupModalHandlers() {
+  const modal = document.getElementById('new-task-modal');
+  const closeModal = function() { modal.style.display = 'none'; };
+
+  // Task type buttons
+  document.querySelectorAll('.nt-type-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() { ntSetType(btn.dataset.type); });
+  });
+
+  // Ticket change → auto-fill description
+  document.getElementById('nt-ticket').addEventListener('change', ntOnTicketChange);
+
+  document.getElementById('nt-close').onclick  = closeModal;
+  document.getElementById('nt-cancel').onclick = closeModal;
+  modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+
+  document.getElementById('nt-save').onclick = async function() {
+    const type = _ntTaskType;
+
+    // Validation
+    if (type === 'Ticket Task') {
+      if (!document.getElementById('nt-ticket').value) {
+        document.getElementById('nt-ticket').focus(); return;
+      }
+    } else {
+      const title = document.getElementById('nt-title').value.trim();
+      if (!title) { document.getElementById('nt-title').focus(); return; }
+    }
+    if (type === 'Requested Task' && !document.getElementById('nt-requested-by').value) {
+      document.getElementById('nt-requested-by').focus(); return;
+    }
+
+    const titleVal = type === 'Ticket Task'
+      ? (function() {
+          const t = _ntTickets.find(function(t) { return t.id === document.getElementById('nt-ticket').value; });
+          return t ? (t.subject || t.title || t.ref || 'Ticket ' + t.id) : 'Ticket Task';
+        })()
+      : document.getElementById('nt-title').value.trim();
+
+    const pid  = (type !== 'Ticket Task') ? document.getElementById('nt-project').value : '';
+    const proj = projectsList.find(function(p) { return p.id === pid; });
+
+    const ticketId = type === 'Ticket Task' ? document.getElementById('nt-ticket').value : '';
+
+    await fetch('/api/tasks', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title:          titleVal,
+        taskType:       type,
+        ticketId:       ticketId,
+        projectId:      pid,
+        projectJobCode: proj ? (proj.jobCode || '') : '',
+        projectName:    proj ? (proj.name   || '') : '',
+        assignedTo:     document.getElementById('nt-assignee').value,
+        requestedBy:    type === 'Requested Task' ? document.getElementById('nt-requested-by').value : '',
+        dueDate:        document.getElementById('nt-due').value,
+        priority:       document.getElementById('nt-priority').value,
+        description:    document.getElementById('nt-desc').value,
+        createdBy:      type === 'Requested Task' ? document.getElementById('nt-requested-by').value : document.getElementById('nt-assignee').value
+      })
+    });
+    closeModal();
+    reloadAndRender();
+  };
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── EOD Section ───────────────────────────────────────────────────────────
+async function buildEodSection(staffName) {
+  const section = document.createElement('div');
+  section.className = 'eod-section';
+
+  const title = document.createElement('div');
+  title.className = 'eod-section-title';
+  title.textContent = 'End of Day Report · ' + todayStr;
+  section.appendChild(title);
+
+  // Check if EOD already submitted today
+  let submitted = null;
+  try {
+    const res = await fetch('/api/eod-log?staffName=' + encodeURIComponent(staffName) + '&date=' + todayStr);
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) submitted = data[0];
+  } catch (e) { /* ignore */ }
+
+  if (submitted) {
+    // Already submitted — show green confirmation card
+    const card = document.createElement('div');
+    card.className = 'eod-submitted-card';
+    card.innerHTML =
+      '<div class="eod-submitted-title">✅ EOD submitted for today</div>' +
+      '<div class="eod-submitted-summary">' + esc(submitted.summary || '') + '</div>' +
+      (submitted.issues ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;"><strong>Issues/Blockers:</strong> ' + esc(submitted.issues) + '</div>' : '') +
+      '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Hours worked: ' + esc(String(submitted.hours || 8)) + '</div>';
+    section.appendChild(card);
+  } else {
+    // Not submitted — show amber warning + form
+    const card = document.createElement('div');
+    card.className = 'eod-warning-card';
+
+    const warnTitle = document.createElement('div');
+    warnTitle.className = 'eod-warning-title';
+    warnTitle.textContent = '⚠️ EOD not submitted for today';
+    card.appendChild(warnTitle);
+
+    // Summary field
+    const f1 = document.createElement('div');
+    f1.className = 'eod-form-field';
+    f1.innerHTML = '<label>What did you work on today? <span style="color:var(--red);">*</span></label>';
+    const summaryTA = document.createElement('textarea');
+    summaryTA.placeholder = 'Brief summary of work done today…';
+    f1.appendChild(summaryTA);
+    card.appendChild(f1);
+
+    // Issues field
+    const f2 = document.createElement('div');
+    f2.className = 'eod-form-field';
+    f2.innerHTML = '<label>Any issues or blockers?</label>';
+    const issuesTA = document.createElement('textarea');
+    issuesTA.placeholder = 'Leave blank if none…';
+    issuesTA.style.minHeight = '52px';
+    f2.appendChild(issuesTA);
+    card.appendChild(f2);
+
+    // Hours field
+    const f3 = document.createElement('div');
+    f3.className = 'eod-form-field';
+    f3.innerHTML = '<label>Hours worked</label>';
+    const hoursInput = document.createElement('input');
+    hoursInput.type = 'number';
+    hoursInput.min = '0';
+    hoursInput.max = '24';
+    hoursInput.step = '0.5';
+    hoursInput.value = '8';
+    f3.appendChild(hoursInput);
+    card.appendChild(f3);
+
+    // Submit button
+    const submitBtn = document.createElement('button');
+    submitBtn.className = 'eod-submit-btn';
+    submitBtn.textContent = 'Submit EOD';
+    card.appendChild(submitBtn);
+
+    // Error message placeholder
+    const errMsg = document.createElement('div');
+    errMsg.style.cssText = 'font-size:12px;color:var(--red);margin-top:8px;display:none;';
+    card.appendChild(errMsg);
+
+    submitBtn.addEventListener('click', async () => {
+      const summary = summaryTA.value.trim();
+      if (!summary) {
+        errMsg.textContent = 'Please fill in what you worked on today.';
+        errMsg.style.display = '';
+        summaryTA.focus();
+        return;
+      }
+      errMsg.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+      try {
+        const r = await fetch('/api/eod-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            staffName,
+            date:    todayStr,
+            summary,
+            issues:  issuesTA.value.trim(),
+            hours:   parseFloat(hoursInput.value) || 8
+          })
+        });
+        if (!r.ok) throw new Error('Server error ' + r.status);
+
+        // Replace form with success view
+        card.className = 'eod-submitted-card';
+        card.innerHTML =
+          '<div class="eod-submitted-title">✅ EOD submitted for today</div>' +
+          '<div class="eod-submitted-summary">' + esc(summary) + '</div>' +
+          (issuesTA.value.trim() ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;"><strong>Issues/Blockers:</strong> ' + esc(issuesTA.value.trim()) + '</div>' : '') +
+          '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Hours worked: ' + esc(String(parseFloat(hoursInput.value) || 8)) + '</div>';
+      } catch (e) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit EOD';
+        errMsg.textContent = 'Failed to submit. Please try again.';
+        errMsg.style.display = '';
+      }
+    });
+
+    section.appendChild(card);
+  }
+
+  return section;
+}
+
+function buildSidebarProjects(projects) {
+  const container = document.getElementById('sidebar-projects');
+  if (!container) return;
+  const statusDot = { 'On Track': '#00c875', 'Delayed': '#e2445c', 'On Hold': '#fdab3d', 'Completed': '#6b7294' };
+  const active = projects.filter(p => p.status !== 'Completed');
+  if (!active.length) { container.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:4px 8px;">No active projects</div>'; return; }
+  container.innerHTML = active.map(p =>
+    `<a href="/project.html?id=${esc(p.id)}" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="background:${statusDot[p.status]||'var(--border)'};font-size:9px;flex-shrink:0;">${esc((p.jobCode||'').slice(0,4))}</span>
+      <span style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.jobCode||p.name)}</span>
+    </a>`
+  ).join('');
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Project Detail — LYS OPS</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <a href="index.html" class="btn btn-ghost btn-sm">← Back</a>
+    <div class="topbar-title" id="topbar-name" style="flex:1; text-align:center; padding: 0 12px;">—</div>
+    <div id="topbar-badge"></div>
+    <a href="admin.html" class="btn btn-ghost btn-sm" title="Admin Settings" style="margin-left:8px;">⚙</a>
+  </header>
+
+  <!-- Timeline Bar — top of page -->
+  <div id="project-timeline-bar" style="background:var(--sidebar-bg); border-bottom:1px solid rgba(255,255,255,0.08); padding:8px 16px;">
+    <div id="project-timeline-display"></div>
+  </div>
+
+  <!-- PIN Modal -->
+  <div id="pin-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-title">Admin PIN Required</div>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Enter the 4-digit PIN to delete this project.</p>
+      <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric">
+      <div id="pin-error" class="pin-error" style="display:none;"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="pin-cancel">Cancel</button>
+        <button class="btn btn-danger" id="pin-confirm">Delete Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Strip: editable name + status + delete (full width) -->
+  <div class="proj-strip">
+    <div class="proj-strip-left">
+      <input type="text" id="header-jobcode" class="proj-jobcode-input" placeholder="Job Code">
+      <input type="text" id="header-name" class="proj-name-input" placeholder="Project Name">
+    </div>
+    <div class="proj-strip-right">
+      <select id="field-status" class="proj-status-select">
+        <option>On Track</option>
+        <option>Delayed</option>
+        <option>On Hold</option>
+        <option>Completed</option>
+      </select>
+      <button class="btn btn-ghost btn-sm btn-del-project" id="btn-delete">Delete</button>
+    </div>
+  </div>
+
+  <!-- Financial Summary Bar (full width) -->
+  <div class="fin-bar">
+    <div class="fin-bar-inner">
+      <div class="fin-item">
+        <div class="fin-label">Contract</div>
+        <div class="fin-value" id="fin-contract">—</div>
+      </div>
+      <div class="fin-item">
+        <div class="fin-label">VO</div>
+        <div class="fin-value" id="fin-vo">—</div>
+      </div>
+      <div class="fin-item">
+        <div class="fin-label">Total</div>
+        <div class="fin-value" id="fin-total">—</div>
+      </div>
+      <div class="fin-item">
+        <div class="fin-label">Paid</div>
+        <div class="fin-value green" id="fin-paid">—</div>
+      </div>
+      <div class="fin-item">
+        <div class="fin-label">Claimed</div>
+        <div class="fin-value amber" id="fin-claimpct">—</div>
+      </div>
+      <div class="fin-item">
+        <div class="fin-label">Fab</div>
+        <div class="fin-value" id="fin-fabpct">—</div>
+        <div class="progress-bar" style="height:3px; margin-top:4px;">
+          <div class="progress-fill green" id="fin-fab-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="fin-item">
+        <div class="fin-label">Install</div>
+        <div class="fin-value" id="fin-installpct">—</div>
+        <div class="progress-bar" style="height:3px; margin-top:4px;">
+          <div class="progress-fill green" id="fin-install-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Layout: sidebar nav + scrollable content -->
+  <div class="project-layout">
+
+    <!-- Left Sidebar: tab navigation -->
+    <div class="project-sidebar">
+      <a href="/" class="proj-tab-btn" style="text-decoration:none;">
+        <span class="proj-tab-icon">📊</span><span>Dashboard</span>
+      </a>
+      <div class="tasks-sidebar-label">Views</div>
+      <a href="/my-tasks" class="proj-tab-btn" style="text-decoration:none;">
+        <span class="proj-tab-icon">👥</span><span>Team</span>
+      </a>
+      <a href="/factory" id="sidebar-factory-link" class="proj-tab-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+        <span class="proj-tab-icon">🏭</span><span>Factory</span>
+        <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+      </a>
+      <a href="/installation" class="proj-tab-btn" style="text-decoration:none;">
+        <span class="proj-tab-icon">🔧</span><span>Installation</span>
+      </a>
+      <a href="/procurement" class="proj-tab-btn" style="text-decoration:none;">
+        <span class="proj-tab-icon">🛒</span><span>Procurement</span>
+      </a>
+      <a href="/planning" class="proj-tab-btn" style="text-decoration:none;">
+        <span class="proj-tab-icon">📅</span><span>Manpower</span>
+      </a>
+      <a href="/feedback" class="proj-tab-btn" style="text-decoration:none;">
+        <span class="proj-tab-icon">💬</span><span>Feedback</span>
+      </a>
+      <a href="new-project.html" class="proj-tab-btn" style="text-decoration:none;background:var(--accent);color:#fff;margin-bottom:6px;border-radius:var(--radius);">
+        <span class="proj-tab-icon" style="background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+      </a>
+      <div style="padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);margin-top:4px;">
+        <button class="proj-tab-btn active" data-tab="summary">
+          <span class="proj-tab-icon">📊</span><span>Summary</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="info">
+          <span class="proj-tab-icon">📋</span><span>Project Info</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="documents">
+          <span class="proj-tab-icon">📄</span><span>Documents</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="drawings">
+          <span class="proj-tab-icon">🖼</span><span>Drawings</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="fabrication">
+          <span class="proj-tab-icon">🔧</span><span>Fabrication</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="installation">
+          <span class="proj-tab-icon">🏗</span><span>Installation</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="delivery">
+          <span class="proj-tab-icon">🚚</span><span>Delivery</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="payment">
+          <span class="proj-tab-icon">💰</span><span>Payment</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="meetings">
+          <span class="proj-tab-icon">📝</span><span>Meetings</span>
+        </button>
+        <button class="proj-tab-btn" data-tab="history">
+          <span class="proj-tab-icon">🕓</span><span>History</span>
+        </button>
+      </div>
+      <a href="admin.html" class="proj-tab-btn" style="text-decoration:none;margin-top:8px;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;">
+        <span class="proj-tab-icon">⚙️</span><span>Admin</span>
+      </a>
+    </div>
+
+    <!-- Content Area -->
+    <div class="project-content">
+
+      <!-- Staff datalist for autocomplete -->
+      <datalist id="staff-list"></datalist>
+
+      <!-- Tab: Summary (read-only dashboard) -->
+      <div class="tab-panel active" id="tab-summary">
+        <!-- filled by renderSummaryTab() -->
+      </div>
+
+      <!-- Tab: Project Info (editable) -->
+      <div class="tab-panel" id="tab-info">
+        <div class="info-cols">
+          <!-- Left: Project Info + Financials -->
+          <div class="card">
+            <div class="section-label">Project Info</div>
+            <div class="field-group">
+              <div class="field" style="grid-column: 1 / -1;">
+                <label>Products / Scope</label>
+                <div class="table-wrap">
+                  <table id="product-scope-table">
+                    <thead>
+                      <tr>
+                        <th>Product Name</th>
+                        <th style="width:80px;">Qty</th>
+                        <th style="width:140px;">Unit</th>
+                        <th style="width:36px;"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="product-scope-tbody"></tbody>
+                  </table>
+                </div>
+                <div style="display:flex; gap:6px; margin-top:6px; align-items:center; flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" id="product-scope-add-btn">+ Add Product</button>
+                  <button class="btn btn-ghost btn-sm" id="btn-sync-scope">↻ Sync to FAB &amp; Install →</button>
+                </div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:5px;">Changes here sync to Fabrication and Installation tabs</div>
+              </div>
+              <div class="field" style="grid-column: 1 / -1;">
+                <label>Scope Notes</label>
+                <textarea id="field-scopeNotes" rows="2" placeholder="Additional scope details, special requirements…"></textarea>
+              </div>
+              <div class="field">
+                <label>Client</label>
+                <input type="text" id="field-client">
+              </div>
+              <div class="field">
+                <label>Client Contact</label>
+                <input type="text" id="field-contact">
+              </div>
+              <div class="field">
+                <label>Main Con</label>
+                <input type="text" id="field-mainCon">
+              </div>
+              <div class="field">
+                <label>Consultant</label>
+                <input type="text" id="field-consultant">
+              </div>
+            </div>
+            <div class="field" style="margin-top:4px;">
+              <label>Latest Notes</label>
+              <textarea id="field-latestNotes" rows="3" placeholder="Latest update / notes…"></textarea>
+            </div>
+            <div class="field-group" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border);">
+              <div class="field">
+                <label>Contract Value ($)</label>
+                <input type="number" id="field-contractValue" min="0" step="0.01">
+              </div>
+              <div class="field">
+                <label>VO Value ($)</label>
+                <input type="number" id="field-voValue" min="0" step="0.01">
+              </div>
+              <div class="field">
+                <label>Start Date</label>
+                <input type="date" id="field-startDate">
+              </div>
+              <div class="field">
+                <label>End Date</label>
+                <input type="date" id="field-endDate">
+              </div>
+              <div class="field" style="grid-column: 1 / -1;">
+                <label>Paid Amount <span style="font-size:10px; color:var(--text-muted); font-weight:400;">(auto from milestones)</span></label>
+                <div id="field-paidAmount-display" class="field-readonly">—</div>
+                <input type="hidden" id="field-paidAmount">
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Team -->
+          <div class="card">
+            <div class="section-label">Team</div>
+            <div class="field-group">
+              <div class="field">
+                <label>Project Manager</label>
+                <select id="field-projectManager"><option value="">— Select —</option></select>
+              </div>
+              <div class="field">
+                <label>QS</label>
+                <select id="field-qs"><option value="">— Select —</option></select>
+              </div>
+              <div class="field">
+                <label>Factory Manager</label>
+                <select id="field-factoryManager"><option value="">— Select —</option></select>
+              </div>
+              <div class="field">
+                <label>Drafter</label>
+                <select id="field-drafter"><option value="">— Select —</option></select>
+              </div>
+              <div class="field">
+                <label>Purchaser</label>
+                <select id="field-purchaser"><option value="">— Select —</option></select>
+              </div>
+              <div class="field">
+                <label>Sales</label>
+                <select id="field-sales"><option value="">— Select —</option></select>
+              </div>
+              <div class="field">
+                <label>Site Engineer</label>
+                <select id="field-siteEngineer"><option value="">— Select —</option></select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Documents -->
+      <div class="tab-panel" id="tab-documents">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div class="section-label" style="margin:0;flex:1;">Documents</div>
+          <button class="btn btn-ghost btn-sm" id="doc-new-group-btn">📁 New Group</button>
+          <button class="btn btn-primary btn-sm" id="doc-add-btn">+ Add Document</button>
+        </div>
+        <div id="documents-list"></div>
+      </div>
+
+      <!-- Tab: Drawings -->
+      <div class="tab-panel" id="tab-drawings">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <div class="section-label" style="margin:0;flex:1;">Drawings</div>
+          <button class="btn btn-ghost btn-sm" id="drawing-new-folder-btn">📁 New Folder</button>
+          <button class="btn btn-primary btn-sm" id="drawing-add-btn">+ Add Drawing</button>
+        </div>
+        <div id="drawings-grid"></div>
+      </div>
+
+      <!-- Tab: Fabrication -->
+      <div class="tab-panel" id="tab-fabrication">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div class="section-label" style="margin:0;">Progress</div>
+          <button class="btn btn-primary btn-sm" id="fab-add-btn">+ Add Row</button>
+        </div>
+        <div class="card" style="padding:0; margin-bottom:12px;">
+          <div class="data-table-wrap">
+            <table id="fab-table" class="data-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th style="width:80px;">Total Qty</th>
+                  <th style="width:110px;">Unit</th>
+                  <th>Process</th>
+                  <th>Qty Done</th>
+                  <th>Qty Sent</th>
+                  <th>Status</th>
+                  <th>Started</th>
+                  <th>Done</th>
+                  <th>Target Delivery</th>
+                  <th>Delivery Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="fab-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+          Overall Fab%: <strong id="fab-pct-display" style="color:var(--accent);">—</strong>
+        </div>
+        <div class="section-label" style="margin-bottom:8px;">Completion</div>
+        <div id="fab-live-summary"></div>
+        <div id="fab-process-timeline" style="margin-top:20px;"></div>
+      </div>
+
+      <!-- Tab: Installation -->
+      <div class="tab-panel" id="tab-installation">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div class="section-label" style="margin:0;">Progress</div>
+          <button class="btn btn-primary btn-sm" id="install-add-btn">+ Add Row</button>
+        </div>
+        <div class="card" style="padding:0; margin-bottom:16px;">
+          <div class="data-table-wrap">
+            <table id="install-table" class="data-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th style="width:80px;">Total Qty</th>
+                  <th style="width:110px;">Unit</th>
+                  <th style="width:90px;">Installed</th>
+                  <th style="width:70px;">%</th>
+                  <th style="width:120px;">Claim Basis</th>
+                  <th>Notes</th>
+                  <th style="width:36px;"></th>
+                </tr>
+              </thead>
+              <tbody id="install-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+          Overall Install%: <strong id="install-pct-display" style="color:var(--accent);">—</strong>
+        </div>
+        <div class="section-label" style="margin-bottom:8px;">Completion</div>
+        <div id="install-live-summary"></div>
+        <div class="card" style="padding:12px 16px; margin-top:12px;">
+          <div class="section-label" style="margin-bottom:8px;">Claim Summary</div>
+          <div style="display:flex; gap:24px; flex-wrap:wrap; font-size:13px;">
+            <div>Contract Value: <strong id="install-contract-value" style="color:var(--text);">—</strong></div>
+            <div>Claimable This Stage: <strong id="install-claimable" style="color:var(--green);">—</strong></div>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">
+            Claimable = Contract Value × Install% — updates live as you enter progress.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tab: Delivery Requests -->
+      <div class="tab-panel" id="tab-delivery">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="section-label" style="margin:0;">Delivery Requests</div>
+          <button class="btn btn-primary btn-sm" id="delivery-add-btn">+ New Delivery Request</button>
+        </div>
+        <div id="delivery-requests-list"></div>
+      </div>
+
+      <!-- Tab: Payment / Claims -->
+      <div class="tab-panel" id="tab-payment">
+
+        <!-- Claims Tracker (SOP Act) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="section-label" style="margin:0;">Progress Claims</div>
+          <button class="btn btn-primary btn-sm" id="claim-add-btn">+ New Claim</button>
+        </div>
+        <div id="claims-summary-strip" style="margin-bottom:16px;"></div>
+        <div id="claims-list"></div>
+
+        <!-- Legacy Payment Milestones (collapsible reference) -->
+        <details style="margin-top:20px;">
+          <summary style="cursor:pointer; font-size:12px; color:var(--text-muted); padding:8px 0; user-select:none;">▸ Legacy Payment Milestones</summary>
+          <div style="margin-top:8px;">
+            <div id="payment-summary-bar" style="margin-bottom:12px;"></div>
+            <div class="card" style="padding:0; margin-bottom:12px;">
+              <div class="data-table-wrap">
+                <table id="payment-table" class="data-table">
+                  <thead>
+                    <tr>
+                      <th>S/N</th>
+                      <th>Milestone</th>
+                      <th>Type</th>
+                      <th>Basis</th>
+                      <th>%</th>
+                      <th>Qty</th>
+                      <th>Unit Rate ($)</th>
+                      <th>Amount ($)</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                      <th>Ref</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="payment-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div style="font-size:13px; color:var(--text-muted); display:flex; gap:24px; flex-wrap:wrap;">
+              <span>Contract Paid: <strong id="payment-paid-display" style="color:var(--green);">—</strong></span>
+              <span>Contract Claimed %: <strong id="payment-pct-display" style="color:var(--amber);">—</strong></span>
+            </div>
+            <div style="margin-top:8px;">
+              <button class="btn btn-ghost btn-sm" id="payment-add-btn">+ Add Milestone</button>
+            </div>
+          </div>
+        </details>
+
+      </div>
+
+      <!-- Tab: Meeting Notes -->
+      <div class="tab-panel" id="tab-meetings">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="section-label" style="margin:0;">Meeting Notes</div>
+          <button class="btn btn-primary btn-sm" id="meeting-add-btn">+ Add Meeting Note</button>
+        </div>
+        <div id="meetings-list"></div>
+      </div>
+
+      <!-- Tab: History -->
+      <div class="tab-panel" id="tab-history">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <div class="section-label" style="margin:0; flex:1;">Project History</div>
+          <button class="btn btn-ghost btn-sm" id="history-refresh-btn">↻ Refresh</button>
+        </div>
+        <div id="history-timeline"></div>
+      </div>
+
+    </div><!-- /.project-content -->
+  </div><!-- /.project-layout -->
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/project.js"></script>
+</body>
+</html>

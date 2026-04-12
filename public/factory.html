@@ -1,0 +1,769 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Factory — LYS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: var(--bg); }
+    .factory-page { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+    .factory-project-group {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .factory-project-title {
+      background: var(--sidebar-bg);
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .factory-item {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .factory-item:last-child { border-bottom: none; }
+    .factory-item-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .factory-item-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .counter-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: var(--bg3);
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+      color: var(--text);
+    }
+    .counter-btn:active { background: var(--accent); color: #fff; }
+    .counter-btn.minus { color: var(--red); }
+    .counter-btn.plus  { color: var(--green); }
+    .counter-val {
+      min-width: 52px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      background: var(--bg2);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .counter-total {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      min-width: 40px;
+    }
+
+    .eod-section {
+      background: var(--sidebar-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 8px;
+    }
+    .eod-section h2 { color: #fff; font-size: 15px; margin: 0 0 4px; }
+    .eod-section p { color: rgba(255,255,255,0.6); font-size: 12px; margin: 0 0 16px; }
+    .eod-submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .eod-submit-btn:disabled { background: var(--green); cursor: default; }
+
+    .do-upload-btn {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 12px;
+      background: var(--bg3);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .do-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* ── Tab bar ── */
+    .factory-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 16px;
+      gap: 0;
+    }
+    .factory-tab {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s;
+      position: relative;
+    }
+    .factory-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .factory-tab .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--red);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      margin-left: 5px;
+    }
+
+    /* ── Site Request cards ── */
+    .sr-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .sr-card.overdue { border-left: 3px solid var(--red); }
+    .sr-card-header {
+      padding: 12px 14px 8px;
+    }
+    .sr-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .sr-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sr-meta span { display: inline-flex; align-items: center; gap: 3px; }
+    .sr-status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .sr-status-New          { background: rgba(51,102,255,0.15); color: var(--accent); }
+    .sr-status-Acknowledged { background: rgba(253,171,61,0.15); color: var(--amber); }
+    .sr-status-In-Fabrication { background: rgba(253,171,61,0.2); color: #e0880a; }
+    .sr-status-Ready        { background: rgba(0,200,117,0.15); color: var(--green); }
+    .sr-status-Delivered    { background: rgba(0,200,117,0.1); color: var(--green); opacity:0.7; }
+    .sr-status-Issue        { background: rgba(226,68,92,0.15); color: var(--red); }
+    .sr-actions {
+      padding: 8px 14px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sr-btn {
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+    .sr-btn-primary { background: var(--accent); color: #fff; }
+    .sr-btn-green   { background: var(--green); color: #fff; }
+    .sr-btn-amber   { background: var(--amber); color: #fff; }
+    .sr-btn-grey    { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .sr-btn-red     { background: var(--red); color: #fff; }
+    .sr-inline-input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--text);
+      box-sizing: border-box;
+      margin-bottom: 6px;
+      font-family: inherit;
+    }
+    .sr-chris-notes {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 0 14px 10px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title"><span>LYS</span> OPS · Factory</div>
+  <span id="factory-date" style="font-size:12px;color:var(--text-muted);"></span>
+</div>
+
+<div class="tasks-layout">
+
+<!-- Left Sidebar -->
+<div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+  <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+    <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
+  </a>
+  <div class="tasks-sidebar-label">Views</div>
+  <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+    <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
+  </a>
+  <a href="/factory" id="sidebar-factory-link" class="staff-nav-btn active" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+    <span class="staff-initial">🏭</span><span>Factory</span>
+    <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+  </a>
+  <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+    <span class="staff-initial" style="font-size:13px;">🔧</span><span>Installation</span>
+  </a>
+  <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+    <span class="staff-initial" style="font-size:13px;">🛒</span><span>Procurement</span>
+  </a>
+  <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+    <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
+  </a>
+  <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+    <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
+  </a>
+  <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+    <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+  </a>
+  <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+    <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+  </a>
+</div>
+
+<div class="tasks-main" style="overflow-y:auto;padding:0;">
+<div class="factory-page">
+
+  <!-- Tab bar -->
+  <div class="factory-tabs">
+    <div class="factory-tab active" id="tab-fab" onclick="switchTab('fab')">🏭 Fabrication</div>
+    <div class="factory-tab" id="tab-requests" onclick="switchTab('requests')">📥 Site Requests <span class="tab-badge" id="sr-badge" style="display:none;">0</span></div>
+  </div>
+
+  <!-- Panel: Fabrication (existing) -->
+  <div id="panel-fab">
+
+  <!-- Materials arriving this week (from procurement) -->
+  <div id="factory-arriving-section" style="display:none;margin:12px 16px 4px;">
+    <div class="section-label" style="color:rgba(255,255,255,0.5);margin-bottom:6px;">📦 Materials Arriving This Week</div>
+    <div id="factory-arriving-list"></div>
+  </div>
+
+  <!-- Project fab items -->
+  <div id="factory-projects">
+    <div class="empty-state">Loading…</div>
+  </div>
+
+  </div><!-- /panel-fab content -->
+
+  <!-- DO Upload -->
+  <div style="margin-bottom:16px;">
+    <div class="section-label">Delivery Orders Received Today</div>
+    <label class="do-upload-btn">
+      📸 Photo a DO (tap to upload)
+      <input type="file" accept="image/*,application/pdf" capture="environment" id="do-file-input" style="display:none;" multiple>
+    </label>
+    <div id="do-uploaded-list"></div>
+  </div>
+
+  <!-- EOD Submit -->
+  <div class="eod-section">
+    <h2>📋 End of Day</h2>
+    <p>Tap to confirm today's progress. Takes 5 seconds.</p>
+    <textarea id="factory-notes" placeholder="Any issues today? Parts needed? Delays?" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius);padding:10px;color:#fff;font-size:13px;resize:vertical;min-height:60px;margin-bottom:12px;box-sizing:border-box;"></textarea>
+    <button class="eod-submit-btn" id="factory-eod-btn">✅ Submit Today's Update</button>
+    <div id="eod-error-msg" style="display:none;margin-top:8px;color:#ff7b8e;font-size:12px;font-weight:600;"></div>
+  </div>
+
+  <div style="height:40px;"></div>
+  </div><!-- /panel-fab -->
+
+  <!-- Panel: Site Requests -->
+  <div id="panel-requests" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:700;color:var(--text);">Factory Inbox — Site Requests</div>
+      <select id="sr-filter" onchange="renderSiteRequests()" style="font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);">
+        <option value="active">Active</option>
+        <option value="all">All</option>
+        <option value="New">New</option>
+        <option value="Acknowledged">Acknowledged</option>
+        <option value="In Fabrication">In Fabrication</option>
+        <option value="Ready">Ready</option>
+        <option value="Delivered">Delivered</option>
+      </select>
+    </div>
+    <div id="sr-list">
+      <div class="empty-state">Loading…</div>
+    </div>
+  </div>
+
+</div><!-- /factory-page -->
+</div><!-- /tasks-main -->
+</div><!-- /tasks-layout -->
+
+<script>
+let projects = [];
+let fabData = {}; // { projectId: fullProjectObject }
+let updates = {};  // { projectId: { fabIdx: newQtyDone } }
+
+document.getElementById('factory-date').textContent = new Date().toLocaleDateString('en-SG', {
+  weekday: 'short', day: 'numeric', month: 'short'
+});
+
+async function init() {
+  const all = await fetch('/api/projects').then(r => r.json());
+  projects = all.filter(p =>
+    p.status === 'Active' || p.status === 'On Track' || p.status === 'Delayed'
+  );
+  await Promise.all([renderProjects(projects), loadArrivingThisWeek()]);
+}
+
+// ── Materials arriving this week ──────────────────────────────────────────────
+async function loadArrivingThisWeek() {
+  try {
+    const pos = await fetch('/api/purchase-orders').then(r => r.json());
+    const today = new Date().toISOString().split('T')[0];
+    const weekEnd = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
+    const arriving = pos.filter(function(p) {
+      return p.status !== 'Delivered' && p.promisedDate && p.promisedDate >= today && p.promisedDate <= weekEnd;
+    });
+    const overduePOs = pos.filter(function(p) { return p.status === 'Overdue'; });
+    const combined = overduePOs.concat(arriving);
+    if (!combined.length) return;
+
+    const section = document.getElementById('factory-arriving-section');
+    const list    = document.getElementById('factory-arriving-list');
+    section.style.display = '';
+
+    list.innerHTML = combined.map(function(p) {
+      var isOverdue = p.status === 'Overdue';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-radius:var(--radius);background:' +
+        (isOverdue ? 'rgba(226,68,92,0.15)' : 'rgba(255,255,255,0.06)') +
+        ';margin-bottom:4px;font-size:12px;">' +
+        '<div><span style="font-weight:600;color:#fff;">' + escFactory(p.material) + '</span>' +
+        (p.supplierName ? '<span style="color:rgba(255,255,255,0.5);margin-left:6px;">' + escFactory(p.supplierName) + '</span>' : '') +
+        (p.projectJobCode ? '<span style="color:rgba(255,255,255,0.35);margin-left:6px;">' + escFactory(p.projectJobCode) + '</span>' : '') +
+        '</div>' +
+        '<div style="text-align:right;">' +
+        '<span style="color:' + (isOverdue ? '#ff7b8e' : 'var(--green)') + ';font-weight:600;">' +
+        (isOverdue ? 'Overdue' : 'ETA ' + p.promisedDate) + '</span></div>' +
+        '</div>';
+    }).join('');
+  } catch (e) {
+    console.error('loadArrivingThisWeek error:', e);
+  }
+}
+
+function escFactory(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function renderProjects(list) {
+  const container = document.getElementById('factory-projects');
+  container.innerHTML = '';
+
+  // Load full project data for all in parallel
+  const fullProjects = await Promise.all(
+    list.map(p => fetch('/api/projects/' + p.id).then(r => r.json()))
+  );
+
+  const withFab = fullProjects.filter(p => p.fabrication && p.fabrication.length > 0);
+
+  if (!withFab.length) {
+    container.innerHTML = '<div class="empty-state">No active fabrication items</div>';
+    return;
+  }
+
+  withFab.forEach(proj => {
+    fabData[proj.id] = proj;
+    if (!updates[proj.id]) updates[proj.id] = {};
+
+    const fabRows = proj.fabrication || [];
+    const totalUnits = fabRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
+    const doneUnits  = fabRows.reduce((s, r) => s + (parseFloat(r.qtyDone) || 0), 0);
+    const pct = totalUnits > 0 ? Math.round(doneUnits / totalUnits * 100) : 0;
+
+    const group = document.createElement('div');
+    group.className = 'factory-project-group';
+    group.innerHTML = `
+      <div class="factory-project-title">
+        ${escHtml(proj.jobCode || '')} · ${escHtml(proj.projectName || proj.name || '')}
+        <span style="float:right;font-weight:400;opacity:0.7;">${pct}% done</span>
+      </div>
+    `;
+
+    fabRows.forEach((row, idx) => {
+      const qtyTotal = parseFloat(row.totalQty) || 0;
+      const currentDone = updates[proj.id][idx] !== undefined
+        ? updates[proj.id][idx]
+        : (parseFloat(row.qtyDone) || 0);
+
+      const item = document.createElement('div');
+      item.className = 'factory-item';
+      item.innerHTML = `
+        <div style="flex:1;">
+          <div class="factory-item-name">${escHtml(row.item || row.product || 'Item ' + (idx + 1))}</div>
+          <div class="factory-item-sub">${escHtml(row.process || '')}${row.process && qtyTotal ? ' · ' : ''}${qtyTotal ? 'Total: ' + qtyTotal + ' units' : ''}</div>
+        </div>
+        <div class="counter">
+          <button class="counter-btn minus" data-pid="${escHtml(proj.id)}" data-idx="${idx}">−</button>
+          <div class="counter-val" id="val-${escHtml(proj.id)}-${idx}">${currentDone}</div>
+          <button class="counter-btn plus"  data-pid="${escHtml(proj.id)}" data-idx="${idx}">+</button>
+        </div>
+        <div class="counter-total">
+          <div style="font-size:10px;">of</div>
+          <div style="font-weight:700;">${qtyTotal}</div>
+        </div>
+      `;
+      group.appendChild(item);
+    });
+
+    // Wire +/- buttons
+    group.querySelectorAll('.counter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pid = btn.dataset.pid;
+        const idx = parseInt(btn.dataset.idx);
+        const row = fabData[pid].fabrication[idx];
+        const qtyTotal = parseFloat(row.totalQty) || 0;
+        let current = updates[pid][idx] !== undefined
+          ? updates[pid][idx]
+          : (parseFloat(row.qtyDone) || 0);
+
+        if (btn.classList.contains('plus'))  current = Math.min(qtyTotal, current + 1);
+        if (btn.classList.contains('minus')) current = Math.max(0, current - 1);
+
+        updates[pid][idx] = current;
+        const valEl = document.getElementById('val-' + pid + '-' + idx);
+        valEl.textContent = current;
+        valEl.style.color = (qtyTotal > 0 && current >= qtyTotal) ? 'var(--green)' : 'var(--text)';
+      });
+    });
+
+    container.appendChild(group);
+  });
+}
+
+// DO Upload
+document.getElementById('do-file-input').addEventListener('change', async function () {
+  const files = Array.from(this.files);
+  const list = document.getElementById('do-uploaded-list');
+  for (const file of files) {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const r = await fetch('/api/upload-do', { method: 'POST', body: formData });
+      const data = await r.json();
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:4px;font-size:12px;';
+      item.innerHTML = `📄 ${escHtml(file.name)} <span style="color:var(--green);margin-left:auto;">✅ Uploaded</span>`;
+      list.appendChild(item);
+    } catch {
+      const item = document.createElement('div');
+      item.style.cssText = 'padding:8px;font-size:12px;color:var(--red);';
+      item.textContent = '❌ Failed to upload ' + file.name;
+      list.appendChild(item);
+    }
+  }
+  this.value = '';
+});
+
+// EOD Submit
+document.getElementById('factory-eod-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('factory-eod-btn');
+  const notes = document.getElementById('factory-notes').value.trim();
+  const today = new Date().toISOString().split('T')[0];
+
+  btn.textContent = '⏳ Saving…';
+  btn.disabled = true;
+
+  try {
+    // Save all fab updates to each project
+    const promises = [];
+    for (const [pid, idxMap] of Object.entries(updates)) {
+      if (!Object.keys(idxMap).length) continue;
+      const proj = fabData[pid];
+      if (!proj) continue;
+      const fab = proj.fabrication || [];
+      for (const [idx, val] of Object.entries(idxMap)) {
+        if (fab[idx]) fab[idx].qtyDone = val;
+      }
+      proj.fabrication = fab;
+      promises.push(
+        fetch('/api/projects/' + pid, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(proj)
+        }).then(r => { if (!r.ok) throw new Error('Failed to save project ' + pid); return r; })
+      );
+    }
+    await Promise.all(promises);
+
+    // Log EOD for Chris
+    const eodRes = await fetch('/api/eod-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        staffName: 'Chris',
+        date: today,
+        totalHours: 9,
+        notes: notes || 'Factory update submitted',
+        taskEntries: []
+      })
+    });
+    if (!eodRes.ok) throw new Error('Failed to submit EOD log');
+
+    btn.textContent = '✅ Submitted! Good work today.';
+    updates = {};
+  } catch (err) {
+    btn.textContent = '❌ Error — Tap to Retry';
+    btn.disabled = false;
+    // Show error message
+    const errEl = document.getElementById('eod-error-msg');
+    if (errEl) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+    console.error('EOD submit error:', err);
+  }
+});
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ── Tab switching ──────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.getElementById('panel-fab').style.display      = tab === 'fab'      ? '' : 'none';
+  document.getElementById('panel-requests').style.display = tab === 'requests' ? '' : 'none';
+  document.getElementById('tab-fab').classList.toggle('active',      tab === 'fab');
+  document.getElementById('tab-requests').classList.toggle('active', tab === 'requests');
+  if (tab === 'requests') loadSiteRequests();
+}
+
+// ── Site Requests ──────────────────────────────────────────────────────────────
+let siteRequests = [];
+
+async function loadSiteRequests() {
+  try {
+    siteRequests = await fetch('/api/site-requests').then(r => r.json());
+    updateSRBadge();
+    renderSiteRequests();
+  } catch (e) {
+    document.getElementById('sr-list').innerHTML = '<div class="empty-state">Failed to load requests</div>';
+  }
+}
+
+function updateSRBadge() {
+  const newCount = siteRequests.filter(r => r.status === 'New').length;
+  const badge = document.getElementById('sr-badge');
+  badge.textContent = newCount;
+  badge.style.display = newCount > 0 ? '' : 'none';
+}
+
+function renderSiteRequests() {
+  const filterVal = document.getElementById('sr-filter').value;
+  const today = new Date().toISOString().split('T')[0];
+
+  let filtered = siteRequests;
+  if (filterVal === 'active') {
+    filtered = siteRequests.filter(r => r.status !== 'Delivered');
+  } else if (filterVal !== 'all') {
+    filtered = siteRequests.filter(r => r.status === filterVal);
+  }
+
+  // Sort by neededByDate asc
+  filtered = filtered.slice().sort((a, b) => {
+    if (!a.neededByDate) return 1;
+    if (!b.neededByDate) return -1;
+    return a.neededByDate.localeCompare(b.neededByDate);
+  });
+
+  const container = document.getElementById('sr-list');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state">No requests found</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  filtered.forEach(req => {
+    const overdue = req.status !== 'Delivered' && req.neededByDate && req.neededByDate < today;
+    const card = document.createElement('div');
+    card.className = 'sr-card' + (overdue ? ' overdue' : '');
+
+    const statusKey = req.status.replace(/ /g, '-');
+    const neededFmt = req.neededByDate ? formatSRDate(req.neededByDate) : '—';
+    const overdueBadge = overdue ? '<span style="color:var(--red);font-weight:700;"> ⚠ OVERDUE</span>' : '';
+
+    card.innerHTML = `
+      <div class="sr-card-header">
+        <div class="sr-item-name">
+          ${escHtml(req.item)}
+          <span class="sr-status-badge sr-status-${statusKey}">${escHtml(req.status)}</span>
+        </div>
+        <div class="sr-meta">
+          <span>📦 ${escHtml(String(req.quantity || ''))} ${escHtml(req.unit || '')}</span>
+          <span>📋 ${escHtml(req.projectJobCode || req.projectName || '—')}</span>
+          <span>👷 ${escHtml(req.requestedBy)}</span>
+          <span>📅 Needed: <strong>${escHtml(neededFmt)}</strong>${overdueBadge}</span>
+          ${req.acknowledgedAt ? `<span>✅ Ack'd ${formatSRDate(req.acknowledgedAt.slice(0,10))}</span>` : ''}
+          ${req.estimatedReadyDate ? `<span>🏭 Est. ready: ${formatSRDate(req.estimatedReadyDate)}</span>` : ''}
+        </div>
+        ${req.notes ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Note: ${escHtml(req.notes)}</div>` : ''}
+        ${req.chrisNotes ? `<div class="sr-chris-notes">Chris: ${escHtml(req.chrisNotes)}</div>` : ''}
+        ${req.issueReason ? `<div style="font-size:11px;color:var(--red);margin-top:4px;">Issue: ${escHtml(req.issueReason)}</div>` : ''}
+      </div>
+      <div class="sr-actions" id="sr-actions-${escHtml(req.id)}"></div>
+    `;
+
+    container.appendChild(card);
+    renderSRActions(req);
+  });
+}
+
+function renderSRActions(req) {
+  const el = document.getElementById('sr-actions-' + req.id);
+  if (!el) return;
+  el.innerHTML = '';
+
+  if (req.status === 'New') {
+    el.innerHTML = `
+      <div style="width:100%;">
+        <input type="date" class="sr-inline-input" id="erd-${escHtml(req.id)}" value="" placeholder="Estimated ready date (optional)">
+        <textarea class="sr-inline-input" id="cn-${escHtml(req.id)}" placeholder="Notes for site engineer (optional)" rows="2" style="resize:none;"></textarea>
+        <button class="sr-btn sr-btn-primary" onclick="acknowledgeRequest('${escHtml(req.id)}')">✅ Acknowledge</button>
+        <button class="sr-btn sr-btn-red" style="margin-left:8px;" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>
+      </div>`;
+  } else if (req.status === 'Acknowledged') {
+    el.innerHTML = `<button class="sr-btn sr-btn-amber" onclick="updateSRStatus('${escHtml(req.id)}','In Fabrication')">🔧 Mark In Fabrication</button>
+      <button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>`;
+  } else if (req.status === 'In Fabrication') {
+    el.innerHTML = `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Ready')">📦 Mark Ready</button>
+      <button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>`;
+  } else if (req.status === 'Ready') {
+    el.innerHTML = `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Delivered')">🚚 Mark Delivered</button>`;
+  } else if (req.status === 'Issue') {
+    el.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="sr-btn sr-btn-primary" onclick="updateSRStatus('${escHtml(req.id)}','Acknowledged')">↩ Resume</button>
+    </div>`;
+  }
+}
+
+function showFlagIssue(id) {
+  const el = document.getElementById('sr-actions-' + id);
+  if (!el) return;
+  el.innerHTML = `
+    <div style="width:100%;">
+      <textarea class="sr-inline-input" id="issue-${escHtml(id)}" placeholder="Describe the issue…" rows="2" style="resize:none;"></textarea>
+      <button class="sr-btn sr-btn-red" onclick="flagIssue('${escHtml(id)}')">🚩 Confirm Flag Issue</button>
+      <button class="sr-btn sr-btn-grey" style="margin-left:8px;" onclick="renderSiteRequests()">Cancel</button>
+    </div>`;
+}
+
+async function acknowledgeRequest(id) {
+  const erdEl = document.getElementById('erd-' + id);
+  const cnEl  = document.getElementById('cn-' + id);
+  const body = { status: 'Acknowledged' };
+  if (erdEl && erdEl.value) body.estimatedReadyDate = erdEl.value;
+  if (cnEl && cnEl.value.trim()) body.chrisNotes = cnEl.value.trim();
+  await srUpdate(id, body);
+}
+
+async function flagIssue(id) {
+  const reasonEl = document.getElementById('issue-' + id);
+  const reason = reasonEl ? reasonEl.value.trim() : '';
+  await srUpdate(id, { status: 'Issue', issueReason: reason });
+}
+
+async function updateSRStatus(id, status) {
+  await srUpdate(id, { status });
+}
+
+async function srUpdate(id, body) {
+  try {
+    const r = await fetch('/api/site-requests/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!r.ok) throw new Error('Update failed');
+    const updated = await r.json();
+    const idx = siteRequests.findIndex(x => x.id === id);
+    if (idx >= 0) siteRequests[idx] = updated;
+    updateSRBadge();
+    renderSiteRequests();
+  } catch (e) {
+    alert('Failed to update: ' + e.message);
+  }
+}
+
+function formatSRDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-SG', { day: 'numeric', month: 'short' });
+}
+
+// Load badge on init
+async function initSRBadge() {
+  try {
+    siteRequests = await fetch('/api/site-requests').then(r => r.json());
+    updateSRBadge();
+  } catch {}
+}
+
+init();
+initSRBadge();
+</script>
+</body>
+</html>

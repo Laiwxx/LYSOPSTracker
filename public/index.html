@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>LYS OPS Tracker</title>
+  <meta name="theme-color" content="#1a1d2e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LYS OPS">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- topbar -->
+  <header class="topbar">
+    <div class="topbar-title">LYS <span>Operations</span><span class="topbar-sub">Project Tracker</span></div>
+    <a href="/api/export/projects" class="btn btn-ghost btn-sm" title="Export projects to Excel" download>📥 Export</a>
+    <a href="admin.html" class="btn btn-ghost btn-sm" title="Admin Settings">⚙ Admin</a>
+  </header>
+
+  <div class="tasks-layout">
+
+  <!-- Left Sidebar -->
+  <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+    <a href="/" class="staff-nav-btn active" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
+    </a>
+    <div class="tasks-sidebar-label">Views</div>
+    <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
+    </a>
+    <a href="/factory" id="sidebar-factory-link" class="staff-nav-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <span class="staff-initial">🏭</span><span>Factory</span>
+      <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+    </a>
+    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🔧</span><span>Installation</span>
+    </a>
+    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🛒</span><span>Procurement</span>
+    </a>
+    <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
+    </a>
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
+    </a>
+    <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+      <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+    </a>
+    <div class="tasks-sidebar-label" style="margin-top:8px;">Projects</div>
+    <div id="sidebar-projects" style="overflow-y:auto;flex:1;"></div>
+    <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:8px;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+      <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="page tasks-main" style="overflow-y:auto;">
+    <div class="dash-sections">
+
+      <!-- 1. KPI Cards -->
+      <div class="kpi-grid" style="margin-bottom:16px;">
+        <div class="kpi-card" style="border-top:3px solid var(--accent);">
+          <div class="kpi-label">Total Portfolio</div>
+          <div class="kpi-value" id="hero-portfolio">—</div>
+          <div class="kpi-sub" id="hero-portfolio-sub"></div>
+        </div>
+        <div class="kpi-card" style="border-top:3px solid var(--amber);">
+          <div class="kpi-label">Outstanding</div>
+          <div class="kpi-value" id="hero-outstanding" style="color:var(--amber);">—</div>
+          <div class="kpi-sub">unclaimed</div>
+        </div>
+        <div class="kpi-card" style="border-top:3px solid var(--green);">
+          <div class="kpi-label">Active Projects</div>
+          <div class="kpi-value" id="hero-active" style="color:var(--green);">—</div>
+          <div class="kpi-sub" id="hero-active-sub"></div>
+        </div>
+        <div class="kpi-card" style="border-top:3px solid var(--red);">
+          <div class="kpi-label">Overdue Tasks</div>
+          <div class="kpi-value" id="hero-overdue" style="color:var(--red);">—</div>
+          <div class="kpi-sub">needs attention</div>
+        </div>
+      </div>
+
+      <!-- 2. Status pills -->
+      <div class="status-row" id="status-row" style="margin-bottom:16px;"></div>
+
+      <!-- 3. Weekly Movement (moved above alert strip) -->
+      <div class="action-panel" id="monday-panel" style="margin-bottom:16px;border-color:rgba(255,255,255,0.12);">
+          <div class="action-panel-header" id="monday-toggle">
+            <span class="title">📅 WEEKLY MOVEMENT</span>
+            <span id="wm-date-label" style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:10px;"></span>
+            <a href="/planning" class="btn btn-ghost btn-sm" style="font-size:11px;margin-left:auto;margin-right:8px;" onclick="event.stopPropagation();">Edit →</a>
+            <span style="font-size:12px;color:var(--text-muted);" id="monday-chevron">▼</span>
+          </div>
+          <div class="action-panel-body">
+            <div id="monday-content" style="padding:4px 0;">
+              <div id="weekly-movement-list"></div>
+            </div>
+          </div>
+        </div>
+
+      <!-- 4. Alert Strip -->
+      <div id="task-alert-panel" class="card" style="margin-bottom:16px;display:none;border-left:4px solid var(--red);"></div>
+
+
+
+      <!-- 5. Claims Pipeline -->
+      <div class="card" id="claims-pipeline-summary" style="margin-bottom:16px;padding:12px 16px;"></div>
+
+      <!-- Project Cards -->
+      <div id="project-list" style="margin-bottom:16px;"></div>
+
+
+
+      <!-- 7. Ops Panels — collapsed by default -->
+      <div style="margin-top:24px;">
+
+
+
+        <div class="action-panel collapsed" id="action-panel" style="margin-bottom:8px;">
+          <div class="action-panel-header" id="action-toggle">
+            <span class="title" id="action-title">NEEDS ATTENTION</span>
+            <span style="font-size:12px;color:var(--text-muted);" id="action-chevron">▼</span>
+          </div>
+          <div class="action-panel-body">
+            <div class="attention-list" id="attention-list"></div>
+          </div>
+        </div>
+
+        <div class="action-panel collapsed" id="factory-panel" style="margin-bottom:8px;">
+          <div class="action-panel-header" id="factory-toggle">
+            <span class="title" id="factory-title">FACTORY</span>
+            <span style="font-size:12px;color:var(--text-muted);" id="factory-chevron">▼</span>
+          </div>
+          <div class="action-panel-body">
+            <div id="factory-queue-list"></div>
+          </div>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div><!-- /page -->
+
+  <div class="toast" id="toast"></div>
+  <script src="js/utils.js"></script>
+  <script src="js/dashboard.js"></script>
+  </div>
+</body>
+</html>
+
+
+
+
+
+

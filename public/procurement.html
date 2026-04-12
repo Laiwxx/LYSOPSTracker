@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>LYS OPS · Procurement</title>
+  <meta name="theme-color" content="#1a1d2e">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Procurement-specific styles ────────────────────────────────────────── */
+    .proc-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      position: sticky;
+      top: 52px;
+      z-index: 100;
+    }
+    .proc-tab-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .proc-tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: rgba(51,102,255,0.05);
+    }
+    .proc-tab-btn:hover:not(.active) { color: var(--text); }
+
+    .proc-panel { display: none; padding: 16px; }
+    .proc-panel.active { display: block; }
+
+    /* Table */
+    .proc-table-wrap { overflow-x: auto; margin-top: 12px; }
+    .proc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .proc-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .proc-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .proc-table tr:last-child td { border-bottom: none; }
+    .proc-table tr:hover td { background: var(--bg3); }
+
+    /* Stars */
+    .stars { color: var(--amber); font-size: 13px; letter-spacing: 1px; }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-ordered  { background: var(--accent-soft);  color: var(--accent); }
+    .badge-transit  { background: var(--amber-soft);   color: var(--amber); }
+    .badge-delivered { background: var(--green-soft);  color: var(--green); }
+    .badge-overdue  { background: var(--red-soft);     color: var(--red); }
+    .badge-active   { background: var(--green-soft);   color: var(--green); }
+    .badge-inactive { background: var(--border);       color: var(--text-muted); }
+
+    /* Trend arrows */
+    .trend-up   { color: var(--red);   font-weight: 700; }
+    .trend-down { color: var(--green); font-weight: 700; }
+    .trend-flat { color: var(--text-muted); }
+
+    /* Price groups */
+    .price-group { margin-bottom: 20px; }
+    .price-group-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      background: var(--bg3);
+      border-radius: var(--radius);
+      margin-bottom: 4px;
+    }
+
+    /* Overdue row highlight */
+    .row-overdue td { background: var(--red-soft) !important; }
+    .row-overdue:hover td { background: rgba(226,68,92,0.15) !important; }
+
+    /* Modal */
+    .proc-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .proc-modal-overlay.open { display: flex; }
+    .proc-modal {
+      background: var(--bg2);
+      border-radius: var(--radius);
+      padding: 20px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      margin: 0 16px;
+    }
+    .proc-modal h3 { font-size: 15px; margin-bottom: 16px; }
+    .proc-modal .field { margin-bottom: 12px; }
+    .proc-modal label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
+    .proc-modal input, .proc-modal select, .proc-modal textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .proc-modal input:focus, .proc-modal select:focus, .proc-modal textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .proc-modal .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .proc-modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    .material-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .material-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+      color: var(--text);
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+    }
+    .material-checkboxes input[type="checkbox"]:checked + span {
+      color: var(--accent);
+    }
+    .material-checkboxes label:has(input:checked) {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .empty-state .icon { font-size: 32px; margin-bottom: 8px; }
+
+    /* Section toolbar */
+    .section-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .section-toolbar-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    @media (max-width: 600px) {
+      .proc-modal .field-row { grid-template-columns: 1fr; }
+      .proc-table th:nth-child(n+5), .proc-table td:nth-child(n+5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-title">LYS <span>Procurement</span><span class="topbar-sub">Workspace</span></div>
+    <div style="display:flex;gap:8px;">
+      <a href="admin.html" class="btn btn-ghost btn-sm">⚙ Admin</a>
+    </div>
+  </header>
+
+  <div class="tasks-layout">
+
+    <!-- Sidebar -->
+    <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+      <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+        <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
+      </a>
+      <div class="tasks-sidebar-label">Views</div>
+      <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+        <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
+      </a>
+      <a href="/factory" id="sidebar-factory-link" class="staff-nav-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+        <span class="staff-initial">🏭</span><span>Factory</span>
+        <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+      </a>
+      <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+        <span class="staff-initial" style="font-size:13px;">🔧</span><span>Installation</span>
+      </a>
+      <a href="/procurement" class="staff-nav-btn active" style="text-decoration:none;">
+        <span class="staff-initial" style="font-size:13px;">🛒</span><span>Procurement</span>
+      </a>
+      <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+        <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
+      </a>
+      <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+        <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
+      </a>
+      <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+        <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+      </a>
+      <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+        <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+      </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="tasks-main" style="overflow-y:auto;display:flex;flex-direction:column;">
+
+      <!-- Tab Bar -->
+      <div class="proc-tabs">
+        <button class="proc-tab-btn active" data-tab="suppliers">Suppliers</button>
+        <button class="proc-tab-btn" data-tab="prices">Price Tracker</button>
+        <button class="proc-tab-btn" data-tab="orders">Purchase Orders</button>
+        <button class="proc-tab-btn" data-tab="pipeline">Pipeline</button>
+      </div>
+
+      <!-- ── Tab 1: Suppliers ──────────────────────────────────────────────── -->
+      <div class="proc-panel active" id="panel-suppliers">
+        <div class="section-toolbar">
+          <div class="section-toolbar-left">
+            <div class="section-title">Active Suppliers</div>
+            <span id="supplier-count" style="font-size:12px;color:var(--text-muted);"></span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openSupplierModal()">+ Add Supplier</button>
+        </div>
+        <div class="card" style="padding:0;">
+          <div class="proc-table-wrap">
+            <table class="proc-table" id="suppliers-table">
+              <thead>
+                <tr>
+                  <th>Supplier</th>
+                  <th>Country</th>
+                  <th>Materials</th>
+                  <th>Contact</th>
+                  <th>Payment Terms</th>
+                  <th>Lead Time</th>
+                  <th>Reliability</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="suppliers-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tab 2: Price Tracker ──────────────────────────────────────────── -->
+      <div class="proc-panel" id="panel-prices">
+        <div class="section-toolbar">
+          <div class="section-toolbar-left">
+            <div class="section-title">Material Prices</div>
+            <span style="font-size:12px;color:var(--text-muted);">Latest price + trend vs previous entry</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openPriceModal()">+ Log Price</button>
+        </div>
+        <div id="prices-content"></div>
+      </div>
+
+      <!-- ── Tab 3: Purchase Orders ────────────────────────────────────────── -->
+      <div class="proc-panel" id="panel-orders">
+        <div class="section-toolbar">
+          <div class="section-toolbar-left">
+            <div class="section-title">Purchase Orders</div>
+            <select id="po-status-filter" class="btn btn-ghost btn-sm" style="padding:4px 8px;font-size:12px;">
+              <option value="">All Status</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Ordered">Ordered</option>
+              <option value="In Transit">In Transit</option>
+              <option value="Delivered">Delivered</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openPOModal()">+ New PO</button>
+        </div>
+        <div class="card" style="padding:0;">
+          <div class="proc-table-wrap">
+            <table class="proc-table" id="po-table">
+              <thead>
+                <tr>
+                  <th>PO ID</th>
+                  <th>Material</th>
+                  <th>Qty</th>
+                  <th>Supplier</th>
+                  <th>Project</th>
+                  <th>Ordered</th>
+                  <th>ETA</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="po-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tab 4: Pipeline ───────────────────────────────────────────────── -->
+      <div class="proc-panel" id="panel-pipeline">
+        <div class="section-toolbar">
+          <div class="section-title">Supplier Pipeline</div>
+          <span style="font-size:12px;color:var(--text-muted);">Suppliers under evaluation — activate when approved</span>
+        </div>
+        <div class="card" style="padding:0;">
+          <div class="proc-table-wrap">
+            <table class="proc-table" id="pipeline-table">
+              <thead>
+                <tr>
+                  <th>Supplier</th>
+                  <th>Country</th>
+                  <th>Materials</th>
+                  <th>Contact</th>
+                  <th>Notes</th>
+                  <th>Added</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="pipeline-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tasks-main -->
+  </div><!-- /tasks-layout -->
+
+  <!-- ── Supplier Modal ──────────────────────────────────────────────────────── -->
+  <div class="proc-modal-overlay" id="supplier-modal">
+    <div class="proc-modal">
+      <h3 id="supplier-modal-title">Add Supplier</h3>
+      <input type="hidden" id="sm-id">
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Supplier Name *</label>
+          <input type="text" id="sm-name" placeholder="Company name">
+        </div>
+        <div class="field">
+          <label>Country</label>
+          <input type="text" id="sm-country" placeholder="Singapore, China…">
+        </div>
+      </div>
+      <div class="proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Material Types</label>
+          <div class="material-checkboxes" id="sm-materials"></div>
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Contact Person</label>
+          <input type="text" id="sm-contact" placeholder="Name">
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input type="text" id="sm-phone" placeholder="+65 9xxx xxxx">
+        </div>
+      </div>
+      <div class="proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="sm-email" placeholder="contact@supplier.com">
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Payment Terms</label>
+          <input type="text" id="sm-payment" placeholder="30 days, COD…">
+        </div>
+        <div class="field">
+          <label>Lead Time (days)</label>
+          <input type="number" id="sm-lead" min="0" placeholder="14">
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Reliability (1–5)</label>
+          <select id="sm-reliability">
+            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+            <option value="4">⭐⭐⭐⭐ Good</option>
+            <option value="3" selected>⭐⭐⭐ Average</option>
+            <option value="2">⭐⭐ Below Average</option>
+            <option value="1">⭐ Poor</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="sm-active">
+            <option value="true">Active</option>
+            <option value="false">Pipeline (evaluating)</option>
+          </select>
+        </div>
+      </div>
+      <div class="proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Notes</label>
+          <textarea id="sm-notes" rows="2" placeholder="Any notes…"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('supplier-modal')">Cancel</button>
+        <button class="btn btn-danger btn-sm" id="sm-delete-btn" onclick="deleteSupplier()" style="display:none;">Delete</button>
+        <button class="btn btn-primary btn-sm" onclick="saveSupplier()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Price Modal ────────────────────────────────────────────────────────── -->
+  <div class="proc-modal-overlay" id="price-modal">
+    <div class="proc-modal">
+      <h3 id="pm-modal-title">Log Material Price</h3>
+      <input type="hidden" id="pm-id">
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Material *</label>
+          <select id="pm-material">
+            <option value="">Select material…</option>
+            <option>Mild Steel</option>
+            <option>Stainless Steel</option>
+            <option>Galvanizing</option>
+            <option>Powder Coating</option>
+            <option>Anchor Bolts</option>
+            <option>Paint/Primer</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Grade / Spec</label>
+          <input type="text" id="pm-grade" placeholder="S275, SS304…">
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Unit Price (SGD) *</label>
+          <input type="number" id="pm-price" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label>Unit</label>
+          <input type="text" id="pm-unit" placeholder="kg, tonne, m2…">
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Supplier</label>
+          <select id="pm-supplier">
+            <option value="">— None —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Date *</label>
+          <input type="date" id="pm-date">
+        </div>
+      </div>
+      <div class="proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Notes</label>
+          <input type="text" id="pm-notes" placeholder="Source, context…">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('price-modal')">Cancel</button>
+        <button class="btn btn-danger btn-sm" id="pm-delete-btn" onclick="deletePrice()" style="display:none;">Delete</button>
+        <button class="btn btn-primary btn-sm" onclick="savePrice()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PO Modal ───────────────────────────────────────────────────────────── -->
+  <div class="proc-modal-overlay" id="po-modal">
+    <div class="proc-modal">
+      <h3 id="po-modal-title">New Purchase Order</h3>
+      <input type="hidden" id="pom-id">
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Material *</label>
+          <input type="text" id="pom-material" placeholder="e.g. Mild Steel Plate 10mm">
+        </div>
+        <div class="field">
+          <label>Supplier</label>
+          <select id="pom-supplier"></select>
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Quantity</label>
+          <input type="number" id="pom-qty" min="0" step="0.01" placeholder="0">
+        </div>
+        <div class="field">
+          <label>Unit</label>
+          <input type="text" id="pom-unit" placeholder="kg, pcs, m2…">
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Unit Price (SGD)</label>
+          <input type="number" id="pom-uprice" min="0" step="0.01" placeholder="0.00" oninput="calcPOTotal()">
+        </div>
+        <div class="field">
+          <label>Total Amount (SGD)</label>
+          <input type="number" id="pom-total" min="0" step="0.01" placeholder="0.00">
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Project Job Code</label>
+          <input type="text" id="pom-jobcode" placeholder="PJ10025-ICA-Kallang">
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="pom-status">
+            <option value="Ordered">Ordered</option>
+            <option value="In Transit">In Transit</option>
+            <option value="Delivered">Delivered</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Ordered Date</label>
+          <input type="date" id="pom-ordered">
+        </div>
+        <div class="field">
+          <label>Promised ETA</label>
+          <input type="date" id="pom-eta">
+        </div>
+      </div>
+      <div class="proc-modal" style="padding:0;box-shadow:none;border:none;">
+        <div class="field">
+          <label>Actual Delivery Date</label>
+          <input type="date" id="pom-actual">
+        </div>
+        <div class="field">
+          <label>Notes</label>
+          <textarea id="pom-notes" rows="2" placeholder="Additional info…"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('po-modal')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="savePO()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="js/utils.js"></script>
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────────
+    var suppliers = [];
+    var prices    = [];
+    var pos       = [];
+    var editingSupplierId = null;
+    var editingPOId       = null;
+    var editingPriceId    = null;
+
+    var MATERIAL_TYPES = ['Mild Steel','Stainless Steel','Galvanizing','Powder Coating','Anchor Bolts','Paint/Primer'];
+
+    // ── Init ───────────────────────────────────────────────────────────────────
+    async function init() {
+      setupTabs();
+      setupFilters();
+      await Promise.all([loadSuppliers(), loadPrices(), loadPOs()]);
+      loadFactoryBadge();
+    }
+
+    // ── Tabs ───────────────────────────────────────────────────────────────────
+    function setupTabs() {
+      document.querySelectorAll('.proc-tab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.proc-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+          document.querySelectorAll('.proc-panel').forEach(function(p) { p.classList.remove('active'); });
+          btn.classList.add('active');
+          document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+        });
+      });
+    }
+
+    function setupFilters() {
+      document.getElementById('po-status-filter').addEventListener('change', renderPOs);
+    }
+
+    // ── API helpers ────────────────────────────────────────────────────────────
+    async function apiFetch(method, url, body) {
+      var opts = { method: method, headers: { 'Content-Type': 'application/json' } };
+      if (body) opts.body = JSON.stringify(body);
+      var r = await fetch(url, opts);
+      if (!r.ok) { var e = await r.json().catch(function() { return {}; }); throw new Error(e.error || r.statusText); }
+      return r.json();
+    }
+
+    // ── Suppliers ──────────────────────────────────────────────────────────────
+    async function loadSuppliers() {
+      try { suppliers = await apiFetch('GET', '/api/suppliers'); }
+      catch (e) { suppliers = []; }
+      renderSuppliers();
+      renderPipeline();
+    }
+
+    function renderSuppliers() {
+      var active = suppliers.filter(function(s) { return s.active; });
+      document.getElementById('supplier-count').textContent = active.length + ' supplier' + (active.length !== 1 ? 's' : '');
+      var tbody = document.getElementById('suppliers-tbody');
+      if (!active.length) {
+        tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">🏪</div>No active suppliers yet. Add one to get started.</div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = active.map(function(s) {
+        return '<tr>' +
+          '<td><strong>' + esc(s.name) + '</strong></td>' +
+          '<td>' + esc(s.country || '—') + '</td>' +
+          '<td style="max-width:160px;font-size:11px;">' + (s.materialTypes && s.materialTypes.length ? s.materialTypes.map(function(m) { return '<span style="display:inline-block;padding:1px 6px;border-radius:10px;background:var(--accent-soft);color:var(--accent);margin:1px;">' + esc(m) + '</span>'; }).join('') : '—') + '</td>' +
+          '<td>' + (s.contactPerson ? esc(s.contactPerson) + (s.phone ? '<br><span style="font-size:11px;color:var(--text-muted);">' + esc(s.phone) + '</span>' : '') : '—') + '</td>' +
+          '<td>' + esc(s.paymentTerms || '—') + '</td>' +
+          '<td>' + (s.leadTimeDays ? s.leadTimeDays + ' days' : '—') + '</td>' +
+          '<td><span class="stars">' + starsHtml(s.reliabilityScore) + '</span></td>' +
+          '<td><button class="btn btn-ghost btn-xs" onclick="openSupplierModal(\'' + s.id + '\')">Edit</button></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    function renderPipeline() {
+      var inactive = suppliers.filter(function(s) { return !s.active; });
+      var tbody = document.getElementById('pipeline-tbody');
+      if (!inactive.length) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">🔍</div>No suppliers in pipeline. Add a supplier with status "Pipeline" to start evaluating.</div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = inactive.map(function(s) {
+        return '<tr>' +
+          '<td><strong>' + esc(s.name) + '</strong></td>' +
+          '<td>' + esc(s.country || '—') + '</td>' +
+          '<td style="font-size:11px;">' + (s.materialTypes && s.materialTypes.length ? s.materialTypes.join(', ') : '—') + '</td>' +
+          '<td>' + (s.contactPerson ? esc(s.contactPerson) : '—') + '</td>' +
+          '<td style="max-width:200px;font-size:12px;color:var(--text-muted);">' + esc(s.notes || '—') + '</td>' +
+          '<td style="font-size:11px;color:var(--text-muted);">' + (s.createdAt ? s.createdAt.slice(0,10) : '—') + '</td>' +
+          '<td style="display:flex;gap:4px;">' +
+            '<button class="btn btn-ghost btn-xs" onclick="openSupplierModal(\'' + s.id + '\')">Edit</button>' +
+            '<button class="btn btn-primary btn-xs" onclick="activateSupplier(\'' + s.id + '\')">✓ Activate</button>' +
+          '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    async function activateSupplier(id) {
+      try {
+        var s = suppliers.find(function(x) { return x.id === id; });
+        if (!s) return;
+        await apiFetch('PUT', '/api/suppliers/' + id, { active: true });
+        showToast(s.name + ' activated');
+        await loadSuppliers();
+      } catch (e) { showToast('Error: ' + e.message, true); }
+    }
+
+    function starsHtml(score) {
+      var n = parseInt(score) || 0;
+      return '★'.repeat(n) + '☆'.repeat(Math.max(0, 5 - n));
+    }
+
+    // ── Supplier Modal ─────────────────────────────────────────────────────────
+    function openSupplierModal(id) {
+      editingSupplierId = id || null;
+      // Build material checkboxes
+      var mc = document.getElementById('sm-materials');
+      mc.innerHTML = MATERIAL_TYPES.map(function(m) {
+        return '<label><input type="checkbox" value="' + m + '"><span>' + m + '</span></label>';
+      }).join('');
+
+      if (id) {
+        var s = suppliers.find(function(x) { return x.id === id; });
+        if (!s) return;
+        document.getElementById('supplier-modal-title').textContent = 'Edit Supplier';
+        document.getElementById('sm-id').value     = s.id;
+        document.getElementById('sm-name').value   = s.name || '';
+        document.getElementById('sm-country').value = s.country || '';
+        document.getElementById('sm-contact').value = s.contactPerson || '';
+        document.getElementById('sm-phone').value   = s.phone || '';
+        document.getElementById('sm-email').value   = s.email || '';
+        document.getElementById('sm-payment').value = s.paymentTerms || '';
+        document.getElementById('sm-lead').value    = s.leadTimeDays || '';
+        document.getElementById('sm-reliability').value = s.reliabilityScore || 3;
+        document.getElementById('sm-active').value  = s.active ? 'true' : 'false';
+        document.getElementById('sm-notes').value   = s.notes || '';
+        // Check material checkboxes
+        var mts = s.materialTypes || [];
+        mc.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+          if (mts.indexOf(cb.value) !== -1) cb.checked = true;
+        });
+        document.getElementById('sm-delete-btn').style.display = '';
+      } else {
+        document.getElementById('supplier-modal-title').textContent = 'Add Supplier';
+        document.getElementById('sm-id').value     = '';
+        document.getElementById('sm-name').value   = '';
+        document.getElementById('sm-country').value = '';
+        document.getElementById('sm-contact').value = '';
+        document.getElementById('sm-phone').value   = '';
+        document.getElementById('sm-email').value   = '';
+        document.getElementById('sm-payment').value = '';
+        document.getElementById('sm-lead').value    = '';
+        document.getElementById('sm-reliability').value = '3';
+        document.getElementById('sm-active').value  = 'true';
+        document.getElementById('sm-notes').value   = '';
+        document.getElementById('sm-delete-btn').style.display = 'none';
+      }
+      document.getElementById('supplier-modal').classList.add('open');
+    }
+
+    async function saveSupplier() {
+      var name = document.getElementById('sm-name').value.trim();
+      if (!name) { alert('Supplier name is required'); return; }
+      var mts = [];
+      document.getElementById('sm-materials').querySelectorAll('input:checked').forEach(function(cb) { mts.push(cb.value); });
+      var payload = {
+        name:             name,
+        country:          document.getElementById('sm-country').value.trim(),
+        materialTypes:    mts,
+        contactPerson:    document.getElementById('sm-contact').value.trim(),
+        phone:            document.getElementById('sm-phone').value.trim(),
+        email:            document.getElementById('sm-email').value.trim(),
+        paymentTerms:     document.getElementById('sm-payment').value.trim(),
+        leadTimeDays:     parseInt(document.getElementById('sm-lead').value) || 0,
+        reliabilityScore: parseInt(document.getElementById('sm-reliability').value) || 3,
+        active:           document.getElementById('sm-active').value === 'true',
+        notes:            document.getElementById('sm-notes').value.trim()
+      };
+      try {
+        if (editingSupplierId) {
+          await apiFetch('PUT', '/api/suppliers/' + editingSupplierId, payload);
+          showToast('Supplier updated');
+        } else {
+          await apiFetch('POST', '/api/suppliers', payload);
+          showToast('Supplier added');
+        }
+        closeModal('supplier-modal');
+        await loadSuppliers();
+      } catch (e) { showToast('Error: ' + e.message, true); }
+    }
+
+    async function deleteSupplier() {
+      if (!editingSupplierId) return;
+      var s = suppliers.find(function(x) { return x.id === editingSupplierId; });
+      if (!confirm('Delete supplier "' + (s ? s.name : '') + '"? This cannot be undone.')) return;
+      try {
+        await apiFetch('DELETE', '/api/suppliers/' + editingSupplierId);
+        showToast('Supplier deleted');
+        closeModal('supplier-modal');
+        await loadSuppliers();
+      } catch (e) { showToast('Error: ' + e.message, true); }
+    }
+
+    // ── Prices ─────────────────────────────────────────────────────────────────
+    async function loadPrices() {
+      try { prices = await apiFetch('GET', '/api/prices'); }
+      catch (e) { prices = []; }
+      renderPrices();
+    }
+
+    function renderPrices() {
+      var container = document.getElementById('prices-content');
+      if (!prices.length) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">📈</div>No price records yet. Log the first price to start tracking.</div>';
+        return;
+      }
+      // Group by material
+      var byMaterial = {};
+      MATERIAL_TYPES.forEach(function(m) { byMaterial[m] = []; });
+      prices.forEach(function(p) {
+        if (!byMaterial[p.material]) byMaterial[p.material] = [];
+        byMaterial[p.material].push(p);
+      });
+
+      var html = '';
+      MATERIAL_TYPES.forEach(function(mat) {
+        var entries = byMaterial[mat];
+        if (!entries.length) return;
+        // Sort by date desc
+        entries.sort(function(a, b) { return b.date.localeCompare(a.date); });
+        var latest = entries[0];
+        var prev   = entries[1];
+        var trend  = '';
+        if (prev) {
+          if (latest.unitPrice > prev.unitPrice)      trend = '<span class="trend-up">▲ ' + pctDiff(latest.unitPrice, prev.unitPrice) + '</span>';
+          else if (latest.unitPrice < prev.unitPrice) trend = '<span class="trend-down">▼ ' + pctDiff(prev.unitPrice, latest.unitPrice) + '</span>';
+          else                                        trend = '<span class="trend-flat">→ No change</span>';
+        }
+
+        html += '<div class="price-group card" style="padding:0;">';
+        html += '<div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);">';
+        html += '<div><span style="font-weight:700;font-size:14px;">' + mat + '</span>';
+        if (trend) html += ' <span style="font-size:12px;margin-left:8px;">' + trend + '</span>';
+        html += '</div>';
+        html += '<span style="font-size:18px;font-weight:800;color:var(--accent);">SGD ' + fmt(latest.unitPrice) + '<span style="font-size:11px;font-weight:400;color:var(--text-muted);">/' + esc(latest.unit || 'unit') + '</span></span>';
+        html += '</div>';
+        html += '<table class="proc-table">';
+        html += '<thead><tr><th>Date</th><th>Grade</th><th>Price</th><th>Unit</th><th>Supplier</th><th>Notes</th><th></th></tr></thead>';
+        html += '<tbody>' + entries.map(function(e) {
+          return '<tr>' +
+            '<td style="font-size:12px;">' + e.date + '</td>' +
+            '<td style="font-size:12px;">' + esc(e.grade || '—') + '</td>' +
+            '<td style="font-weight:600;">SGD ' + fmt(e.unitPrice) + '</td>' +
+            '<td style="font-size:12px;">' + esc(e.unit || '—') + '</td>' +
+            '<td style="font-size:12px;">' + esc(e.supplierName || '—') + '</td>' +
+            '<td style="font-size:11px;color:var(--text-muted);">' + esc(e.notes || '') + '</td>' +
+            '<td><button class="btn btn-ghost btn-xs" onclick="openPriceModal(\'' + e.id + '\')">Edit</button></td>' +
+            '</tr>';
+        }).join('') + '</tbody></table>';
+        html += '</div>';
+      });
+
+      if (!html) html = '<div class="empty-state"><div class="icon">📈</div>No price records yet.</div>';
+      container.innerHTML = html;
+    }
+
+    function pctDiff(a, b) {
+      if (!b) return '';
+      return Math.round(Math.abs(a - b) / b * 100) + '%';
+    }
+
+    // ── Price Modal ────────────────────────────────────────────────────────────
+    function openPriceModal(id) {
+      editingPriceId = id || null;
+      // Populate supplier dropdown
+      var sel = document.getElementById('pm-supplier');
+      sel.innerHTML = '<option value="">— None —</option>' +
+        suppliers.filter(function(s) { return s.active; }).map(function(s) {
+          return '<option value="' + s.id + '" data-name="' + esc(s.name) + '">' + esc(s.name) + '</option>';
+        }).join('');
+
+      if (id) {
+        // Edit existing entry
+        var entry = prices.find(function(p) { return p.id === id; });
+        if (!entry) return;
+        document.getElementById('pm-modal-title').textContent = 'Edit Price Entry';
+        document.getElementById('pm-id').value       = entry.id;
+        document.getElementById('pm-material').value = entry.material || '';
+        document.getElementById('pm-grade').value    = entry.grade || '';
+        document.getElementById('pm-price').value    = entry.unitPrice || '';
+        document.getElementById('pm-unit').value     = entry.unit || '';
+        document.getElementById('pm-date').value     = entry.date || '';
+        document.getElementById('pm-notes').value    = entry.notes || '';
+        if (entry.supplierId) sel.value = entry.supplierId;
+        document.getElementById('pm-delete-btn').style.display = '';
+      } else {
+        // New entry
+        document.getElementById('pm-modal-title').textContent = 'Log Material Price';
+        document.getElementById('pm-id').value       = '';
+        document.getElementById('pm-material').value = '';
+        document.getElementById('pm-grade').value    = '';
+        document.getElementById('pm-price').value    = '';
+        document.getElementById('pm-unit').value     = '';
+        document.getElementById('pm-date').value     = new Date().toISOString().slice(0, 10);
+        document.getElementById('pm-notes').value    = '';
+        document.getElementById('pm-delete-btn').style.display = 'none';
+      }
+      document.getElementById('price-modal').classList.add('open');
+    }
+
+    async function savePrice() {
+      var mat = document.getElementById('pm-material').value;
+      var up  = parseFloat(document.getElementById('pm-price').value);
+      if (!mat) { alert('Select a material'); return; }
+      if (!up)  { alert('Enter a unit price'); return; }
+      var supSel  = document.getElementById('pm-supplier');
+      var supId   = supSel.value;
+      var supName = supId ? (supSel.options[supSel.selectedIndex].dataset.name || '') : '';
+      var payload = {
+        material:     mat,
+        grade:        document.getElementById('pm-grade').value.trim(),
+        unitPrice:    up,
+        unit:         document.getElementById('pm-unit').value.trim(),
+        supplierId:   supId,
+        supplierName: supName,
+        date:         document.getElementById('pm-date').value,
+        notes:        document.getElementById('pm-notes').value.trim()
+      };
+      try {
+        if (editingPriceId) {
+          await apiFetch('PUT', '/api/prices/' + editingPriceId, payload);
+          showToast('Price entry updated');
+        } else {
+          await apiFetch('POST', '/api/prices', payload);
+          showToast('Price logged');
+        }
+        closeModal('price-modal');
+        await loadPrices();
+      } catch (e) { showToast('Error: ' + e.message, true); }
+    }
+
+    async function deletePrice() {
+      if (!editingPriceId) return;
+      var entry = prices.find(function(p) { return p.id === editingPriceId; });
+      var label = entry ? (entry.material + ' — SGD ' + fmt(entry.unitPrice) + ' (' + entry.date + ')') : '';
+      if (!confirm('Delete price entry: ' + label + '?\nThis cannot be undone.')) return;
+      try {
+        await apiFetch('DELETE', '/api/prices/' + editingPriceId);
+        showToast('Price entry deleted');
+        closeModal('price-modal');
+        await loadPrices();
+      } catch (e) { showToast('Error: ' + e.message, true); }
+    }
+
+    // ── Purchase Orders ────────────────────────────────────────────────────────
+    async function loadPOs() {
+      try { pos = await apiFetch('GET', '/api/purchase-orders'); }
+      catch (e) { pos = []; }
+      renderPOs();
+    }
+
+    function renderPOs() {
+      var filter = document.getElementById('po-status-filter').value;
+      var filtered = filter ? pos.filter(function(p) { return p.status === filter; }) : pos;
+      // Sort: Overdue first, then by promisedDate asc
+      filtered.sort(function(a, b) {
+        if (a.status === 'Overdue' && b.status !== 'Overdue') return -1;
+        if (b.status === 'Overdue' && a.status !== 'Overdue') return 1;
+        return (a.promisedDate || '9999').localeCompare(b.promisedDate || '9999');
+      });
+      var tbody = document.getElementById('po-tbody');
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="icon">📦</div>No purchase orders' + (filter ? ' with status "' + filter + '"' : '') + '.</div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = filtered.map(function(p) {
+        var statusBadge = {
+          'Ordered':    '<span class="badge badge-ordered">Ordered</span>',
+          'In Transit': '<span class="badge badge-transit">In Transit</span>',
+          'Delivered':  '<span class="badge badge-delivered">Delivered</span>',
+          'Overdue':    '<span class="badge badge-overdue">Overdue</span>'
+        }[p.status] || '<span class="badge">' + esc(p.status) + '</span>';
+        var isOverdue = p.status === 'Overdue';
+        return '<tr class="' + (isOverdue ? 'row-overdue' : '') + '">' +
+          '<td style="font-size:11px;font-weight:600;color:var(--text-muted);">' + esc(p.id) + '</td>' +
+          '<td><strong>' + esc(p.material) + '</strong></td>' +
+          '<td style="font-size:12px;">' + (p.quantity ? p.quantity + ' ' + esc(p.unit || '') : '—') + '</td>' +
+          '<td style="font-size:12px;">' + esc(p.supplierName || '—') + '</td>' +
+          '<td style="font-size:11px;">' + (p.projectJobCode ? '<a href="project.html?id=' + esc(p.projectId) + '" style="color:var(--accent);">' + esc(p.projectJobCode) + '</a>' : '—') + '</td>' +
+          '<td style="font-size:12px;">' + (p.orderedDate || '—') + '</td>' +
+          '<td style="font-size:12px;font-weight:' + (isOverdue ? '700' : '400') + ';color:' + (isOverdue ? 'var(--red)' : 'inherit') + ';">' + (p.promisedDate || '—') + '</td>' +
+          '<td style="font-size:12px;font-weight:600;">S$' + fmt(p.totalAmount || 0) + '</td>' +
+          '<td>' + statusBadge + '</td>' +
+          '<td><button class="btn btn-ghost btn-xs" onclick="openPOModal(\'' + p.id + '\')">Edit</button></td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    // ── PO Modal ───────────────────────────────────────────────────────────────
+    function openPOModal(id) {
+      editingPOId = id || null;
+      // Populate supplier dropdown
+      var sel = document.getElementById('pom-supplier');
+      sel.innerHTML = '<option value="">— Select supplier —</option>' +
+        suppliers.filter(function(s) { return s.active; }).map(function(s) {
+          return '<option value="' + s.id + '" data-name="' + esc(s.name) + '">' + esc(s.name) + '</option>';
+        }).join('');
+
+      if (id) {
+        var p = pos.find(function(x) { return x.id === id; });
+        if (!p) return;
+        document.getElementById('po-modal-title').textContent = 'Edit Purchase Order';
+        document.getElementById('pom-id').value       = p.id;
+        document.getElementById('pom-material').value = p.material || '';
+        document.getElementById('pom-qty').value      = p.quantity || '';
+        document.getElementById('pom-unit').value     = p.unit || '';
+        document.getElementById('pom-uprice').value   = p.unitPrice || '';
+        document.getElementById('pom-total').value    = p.totalAmount || '';
+        document.getElementById('pom-jobcode').value  = p.projectJobCode || '';
+        document.getElementById('pom-status').value   = ['Ordered','In Transit','Delivered'].includes(p.status) ? p.status : 'Ordered';
+        document.getElementById('pom-ordered').value  = p.orderedDate || '';
+        document.getElementById('pom-eta').value      = p.promisedDate || '';
+        document.getElementById('pom-actual').value   = p.actualDate || '';
+        document.getElementById('pom-notes').value    = p.notes || '';
+        if (p.supplierId) sel.value = p.supplierId;
+      } else {
+        document.getElementById('po-modal-title').textContent = 'New Purchase Order';
+        document.getElementById('pom-id').value       = '';
+        document.getElementById('pom-material').value = '';
+        document.getElementById('pom-qty').value      = '';
+        document.getElementById('pom-unit').value     = '';
+        document.getElementById('pom-uprice').value   = '';
+        document.getElementById('pom-total').value    = '';
+        document.getElementById('pom-jobcode').value  = '';
+        document.getElementById('pom-status').value   = 'Ordered';
+        document.getElementById('pom-ordered').value  = new Date().toISOString().slice(0,10);
+        document.getElementById('pom-eta').value      = '';
+        document.getElementById('pom-actual').value   = '';
+        document.getElementById('pom-notes').value    = '';
+      }
+      document.getElementById('po-modal').classList.add('open');
+    }
+
+    function calcPOTotal() {
+      var qty = parseFloat(document.getElementById('pom-qty').value) || 0;
+      var up  = parseFloat(document.getElementById('pom-uprice').value) || 0;
+      if (qty && up) document.getElementById('pom-total').value = (qty * up).toFixed(2);
+    }
+
+    async function savePO() {
+      var mat = document.getElementById('pom-material').value.trim();
+      if (!mat) { alert('Material is required'); return; }
+      var supSel  = document.getElementById('pom-supplier');
+      var supId   = supSel.value;
+      var supName = supId ? (supSel.options[supSel.selectedIndex].dataset.name || '') : '';
+      var payload = {
+        material:       mat,
+        quantity:       parseFloat(document.getElementById('pom-qty').value) || 0,
+        unit:           document.getElementById('pom-unit').value.trim(),
+        supplierId:     supId,
+        supplierName:   supName,
+        unitPrice:      parseFloat(document.getElementById('pom-uprice').value) || 0,
+        totalAmount:    parseFloat(document.getElementById('pom-total').value) || 0,
+        projectJobCode: document.getElementById('pom-jobcode').value.trim(),
+        status:         document.getElementById('pom-status').value,
+        orderedDate:    document.getElementById('pom-ordered').value,
+        promisedDate:   document.getElementById('pom-eta').value,
+        actualDate:     document.getElementById('pom-actual').value,
+        notes:          document.getElementById('pom-notes').value.trim()
+      };
+      try {
+        if (editingPOId) {
+          await apiFetch('PUT', '/api/purchase-orders/' + editingPOId, payload);
+          showToast('PO updated');
+        } else {
+          await apiFetch('POST', '/api/purchase-orders', payload);
+          showToast('Purchase order created');
+        }
+        closeModal('po-modal');
+        await loadPOs();
+      } catch (e) { showToast('Error: ' + e.message, true); }
+    }
+
+    // ── Utilities ──────────────────────────────────────────────────────────────
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function fmt(n) {
+      return Number(n).toLocaleString('en-SG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function esc(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function showToast(msg, isError) {
+      var t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.style.background = isError ? 'var(--red)' : 'var(--green)';
+      t.style.opacity = '1';
+      t.style.display = 'block';
+      setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.style.display = 'none'; }, 400); }, 2800);
+    }
+
+    // Close modals on backdrop click
+    document.querySelectorAll('.proc-modal-overlay').forEach(function(overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.classList.remove('open');
+      });
+    });
+
+    // Load factory badge (site request count)
+    async function loadFactoryBadge() {
+      try {
+        var reqs = await fetch('/api/site-requests').then(function(r) { return r.json(); });
+        var newCount = reqs.filter(function(r) { return r.status === 'New'; }).length;
+        var badge = document.getElementById('sidebar-factory-badge');
+        if (badge) { badge.textContent = newCount; badge.style.display = newCount > 0 ? 'inline-flex' : 'none'; }
+      } catch {}
+    }
+
+    init();
+  </script>
+</body>
+</html>

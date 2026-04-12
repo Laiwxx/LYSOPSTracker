@@ -1,0 +1,246 @@
+[
+  {
+    "id": "wm-chin-poh-fatt",
+    "name": "Chin Poh Fatt",
+    "nationality": "Malaysian",
+    "code": "WM",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wm-ee-kok-keong",
+    "name": "Ee Kok Keong",
+    "nationality": "Malaysian",
+    "code": "WM",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wm-pow-kin-pheng",
+    "name": "Pow Kin Pheng",
+    "nationality": "Malaysian",
+    "code": "WM",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wm-tan-yock-wan",
+    "name": "Tan Yock Wan",
+    "nationality": "Malaysian",
+    "code": "WM",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wm-lin-chee-cheong",
+    "name": "Lin Chee Cheong",
+    "nationality": "Malaysian",
+    "code": "WM",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wt-fangkaew-sarawit",
+    "name": "Fangkaew Sarawit",
+    "nationality": "Thai",
+    "code": "WT",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wt-hoomphaeng-kritsana",
+    "name": "Hoomphaeng Kritsana",
+    "nationality": "Thai",
+    "code": "WT",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wi-kannaiyan-jaishankar",
+    "name": "Kannaiyan Jaishankar",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wi-mariyappan-malayandi",
+    "name": "Mariyappan Malayandi @ Kuppsamy",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Driver",
+    "active": true,
+    "startDate": "2025-04-08"
+  },
+  {
+    "id": "wi-thangavel-murugavel",
+    "name": "Thangavel Murugavel",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wi-perumal-kamaraj",
+    "name": "Perumal Kamaraj",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2025-05-20"
+  },
+  {
+    "id": "wi-elumalai-govindan",
+    "name": "Elumalai Govindan",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": false
+  },
+  {
+    "id": "wi-adaikkalam-ramesh",
+    "name": "Adaikkalam Ramesh",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": false,
+    "startDate": "2022-08-17"
+  },
+  {
+    "id": "wi-viswanathan-vaithiyanathan",
+    "name": "Viswanathan Vaithiyanathan",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": false,
+    "startDate": "2022-09-08"
+  },
+  {
+    "id": "wi-karupaiya-jaganathan",
+    "name": "Karupaiya Jaganathan",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2022-06-08"
+  },
+  {
+    "id": "wi-jayabalan-ramesh",
+    "name": "Jayabalan Ramesh",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2024-07-16",
+    "notes": "5.5 w/k"
+  },
+  {
+    "id": "wi-rajagopal-mayakrishnan",
+    "name": "Rajagopal Mayakrishnan",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2024-01-15"
+  },
+  {
+    "id": "wi-govindan-venkataswaran",
+    "name": "Govindan Venkataswaran",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wi-venkatakrishnapuram-palani",
+    "name": "Venkatakrishnapuram Palanivel Ananthakumar",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wi-palanisamy-manikandan",
+    "name": "Palanisamy Manikandan",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wi-dhadikaran-muruganandam",
+    "name": "Dhadikaran Muruganandam",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "wi-mahadevan-maharajan",
+    "name": "Mahadevan Maharajan",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2025-01-03"
+  },
+  {
+    "id": "wi-natarasan-sivakumar",
+    "name": "Natarasan Sivakumar",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2025-03-16"
+  },
+  {
+    "id": "wi-sekar-ganesh",
+    "name": "Sekar Ganesh",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2025-04-19"
+  },
+  {
+    "id": "wi-alugusamy-gunamoorti",
+    "name": "Alugusamy Gunamoorti",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker",
+    "active": true,
+    "startDate": "2025-04-19"
+  },
+  {
+    "id": "ss-chang-mui-yam",
+    "name": "Chang Mui Yam",
+    "nationality": "Singaporean",
+    "code": "SS",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "ss-chin-poh-hoon",
+    "name": "Chin Poh Hoon",
+    "nationality": "Singaporean",
+    "code": "SS",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "ss-tai-nyur-hing",
+    "name": "Tai Nyur Hing",
+    "nationality": "Singaporean",
+    "code": "SS",
+    "role": "Worker",
+    "active": true
+  },
+  {
+    "id": "ss-yap-teck-huat",
+    "name": "Yap Teck Huat",
+    "nationality": "Singaporean",
+    "code": "SS",
+    "role": "Worker",
+    "active": true
+  }
+]

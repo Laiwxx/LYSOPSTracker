@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Attendance — LYS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: var(--bg); }
+
+    /* ── Top bar ── */
+    .att-topbar {
+      background: var(--sidebar-bg);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 52px;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .att-topbar h1 { font-size: 14px; font-weight: 700; color: #fff; margin: 0; flex: 1; }
+
+    .att-date-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .att-date-nav button {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 16px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .att-date-nav button:hover { background: rgba(255,255,255,0.22); }
+    .att-date-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .att-save-btn {
+      padding: 6px 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .att-save-btn:hover { opacity: 0.88; }
+
+    /* ── Summary bar ── */
+    .att-summary {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .att-pill {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .att-pill.present  { background: #00c875; }
+    .att-pill.on-site  { background: #3366ff; }
+    .att-pill.mc       { background: #fdab3d; color: #1a1d2e; }
+    .att-pill.absent   { background: #e2445c; }
+    .att-pill.off      { background: #6b7280; }
+    .att-pill.on-leave { background: #a25ddc; }
+
+    /* ── Worker grid ── */
+    .att-main {
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .att-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    /* ── Worker card ── */
+    .att-card {
+      background: var(--bg2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .att-card:active { transform: scale(0.96); }
+
+    .att-card.status-Present  { border-color: #00c875; background: rgba(0,200,117,0.08); }
+    .att-card.status-MC       { border-color: #fdab3d; background: rgba(253,171,61,0.08); }
+    .att-card.status-Absent   { border-color: #e2445c; background: rgba(226,68,92,0.08); }
+    .att-card.status-Off      { border-color: #6b7280; background: rgba(107,114,128,0.08); }
+    .att-card.status-On-Site  { border-color: #3366ff; background: rgba(51,102,255,0.08); }
+    .att-card.status-On-Leave { border-color: #a25ddc; background: rgba(162,93,220,0.08); }
+
+    .att-card-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      background: var(--bg3);
+      color: var(--text-muted);
+    }
+    .att-card-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 8px;
+      word-break: break-word;
+    }
+    .att-status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .status-Present  .att-status-badge { background: #00c875; }
+    .status-MC       .att-status-badge { background: #fdab3d; color: #1a1d2e; }
+    .status-Absent   .att-status-badge { background: #e2445c; }
+    .status-Off      .att-status-badge { background: #6b7280; }
+    .status-On-Site  .att-status-badge { background: #3366ff; }
+    .status-On-Leave .att-status-badge { background: #a25ddc; }
+
+    /* ── Toast ── */
+    .att-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1d2e;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 0.25s ease;
+      z-index: 9999;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .att-toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Mobile responsive ── */
+    @media (max-width: 480px) {
+      .att-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 8px;
+      }
+      .att-main { padding: 10px; }
+      .att-topbar h1 { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="att-topbar">
+  <h1>📋 Attendance</h1>
+  <div class="att-date-nav">
+    <button id="prev-day" title="Previous day">‹</button>
+    <span class="att-date-label" id="date-label">—</span>
+    <button id="next-day" title="Next day">›</button>
+  </div>
+  <button class="att-save-btn" id="save-btn">💾 Save</button>
+</div>
+
+<!-- Summary bar -->
+<div class="att-summary" id="summary-bar">
+  <span class="att-pill present" id="pill-present">0 Present</span>
+  <span class="att-pill on-site" id="pill-onsite">0 On Site</span>
+  <span class="att-pill mc" id="pill-mc">0 MC</span>
+  <span class="att-pill absent" id="pill-absent">0 Absent</span>
+  <span class="att-pill off" id="pill-off">0 Off</span>
+  <span class="att-pill on-leave" id="pill-leave">0 Leave</span>
+</div>
+
+<!-- Worker grid (no sidebar — Chris uses this full-screen on tablet/phone) -->
+<div class="att-main">
+  <div class="att-grid" id="worker-grid">
+    <div style="color:var(--text-muted);font-size:13px;">Loading…</div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="att-toast" id="toast"></div>
+
+<script>
+const STATUS_CYCLE = ['Present', 'MC', 'Absent', 'Off', 'On Site', 'On Leave'];
+
+let currentDate = new Date().toISOString().split('T')[0];
+let statuses = {}; // { workerId: status }
+let workers  = [];
+
+// ── Date helpers ──────────────────────────────────────
+function fmtDate(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-SG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function shiftDate(days) {
+  const d = new Date(currentDate + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+document.getElementById('prev-day').addEventListener('click', () => {
+  currentDate = shiftDate(-1);
+  updateDateLabel();
+  loadAttendance();
+});
+document.getElementById('next-day').addEventListener('click', () => {
+  currentDate = shiftDate(1);
+  updateDateLabel();
+  loadAttendance();
+});
+
+function updateDateLabel() {
+  document.getElementById('date-label').textContent = fmtDate(currentDate);
+}
+
+// ── Load workers + attendance ─────────────────────────
+async function init() {
+  updateDateLabel();
+  try {
+    workers = await fetch('/api/workers?active=true').then(r => r.json());
+    // Default everyone to Present
+    workers.forEach(w => { statuses[w.id] = 'Present'; });
+  } catch {
+    workers = [];
+  }
+  await loadAttendance();
+}
+
+async function loadAttendance() {
+  try {
+    const rec = await fetch('/api/attendance?date=' + currentDate).then(r => r.json());
+    if (rec && Array.isArray(rec.records)) {
+      rec.records.forEach(r => { statuses[r.workerId] = r.status; });
+    } else {
+      // No saved record — reset all to Present
+      workers.forEach(w => { statuses[w.id] = 'Present'; });
+    }
+  } catch {
+    workers.forEach(w => { statuses[w.id] = 'Present'; });
+  }
+  renderGrid();
+}
+
+// ── Render ────────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById('worker-grid');
+  grid.innerHTML = '';
+
+  if (!workers.length) {
+    grid.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">No active workers found.</div>';
+    updateSummary();
+    return;
+  }
+
+  workers.forEach(w => {
+    const status = statuses[w.id] || 'Present';
+    const cssClass = 'status-' + status.replace(' ', '-');
+
+    const card = document.createElement('div');
+    card.className = 'att-card ' + cssClass;
+    card.dataset.workerId = w.id;
+    card.innerHTML = `
+      <div class="att-card-badge">${esc(w.code || '?')}</div>
+      <div class="att-card-name">${esc(shortName(w.name))}</div>
+      <span class="att-status-badge">${esc(status)}</span>
+    `;
+
+    card.addEventListener('click', () => cycleStatus(w.id));
+    grid.appendChild(card);
+  });
+
+  updateSummary();
+}
+
+function cycleStatus(workerId) {
+  const current = statuses[workerId] || 'Present';
+  const idx = STATUS_CYCLE.indexOf(current);
+  statuses[workerId] = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  // Update just this card
+  const card = document.querySelector(`[data-worker-id="${workerId}"]`);
+  if (card) {
+    const newStatus = statuses[workerId];
+    card.className = 'att-card status-' + newStatus.replace(' ', '-');
+    card.querySelector('.att-status-badge').textContent = newStatus;
+  }
+  updateSummary();
+}
+
+function updateSummary() {
+  const counts = { Present: 0, MC: 0, Absent: 0, Off: 0, 'On Site': 0, 'On Leave': 0 };
+  Object.values(statuses).forEach(s => { if (s in counts) counts[s]++; });
+  document.getElementById('pill-present').textContent = counts['Present'] + ' Present';
+  document.getElementById('pill-onsite').textContent  = counts['On Site'] + ' On Site';
+  document.getElementById('pill-mc').textContent      = counts['MC'] + ' MC';
+  document.getElementById('pill-absent').textContent  = counts['Absent'] + ' Absent';
+  document.getElementById('pill-off').textContent     = counts['Off'] + ' Off';
+  document.getElementById('pill-leave').textContent   = counts['On Leave'] + ' Leave';
+}
+
+// ── Save ──────────────────────────────────────────────
+document.getElementById('save-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('save-btn');
+  btn.textContent = '⏳ Saving…';
+  btn.disabled = true;
+
+  const records = workers.map(w => ({
+    workerId:   w.id,
+    workerName: w.name,
+    status:     statuses[w.id] || 'Present',
+    notes:      ''
+  }));
+
+  try {
+    const r = await fetch('/api/attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: currentDate, records })
+    });
+    if (r.ok) {
+      showToast('✅ Saved for ' + fmtDate(currentDate));
+      btn.textContent = '✅ Saved';
+    } else {
+      showToast('❌ Save failed');
+      btn.textContent = '❌ Error';
+    }
+  } catch {
+    showToast('⚠️ Offline — could not save');
+    btn.textContent = '⚠️ Offline';
+  }
+
+  setTimeout(() => { btn.textContent = '💾 Save'; btn.disabled = false; }, 2500);
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function shortName(name) {
+  const parts = name.split(' ');
+  return parts.length > 2 ? parts.slice(0, 2).join(' ') : name;
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+init();
+</script>
+</body>
+</html>

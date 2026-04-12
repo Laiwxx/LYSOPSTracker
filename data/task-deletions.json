@@ -1,0 +1,1402 @@
+[
+  {
+    "taskId": "mnsafnjq",
+    "taskTitle": "MC Test Task 0 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.386Z"
+  },
+  {
+    "taskId": "mnsafnjt",
+    "taskTitle": "MC Test Task 1 — PO followup",
+    "projectJobCode": "BD 21537",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.388Z"
+  },
+  {
+    "taskId": "mnsafnju",
+    "taskTitle": "MC Test Task 2 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.394Z"
+  },
+  {
+    "taskId": "mnsafnk0",
+    "taskTitle": "MC Test Task 3 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.402Z"
+  },
+  {
+    "taskId": "mnsafnk1",
+    "taskTitle": "MC Test Task 4 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.420Z"
+  },
+  {
+    "taskId": "mnsafnk3",
+    "taskTitle": "MC Test Task 5 — ",
+    "projectJobCode": "BD 22215",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.421Z"
+  },
+  {
+    "taskId": "mnsafnk4",
+    "taskTitle": "MC Test Task 6 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.423Z"
+  },
+  {
+    "taskId": "mnsafnk5",
+    "taskTitle": "MC Test Task 7 — fab check",
+    "projectJobCode": "BD 20714",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.425Z"
+  },
+  {
+    "taskId": "mnsafnk6",
+    "taskTitle": "MC Test Task 8 — PO followup",
+    "projectJobCode": "BD 20387",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.427Z"
+  },
+  {
+    "taskId": "mnsafnk8",
+    "taskTitle": "MC Test Task 9 — fab check",
+    "projectJobCode": "BD 25415",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.429Z"
+  },
+  {
+    "taskId": "mnsafnk9",
+    "taskTitle": "MC Test Task 10 — fab check",
+    "projectJobCode": "BD 21583",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.430Z"
+  },
+  {
+    "taskId": "mnsafnka",
+    "taskTitle": "MC Test Task 11 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.432Z"
+  },
+  {
+    "taskId": "mnsafnkc",
+    "taskTitle": "MC Test Task 12 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.433Z"
+  },
+  {
+    "taskId": "mnsafnke",
+    "taskTitle": "MC Test Task 13 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.434Z"
+  },
+  {
+    "taskId": "mnsafnkf",
+    "taskTitle": "MC Test Task 14 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.436Z"
+  },
+  {
+    "taskId": "mnsafnkg",
+    "taskTitle": "MC Test Task 15 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.437Z"
+  },
+  {
+    "taskId": "mnsafnkh",
+    "taskTitle": "MC Test Task 16 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.438Z"
+  },
+  {
+    "taskId": "mnsafnki",
+    "taskTitle": "MC Test Task 17 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.439Z"
+  },
+  {
+    "taskId": "mnsafnkj",
+    "taskTitle": "MC Test Task 18 — fab check",
+    "projectJobCode": "BD 23344",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.441Z"
+  },
+  {
+    "taskId": "mnsafnkk",
+    "taskTitle": "MC Test Task 19 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.442Z"
+  },
+  {
+    "taskId": "mnsafnkl",
+    "taskTitle": "MC Test Task 20 — ",
+    "projectJobCode": "BD 22192",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.443Z"
+  },
+  {
+    "taskId": "mnsafnkn",
+    "taskTitle": "MC Test Task 21 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.445Z"
+  },
+  {
+    "taskId": "mnsafnko",
+    "taskTitle": "MC Test Task 22 — site visit",
+    "projectJobCode": "BD 19469",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.446Z"
+  },
+  {
+    "taskId": "mnsafnkp",
+    "taskTitle": "MC Test Task 23 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.447Z"
+  },
+  {
+    "taskId": "mnsafnkr",
+    "taskTitle": "MC Test Task 24 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.448Z"
+  },
+  {
+    "taskId": "mnsafnkt",
+    "taskTitle": "MC Test Task 25 — fab check",
+    "projectJobCode": "BD 24409",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.450Z"
+  },
+  {
+    "taskId": "mnsafnku",
+    "taskTitle": "MC Test Task 26 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.451Z"
+  },
+  {
+    "taskId": "mnsafnkw",
+    "taskTitle": "MC Test Task 27 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.452Z"
+  },
+  {
+    "taskId": "mnsafnkx",
+    "taskTitle": "MC Test Task 28 — fab check",
+    "projectJobCode": "BD 23329",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.453Z"
+  },
+  {
+    "taskId": "mnsafnky",
+    "taskTitle": "MC Test Task 29 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.454Z"
+  },
+  {
+    "taskId": "mnsafnkz",
+    "taskTitle": "MC Test Task 30 — site visit",
+    "projectJobCode": "BD 22291",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.456Z"
+  },
+  {
+    "taskId": "mnsafnl0",
+    "taskTitle": "MC Test Task 31 — ",
+    "projectJobCode": "BD 20429",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.457Z"
+  },
+  {
+    "taskId": "mnsafnl2",
+    "taskTitle": "MC Test Task 32 — site visit",
+    "projectJobCode": "BD 25091",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.458Z"
+  },
+  {
+    "taskId": "mnsafnl3",
+    "taskTitle": "MC Test Task 33 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.459Z"
+  },
+  {
+    "taskId": "mnsafnl4",
+    "taskTitle": "MC Test Task 34 — fab check",
+    "projectJobCode": "BD 20730",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.461Z"
+  },
+  {
+    "taskId": "mnsafnl6",
+    "taskTitle": "MC Test Task 35 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.462Z"
+  },
+  {
+    "taskId": "mnsafnl7",
+    "taskTitle": "MC Test Task 36 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.463Z"
+  },
+  {
+    "taskId": "mnsafnl8",
+    "taskTitle": "MC Test Task 37 — drawings",
+    "projectJobCode": "BD 25916",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.464Z"
+  },
+  {
+    "taskId": "mnsafnla",
+    "taskTitle": "MC Test Task 38 — fab check",
+    "projectJobCode": "BD 21012",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.466Z"
+  },
+  {
+    "taskId": "mnsafnlc",
+    "taskTitle": "MC Test Task 39 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.467Z"
+  },
+  {
+    "taskId": "mnsafnld",
+    "taskTitle": "MC Test Task 40 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.468Z"
+  },
+  {
+    "taskId": "mnsafnle",
+    "taskTitle": "MC Test Task 41 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.469Z"
+  },
+  {
+    "taskId": "mnsafnlf",
+    "taskTitle": "MC Test Task 42 — drawings",
+    "projectJobCode": "BD 22946",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.471Z"
+  },
+  {
+    "taskId": "mnsafnlg",
+    "taskTitle": "MC Test Task 43 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.472Z"
+  },
+  {
+    "taskId": "mnsafnlh",
+    "taskTitle": "MC Test Task 44 — drawings",
+    "projectJobCode": "BD 22366",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.473Z"
+  },
+  {
+    "taskId": "mnsafnlj",
+    "taskTitle": "MC Test Task 45 — ",
+    "projectJobCode": "BD 21381",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.474Z"
+  },
+  {
+    "taskId": "mnsafnlk",
+    "taskTitle": "MC Test Task 46 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.476Z"
+  },
+  {
+    "taskId": "mnsafnlm",
+    "taskTitle": "MC Test Task 47 — site visit",
+    "projectJobCode": "BD 23364",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.478Z"
+  },
+  {
+    "taskId": "mnsafnln",
+    "taskTitle": "MC Test Task 48 — site visit",
+    "projectJobCode": "BD 25369",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.479Z"
+  },
+  {
+    "taskId": "mnsafnlo",
+    "taskTitle": "MC Test Task 49 — ",
+    "projectJobCode": "BD 22796",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.480Z"
+  },
+  {
+    "taskId": "mnsafnlp",
+    "taskTitle": "Untitled Task",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.482Z"
+  },
+  {
+    "taskId": "mnsafnlr",
+    "taskTitle": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.483Z"
+  },
+  {
+    "taskId": "mnsafnls",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.484Z"
+  },
+  {
+    "taskId": "mnsafnlt",
+    "taskTitle": "<script>alert(1)</script>",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.486Z"
+  },
+  {
+    "taskId": "mnsafnlv",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.487Z"
+  },
+  {
+    "taskId": "mnsafnlw",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T02:29:43.489Z"
+  },
+  {
+    "taskId": "mnseo5cn",
+    "taskTitle": "MC Test Task 0 — drawings",
+    "projectJobCode": "BD 24928",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.198Z"
+  },
+  {
+    "taskId": "mnseo5cp",
+    "taskTitle": "MC Test Task 1 — ",
+    "projectJobCode": "BD 22841",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.200Z"
+  },
+  {
+    "taskId": "mnseo5cq",
+    "taskTitle": "MC Test Task 2 — ",
+    "projectJobCode": "BD 23296",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.201Z"
+  },
+  {
+    "taskId": "mnseo5cu",
+    "taskTitle": "MC Test Task 3 — site visit",
+    "projectJobCode": "BD 20937",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.203Z"
+  },
+  {
+    "taskId": "mnseo5cv",
+    "taskTitle": "MC Test Task 4 — ",
+    "projectJobCode": "BD 24050",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.205Z"
+  },
+  {
+    "taskId": "mnseo5cx",
+    "taskTitle": "MC Test Task 5 — site visit",
+    "projectJobCode": "BD 23777",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.206Z"
+  },
+  {
+    "taskId": "mnseo5cz",
+    "taskTitle": "MC Test Task 6 — drawings",
+    "projectJobCode": "BD 23334",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.208Z"
+  },
+  {
+    "taskId": "mnseo5d2",
+    "taskTitle": "MC Test Task 7 — site visit",
+    "projectJobCode": "BD 25423",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.209Z"
+  },
+  {
+    "taskId": "mnseo5d6",
+    "taskTitle": "MC Test Task 8 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.212Z"
+  },
+  {
+    "taskId": "mnseo5da",
+    "taskTitle": "MC Test Task 9 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.214Z"
+  },
+  {
+    "taskId": "mnseo5dc",
+    "taskTitle": "MC Test Task 10 — site visit",
+    "projectJobCode": "BD 21318",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.229Z"
+  },
+  {
+    "taskId": "mnseo5dd",
+    "taskTitle": "MC Test Task 11 — site visit",
+    "projectJobCode": "BD 24568",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.234Z"
+  },
+  {
+    "taskId": "mnseo5df",
+    "taskTitle": "MC Test Task 12 — PO followup",
+    "projectJobCode": "BD 20846",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.236Z"
+  },
+  {
+    "taskId": "mnseo5dh",
+    "taskTitle": "MC Test Task 13 — fab check",
+    "projectJobCode": "BD 20545",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.238Z"
+  },
+  {
+    "taskId": "mnseo5di",
+    "taskTitle": "MC Test Task 14 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.241Z"
+  },
+  {
+    "taskId": "mnseo5dj",
+    "taskTitle": "MC Test Task 15 — drawings",
+    "projectJobCode": "BD 19517",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.243Z"
+  },
+  {
+    "taskId": "mnseo5dk",
+    "taskTitle": "MC Test Task 16 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.246Z"
+  },
+  {
+    "taskId": "mnseo5dm",
+    "taskTitle": "MC Test Task 17 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.248Z"
+  },
+  {
+    "taskId": "mnseo5dn",
+    "taskTitle": "MC Test Task 18 — drawings",
+    "projectJobCode": "BD 19951",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.250Z"
+  },
+  {
+    "taskId": "mnseo5do",
+    "taskTitle": "MC Test Task 19 — PO followup",
+    "projectJobCode": "BD 23249",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.252Z"
+  },
+  {
+    "taskId": "mnseo5dp",
+    "taskTitle": "MC Test Task 20 — fab check",
+    "projectJobCode": "BD 24463",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.253Z"
+  },
+  {
+    "taskId": "mnseo5dq",
+    "taskTitle": "MC Test Task 21 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.255Z"
+  },
+  {
+    "taskId": "mnseo5dr",
+    "taskTitle": "MC Test Task 22 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.257Z"
+  },
+  {
+    "taskId": "mnseo5ds",
+    "taskTitle": "MC Test Task 23 — PO followup",
+    "projectJobCode": "BD 21366",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.259Z"
+  },
+  {
+    "taskId": "mnseo5du",
+    "taskTitle": "MC Test Task 24 — fab check",
+    "projectJobCode": "BD 20979",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.261Z"
+  },
+  {
+    "taskId": "mnseo5dv",
+    "taskTitle": "MC Test Task 25 — drawings",
+    "projectJobCode": "BD 23097",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.262Z"
+  },
+  {
+    "taskId": "mnseo5dw",
+    "taskTitle": "MC Test Task 26 — fab check",
+    "projectJobCode": "BD 25638",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.264Z"
+  },
+  {
+    "taskId": "mnseo5dx",
+    "taskTitle": "MC Test Task 27 — ",
+    "projectJobCode": "BD 24962",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.267Z"
+  },
+  {
+    "taskId": "mnseo5dz",
+    "taskTitle": "MC Test Task 28 — PO followup",
+    "projectJobCode": "BD 21995",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.268Z"
+  },
+  {
+    "taskId": "mnseo5e0",
+    "taskTitle": "MC Test Task 29 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.270Z"
+  },
+  {
+    "taskId": "mnseo5e1",
+    "taskTitle": "MC Test Task 30 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.271Z"
+  },
+  {
+    "taskId": "mnseo5e3",
+    "taskTitle": "MC Test Task 31 — drawings",
+    "projectJobCode": "BD 24969",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.273Z"
+  },
+  {
+    "taskId": "mnseo5e4",
+    "taskTitle": "MC Test Task 32 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.278Z"
+  },
+  {
+    "taskId": "mnseo5e5",
+    "taskTitle": "MC Test Task 33 — ",
+    "projectJobCode": "BD 19472",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.279Z"
+  },
+  {
+    "taskId": "mnseo5e6",
+    "taskTitle": "MC Test Task 34 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.281Z"
+  },
+  {
+    "taskId": "mnseo5e8",
+    "taskTitle": "MC Test Task 35 — fab check",
+    "projectJobCode": "BD 20800",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.282Z"
+  },
+  {
+    "taskId": "mnseo5e9",
+    "taskTitle": "MC Test Task 36 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.295Z"
+  },
+  {
+    "taskId": "mnseo5ea",
+    "taskTitle": "MC Test Task 37 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.308Z"
+  },
+  {
+    "taskId": "mnseo5ec",
+    "taskTitle": "MC Test Task 38 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.314Z"
+  },
+  {
+    "taskId": "mnseo5eo",
+    "taskTitle": "MC Test Task 39 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.317Z"
+  },
+  {
+    "taskId": "mnseo5ep",
+    "taskTitle": "MC Test Task 40 — site visit",
+    "projectJobCode": "BD 20760",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.320Z"
+  },
+  {
+    "taskId": "mnseo5eq",
+    "taskTitle": "MC Test Task 41 — fab check",
+    "projectJobCode": "BD 20007",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.323Z"
+  },
+  {
+    "taskId": "mnseo5es",
+    "taskTitle": "MC Test Task 42 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.327Z"
+  },
+  {
+    "taskId": "mnseo5et",
+    "taskTitle": "MC Test Task 43 — drawings",
+    "projectJobCode": "BD 21480",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.329Z"
+  },
+  {
+    "taskId": "mnseo5eu",
+    "taskTitle": "MC Test Task 44 — site visit",
+    "projectJobCode": "BD 23120",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.330Z"
+  },
+  {
+    "taskId": "mnseo5ev",
+    "taskTitle": "MC Test Task 45 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.332Z"
+  },
+  {
+    "taskId": "mnseo5ex",
+    "taskTitle": "MC Test Task 46 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.334Z"
+  },
+  {
+    "taskId": "mnseo5ey",
+    "taskTitle": "MC Test Task 47 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.338Z"
+  },
+  {
+    "taskId": "mnseo5ez",
+    "taskTitle": "MC Test Task 48 — drawings",
+    "projectJobCode": "BD 22990",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.340Z"
+  },
+  {
+    "taskId": "mnseo5f1",
+    "taskTitle": "MC Test Task 49 — ",
+    "projectJobCode": "BD 21592",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.342Z"
+  },
+  {
+    "taskId": "mnseo5f2",
+    "taskTitle": "Untitled Task",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.344Z"
+  },
+  {
+    "taskId": "mnseo5f3",
+    "taskTitle": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.346Z"
+  },
+  {
+    "taskId": "mnseo5f5",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.348Z"
+  },
+  {
+    "taskId": "mnseo5f6",
+    "taskTitle": "<script>alert(1)</script>",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.350Z"
+  },
+  {
+    "taskId": "mnseo5f7",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.351Z"
+  },
+  {
+    "taskId": "mnseo5f9",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T04:28:18.353Z"
+  },
+  {
+    "taskId": "mnsi15f1",
+    "taskTitle": "MC Test Task 0 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.128Z"
+  },
+  {
+    "taskId": "mnsi15fk",
+    "taskTitle": "MC Test Task 1 — drawings",
+    "projectJobCode": "BD 25253",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.143Z"
+  },
+  {
+    "taskId": "mnsi15fv",
+    "taskTitle": "MC Test Task 2 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.156Z"
+  },
+  {
+    "taskId": "mnsi15g7",
+    "taskTitle": "MC Test Task 3 — PO followup",
+    "projectJobCode": "BD 20894",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.166Z"
+  },
+  {
+    "taskId": "mnsi15gf",
+    "taskTitle": "MC Test Task 4 — ",
+    "projectJobCode": "BD 23510",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.179Z"
+  },
+  {
+    "taskId": "mnsi15gp",
+    "taskTitle": "MC Test Task 5 — ",
+    "projectJobCode": "BD 22538",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.191Z"
+  },
+  {
+    "taskId": "mnsi15gv",
+    "taskTitle": "MC Test Task 6 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.203Z"
+  },
+  {
+    "taskId": "mnsi15h4",
+    "taskTitle": "MC Test Task 7 — ",
+    "projectJobCode": "BD 22217",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.214Z"
+  },
+  {
+    "taskId": "mnsi15ha",
+    "taskTitle": "MC Test Task 8 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.226Z"
+  },
+  {
+    "taskId": "mnsi15hh",
+    "taskTitle": "MC Test Task 9 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.237Z"
+  },
+  {
+    "taskId": "mnsi15hn",
+    "taskTitle": "MC Test Task 10 — ",
+    "projectJobCode": "BD 24485",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.249Z"
+  },
+  {
+    "taskId": "mnsi15ht",
+    "taskTitle": "MC Test Task 11 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.260Z"
+  },
+  {
+    "taskId": "mnsi15i2",
+    "taskTitle": "MC Test Task 12 — drawings",
+    "projectJobCode": "BD 22308",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.270Z"
+  },
+  {
+    "taskId": "mnsi15i9",
+    "taskTitle": "MC Test Task 13 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.281Z"
+  },
+  {
+    "taskId": "mnsi15ik",
+    "taskTitle": "MC Test Task 14 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.294Z"
+  },
+  {
+    "taskId": "mnsi15iq",
+    "taskTitle": "MC Test Task 15 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.310Z"
+  },
+  {
+    "taskId": "mnsi15j0",
+    "taskTitle": "MC Test Task 16 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.325Z"
+  },
+  {
+    "taskId": "mnsi15j7",
+    "taskTitle": "MC Test Task 17 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.336Z"
+  },
+  {
+    "taskId": "mnsi15jh",
+    "taskTitle": "MC Test Task 18 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.350Z"
+  },
+  {
+    "taskId": "mnsi15jn",
+    "taskTitle": "MC Test Task 19 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.364Z"
+  },
+  {
+    "taskId": "mnsi15jx",
+    "taskTitle": "MC Test Task 20 — fab check",
+    "projectJobCode": "BD 24898",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.377Z"
+  },
+  {
+    "taskId": "mnsi15k3",
+    "taskTitle": "MC Test Task 21 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.388Z"
+  },
+  {
+    "taskId": "mnsi15kg",
+    "taskTitle": "MC Test Task 22 — ",
+    "projectJobCode": "BD 21070",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.399Z"
+  },
+  {
+    "taskId": "mnsi15km",
+    "taskTitle": "MC Test Task 23 — drawings",
+    "projectJobCode": "BD 20173",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.412Z"
+  },
+  {
+    "taskId": "mnsi15kv",
+    "taskTitle": "MC Test Task 24 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.429Z"
+  },
+  {
+    "taskId": "mnsi15l2",
+    "taskTitle": "MC Test Task 25 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.495Z"
+  },
+  {
+    "taskId": "mnsi15lb",
+    "taskTitle": "MC Test Task 26 — PO followup",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.509Z"
+  },
+  {
+    "taskId": "mnsi15lh",
+    "taskTitle": "MC Test Task 27 — ",
+    "projectJobCode": "BD 23722",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.526Z"
+  },
+  {
+    "taskId": "mnsi15lo",
+    "taskTitle": "MC Test Task 28 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.540Z"
+  },
+  {
+    "taskId": "mnsi15lv",
+    "taskTitle": "MC Test Task 29 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.550Z"
+  },
+  {
+    "taskId": "mnsi15m1",
+    "taskTitle": "MC Test Task 30 — PO followup",
+    "projectJobCode": "BD 25421",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.561Z"
+  },
+  {
+    "taskId": "mnsi15m8",
+    "taskTitle": "MC Test Task 31 — ",
+    "projectJobCode": "BD 20289",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.573Z"
+  },
+  {
+    "taskId": "mnsi15me",
+    "taskTitle": "MC Test Task 32 — site visit",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.586Z"
+  },
+  {
+    "taskId": "mnsi15mv",
+    "taskTitle": "MC Test Task 33 — PO followup",
+    "projectJobCode": "BD 19244",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.607Z"
+  },
+  {
+    "taskId": "mnsi15n1",
+    "taskTitle": "MC Test Task 34 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.626Z"
+  },
+  {
+    "taskId": "mnsi15n8",
+    "taskTitle": "MC Test Task 35 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.639Z"
+  },
+  {
+    "taskId": "mnsi15nf",
+    "taskTitle": "MC Test Task 36 — fab check",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.652Z"
+  },
+  {
+    "taskId": "mnsi15nm",
+    "taskTitle": "MC Test Task 37 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.661Z"
+  },
+  {
+    "taskId": "mnsi15nr",
+    "taskTitle": "MC Test Task 38 — site visit",
+    "projectJobCode": "BD 22068",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.675Z"
+  },
+  {
+    "taskId": "mnsi15nz",
+    "taskTitle": "MC Test Task 39 — ",
+    "projectJobCode": "BD 22608",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.687Z"
+  },
+  {
+    "taskId": "mnsi15o6",
+    "taskTitle": "MC Test Task 40 — site visit",
+    "projectJobCode": "BD 23785",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.703Z"
+  },
+  {
+    "taskId": "mnsi15od",
+    "taskTitle": "MC Test Task 41 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.721Z"
+  },
+  {
+    "taskId": "mnsi15ol",
+    "taskTitle": "MC Test Task 42 — ",
+    "projectJobCode": "BD 24099",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.737Z"
+  },
+  {
+    "taskId": "mnsi15or",
+    "taskTitle": "MC Test Task 43 — ",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.808Z"
+  },
+  {
+    "taskId": "mnsi15oz",
+    "taskTitle": "MC Test Task 44 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.864Z"
+  },
+  {
+    "taskId": "mnsi15p6",
+    "taskTitle": "MC Test Task 45 — fab check",
+    "projectJobCode": "BD 21077",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.893Z"
+  },
+  {
+    "taskId": "mnsi15pe",
+    "taskTitle": "MC Test Task 46 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.946Z"
+  },
+  {
+    "taskId": "mnsi15pk",
+    "taskTitle": "MC Test Task 47 — drawings",
+    "projectJobCode": "BD 24746",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.972Z"
+  },
+  {
+    "taskId": "mnsi15pr",
+    "taskTitle": "MC Test Task 48 — drawings",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:24.987Z"
+  },
+  {
+    "taskId": "mnsi15pz",
+    "taskTitle": "MC Test Task 49 — PO followup",
+    "projectJobCode": "BD 20591",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:25.004Z"
+  },
+  {
+    "taskId": "mnsi15qa",
+    "taskTitle": "Untitled Task",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:25.036Z"
+  },
+  {
+    "taskId": "mnsi15qk",
+    "taskTitle": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:25.059Z"
+  },
+  {
+    "taskId": "mnsi15qt",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:25.075Z"
+  },
+  {
+    "taskId": "mnsi15r3",
+    "taskTitle": "<script>alert(1)</script>",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:25.093Z"
+  },
+  {
+    "taskId": "mnsi15rd",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:25.112Z"
+  },
+  {
+    "taskId": "mnsi15rk",
+    "taskTitle": "Test",
+    "projectJobCode": "",
+    "deletedBy": "Unknown",
+    "reason": "",
+    "deletedAt": "2026-04-10T06:02:25.132Z"
+  },
+  {
+    "taskId": "mnsi388e",
+    "taskTitle": "Fix Board",
+    "projectJobCode": "BD 21222 - QA (ICA Kallang)",
+    "deletedBy": "Unknown",
+    "reason": "fff",
+    "deletedAt": "2026-04-10T07:29:12.032Z"
+  },
+  {
+    "taskId": "mnsqnjpb",
+    "taskTitle": "Fix Webpage",
+    "projectJobCode": "",
+    "deletedBy": "Lai Wei Xiang",
+    "reason": "",
+    "deletedAt": "2026-04-10T10:04:25.057Z"
+  },
+  {
+    "taskId": "mnsqtgr5",
+    "taskTitle": "Fix the webpages",
+    "projectJobCode": "",
+    "deletedBy": "Team View",
+    "reason": "f",
+    "deletedAt": "2026-04-10T10:12:33.932Z"
+  },
+  {
+    "taskId": "mnsqynu1",
+    "taskTitle": "fwqgwegwegw",
+    "projectJobCode": "",
+    "deletedBy": "Team View",
+    "reason": "f",
+    "deletedAt": "2026-04-10T10:12:36.395Z"
+  },
+  {
+    "taskId": "mnsqu2wl",
+    "taskTitle": "wfwfwfw",
+    "projectJobCode": "",
+    "deletedBy": "Team View",
+    "reason": "f",
+    "deletedAt": "2026-04-10T10:12:38.782Z"
+  },
+  {
+    "taskId": "mnspoz78",
+    "taskTitle": "Send Reminder to Client",
+    "projectJobCode": "BD 25225- Nakano (ST Eng DC)",
+    "deletedBy": "Team View",
+    "reason": "vfvdfvf",
+    "deletedAt": "2026-04-10T10:18:14.579Z"
+  },
+  {
+    "taskId": "mnswx4h9",
+    "taskTitle": "Send Drawing to nakano",
+    "projectJobCode": "BD 25225- Nakano (ST Eng DC)",
+    "deletedBy": "Team View",
+    "reason": "Test",
+    "deletedAt": "2026-04-10T13:14:13.957Z"
+  }
+]

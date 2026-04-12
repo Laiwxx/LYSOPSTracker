@@ -1,0 +1,1340 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Weekly Manpower Plan — LYS</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: var(--bg); overflow: hidden; }
+
+    /* ── Topbar ──────────────────────────────────────── */
+    .wp-topbar {
+      background: var(--sidebar-bg);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 52px;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+    .wp-topbar h1 {
+      font-size: 14px; font-weight: 700; color: #fff; margin: 0; white-space: nowrap;
+    }
+    .week-nav { display: flex; align-items: center; gap: 6px; margin-left: 6px; }
+    .week-nav-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius);
+      color: rgba(255,255,255,0.85);
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; padding: 3px 10px;
+      font-family: inherit; line-height: 1;
+    }
+    .week-nav-btn:hover { background: rgba(255,255,255,0.2); }
+    .week-label {
+      color: rgba(255,255,255,0.9);
+      font-size: 12px; font-weight: 600;
+      min-width: 155px; text-align: center; white-space: nowrap;
+    }
+    .wp-spacer { flex: 1; }
+    .wp-btn {
+      padding: 5px 12px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius);
+      color: rgba(255,255,255,0.85);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      white-space: nowrap;
+    }
+    .wp-btn:hover { background: rgba(255,255,255,0.18); }
+    .wp-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── Shell layout ────────────────────────────────── */
+    .wp-shell {
+      display: flex;
+      height: calc(100vh - 52px);
+      overflow: hidden;
+    }
+
+    /* ── Nav sidebar ─────────────────────────────────── */
+    .wp-nav {
+      width: 48px; min-width: 48px;
+      background: var(--sidebar-bg);
+      display: flex; flex-direction: column;
+      align-items: center;
+      padding: 8px 0; gap: 4px;
+      height: 100%; flex-shrink: 0;
+    }
+    .wp-nav a {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; font-size: 17px;
+      text-decoration: none;
+      color: rgba(255,255,255,0.6);
+      transition: background 0.15s, color 0.15s;
+    }
+    .wp-nav a:hover, .wp-nav a.active {
+      background: rgba(255,255,255,0.12); color: #fff;
+    }
+    .wp-nav .nav-spacer { flex: 1; }
+
+    /* ── Main area ───────────────────────────────────── */
+    .wp-main {
+      flex: 1; overflow: auto;
+      display: flex; flex-direction: column;
+    }
+
+    /* ── Summary bar ─────────────────────────────────── */
+    .summary-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 7px 16px;
+      display: flex; align-items: center;
+      gap: 18px; flex-shrink: 0; flex-wrap: wrap;
+    }
+    .sum-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .sum-stat {
+      font-size: 12px; font-weight: 600;
+      color: var(--text);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .sum-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      display: inline-block; flex-shrink: 0;
+    }
+    .dot-fab  { background: #3b82f6; }
+    .dot-inst { background: #22c55e; }
+    .dot-maint{ background: #f97316; }
+    .dot-mc   { background: #ef4444; }
+    .dot-off  { background: #9ca3af; }
+
+    /* ── Mobile day tabs ─────────────────────────────── */
+    .day-tabs {
+      display: none;
+      overflow-x: auto; gap: 4px;
+      padding: 6px 12px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .day-tab {
+      flex-shrink: 0; padding: 5px 13px;
+      border-radius: 20px; font-size: 12px; font-weight: 600;
+      cursor: pointer;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text-muted); font-family: inherit;
+    }
+    .day-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    /* ── Grid wrapper ────────────────────────────────── */
+    .wp-grid-wrap { flex: 1; overflow: auto; padding: 10px; }
+    .wp-grid {
+      width: 100%; border-collapse: collapse; min-width: 680px;
+    }
+
+    /* ── Table header ────────────────────────────────── */
+    .wp-grid th {
+      background: var(--sidebar-bg);
+      color: rgba(255,255,255,0.85);
+      font-size: 11px; font-weight: 700;
+      text-align: center; padding: 7px 6px;
+      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.08);
+      position: sticky; top: 0; z-index: 2;
+    }
+    .th-worker { text-align: left !important; min-width: 155px; }
+    .th-day { min-width: 105px; }
+    .th-day .dn { font-size: 12px; }
+    .th-day .dd { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 1px; }
+    .th-day.today-col { background: rgba(51,102,255,0.35) !important; }
+
+    /* ── Worker name cell ────────────────────────────── */
+    .td-worker {
+      background: var(--bg2);
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .wr-name {
+      font-size: 12px; font-weight: 600; color: var(--text);
+    }
+    .wr-badge {
+      display: inline-block;
+      background: var(--sidebar-bg); color: rgba(255,255,255,0.8);
+      border-radius: 3px; padding: 1px 5px;
+      font-size: 9px; font-weight: 800;
+      margin-right: 4px; vertical-align: middle;
+    }
+    .wr-meta { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+    .btn-del-row {
+      background: none; border: none;
+      color: var(--text-muted); cursor: pointer;
+      font-size: 12px; padding: 0 3px; float: right;
+    }
+    .btn-del-row:hover { color: var(--red); }
+
+    /* ── Assignment cell ─────────────────────────────── */
+    .td-cell {
+      border: 1px solid var(--border);
+      padding: 3px; cursor: pointer;
+      vertical-align: top; min-width: 105px;
+      transition: background 0.1s;
+    }
+    .td-cell:hover { background: rgba(51,102,255,0.05); }
+    .td-cell.readonly { cursor: default; }
+    .td-cell.readonly:hover { background: transparent; }
+
+    /* Chips */
+    .chip {
+      border-radius: 5px; padding: 5px 7px;
+      font-size: 11px; font-weight: 600;
+      min-height: 42px;
+      display: flex; flex-direction: column;
+      justify-content: center; gap: 2px;
+    }
+    .chip-empty {
+      min-height: 42px; display: flex;
+      align-items: center; justify-content: center;
+      color: rgba(150,150,170,0.35);
+      font-size: 16px; font-weight: 300;
+    }
+    .chip-fab   { background: rgba(59,130,246,0.13); border: 1px solid rgba(59,130,246,0.28); color: #3b82f6; }
+    .chip-inst  { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.28);  color: #16a34a; }
+    .chip-driver { background: rgba(249,115,22,0.13); border: 1px solid rgba(249,115,22,0.28); color: #ea580c; }
+    .chip-mc    {
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(239,68,68,0.1), rgba(239,68,68,0.1) 4px,
+        rgba(239,68,68,0.04) 4px, rgba(239,68,68,0.04) 8px
+      );
+      border: 1px solid rgba(239,68,68,0.3); color: #dc2626;
+    }
+    .chip-off   { background: rgba(156,163,175,0.1); border: 1px solid rgba(156,163,175,0.2); color: #9ca3af; }
+    .chip-title { font-size: 11px; font-weight: 700; }
+    .chip-sub   {
+      font-size: 10px; font-weight: 500; opacity: 0.85;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 98px;
+    }
+
+    /* ── Supply section header row ───────────────────── */
+    .supply-hrow td {
+      background: var(--bg2);
+      border-top: 3px solid var(--accent);
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 7px 12px;
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .btn-add-supply {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius);
+      padding: 4px 10px; font-size: 11px; font-weight: 600;
+      cursor: pointer; font-family: inherit; margin-left: 10px;
+    }
+    .btn-add-supply:hover { opacity: 0.85; }
+
+    /* ── Popup ───────────────────────────────────────── */
+    .popup-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      display: none; align-items: center; justify-content: center;
+    }
+    .popup-overlay.open { display: flex; }
+    .popup-box {
+      background: var(--bg2); border-radius: 10px;
+      padding: 20px; width: 330px; max-width: 94vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+    .popup-head {
+      font-size: 14px; font-weight: 700;
+      color: var(--text); margin-bottom: 14px;
+    }
+    .popup-head span { color: var(--text-muted); font-weight: 500; font-size: 12px; display: block; margin-top: 2px; }
+    .type-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 14px;
+    }
+    .type-btn {
+      padding: 10px 6px; border-radius: 7px;
+      border: 2px solid var(--border);
+      background: var(--bg3); cursor: pointer;
+      font-size: 12px; font-weight: 600;
+      text-align: center; color: var(--text);
+      font-family: inherit; transition: border-color 0.1s, background 0.1s;
+    }
+    .type-btn:hover { border-color: var(--accent); }
+    .type-btn.sel-fab   { color: #3b82f6; border-color: #3b82f6; background: rgba(59,130,246,0.12); }
+    .type-btn.sel-inst  { color: #22c55e; border-color: #22c55e; background: rgba(34,197,94,0.12); }
+    .type-btn.sel-maint { color: #f97316; border-color: #f97316; background: rgba(249,115,22,0.12); }
+    .type-btn.sel-clear { color: var(--text-muted); border-color: var(--border); }
+    .popup-fields { display: none; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .popup-fields.vis { display: flex; }
+    .pop-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted); margin-bottom: 2px;
+    }
+    .pop-input {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 7px 10px;
+      font-size: 13px; color: var(--text);
+      font-family: inherit; width: 100%; box-sizing: border-box;
+    }
+    .pop-input::placeholder { color: var(--text-muted); }
+    .popup-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .pop-cancel {
+      padding: 7px 14px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; color: var(--text); font-family: inherit;
+    }
+    .pop-save {
+      padding: 7px 16px; background: var(--accent);
+      border: none; border-radius: var(--radius);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; color: #fff; font-family: inherit;
+    }
+
+    /* ── Page tabs ───────────────────────────────────── */
+    .page-tabs {
+      display: flex; gap: 2px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 7px; padding: 2px;
+      margin-left: 4px;
+    }
+    .page-tab {
+      padding: 4px 12px;
+      background: transparent; border: none;
+      border-radius: 5px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+      white-space: nowrap; transition: background 0.15s, color 0.15s;
+    }
+    .page-tab.active {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+
+    /* ── Transport section ───────────────────────────── */
+    #transport-section { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+    .transport-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex; align-items: center; gap: 10px;
+      flex-shrink: 0; flex-wrap: wrap;
+    }
+    .tp-date-nav { display: flex; align-items: center; gap: 4px; }
+    .tp-date-input {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text);
+      font-family: inherit; font-size: 12px;
+      padding: 4px 8px; cursor: pointer;
+    }
+    .tp-summary { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .tp-trips {
+      flex: 1; overflow-y: auto;
+      padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .trip-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px;
+    }
+    .trip-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .trip-num { font-size: 13px; font-weight: 700; color: var(--text); }
+    .trip-time-badge {
+      font-size: 11px; color: var(--text-muted);
+      background: var(--bg3); border-radius: 4px;
+      padding: 2px 7px; margin-left: 8px;
+    }
+    .trip-delete-btn {
+      background: none; border: none;
+      color: var(--text-muted); cursor: pointer;
+      font-size: 12px; padding: 3px 8px;
+      border-radius: var(--radius); font-family: inherit;
+    }
+    .trip-delete-btn:hover { color: var(--red); background: rgba(239,68,68,0.1); }
+    .trip-fields {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .trip-field { display: flex; flex-direction: column; gap: 4px; }
+    .trip-field.full-width { grid-column: 1 / -1; }
+    .trip-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+    .trip-input {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 6px 10px;
+      font-size: 13px; color: var(--text);
+      font-family: inherit; width: 100%; box-sizing: border-box;
+    }
+    .trip-input::placeholder { color: var(--text-muted); }
+    .worker-chips {
+      display: flex; flex-wrap: wrap; gap: 5px;
+      padding: 6px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      min-height: 38px;
+    }
+    .worker-chip {
+      display: inline-flex; align-items: center;
+      padding: 4px 9px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--bg2);
+      cursor: pointer; font-size: 11px; font-weight: 600;
+      color: var(--text); user-select: none;
+      transition: border-color 0.1s, background 0.1s;
+    }
+    .worker-chip.selected {
+      background: rgba(51,102,255,0.15);
+      border-color: var(--accent); color: var(--accent);
+    }
+    .worker-chip.dimmed {
+      opacity: 0.38; cursor: not-allowed;
+    }
+    .worker-chip:not(.dimmed):hover { border-color: var(--accent); }
+    .tp-empty-msg { font-size: 12px; color: var(--text-muted); padding: 4px 2px; }
+    .tp-no-trips {
+      text-align: center; padding: 48px 20px;
+      color: var(--text-muted); font-size: 13px;
+    }
+
+    /* ── Mobile overrides ────────────────────────────── */
+    @media (max-width: 768px) {
+      body { overflow: auto; }
+      .wp-shell { flex-direction: column; height: auto; overflow: visible; }
+      .wp-main  { overflow: visible; }
+      #weekly-plan-section { overflow: visible; }
+      .wp-grid-wrap { padding: 6px; overflow-x: auto; }
+      .wp-grid { min-width: 0; }
+      .day-tabs { display: flex; }
+      .wp-nav {
+        width: 100%; min-width: unset; flex-direction: row;
+        height: auto; padding: 4px 8px;
+      }
+      .wp-nav .nav-spacer { display: none; }
+      td.hidden-day, th.hidden-day { display: none; }
+      .trip-fields { grid-template-columns: 1fr 1fr; }
+      #transport-section.open { height: calc(100vh - 52px); overflow: hidden; }
+    }
+    @media (max-width: 480px) {
+      .trip-fields { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="wp-topbar">
+  <h1>📅 Manpower Plan</h1>
+  <div class="page-tabs">
+    <button class="page-tab active" data-tab="weekly">Weekly Plan</button>
+    <button class="page-tab" data-tab="transport">🚛 Transport</button>
+  </div>
+  <div class="week-nav" id="week-nav-ctrl">
+    <button class="week-nav-btn" id="prev-week">‹</button>
+    <span class="week-label" id="week-label">Loading…</span>
+    <button class="week-nav-btn" id="next-week">›</button>
+  </div>
+  <div class="wp-spacer"></div>
+  <button class="wp-btn" id="transport-save-btn" style="display:none;">💾 Save Transport</button>
+  <button class="wp-btn primary" id="save-btn">💾 Save Week</button>
+</div>
+
+<div class="tasks-layout" style="height:calc(100vh - 52px);overflow:hidden;">
+
+  <!-- Left Sidebar -->
+  <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+    <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
+    </a>
+    <div class="tasks-sidebar-label">Views</div>
+    <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
+    </a>
+    <a href="/factory" id="sidebar-factory-link" class="staff-nav-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <span class="staff-initial">🏭</span><span>Factory</span>
+      <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+    </a>
+    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🔧</span><span>Installation</span>
+    </a>
+    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🛒</span><span>Procurement</span>
+    </a>
+    <a href="/planning" class="staff-nav-btn active" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
+    </a>
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
+    </a>
+    <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+      <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+    </a>
+    <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+      <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+    </a>
+  </div>
+
+  <!-- Main -->
+  <div class="wp-main">
+
+    <!-- ── Weekly Plan section ─────────────────────── -->
+    <div id="weekly-plan-section" style="display:flex;flex-direction:column;flex:1;overflow:auto;">
+
+      <!-- Summary bar -->
+      <div class="summary-bar">
+        <span class="sum-label">This Week</span>
+        <span class="sum-stat" id="stat-total">— workers</span>
+        <span class="sum-stat"><span class="sum-dot dot-fab"></span> <span id="stat-fab">0</span> Factory</span>
+        <span class="sum-stat"><span class="sum-dot dot-inst"></span> <span id="stat-inst">0</span> Site</span>
+        <span class="sum-stat"><span class="sum-dot dot-maint"></span> <span id="stat-maint">0</span> Maint</span>
+        <span class="sum-stat"><span class="sum-dot dot-mc"></span> <span id="stat-mc">0</span> MC/Off</span>
+      </div>
+
+      <!-- Mobile day tabs -->
+      <div class="day-tabs" id="day-tabs"></div>
+
+      <!-- Grid -->
+      <div class="wp-grid-wrap">
+        <table class="wp-grid">
+          <thead id="grid-head"></thead>
+          <tbody id="grid-body"></tbody>
+        </table>
+      </div>
+
+    </div><!-- /weekly-plan-section -->
+
+    <!-- ── Transport section ───────────────────────── -->
+    <div id="transport-section">
+
+      <!-- Transport toolbar -->
+      <div class="transport-bar">
+        <div class="tp-date-nav">
+          <button class="week-nav-btn" id="tp-prev-day">‹</button>
+          <input type="date" class="tp-date-input" id="tp-date">
+          <button class="week-nav-btn" id="tp-next-day">›</button>
+        </div>
+        <button class="wp-btn primary" id="tp-add-trip">+ Add Trip</button>
+        <span class="tp-summary" id="tp-summary"></span>
+        <div class="wp-spacer"></div>
+        <button class="wp-btn" id="tp-print-btn">🖨️ Print Schedule</button>
+      </div>
+
+      <!-- Trip cards list -->
+      <div class="tp-trips" id="tp-trips"></div>
+
+    </div><!-- /transport-section -->
+
+  </div><!-- /wp-main -->
+</div><!-- /wp-shell -->
+
+<!-- Assignment popup -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup-box">
+    <div class="popup-head">
+      Assign Worker
+      <span id="popup-sub"></span>
+    </div>
+    <div class="type-grid">
+      <button class="type-btn" data-type="Fabrication">🏭 Fabrication</button>
+      <button class="type-btn" data-type="Installation">🔧 Installation</button>
+      <button class="type-btn" data-type="Driver">🚚 Driver</button>
+      <button class="type-btn" data-type="">✕ Clear</button>
+    </div>
+    <div class="popup-fields" id="popup-fields">
+      <div id="proj-wrap" style="display:none;">
+        <div class="pop-label">Project</div>
+        <select class="pop-input" id="field-project">
+          <option value="">Select project…</option>
+        </select>
+      </div>
+      <div>
+        <div class="pop-label" id="notes-label">Notes / Location</div>
+        <input class="pop-input" type="text" id="field-notes" placeholder="e.g. Site B2, gate installation">
+      </div>
+    </div>
+    <div class="popup-actions">
+      <button class="pop-cancel" id="popup-cancel">Cancel</button>
+      <button class="pop-save" id="popup-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Constants ──────────────────────────────────────────
+const DAYS      = ['mon','tue','wed','thu','fri','sat'];
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// ── State ──────────────────────────────────────────────
+let workers      = [];   // own workers from API
+let projects     = [];   // active projects
+let plan         = {};   // { workerId: { mon: {type,…}, tue: {…}, … } }
+let supplyWorkers= [];   // [{ id, name, company, role, code }]
+let attendance   = {};   // { 'YYYY-MM-DD': { workerId: status } }
+
+let weekStart    = getMonday(new Date());  // always a Monday
+let mobileDay    = DAYS[0];
+
+// Popup state
+let popupWorker  = null;
+let popupDay     = null;
+
+// ── Date helpers ───────────────────────────────────────
+function getMonday(d) {
+  const dt = new Date(d);
+  const day = dt.getDay();
+  dt.setDate(dt.getDate() - (day === 0 ? 6 : day - 1));
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+function toStr(d) { return d.toISOString().split('T')[0]; }
+function weekDates() {
+  return DAYS.map((_,i) => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+}
+function weekNum(d) {
+  const dt = new Date(d);
+  dt.setHours(0,0,0,0);
+  dt.setDate(dt.getDate() + 4 - (dt.getDay() || 7));
+  const y = new Date(dt.getFullYear(),0,1);
+  return Math.ceil((((dt - y) / 86400000) + 1) / 7);
+}
+function shortDate(d) {
+  return d.toLocaleDateString('en-SG', { day:'numeric', month:'short' });
+}
+
+// ── Init ───────────────────────────────────────────────
+async function init() {
+  const [wData, pData] = await Promise.all([
+    fetch('/api/workers?active=true').then(r => r.json()).catch(() => []),
+    fetch('/api/projects').then(r => r.json()).catch(() => [])
+  ]);
+
+  workers  = (wData || []).filter(w => w.active !== false);
+  projects = (pData || []).filter(p => ['Active','On Track','Delayed'].includes(p.status));
+
+  // Populate project dropdown
+  const sel = document.getElementById('field-project');
+  projects.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = (p.jobCode ? p.jobCode + ' — ' : '') + (p.projectName || p.name || '');
+    sel.appendChild(o);
+  });
+
+  // Default mobile day = today if in current week, else Mon
+  const today = toStr(new Date());
+  const idx = weekDates().findIndex(d => toStr(d) === today);
+  if (idx >= 0) mobileDay = DAYS[idx];
+
+  await loadWeek();
+}
+
+// ── Week navigation ────────────────────────────────────
+document.getElementById('prev-week').addEventListener('click', () => {
+  weekStart.setDate(weekStart.getDate() - 7);
+  loadWeek();
+});
+document.getElementById('next-week').addEventListener('click', () => {
+  weekStart.setDate(weekStart.getDate() + 7);
+  loadWeek();
+});
+
+// ── Load week ──────────────────────────────────────────
+async function loadWeek() {
+  const ws = toStr(weekStart);
+  updateWeekLabel();
+
+  // Fetch attendance for all 6 days in parallel
+  attendance = {};
+  await Promise.all(weekDates().map(d => {
+    const ds = toStr(d);
+    return fetch('/api/attendance?date=' + ds)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && Array.isArray(data.records)) {
+          attendance[ds] = {};
+          data.records.forEach(r => { attendance[ds][r.workerId] = r.status; });
+        }
+      })
+      .catch(() => {});
+  }));
+
+  // Fetch weekly plan
+  try {
+    const r = await fetch('/api/manpower-plan?weekStart=' + ws);
+    if (r.ok) {
+      const data = await r.json();
+      plan          = data.assignments    || {};
+      supplyWorkers = data.supplyWorkers  || [];
+    } else {
+      plan = {}; supplyWorkers = [];
+    }
+  } catch { plan = {}; supplyWorkers = []; }
+
+  // Auto-mark MC/Off from attendance (non-destructive: only fills empty cells)
+  const allIds = [...workers.map(w => w.id), ...supplyWorkers.map(w => w.id)];
+  weekDates().forEach((d, i) => {
+    const ds  = toStr(d);
+    const day = DAYS[i];
+    if (!attendance[ds]) return;
+    allIds.forEach(wid => {
+      const status = attendance[ds][wid];
+      if (!status) return;
+      const existing = (plan[wid] || {})[day];
+      if (existing && existing.type && !existing._auto) return; // keep manual assignment
+      if (status === 'MC') {
+        if (!plan[wid]) plan[wid] = {};
+        plan[wid][day] = { type:'MC', notes:'MC', _auto: true };
+      } else if (['Absent','Off','On Leave'].includes(status)) {
+        if (!plan[wid]) plan[wid] = {};
+        plan[wid][day] = { type:'Off', notes: status, _auto: true };
+      }
+    });
+  });
+
+  render();
+}
+
+function updateWeekLabel() {
+  const dates = weekDates();
+  document.getElementById('week-label').textContent =
+    `Week ${weekNum(weekStart)} · ${shortDate(dates[0])}–${shortDate(dates[5])}`;
+}
+
+// ── Render ─────────────────────────────────────────────
+function render() {
+  renderHead();
+  renderBody();
+  renderTabs();
+  updateSummary();
+}
+
+function isMobileHidden(day) {
+  return window.innerWidth < 769 && day !== mobileDay;
+}
+
+function renderHead() {
+  const dates  = weekDates();
+  const today  = toStr(new Date());
+  let html = '<tr><th class="th-worker">Worker</th>';
+  dates.forEach((d, i) => {
+    const ds   = toStr(d);
+    const tc   = ds === today ? ' today-col' : '';
+    const hc   = isMobileHidden(DAYS[i]) ? ' hidden-day' : '';
+    html += `<th class="th-day${tc}${hc}" data-day="${DAYS[i]}">
+      <div class="dn">${DAY_NAMES[i]}</div>
+      <div class="dd">${shortDate(d)}</div>
+    </th>`;
+  });
+  html += '</tr>';
+  document.getElementById('grid-head').innerHTML = html;
+}
+
+function renderBody() {
+  const body = document.getElementById('grid-body');
+  body.innerHTML = '';
+  workers.forEach(w => body.appendChild(buildRow(w, false)));
+
+  // Supply section header
+  const hrow = document.createElement('tr');
+  hrow.className = 'supply-hrow';
+  hrow.innerHTML = `<td colspan="7">
+    Supply Workers
+    <button class="btn-add-supply" id="add-supply-btn">+ Add Supply Worker</button>
+  </td>`;
+  body.appendChild(hrow);
+  document.getElementById('add-supply-btn').addEventListener('click', addSupplyWorker);
+
+  supplyWorkers.forEach(w => body.appendChild(buildRow(w, true)));
+}
+
+function buildRow(w, isSupply) {
+  const tr = document.createElement('tr');
+
+  // Name cell
+  const ntd = document.createElement('td');
+  ntd.className = 'td-worker';
+  ntd.innerHTML = `
+    <div>
+      <span class="wr-badge">${esc(w.code || '?')}</span>
+      <span class="wr-name">${esc(w.name)}</span>
+      ${isSupply ? `<button class="btn-del-row" data-id="${esc(w.id)}" title="Remove">✕</button>` : ''}
+    </div>
+    <div class="wr-meta">${isSupply
+      ? esc((w.company || '') + (w.role ? ' · ' + w.role : ''))
+      : esc(w.role || '')
+    }</div>
+  `;
+  if (isSupply) {
+    ntd.querySelector('.btn-del-row').addEventListener('click', () => removeSupplyWorker(w.id));
+  }
+  tr.appendChild(ntd);
+
+  // Day cells
+  DAYS.forEach(day => {
+    const td  = document.createElement('td');
+    td.className = 'td-cell' + (isMobileHidden(day) ? ' hidden-day' : '');
+    const dayData  = (plan[w.id] || {})[day] || {};
+    const readonly = !!(dayData._auto || dayData.type === 'MC' || dayData.type === 'Off');
+
+    if (readonly) {
+      td.classList.add('readonly');
+    } else {
+      td.addEventListener('click', () => openPopup(w, day));
+    }
+    td.appendChild(buildChip(dayData));
+    tr.appendChild(td);
+  });
+
+  return tr;
+}
+
+function buildChip(data) {
+  const div = document.createElement('div');
+  if (!data || !data.type) {
+    div.className = 'chip-empty'; div.textContent = '+';
+    return div;
+  }
+  const t = data.type;
+  let cls = 'chip ';
+  if (t === 'Fabrication') cls += 'chip-fab';
+  else if (t === 'Installation') cls += 'chip-inst';
+  else if (t === 'Driver') cls += 'chip-driver';
+  else if (t === 'MC')  cls += 'chip-mc';
+  else if (t === 'Off') cls += 'chip-off';
+  div.className = cls;
+  const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Maintenance:'🔩 Maint', MC:'🤒 MC', Off:'🏠 Off' }[t] || t;
+  div.innerHTML = `<span class="chip-title">${label}</span>`;
+  const sub = data.projectName || data.location || data.notes || '';
+  if (sub) div.innerHTML += `<span class="chip-sub">${esc(sub)}</span>`;
+  return div;
+}
+
+// ── Mobile tabs ────────────────────────────────────────
+function renderTabs() {
+  const ct = document.getElementById('day-tabs');
+  ct.innerHTML = '';
+  const dates = weekDates();
+  DAYS.forEach((day, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'day-tab' + (day === mobileDay ? ' active' : '');
+    btn.textContent = DAY_NAMES[i] + ' ' + dates[i].getDate();
+    btn.addEventListener('click', () => { mobileDay = day; render(); });
+    ct.appendChild(btn);
+  });
+}
+
+// ── Popup ──────────────────────────────────────────────
+function openPopup(worker, day) {
+  popupWorker = worker; popupDay = day;
+  const existing = (plan[worker.id] || {})[day] || {};
+  document.getElementById('popup-sub').textContent =
+    worker.name + ' · ' + DAY_NAMES[DAYS.indexOf(day)];
+
+  // Reset type buttons
+  document.querySelectorAll('.type-btn').forEach(b => {
+    b.className = 'type-btn';
+  });
+  if (existing.type) {
+    const btn = document.querySelector(`.type-btn[data-type="${existing.type}"]`);
+    if (btn) applyTypeStyle(btn, existing.type);
+  }
+
+  document.getElementById('field-project').value = existing.projectId || '';
+  document.getElementById('field-notes').value   = existing.notes || existing.location || '';
+  showFields(existing.type || '');
+  document.getElementById('popup-overlay').classList.add('open');
+}
+
+function applyTypeStyle(btn, type) {
+  const map = { Fabrication:'sel-fab', Installation:'sel-inst', Maintenance:'sel-driver', '':'sel-clear' };
+  btn.classList.add(map[type] || 'sel-clear');
+}
+
+document.querySelectorAll('.type-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
+    applyTypeStyle(btn, btn.dataset.type);
+    showFields(btn.dataset.type);
+  });
+});
+
+function showFields(type) {
+  const fields = document.getElementById('popup-fields');
+  const projW  = document.getElementById('proj-wrap');
+  if (!type) { fields.classList.remove('vis'); return; }
+  fields.classList.add('vis');
+  projW.style.display = (type === 'Installation' || type === 'Fabrication' || type === 'Driver') ? '' : 'none';
+  document.getElementById('notes-label').textContent =
+    type === 'Installation' ? 'Location / Notes'
+    : type === 'Driver' ? 'Destination / Purpose (e.g. Changi T5 — worker transport)'
+    : type === 'Fabrication' ? 'Notes (optional)'
+    : 'Notes';
+}
+
+document.getElementById('popup-cancel').addEventListener('click', closePopup);
+document.getElementById('popup-overlay').addEventListener('click', e => {
+  if (e.target.id === 'popup-overlay') closePopup();
+});
+
+document.getElementById('popup-save').addEventListener('click', () => {
+  const selBtn = document.querySelector('.type-btn[class*="sel-"]');
+  const type   = selBtn ? selBtn.dataset.type : '';
+  const projId = document.getElementById('field-project').value;
+  const notes  = document.getElementById('field-notes').value.trim();
+  const proj   = projects.find(p => p.id === projId);
+
+  if (!plan[popupWorker.id]) plan[popupWorker.id] = {};
+
+  if (!type) {
+    delete plan[popupWorker.id][popupDay];
+  } else {
+    plan[popupWorker.id][popupDay] = {
+      type,
+      projectId:   type === 'Installation' ? projId   : '',
+      projectName: type === 'Installation' && proj ? (proj.projectName || proj.name || '') : '',
+      location:    type === 'Installation' ? notes    : '',
+      notes:       type !== 'Installation' ? notes    : notes
+    };
+  }
+
+  closePopup();
+  render();
+});
+
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('open');
+  popupWorker = null; popupDay = null;
+}
+
+// ── Supply Workers ─────────────────────────────────────
+function addSupplyWorker() {
+  const name = prompt('Supply worker name:');
+  if (!name || !name.trim()) return;
+  const company = prompt('Company (optional):') || '';
+  const role    = prompt('Role (optional):')    || 'Worker';
+  const id = 'supply-' + Date.now();
+  supplyWorkers.push({ id, name: name.trim(), company: company.trim(), role: role.trim(), code: 'EXT' });
+  plan[id] = {};
+  render();
+}
+
+function removeSupplyWorker(id) {
+  supplyWorkers = supplyWorkers.filter(w => w.id !== id);
+  delete plan[id];
+  render();
+}
+
+// ── Summary ────────────────────────────────────────────
+function updateSummary() {
+  let fab=0, inst=0, maint=0, mc=0;
+  [...workers.map(w=>w.id), ...supplyWorkers.map(w=>w.id)].forEach(wid => {
+    DAYS.forEach(day => {
+      const d = (plan[wid] || {})[day];
+      if (!d || !d.type) return;
+      if (d.type === 'Fabrication')  fab++;
+      else if (d.type === 'Installation') inst++;
+      else if (d.type === 'Driver')  maint++;
+      else if (d.type === 'MC' || d.type === 'Off') mc++;
+    });
+  });
+  document.getElementById('stat-total').textContent = (workers.length + supplyWorkers.length) + ' workers';
+  document.getElementById('stat-fab').textContent   = fab;
+  document.getElementById('stat-inst').textContent  = inst;
+  document.getElementById('stat-maint').textContent = maint;
+  document.getElementById('stat-mc').textContent    = mc;
+}
+
+// ── Save ───────────────────────────────────────────────
+document.getElementById('save-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('save-btn');
+  btn.textContent = '⏳ Saving…';
+
+  // Strip _auto flags before saving (MC/Off come from attendance, not stored in plan)
+  const cleanPlan = {};
+  Object.entries(plan).forEach(([wid, days]) => {
+    const clean = {};
+    Object.entries(days).forEach(([day, data]) => {
+      if (!data._auto) clean[day] = data;
+    });
+    if (Object.keys(clean).length) cleanPlan[wid] = clean;
+  });
+
+  try {
+    const r = await fetch('/api/manpower-plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        weekStart:    toStr(weekStart),
+        assignments:  cleanPlan,
+        supplyWorkers
+      })
+    });
+    if (r.ok) {
+      btn.textContent = '✅ Saved!';
+      setTimeout(() => { btn.textContent = '💾 Save Week'; }, 2000);
+    } else {
+      btn.textContent = '❌ Error';
+      setTimeout(() => { btn.textContent = '💾 Save Week'; }, 2000);
+    }
+  } catch {
+    btn.textContent = '⚠️ Offline';
+    setTimeout(() => { btn.textContent = '💾 Save Week'; }, 3000);
+  }
+});
+
+// ── Utils ──────────────────────────────────────────────
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════════
+// TRANSPORT PLAN
+// ══════════════════════════════════════════════════════
+
+let tpDate    = new Date().toISOString().split('T')[0]; // default today
+let tpTrips   = [];   // array of trip objects for tpDate
+let tpPresent = [];   // workers Present/On Site for tpDate
+
+function tpOffsetDate(dateStr, days) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+function tpNewId() {
+  return 'trip-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+}
+
+// Load attendance + existing trips for tpDate
+async function loadTransport() {
+  document.getElementById('tp-date').value = tpDate;
+
+  // Present workers for tpDate
+  try {
+    const r = await fetch('/api/attendance?date=' + tpDate);
+    if (r.ok) {
+      const data = await r.json();
+      tpPresent = (data.records || []).filter(rec =>
+        rec.status === 'Present' || rec.status === 'On Site'
+      );
+    } else { tpPresent = []; }
+  } catch { tpPresent = []; }
+
+  // Existing trips
+  try {
+    const r = await fetch('/api/transport?date=' + tpDate);
+    if (r.ok) {
+      const data = await r.json();
+      tpTrips = data.trips || [];
+    } else { tpTrips = []; }
+  } catch { tpTrips = []; }
+
+  renderTransport();
+}
+
+function renderTransport() {
+  // Build set of ALL assigned worker IDs across all trips
+  const allAssigned = new Set();
+  tpTrips.forEach(trip => {
+    (trip.workers || []).forEach(w => allAssigned.add(w.workerId));
+  });
+
+  const container = document.getElementById('tp-trips');
+  container.innerHTML = '';
+
+  if (tpTrips.length === 0) {
+    container.innerHTML = '<div class="tp-no-trips">No trips planned for this day.<br>Click <strong>+ Add Trip</strong> to create one.</div>';
+  } else {
+    tpTrips.forEach((trip, idx) => renderTripCard(trip, idx, allAssigned, container));
+  }
+
+  // Summary
+  const dispatched = allAssigned.size;
+  const remaining  = Math.max(0, tpPresent.length - dispatched);
+  document.getElementById('tp-summary').textContent =
+    tpPresent.length
+      ? `${dispatched} dispatched · ${remaining} in factory (${tpPresent.length} present)`
+      : 'No attendance recorded for this day';
+}
+
+function renderTripCard(trip, idx, allAssigned, container) {
+  const tripWorkerIds = new Set((trip.workers || []).map(w => w.workerId));
+
+  // Worker chips HTML
+  let workerHtml = '';
+  if (tpPresent.length === 0) {
+    workerHtml = '<span class="tp-empty-msg">No workers marked Present today — mark attendance first.</span>';
+  } else {
+    tpPresent.forEach(pw => {
+      const wid      = pw.workerId;
+      const wname    = esc(pw.workerName || pw.name || wid);
+      const selected = tripWorkerIds.has(wid);
+      const dimmed   = allAssigned.has(wid) && !selected; // in another trip
+      const cls      = 'worker-chip' + (selected ? ' selected' : '') + (dimmed ? ' dimmed' : '');
+      workerHtml += `<span class="${cls}" data-wid="${esc(wid)}" data-wname="${esc(pw.workerName || pw.name || wid)}">${wname}</span>`;
+    });
+  }
+
+  // Project options
+  let projOpts = '<option value="">— No project —</option>';
+  projects.forEach(p => {
+    const sel = trip.projectId === p.id ? ' selected' : '';
+    projOpts += `<option value="${esc(p.id)}"${sel}>${esc((p.jobCode ? p.jobCode + ' — ' : '') + (p.projectName || p.name || ''))}</option>`;
+  });
+
+  const card = document.createElement('div');
+  card.className = 'trip-card';
+  card.innerHTML = `
+    <div class="trip-card-header">
+      <span>
+        <span class="trip-num">Trip ${idx + 1}</span>
+        ${trip.departureTime ? `<span class="trip-time-badge">🕐 ${esc(trip.departureTime)}</span>` : ''}
+      </span>
+      <button class="trip-delete-btn" data-id="${esc(trip.id)}">✕ Remove</button>
+    </div>
+    <div class="trip-fields">
+      <div class="trip-field">
+        <div class="trip-label">Departure Time</div>
+        <input type="time" class="trip-input tp-f-time" value="${esc(trip.departureTime || '')}">
+      </div>
+      <div class="trip-field">
+        <div class="trip-label">Driver</div>
+        <input type="text" class="trip-input tp-f-driver" value="${esc(trip.driver || '')}" placeholder="Driver name">
+      </div>
+      <div class="trip-field">
+        <div class="trip-label">Vehicle</div>
+        <input type="text" class="trip-input tp-f-vehicle" value="${esc(trip.vehicle || '')}" placeholder="e.g. Lorry SBA1234X">
+      </div>
+      <div class="trip-field full-width">
+        <div class="trip-label">Workers on this trip</div>
+        <div class="worker-chips">${workerHtml}</div>
+      </div>
+      <div class="trip-field">
+        <div class="trip-label">Destination</div>
+        <input type="text" class="trip-input tp-f-dest" value="${esc(trip.destination || '')}" placeholder="e.g. Changi Airport">
+      </div>
+      <div class="trip-field">
+        <div class="trip-label">Project</div>
+        <select class="trip-input tp-f-proj">${projOpts}</select>
+      </div>
+      <div class="trip-field full-width">
+        <div class="trip-label">Notes</div>
+        <input type="text" class="trip-input tp-f-notes" value="${esc(trip.notes || '')}" placeholder="Optional notes">
+      </div>
+    </div>
+  `;
+
+  // Worker chip toggle
+  card.querySelectorAll('.worker-chip:not(.dimmed)').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const t = tpTrips.find(x => x.id === trip.id);
+      if (!t) return;
+      const wid   = chip.dataset.wid;
+      const wname = chip.dataset.wname;
+      const alreadyOn = (t.workers || []).findIndex(w => w.workerId === wid);
+      if (alreadyOn >= 0) {
+        t.workers.splice(alreadyOn, 1);
+      } else {
+        if (!t.workers) t.workers = [];
+        t.workers.push({ workerId: wid, workerName: wname });
+      }
+      tpCollectCard(card, trip.id);
+      renderTransport();
+    });
+  });
+
+  // Delete trip
+  card.querySelector('.trip-delete-btn').addEventListener('click', () => {
+    tpTrips = tpTrips.filter(x => x.id !== trip.id);
+    renderTransport();
+  });
+
+  // Sync input fields back to tpTrips on blur/change
+  const sync = () => tpCollectCard(card, trip.id);
+  card.querySelectorAll('.trip-input').forEach(inp => inp.addEventListener('change', sync));
+
+  container.appendChild(card);
+}
+
+// Read current card input values into the tpTrips array entry
+function tpCollectCard(card, tripId) {
+  const t = tpTrips.find(x => x.id === tripId);
+  if (!t) return;
+  const g = cls => { const el = card.querySelector('.' + cls); return el ? el.value.trim() : ''; };
+  t.departureTime = card.querySelector('.tp-f-time')   ? card.querySelector('.tp-f-time').value   : t.departureTime;
+  t.driver        = g('tp-f-driver');
+  t.vehicle       = g('tp-f-vehicle');
+  t.destination   = g('tp-f-dest');
+  t.notes         = g('tp-f-notes');
+  const projEl = card.querySelector('.tp-f-proj');
+  if (projEl) {
+    t.projectId = projEl.value;
+    const proj  = projects.find(p => p.id === projEl.value);
+    t.projectJobCode = proj ? (proj.jobCode || '') : '';
+  }
+}
+
+// Collect all cards before save/print
+function tpCollectAll() {
+  document.querySelectorAll('#tp-trips .trip-card').forEach((card, idx) => {
+    if (tpTrips[idx]) tpCollectCard(card, tpTrips[idx].id);
+  });
+}
+
+// ── Transport: Add trip ────────────────────────────────
+document.getElementById('tp-add-trip').addEventListener('click', () => {
+  tpCollectAll();
+  tpTrips.push({
+    id: tpNewId(), departureTime: '', driver: '', vehicle: '',
+    workers: [], destination: '', projectId: '', projectJobCode: '', notes: ''
+  });
+  renderTransport();
+  setTimeout(() => {
+    const el = document.getElementById('tp-trips');
+    el.scrollTop = el.scrollHeight;
+  }, 50);
+});
+
+// ── Transport: Date navigation ─────────────────────────
+document.getElementById('tp-prev-day').addEventListener('click', () => {
+  tpDate = tpOffsetDate(tpDate, -1);
+  loadTransport();
+});
+document.getElementById('tp-next-day').addEventListener('click', () => {
+  tpDate = tpOffsetDate(tpDate, 1);
+  loadTransport();
+});
+document.getElementById('tp-date').addEventListener('change', e => {
+  if (e.target.value) { tpDate = e.target.value; loadTransport(); }
+});
+
+// ── Transport: Save ────────────────────────────────────
+document.getElementById('transport-save-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('transport-save-btn');
+  tpCollectAll();
+  btn.textContent = '⏳ Saving…'; btn.disabled = true;
+  try {
+    const r = await fetch('/api/transport', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: tpDate, trips: tpTrips })
+    });
+    if (r.ok) {
+      btn.textContent = '✅ Saved!';
+      setTimeout(() => { btn.textContent = '💾 Save Transport'; btn.disabled = false; }, 2000);
+    } else {
+      btn.textContent = '❌ Error';
+      setTimeout(() => { btn.textContent = '💾 Save Transport'; btn.disabled = false; }, 2000);
+    }
+  } catch {
+    btn.textContent = '⚠️ Offline';
+    setTimeout(() => { btn.textContent = '💾 Save Transport'; btn.disabled = false; }, 3000);
+  }
+});
+
+// ── Transport: Print ───────────────────────────────────
+document.getElementById('tp-print-btn').addEventListener('click', () => {
+  tpCollectAll();
+  const dateObj = new Date(tpDate + 'T00:00:00');
+  const dateStr = dateObj.toLocaleDateString('en-SG', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  let html = `<!DOCTYPE html><html><head><title>Transport Schedule — ${tpDate}</title>
+  <style>
+    body{font-family:Arial,sans-serif;padding:20px;color:#222;margin:0}
+    h1{font-size:18px;margin:0 0 2px}
+    .sub{font-size:12px;color:#888;margin-bottom:20px}
+    .trip{border:1px solid #ddd;border-radius:8px;padding:14px;margin-bottom:14px;page-break-inside:avoid}
+    .th{font-size:15px;font-weight:bold;border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:10px}
+    .row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:8px}
+    .f{min-width:130px}.lbl{font-size:10px;text-transform:uppercase;color:#888;font-weight:bold}
+    .val{font-size:13px;margin-top:2px}
+    .wrow{margin-top:8px}
+    .wtag{display:inline-block;background:#f0f4ff;border:1px solid #c7d2fe;border-radius:4px;padding:2px 8px;font-size:12px;margin:2px}
+    .notes{margin-top:8px;font-size:12px;color:#555}
+    .summary{background:#f8f8f8;border-radius:6px;padding:10px 14px;margin-bottom:18px;font-size:13px}
+    @media print{body{padding:0}}
+  </style></head><body>
+  <h1>🚛 Transport Schedule — LYS</h1>
+  <div class="sub">${dateStr} · ${tpTrips.length} trip(s)</div>
+  <div class="summary">Workers dispatched: <strong>${[...new Set(tpTrips.flatMap(t => (t.workers||[]).map(w=>w.workerId)))].length}</strong> · Trips: <strong>${tpTrips.length}</strong></div>`;
+
+  tpTrips.forEach((trip, i) => {
+    const proj = projects.find(p => p.id === trip.projectId);
+    html += `<div class="trip">
+      <div class="th">Trip ${i+1}${trip.departureTime ? ' &nbsp;·&nbsp; ' + trip.departureTime : ''}${trip.driver ? ' &nbsp;·&nbsp; ' + esc(trip.driver) : ''}</div>
+      <div class="row">
+        <div class="f"><div class="lbl">Time</div><div class="val">${trip.departureTime || '—'}</div></div>
+        <div class="f"><div class="lbl">Driver</div><div class="val">${esc(trip.driver || '—')}</div></div>
+        <div class="f"><div class="lbl">Vehicle</div><div class="val">${esc(trip.vehicle || '—')}</div></div>
+        <div class="f"><div class="lbl">Destination</div><div class="val">${esc(trip.destination || '—')}</div></div>
+        ${proj ? `<div class="f"><div class="lbl">Project</div><div class="val">${esc(proj.jobCode || proj.projectName || '')}</div></div>` : ''}
+      </div>
+      <div class="wrow"><div class="lbl">Workers (${(trip.workers||[]).length})</div>
+        <div style="margin-top:4px">${(trip.workers||[]).length
+          ? (trip.workers).map(w => `<span class="wtag">${esc(w.workerName || w.workerId)}</span>`).join('')
+          : '<span style="color:#aaa">None assigned</span>'}</div>
+      </div>
+      ${trip.notes ? `<div class="notes">📝 ${esc(trip.notes)}</div>` : ''}
+    </div>`;
+  });
+
+  html += '</body></html>';
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(() => w.print(), 400);
+});
+
+// ── Tab switching ──────────────────────────────────────
+document.querySelectorAll('.page-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const isWeekly = tab.dataset.tab === 'weekly';
+
+    document.getElementById('weekly-plan-section').style.display  = isWeekly ? 'flex' : 'none';
+    document.getElementById('week-nav-ctrl').style.display         = isWeekly ? '' : 'none';
+    document.getElementById('save-btn').style.display              = isWeekly ? '' : 'none';
+
+    const ts = document.getElementById('transport-section');
+    ts.style.display = isWeekly ? 'none' : 'flex';
+    document.getElementById('transport-save-btn').style.display    = isWeekly ? 'none' : '';
+
+    if (!isWeekly) loadTransport();
+  });
+});
+
+window.addEventListener('resize', render);
+
+init();
+</script>
+</body>
+</html>

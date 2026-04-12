@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Admin Settings — LYS OPS</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .staff-inline-input {
+      background: var(--bg2);
+      border: 1px solid var(--accent);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+      font-size: 13px;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .staff-inline-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+    #staff-table tbody tr:last-child td { border-bottom: none; }
+    .log-table { width:100%; border-collapse:collapse; }
+    .log-table th { font-size:11px; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); padding:6px 10px; border-bottom:1px solid var(--border); text-align:left; }
+    .log-table td { padding:7px 10px; font-size:12px; border-bottom:1px solid var(--border); vertical-align:top; }
+    .log-table tr:last-child td { border-bottom:none; }
+    .log-action-badge { display:inline-block; padding:2px 7px; border-radius:10px; font-size:10px; font-weight:700; background:rgba(51,102,255,0.12); color:var(--accent); white-space:nowrap; }
+    .log-action-badge.error-badge { background:rgba(220,38,38,0.1); color:var(--red); }
+    .log-action-badge.success-badge { background:rgba(0,200,117,0.12); color:var(--green); }
+    .log-error-row td { background:rgba(220,38,38,0.04); }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <a href="/" class="btn btn-ghost btn-sm">← Dashboard</a>
+    <div class="topbar-title" style="flex:1; text-align:center;">Admin Settings</div>
+  </header>
+
+  <div class="tasks-layout">
+
+  <!-- Left Sidebar -->
+  <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+    <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
+    </a>
+    <div class="tasks-sidebar-label">Views</div>
+    <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
+    </a>
+    <a href="/factory" id="sidebar-factory-link" class="staff-nav-btn" style="text-decoration:none;display:flex;align-items:center;gap:8px;">
+      <span class="staff-initial">🏭</span><span>Factory</span>
+      <span id="sidebar-factory-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;min-width:16px;height:16px;padding:0 4px;align-items:center;justify-content:center;"></span>
+    </a>
+    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🔧</span><span>Installation</span>
+    </a>
+    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">🛒</span><span>Procurement</span>
+    </a>
+    <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
+    </a>
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
+    </a>
+    <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+      <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+    </a>
+    <a href="admin.html" class="staff-nav-btn active" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+      <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+    </a>
+  </div>
+
+  <div class="page" style="overflow-y:auto;">
+
+    <!-- PIN Access Gate -->
+    <div id="pin-gate" style="display:none;">
+      <div class="card" style="max-width:360px; margin:60px auto; text-align:center;">
+        <div class="section-label" style="margin-bottom:12px;">Enter Admin PIN</div>
+        <input type="password" id="gate-pin-input" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric" style="margin:0 auto 10px;">
+        <div id="gate-pin-error" class="pin-error" style="display:none;"></div>
+        <button class="btn btn-primary" id="gate-pin-btn" style="width:100%;">Unlock</button>
+      </div>
+    </div>
+
+    <!-- Admin Content (hidden until unlocked) -->
+    <div id="admin-content" style="display:none;">
+
+      <!-- Staff Management -->
+      <div class="admin-section">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:16px;">
+          <div class="admin-section-title" style="border:none; padding:0; margin:0;">Staff Management</div>
+          <button class="btn btn-primary btn-sm" id="staff-add-btn">+ Add Staff</button>
+        </div>
+
+        <div class="data-table-wrap">
+        <table id="staff-table" class="data-table" style="margin-bottom:0;">
+          <thead>
+            <tr>
+              <th style="width:35%;">Name</th>
+              <th>Email</th>
+              <th style="width:160px; text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="staff-tbody">
+            <!-- filled by JS -->
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <!-- Admin PIN -->
+      <div class="admin-section">
+        <div class="admin-section-title">Admin PIN</div>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+          This 4-digit PIN is required to delete projects. Set or change it below.
+        </p>
+        <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="field" style="margin:0; flex:0 0 auto;">
+            <label>New PIN (4 digits)</label>
+            <input type="password" id="new-pin-input" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric" style="width:100px;">
+          </div>
+          <div class="field" style="margin:0; flex:0 0 auto;">
+            <label>Confirm PIN</label>
+            <input type="password" id="confirm-pin-input" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric" style="width:100px;">
+          </div>
+          <button class="btn btn-primary" id="save-pin-btn">Save PIN</button>
+        </div>
+        <div id="pin-save-msg" style="margin-top:10px; font-size:13px; display:none;"></div>
+      </div>
+
+      <!-- Workers Section -->
+      <div class="admin-section" id="workers-section">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding-bottom:8px; border-bottom:1px solid var(--border); margin-bottom:16px;">
+          <div class="admin-section-title" style="border:none; padding:0; margin:0;">Workers</div>
+          <button class="btn btn-primary btn-sm" id="worker-add-btn">+ Add Worker</button>
+        </div>
+        <div class="data-table-wrap">
+        <table id="worker-table" class="data-table" style="margin-bottom:0;">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th style="width:80px;">Code</th>
+              <th style="width:120px;">Nationality</th>
+              <th style="width:100px;">Role</th>
+              <th style="width:70px;">Active</th>
+              <th style="width:140px; text-align:right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="worker-tbody">
+            <!-- filled by JS -->
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <!-- Activity Logs -->
+      <div class="admin-section" id="logs-section">
+        <div class="admin-section-title">System Logs</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button class="btn btn-primary btn-sm" id="log-tab-activity" onclick="switchLogTab('activity')">Activity</button>
+          <button class="btn btn-ghost btn-sm" id="log-tab-errors" onclick="switchLogTab('errors')">Errors</button>
+          <button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="loadLogs()">↻ Refresh</button>
+        </div>
+        <div id="log-content" style="font-size:12px;overflow-x:auto;">
+          <div style="color:var(--text-muted);padding:12px 0;">Loading logs…</div>
+        </div>
+      </div>
+
+    </div><!-- /admin-content -->
+
+  </div><!-- /page -->
+
+  </div><!-- /tasks-layout -->
+
+  <div class="toast" id="toast"></div>
+  <script src="js/utils.js"></script>
+  <script>
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    async function api(method, url, body) {
+      const opts = { method, headers: { 'Content-Type': 'application/json' } };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(url, opts);
+      if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || res.statusText); }
+      return res.json();
+    }
+
+    // ── PIN Gate ──────────────────────────────────────────────────────────────
+    async function init() {
+      const { pinSet } = await api('GET', '/api/admin/pin');
+      if (!pinSet) {
+        // No PIN configured — allow straight in
+        showAdminContent();
+      } else {
+        document.getElementById('pin-gate').style.display = '';
+        const gateBtn = document.getElementById('gate-pin-btn');
+        const gateInput = document.getElementById('gate-pin-input');
+        const gateErr = document.getElementById('gate-pin-error');
+
+        const tryUnlock = async () => {
+          const pin = gateInput.value.trim();
+          if (!/^\d{4}$/.test(pin)) { gateErr.textContent = 'Enter a 4-digit PIN.'; gateErr.style.display = 'block'; return; }
+          gateBtn.disabled = true;
+          try {
+            const { ok } = await api('POST', '/api/admin/pin', { action: 'verify', pin });
+            if (ok) { showAdminContent(); }
+            else { gateErr.textContent = 'Incorrect PIN.'; gateErr.style.display = 'block'; gateBtn.disabled = false; }
+          } catch { gateErr.textContent = 'Error. Try again.'; gateErr.style.display = 'block'; gateBtn.disabled = false; }
+        };
+
+        gateBtn.addEventListener('click', tryUnlock);
+        gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+        setTimeout(() => gateInput.focus(), 100);
+      }
+    }
+
+    function showAdminContent() {
+      document.getElementById('pin-gate').style.display = 'none';
+      document.getElementById('admin-content').style.display = '';
+      loadStaff();
+      loadWorkers();
+      loadLogs();
+      if (logRefreshTimer) clearInterval(logRefreshTimer);
+      logRefreshTimer = setInterval(loadLogs, 30000);
+    }
+
+    // ── Staff ─────────────────────────────────────────────────────────────────
+    let staffMap = {};
+
+    async function loadStaff() {
+      staffMap = await api('GET', '/api/staff');
+      renderStaffTable();
+    }
+
+    function renderStaffTable() {
+      const tbody = document.getElementById('staff-tbody');
+      tbody.innerHTML = '';
+
+      const seen = new Set();
+      const entries = [];
+      Object.values(staffMap).forEach(v => {
+        if (v.name && !seen.has(v.name)) { seen.add(v.name); entries.push(v); }
+      });
+      entries.sort((a, b) => a.name.localeCompare(b.name));
+
+      if (entries.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="padding:16px 12px; color:var(--text-muted); font-size:13px; text-align:center;">No staff added yet.</td></tr>';
+        return;
+      }
+
+      entries.forEach(({ name, email }) => appendViewRow(tbody, name, email || ''));
+    }
+
+    function appendViewRow(tbody, name, email) {
+      const tr = document.createElement('tr');
+      tr.dataset.name = name;
+      tr.dataset.email = email;
+      tr.innerHTML = `
+        <td style="padding:10px 12px; font-size:13px; font-weight:500;">${escHtml(name)}</td>
+        <td style="padding:10px 12px; font-size:13px; color:var(--text-muted);">${email ? escHtml(email) : '<span style="opacity:0.4;">—</span>'}</td>
+        <td style="padding:8px 12px; text-align:right; white-space:nowrap;">
+          <button class="btn btn-ghost btn-sm" data-action="edit">Edit</button>
+          <button class="btn btn-danger btn-sm" data-action="delete" style="margin-left:6px;">Delete</button>
+        </td>
+      `;
+      tr.querySelector('[data-action="edit"]').addEventListener('click', () => enterEditMode(tr, name, email, false));
+      tr.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        if (!confirm(`Remove "${name}" from staff list?`)) return;
+        try {
+          await api('DELETE', `/api/staff/${encodeURIComponent(name)}`);
+          showToast(`${name} removed.`, 'success');
+          await loadStaff();
+        } catch (err) { showToast(err.message, 'error'); }
+      });
+      tbody.appendChild(tr);
+    }
+
+    function enterEditMode(tr, name, email, isNew) {
+      // Remove empty-state row if present
+      const emptyRow = tr.parentElement.querySelector('td[colspan]');
+      if (emptyRow) emptyRow.closest('tr').remove();
+
+      tr.innerHTML = `
+        <td style="padding:6px 12px;">
+          <input type="text" class="staff-inline-input" placeholder="Name" value="${escHtml(name)}" autocomplete="off" style="width:100%;">
+        </td>
+        <td style="padding:6px 12px;">
+          <input type="email" class="staff-inline-input" placeholder="Email (optional)" value="${escHtml(email)}" autocomplete="off" style="width:100%;">
+        </td>
+        <td style="padding:6px 12px; text-align:right; white-space:nowrap;">
+          <button class="btn btn-primary btn-sm" data-action="save">Save</button>
+          <button class="btn btn-ghost btn-sm" data-action="cancel" style="margin-left:6px;">Cancel</button>
+        </td>
+      `;
+
+      const nameInput  = tr.querySelector('input[type="text"]');
+      const emailInput = tr.querySelector('input[type="email"]');
+      nameInput.focus();
+
+      const doSave = async () => {
+        const newName  = nameInput.value.trim();
+        const newEmail = emailInput.value.trim();
+        if (!newName) { showToast('Name is required.', 'error'); nameInput.focus(); return; }
+        try {
+          await api('POST', '/api/staff', { name: newName, email: newEmail });
+          showToast(`${newName} saved.`, 'success');
+          await loadStaff();
+        } catch (err) { showToast(err.message, 'error'); }
+      };
+
+      const doCancel = () => {
+        if (isNew) { tr.remove(); checkEmptyState(); }
+        else { appendViewRowReplace(tr, name, email); }
+      };
+
+      tr.querySelector('[data-action="save"]').addEventListener('click', doSave);
+      tr.querySelector('[data-action="cancel"]').addEventListener('click', doCancel);
+      [nameInput, emailInput].forEach(inp => inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') doSave();
+        if (e.key === 'Escape') doCancel();
+      }));
+    }
+
+    function appendViewRowReplace(tr, name, email) {
+      const newTr = document.createElement('tr');
+      tr.parentElement.insertBefore(newTr, tr);
+      appendViewRow(tr.parentElement, name, email);
+      // The above appended to end — instead replace in place
+      const last = tr.parentElement.lastElementChild;
+      tr.parentElement.insertBefore(last, tr);
+      tr.remove();
+    }
+
+    function checkEmptyState() {
+      const tbody = document.getElementById('staff-tbody');
+      if (tbody.children.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="padding:16px 12px; color:var(--text-muted); font-size:13px; text-align:center;">No staff added yet.</td></tr>';
+      }
+    }
+
+    document.getElementById('staff-add-btn').addEventListener('click', () => {
+      const tbody = document.getElementById('staff-tbody');
+      // Remove empty-state row if present
+      const emptyRow = tbody.querySelector('td[colspan]');
+      if (emptyRow) emptyRow.closest('tr').remove();
+
+      const tr = document.createElement('tr');
+      tbody.insertBefore(tr, tbody.firstChild);
+      enterEditMode(tr, '', '', true);
+    });
+
+    // ── Workers ───────────────────────────────────────────────────────────────
+    let workersList = [];
+
+    async function loadWorkers() {
+      try {
+        workersList = await api('GET', '/api/workers');
+        renderWorkerTable();
+      } catch (err) { showToast('Failed to load workers: ' + err.message, 'error'); }
+    }
+
+    function renderWorkerTable() {
+      const tbody = document.getElementById('worker-tbody');
+      tbody.innerHTML = '';
+      if (!workersList.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:16px 12px; color:var(--text-muted); font-size:13px; text-align:center;">No workers found.</td></tr>';
+        return;
+      }
+      const sorted = [...workersList].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      sorted.forEach(w => appendWorkerViewRow(tbody, w));
+    }
+
+    function appendWorkerViewRow(tbody, w) {
+      const tr = document.createElement('tr');
+      tr.dataset.id = w.id;
+      tr.innerHTML = `
+        <td style="padding:10px 12px; font-size:13px; font-weight:500;">${escHtml(w.name || '')}</td>
+        <td style="padding:10px 12px; font-size:12px; color:var(--text-muted);">${escHtml(w.code || '')}</td>
+        <td style="padding:10px 12px; font-size:12px; color:var(--text-muted);">${escHtml(w.nationality || '')}</td>
+        <td style="padding:10px 12px; font-size:12px; color:var(--text-muted);">${escHtml(w.role || '')}</td>
+        <td style="padding:10px 12px;">
+          <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;${w.active !== false ? 'background:rgba(0,200,117,0.12);color:var(--green);' : 'background:rgba(107,114,148,0.15);color:var(--text-muted);'}">${w.active !== false ? 'Active' : 'Inactive'}</span>
+        </td>
+        <td style="padding:8px 12px; text-align:right; white-space:nowrap;">
+          <button class="btn btn-ghost btn-sm" data-action="edit-worker">Edit</button>
+          <button class="btn btn-danger btn-sm" data-action="delete-worker" style="margin-left:6px;">Delete</button>
+        </td>
+      `;
+      tr.querySelector('[data-action="edit-worker"]').addEventListener('click', () => enterWorkerEditMode(tr, w, false));
+      tr.querySelector('[data-action="delete-worker"]').addEventListener('click', async () => {
+        if (!confirm(`Remove worker "${w.name}"?`)) return;
+        try {
+          await api('DELETE', `/api/workers/${encodeURIComponent(w.id)}`);
+          showToast(`${w.name} removed.`, 'success');
+          await loadWorkers();
+        } catch (err) { showToast(err.message, 'error'); }
+      });
+      tbody.appendChild(tr);
+    }
+
+    function enterWorkerEditMode(tr, w, isNew) {
+      const emptyRow = tr.parentElement && tr.parentElement.querySelector('td[colspan]');
+      if (emptyRow) emptyRow.closest('tr').remove();
+
+      tr.innerHTML = `
+        <td style="padding:6px 8px;"><input type="text" class="staff-inline-input" placeholder="Name *" value="${escHtml(w.name || '')}" style="width:100%;" data-f="name"></td>
+        <td style="padding:6px 8px;"><input type="text" class="staff-inline-input" placeholder="Code" value="${escHtml(w.code || '')}" style="width:60px;" data-f="code"></td>
+        <td style="padding:6px 8px;"><input type="text" class="staff-inline-input" placeholder="Nationality" value="${escHtml(w.nationality || '')}" style="width:100%;" data-f="nationality"></td>
+        <td style="padding:6px 8px;"><input type="text" class="staff-inline-input" placeholder="Role" value="${escHtml(w.role || '')}" style="width:100%;" data-f="role"></td>
+        <td style="padding:6px 8px;">
+          <select class="staff-inline-input" data-f="active" style="width:80px;">
+            <option value="true" ${w.active !== false ? 'selected' : ''}>Active</option>
+            <option value="false" ${w.active === false ? 'selected' : ''}>Inactive</option>
+          </select>
+        </td>
+        <td style="padding:6px 8px; text-align:right; white-space:nowrap;">
+          <button class="btn btn-primary btn-sm" data-action="save-worker">Save</button>
+          <button class="btn btn-ghost btn-sm" data-action="cancel-worker" style="margin-left:6px;">Cancel</button>
+        </td>
+      `;
+
+      const nameInput = tr.querySelector('[data-f="name"]');
+      nameInput.focus();
+
+      const doSave = async () => {
+        const name = tr.querySelector('[data-f="name"]').value.trim();
+        if (!name) { showToast('Name is required.', 'error'); tr.querySelector('[data-f="name"]').focus(); return; }
+        const body = {
+          name,
+          code:        tr.querySelector('[data-f="code"]').value.trim(),
+          nationality: tr.querySelector('[data-f="nationality"]').value.trim(),
+          role:        tr.querySelector('[data-f="role"]').value.trim(),
+          active:      tr.querySelector('[data-f="active"]').value !== 'false'
+        };
+        try {
+          if (isNew) {
+            await api('POST', '/api/workers', body);
+          } else {
+            await api('PUT', `/api/workers/${encodeURIComponent(w.id)}`, body);
+          }
+          showToast(`${name} saved.`, 'success');
+          await loadWorkers();
+        } catch (err) { showToast(err.message, 'error'); }
+      };
+
+      tr.querySelector('[data-action="save-worker"]').addEventListener('click', doSave);
+      tr.querySelector('[data-action="cancel-worker"]').addEventListener('click', () => loadWorkers());
+      tr.querySelectorAll('input,select').forEach(inp => inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') doSave();
+        if (e.key === 'Escape') loadWorkers();
+      }));
+    }
+
+    document.getElementById('worker-add-btn').addEventListener('click', () => {
+      const tbody = document.getElementById('worker-tbody');
+      const emptyRow = tbody.querySelector('td[colspan]');
+      if (emptyRow) emptyRow.closest('tr').remove();
+      const tr = document.createElement('tr');
+      tbody.insertBefore(tr, tbody.firstChild);
+      enterWorkerEditMode(tr, { name: '', code: '', nationality: '', role: '', active: true }, true);
+    });
+
+    // ── Admin PIN change ──────────────────────────────────────────────────────
+    document.getElementById('save-pin-btn').addEventListener('click', async () => {
+      const pin1 = document.getElementById('new-pin-input').value.trim();
+      const pin2 = document.getElementById('confirm-pin-input').value.trim();
+      const msg  = document.getElementById('pin-save-msg');
+
+      if (!/^\d{4}$/.test(pin1)) { showPinMsg('PIN must be exactly 4 digits.', 'error'); return; }
+      if (pin1 !== pin2) { showPinMsg('PINs do not match.', 'error'); return; }
+
+      try {
+        await api('POST', '/api/admin/pin', { action: 'set', pin: pin1 });
+        document.getElementById('new-pin-input').value = '';
+        document.getElementById('confirm-pin-input').value = '';
+        showPinMsg('PIN saved successfully.', 'success');
+      } catch (err) { showPinMsg(err.message, 'error'); }
+    });
+
+    function showPinMsg(text, type) {
+      const el = document.getElementById('pin-save-msg');
+      el.textContent = text;
+      el.style.color = type === 'error' ? 'var(--red)' : 'var(--green)';
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    function escHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── Logs ──────────────────────────────────────────────────────────────────
+    let currentLogTab = 'activity';
+    let logRefreshTimer = null;
+
+    function switchLogTab(tab) {
+      currentLogTab = tab;
+      document.getElementById('log-tab-activity').className = tab === 'activity' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+      document.getElementById('log-tab-errors').className   = tab === 'errors'   ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+      loadLogs();
+    }
+
+    async function loadLogs() {
+      const container = document.getElementById('log-content');
+      const limit = currentLogTab === 'errors' ? 20 : 50;
+      try {
+        const data = await api('GET', `/api/logs?type=${currentLogTab}&limit=${limit}`);
+        if (!data.length) {
+          container.innerHTML = '<div style="color:var(--text-muted);padding:12px 0;">No ' + currentLogTab + ' logs yet.</div>';
+          return;
+        }
+        if (currentLogTab === 'activity') {
+          const badgeClass = (action) => {
+            if (action && action.includes('email.sent')) return 'log-action-badge success-badge';
+            if (action && (action.includes('failed') || action.includes('error'))) return 'log-action-badge error-badge';
+            return 'log-action-badge';
+          };
+          container.innerHTML = '<table class="log-table"><thead><tr><th>Time</th><th>Action</th><th>Details</th></tr></thead><tbody>' +
+            data.map(row => `<tr>
+              <td style="white-space:nowrap;color:var(--text-muted);">${row.timestamp ? row.timestamp.replace('T',' ').slice(0,19) : '—'}</td>
+              <td><span class="${badgeClass(row.action)}">${escHtml(row.action || '')}</span></td>
+              <td style="color:var(--text-muted);max-width:340px;word-break:break-all;">${escHtml(JSON.stringify(row.details || {}))}</td>
+            </tr>`).join('') +
+            '</tbody></table>';
+        } else {
+          container.innerHTML = '<table class="log-table"><thead><tr><th>Time</th><th>Context</th><th>Message</th></tr></thead><tbody>' +
+            data.map(row => `<tr class="log-error-row">
+              <td style="white-space:nowrap;color:var(--text-muted);">${row.timestamp ? row.timestamp.replace('T',' ').slice(0,19) : '—'}</td>
+              <td><span class="log-action-badge error-badge">${escHtml(row.context || '')}</span></td>
+              <td style="color:var(--red);max-width:400px;word-break:break-all;">${escHtml(row.message || '')}${row.stack ? '<br><span style="color:var(--text-muted);font-size:10px;">' + escHtml(row.stack) + '</span>' : ''}</td>
+            </tr>`).join('') +
+            '</tbody></table>';
+        }
+      } catch (err) {
+        container.innerHTML = '<div style="color:var(--red);padding:12px 0;">Failed to load logs: ' + escHtml(err.message) + '</div>';
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

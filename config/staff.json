@@ -1,0 +1,58 @@
+{
+  "Purchaser": {
+    "name": "Rena",
+    "email": "enquiry@laiyewseng.com.sg"
+  },
+  "Rena": {
+    "name": "Rena",
+    "email": "enquiry@laiyewseng.com.sg"
+  },
+  "Factory Manager": {
+    "name": "Chris",
+    "email": "chris@laiyewseng.com.sg"
+  },
+  "Chris": {
+    "name": "Chris",
+    "email": "chris@laiyewseng.com.sg"
+  },
+  "Project Manager": {
+    "name": "Lai Wei Xiang",
+    "email": "laiwx@laiyewseng.com.sg"
+  },
+  "GM": {
+    "name": "Lai Wei Xiang",
+    "email": "laiwx@laiyewseng.com.sg"
+  },
+  "Lai Wei Xiang": {
+    "name": "Lai Wei Xiang",
+    "email": "laiwx@laiyewseng.com.sg"
+  },
+  "QS": {
+    "name": "Alex Mac",
+    "email": "alexmac@laiyewseng.com.sg"
+  },
+  "Salve": {
+    "name": "Salve",
+    "email": "Salve@laiyewseng.com.sg"
+  },
+  "Alex Mac": {
+    "name": "Alex Mac",
+    "email": "alexmac@laiyewseng.com.sg"
+  },
+  "Site Engineer": {
+    "name": "Teo Meei Haw",
+    "email": "MeeiHaw@laiyewseng.com.sg"
+  },
+  "Teo Meei Haw": {
+    "name": "Teo Meei Haw",
+    "email": "MeeiHaw@laiyewseng.com.sg"
+  },
+  "Jun Jie": {
+    "name": "Jun Jie",
+    "email": "Junjie@laiyewseng.com.sg"
+  },
+  "Project Manager/Site Engineer": {
+    "name": "Lai Wei Xiang",
+    "email": "laiwx@laiyewseng.com.sg"
+  }
+}

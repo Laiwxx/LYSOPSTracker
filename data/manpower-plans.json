@@ -1,0 +1,45 @@
+[
+  {
+    "weekStart": "2026-04-05",
+    "assignments": {
+      "wm-chin-poh-fatt": {
+        "mon": {
+          "type": "Fabrication",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-lin-chee-cheong": {
+        "tue": {
+          "type": "Installation",
+          "projectId": "pj10025-ica-kallang",
+          "projectName": "Column Jacketing / Stainless Steel Bench - ICA Kallang",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wt-fangkaew-sarawit": {
+        "wed": {
+          "type": "Fabrication",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": "fgewgorwrw"
+        }
+      },
+      "wt-hoomphaeng-kritsana": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-xxx26-v3-taman-jurong",
+          "projectName": "Installation of Crash Rated Item @ Taman Jurong Polyclnic",
+          "location": "mogmrwgmwogr",
+          "notes": "mogmrwgmwogr"
+        }
+      }
+    },
+    "supplyWorkers": [],
+    "savedAt": "2026-04-11T15:47:44.023Z"
+  }
+]
