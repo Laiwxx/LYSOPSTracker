@@ -4,3 +4,5 @@ data/projects.json
 config/admin.json
 public/uploads/
 *.log
+data/*.backup-*.json
+data/pr-control-list.xlsx

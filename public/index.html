@@ -17,14 +17,14 @@
   <!-- topbar -->
   <header class="topbar">
     <div class="topbar-title">LYS <span>Operations</span><span class="topbar-sub">Project Tracker</span></div>
-    <a href="/api/export/projects" class="btn btn-ghost btn-sm" title="Export projects to Excel" download>📥 Export</a>
+    <a href="/api/export/projects" class="btn btn-ghost btn-sm topbar-export" title="Export projects to Excel" download>📥 Export</a>
     <a href="admin.html" class="btn btn-ghost btn-sm" title="Admin Settings">⚙ Admin</a>
   </header>
 
   <div class="tasks-layout">
 
   <!-- Left Sidebar -->
-  <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+  <div class="tasks-sidebar">
     <a href="/" class="staff-nav-btn active" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
     </a>
@@ -121,6 +121,17 @@
       <div style="margin-top:24px;">
 
 
+
+        <!-- EOD Status Panel -->
+        <div class="action-panel" id="eod-panel" style="margin-bottom:8px;">
+          <div class="action-panel-header" id="eod-toggle">
+            <span class="title" id="eod-title">EOD STATUS</span>
+            <span style="font-size:12px;color:var(--text-muted);" id="eod-chevron">▼</span>
+          </div>
+          <div class="action-panel-body">
+            <div id="eod-status-list" style="padding:0 16px;"></div>
+          </div>
+        </div>
 
         <div class="action-panel collapsed" id="action-panel" style="margin-bottom:8px;">
           <div class="action-panel-header" id="action-toggle">

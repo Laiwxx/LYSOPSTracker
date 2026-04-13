@@ -142,7 +142,7 @@
         <button class="proj-tab-btn" data-tab="installation">
           <span class="proj-tab-icon">🏗</span><span>Installation</span>
         </button>
-        <button class="proj-tab-btn" data-tab="delivery">
+        <button class="proj-tab-btn" data-tab="delivery" title="Delivery Requests">
           <span class="proj-tab-icon">🚚</span><span>Delivery</span>
         </button>
         <button class="proj-tab-btn" data-tab="payment">
@@ -241,6 +241,10 @@
                 <label>End Date</label>
                 <input type="date" id="field-endDate">
               </div>
+              <div class="field">
+                <label>FAB Lead Time (days)</label>
+                <input type="number" id="field-fabLeadTimeDays" min="1" placeholder="14">
+              </div>
               <div class="field" style="grid-column: 1 / -1;">
                 <label>Paid Amount <span style="font-size:10px; color:var(--text-muted); font-weight:400;">(auto from milestones)</span></label>
                 <div id="field-paidAmount-display" class="field-readonly">—</div>
@@ -310,7 +314,7 @@
       <div class="tab-panel" id="tab-fabrication">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <div class="section-label" style="margin:0;">Progress</div>
-          <button class="btn btn-primary btn-sm" id="fab-add-btn">+ Add Row</button>
+          <span style="font-size:11px;color:var(--text-muted);font-style:italic;">Updated by Chris on /factory</span>
         </div>
         <div class="card" style="padding:0; margin-bottom:12px;">
           <div class="data-table-wrap">
@@ -319,16 +323,13 @@
                 <tr>
                   <th>Item</th>
                   <th style="width:80px;">Total Qty</th>
-                  <th style="width:110px;">Unit</th>
+                  <th style="width:80px;">Unit</th>
                   <th>Process</th>
-                  <th>Qty Done</th>
-                  <th>Qty Sent</th>
+                  <th style="width:80px;">Qty Done</th>
                   <th>Status</th>
-                  <th>Started</th>
-                  <th>Done</th>
-                  <th>Target Delivery</th>
-                  <th>Delivery Status</th>
-                  <th></th>
+                  <th style="width:90px;">Started</th>
+                  <th style="width:90px;">Done</th>
+                  <th style="width:110px;">Target Delivery</th>
                 </tr>
               </thead>
               <tbody id="fab-tbody"></tbody>
@@ -347,7 +348,7 @@
       <div class="tab-panel" id="tab-installation">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
           <div class="section-label" style="margin:0;">Progress</div>
-          <button class="btn btn-primary btn-sm" id="install-add-btn">+ Add Row</button>
+          <span style="font-size:11px;color:var(--text-muted);font-style:italic;">Updated by site engineer on /installation</span>
         </div>
         <div class="card" style="padding:0; margin-bottom:16px;">
           <div class="data-table-wrap">
@@ -356,12 +357,10 @@
                 <tr>
                   <th>Item</th>
                   <th style="width:80px;">Total Qty</th>
-                  <th style="width:110px;">Unit</th>
-                  <th style="width:90px;">Installed</th>
-                  <th style="width:70px;">%</th>
-                  <th style="width:120px;">Claim Basis</th>
+                  <th style="width:80px;">Unit</th>
+                  <th style="width:80px;">Qty Done</th>
+                  <th style="width:60px;">%</th>
                   <th>Notes</th>
-                  <th style="width:36px;"></th>
                 </tr>
               </thead>
               <tbody id="install-tbody"></tbody>

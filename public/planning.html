@@ -6,7 +6,8 @@
   <title>Weekly Manpower Plan — LYS</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    body { background: var(--bg); overflow: hidden; }
+    body { background: var(--bg); }
+    .tasks-layout { overflow: hidden; }
 
     /* ── Topbar ──────────────────────────────────────── */
     .wp-topbar {
@@ -282,6 +283,7 @@
     .type-btn.sel-fab   { color: #3b82f6; border-color: #3b82f6; background: rgba(59,130,246,0.12); }
     .type-btn.sel-inst  { color: #22c55e; border-color: #22c55e; background: rgba(34,197,94,0.12); }
     .type-btn.sel-maint { color: #f97316; border-color: #f97316; background: rgba(249,115,22,0.12); }
+    .type-btn.sel-mc    { color: #dc2626; border-color: #ef4444; background: rgba(239,68,68,0.12); }
     .type-btn.sel-clear { color: var(--text-muted); border-color: var(--border); }
     .popup-fields { display: none; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .popup-fields.vis { display: flex; }
@@ -425,6 +427,12 @@
     /* ── Mobile overrides ────────────────────────────── */
     @media (max-width: 768px) {
       body { overflow: auto; }
+      /* Override inline height/overflow on tasks-layout so bottom nav is visible */
+      .tasks-layout {
+        height: auto !important;
+        overflow: visible !important;
+        min-height: calc(100vh - 52px);
+      }
       .wp-shell { flex-direction: column; height: auto; overflow: visible; }
       .wp-main  { overflow: visible; }
       #weekly-plan-section { overflow: visible; }
@@ -439,9 +447,16 @@
       td.hidden-day, th.hidden-day { display: none; }
       .trip-fields { grid-template-columns: 1fr 1fr; }
       #transport-section.open { height: calc(100vh - 52px); overflow: hidden; }
+      /* Topbar: hide week nav labels on very small screens, keep buttons */
+      .week-label { min-width: 100px; font-size: 11px; }
+      /* Save buttons: full-width on mobile */
+      .wp-btn { padding: 5px 10px; font-size: 11px; }
     }
     @media (max-width: 480px) {
       .trip-fields { grid-template-columns: 1fr; }
+      /* Topbar: stack controls to prevent overflow */
+      .wp-topbar { flex-wrap: wrap; height: auto; padding: 8px 12px; gap: 6px; }
+      .week-nav { margin-left: 0; }
     }
   </style>
 </head>
@@ -464,10 +479,10 @@
   <button class="wp-btn primary" id="save-btn">💾 Save Week</button>
 </div>
 
-<div class="tasks-layout" style="height:calc(100vh - 52px);overflow:hidden;">
+<div class="tasks-layout" style="height:calc(100vh - 52px);">
 
   <!-- Left Sidebar -->
-  <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+  <div class="tasks-sidebar">
     <a href="/" class="staff-nav-btn" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
     </a>
@@ -563,6 +578,7 @@
       <button class="type-btn" data-type="Fabrication">🏭 Fabrication</button>
       <button class="type-btn" data-type="Installation">🔧 Installation</button>
       <button class="type-btn" data-type="Driver">🚚 Driver</button>
+      <button class="type-btn" data-type="MC">🤒 MC</button>
       <button class="type-btn" data-type="">✕ Clear</button>
     </div>
     <div class="popup-fields" id="popup-fields">
@@ -875,7 +891,7 @@ function openPopup(worker, day) {
 }
 
 function applyTypeStyle(btn, type) {
-  const map = { Fabrication:'sel-fab', Installation:'sel-inst', Maintenance:'sel-driver', '':'sel-clear' };
+  const map = { Fabrication:'sel-fab', Installation:'sel-inst', Maintenance:'sel-driver', Driver:'sel-driver', MC:'sel-mc', '':'sel-clear' };
   btn.classList.add(map[type] || 'sel-clear');
 }
 
@@ -890,7 +906,7 @@ document.querySelectorAll('.type-btn').forEach(btn => {
 function showFields(type) {
   const fields = document.getElementById('popup-fields');
   const projW  = document.getElementById('proj-wrap');
-  if (!type) { fields.classList.remove('vis'); return; }
+  if (!type || type === 'MC') { fields.classList.remove('vis'); return; }
   fields.classList.add('vis');
   projW.style.display = (type === 'Installation' || type === 'Fabrication' || type === 'Driver') ? '' : 'none';
   document.getElementById('notes-label').textContent =
@@ -905,6 +921,41 @@ document.getElementById('popup-overlay').addEventListener('click', e => {
   if (e.target.id === 'popup-overlay') closePopup();
 });
 
+// Save MC status to attendance.json for a specific worker+day
+async function saveMCToAttendance(worker, day) {
+  const dateIdx = DAYS.indexOf(day);
+  if (dateIdx < 0) return;
+  const date = toStr(weekDates()[dateIdx]);
+
+  // Fetch current attendance records for that date (to merge, not overwrite)
+  let currentRecords = [];
+  try {
+    const r = await fetch('/api/attendance?date=' + date);
+    if (r.ok) {
+      const data = await r.json();
+      if (data && Array.isArray(data.records)) currentRecords = data.records.slice();
+    }
+  } catch {}
+
+  // Update or add this worker's MC status
+  const mcRecord = { workerId: worker.id, workerName: worker.name, status: 'MC', notes: '' };
+  const idx = currentRecords.findIndex(rec => rec.workerId === worker.id);
+  if (idx >= 0) currentRecords[idx] = mcRecord;
+  else currentRecords.push(mcRecord);
+
+  // POST merged records back to server
+  try {
+    await fetch('/api/attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, records: currentRecords })
+    });
+    // Update local attendance cache so render() reflects the change
+    if (!attendance[date]) attendance[date] = {};
+    attendance[date][worker.id] = 'MC';
+  } catch {}
+}
+
 document.getElementById('popup-save').addEventListener('click', () => {
   const selBtn = document.querySelector('.type-btn[class*="sel-"]');
   const type   = selBtn ? selBtn.dataset.type : '';
@@ -916,6 +967,11 @@ document.getElementById('popup-save').addEventListener('click', () => {
 
   if (!type) {
     delete plan[popupWorker.id][popupDay];
+  } else if (type === 'MC') {
+    // Mark MC in plan (as auto-derived so it won't be saved to plan file)
+    // and persist to attendance.json so it survives week reload
+    plan[popupWorker.id][popupDay] = { type: 'MC', notes: 'MC', _auto: true };
+    saveMCToAttendance(popupWorker, popupDay);
   } else {
     plan[popupWorker.id][popupDay] = {
       type,
@@ -937,14 +993,50 @@ function closePopup() {
 
 // ── Supply Workers ─────────────────────────────────────
 function addSupplyWorker() {
-  const name = prompt('Supply worker name:');
-  if (!name || !name.trim()) return;
-  const company = prompt('Company (optional):') || '';
-  const role    = prompt('Role (optional):')    || 'Worker';
-  const id = 'supply-' + Date.now();
-  supplyWorkers.push({ id, name: name.trim(), company: company.trim(), role: role.trim(), code: 'EXT' });
-  plan[id] = {};
-  render();
+  // Toggle: if inline add row already visible, remove it
+  const existing = document.getElementById('supply-add-row');
+  if (existing) { existing.remove(); return; }
+
+  const hrow = document.querySelector('.supply-hrow');
+  if (!hrow) return;
+
+  const tr = document.createElement('tr');
+  tr.id = 'supply-add-row';
+  tr.innerHTML = `<td colspan="7" style="padding:8px 10px;background:var(--bg3);border:1px solid var(--border);">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <input type="text" id="new-supply-name" placeholder="Worker name *"
+        style="flex:1;min-width:130px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:5px 8px;font-size:12px;color:var(--text);font-family:inherit;">
+      <input type="text" id="new-supply-company" placeholder="Company (optional)"
+        style="flex:1;min-width:130px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:5px 8px;font-size:12px;color:var(--text);font-family:inherit;">
+      <button id="save-supply-btn" style="padding:5px 12px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Save</button>
+      <button id="cancel-supply-btn" style="padding:5px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;cursor:pointer;font-family:inherit;">Cancel</button>
+    </div>
+  </td>`;
+  hrow.insertAdjacentElement('afterend', tr);
+  document.getElementById('new-supply-name').focus();
+
+  document.getElementById('save-supply-btn').addEventListener('click', () => {
+    const nameInput = document.getElementById('new-supply-name');
+    const name = nameInput.value.trim();
+    if (!name) {
+      nameInput.style.borderColor = 'var(--red)';
+      nameInput.focus();
+      return;
+    }
+    const company = document.getElementById('new-supply-company').value.trim();
+    const id = 'supply-' + Date.now();
+    supplyWorkers.push({ id, name, company, role: 'Worker', code: 'EXT' });
+    plan[id] = {};
+    tr.remove();
+    render();
+  });
+
+  document.getElementById('cancel-supply-btn').addEventListener('click', () => tr.remove());
+
+  // Allow Enter key in name field to trigger Save
+  document.getElementById('new-supply-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('save-supply-btn').click();
+  });
 }
 
 function removeSupplyWorker(id) {

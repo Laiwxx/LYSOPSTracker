@@ -18,10 +18,13 @@
     loadSiteRequestAlerts();
     loadOverduePOAlerts();
     loadWeeklyBrief();
+    loadEodStatus();
     bindActionToggle();
     bindFactoryToggle();
     bindMondayToggle();
+    bindEodToggle();
     bindFilters();
+    setInterval(loadEodStatus, 5 * 60 * 1000); // auto-refresh every 5 minutes
   });
 
   // ── Hero Metrics ──────────────────────────────────────────────────────────
@@ -614,6 +617,29 @@
         var total = fab.length + inst.length + drv.length;
         var today = (d === todayKey);
 
+        // Empty day → compact single-line row (no big coloured block)
+        if (total === 0) {
+          return '<div style="' +
+              'flex:0 0 auto;' +
+              'background:rgba(255,255,255,0.015);' +
+              'border:1px solid ' + (today ? dc.border + '55' : 'rgba(255,255,255,0.06)') + ';' +
+              'border-radius:8px;overflow:hidden;' +
+              (today ? 'box-shadow:0 0 0 2px ' + dc.border + '22;' : '') +
+            '">' +
+            '<div style="' +
+              'background:' + dc.bg + ';opacity:0.65;' +
+              'padding:7px 12px;' +
+              'display:flex;align-items:center;gap:12px;' +
+            '">' +
+              '<span style="font-size:12px;font-weight:800;letter-spacing:0.3px;color:' + dc.text + ';min-width:28px;">' +
+                dc.label.slice(0,3).toUpperCase() +
+                (today ? '\u00a0<span style="font-size:9px;vertical-align:middle;opacity:0.8;">TODAY</span>' : '') +
+              '</span>' +
+              '<span style="font-size:11px;color:rgba(255,255,255,0.22);font-style:italic;">No assignments</span>' +
+            '</div>' +
+          '</div>';
+        }
+
         var header =
           '<div style="' +
             'background:' + dc.bg + ';' +
@@ -630,19 +656,14 @@
                 dc.label +
               '</div>' +
             '</div>' +
-            (total > 0
-              ? '<span style="background:' + dc.border + ';color:#fff;border-radius:50%;' +
-                  'width:22px;height:22px;display:flex;align-items:center;justify-content:center;' +
-                  'font-size:11px;font-weight:800;flex-shrink:0;">' + total + '</span>'
-              : '<span style="font-size:18px;opacity:0.2;">\u25EF</span>') +
+            '<span style="background:' + dc.border + ';color:#fff;border-radius:50%;' +
+                'width:22px;height:22px;display:flex;align-items:center;justify-content:center;' +
+                'font-size:11px;font-weight:800;flex-shrink:0;">' + total + '</span>' +
           '</div>';
 
-        var body = total > 0
-          ? typeGroup(fab, 'Fabrication') +
-            typeGroup(inst, 'Installation') +
-            typeGroup(drv, 'Driver')
-          : '<div style="display:flex;align-items:center;justify-content:center;' +
-              'min-height:50px;color:rgba(255,255,255,0.15);font-size:22px;">\u2014</div>';
+        var body = typeGroup(fab, 'Fabrication') +
+                   typeGroup(inst, 'Installation') +
+                   typeGroup(drv, 'Driver');
 
         return '<div style="' +
             'flex:0 0 210px;min-width:210px;' +
@@ -737,6 +758,7 @@
     try {
       allProjects = await api('GET', '/api/projects');
       renderSidebarProjects(allProjects);
+      renderProjects();
       await renderCharts(allProjects);
     } catch (err) {
       console.error('[LYS Dashboard] loadProjects failed:', err);
@@ -1234,6 +1256,71 @@
         ).join('') +
         (overdue.length > 5 ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;"><a href="/tasks">View all ' + overdue.length + ' overdue \u2192</a></div>' : '');
     } catch (err) { console.warn('[LYS Dashboard] renderTaskAlerts failed:', err); }
+  }
+
+  // ── EOD Status Panel ──────────────────────────────────────────────────────
+  async function loadEodStatus() {
+    try {
+      var today = new Date().toISOString().split('T')[0];
+      var todayDisplay = new Date().toLocaleDateString('en-SG', { weekday: 'long', day: 'numeric', month: 'short' });
+
+      var titleEl = document.getElementById('eod-title');
+      if (titleEl) titleEl.textContent = 'EOD STATUS — ' + todayDisplay;
+
+      var data = await api('GET', '/api/eod-log?date=' + today);
+      var list = document.getElementById('eod-status-list');
+      if (!list) return;
+
+      var allStaff = ['Chris', 'Rena', 'Alex Mac', 'Salve', 'Teo Meei Haw', 'Jun Jie'];
+      var submitted = Array.isArray(data.submitted) ? data.submitted : [];
+      var logs = Array.isArray(data.logs) ? data.logs : [];
+
+      // Map issues by staff name
+      var issueMap = {};
+      logs.forEach(function(l) { if (l.issues && l.issues.trim()) issueMap[l.staffName] = l.issues.trim(); });
+
+      var submittedCount = allStaff.filter(function(n) { return submitted.includes(n); }).length;
+      var flaggedCount = Object.keys(issueMap).length;
+
+      var rows = allStaff.map(function(name) {
+        var done = submitted.includes(name);
+        var issues = issueMap[name] || '';
+        return '<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">' +
+          '<span style="font-size:16px;flex-shrink:0;line-height:1.4;">' + (done ? '✅' : '⚠️') + '</span>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<div style="font-size:13px;font-weight:600;">' + esc(name) + '</div>' +
+            (issues
+              ? '<div style="font-size:11px;color:var(--amber);margin-top:3px;line-height:1.4;">' + esc(issues) + '</div>'
+              : (!done ? '<div style="font-size:11px;color:var(--text-muted);">Not yet submitted</div>' : '')) +
+          '</div>' +
+          '<span style="font-size:11px;font-weight:700;color:' + (done ? 'var(--green)' : 'var(--text-muted)') + ';flex-shrink:0;padding-top:2px;">' +
+            (done ? 'Submitted' : 'Pending') +
+          '</span>' +
+        '</div>';
+      }).join('');
+
+      list.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0 8px;border-bottom:2px solid var(--border);margin-bottom:2px;">' +
+          '<span style="font-size:12px;color:var(--text-muted);">' + submittedCount + ' of ' + allStaff.length + ' submitted</span>' +
+          (flaggedCount
+            ? '<span style="font-size:11px;font-weight:700;color:var(--amber);">⚠️ ' + flaggedCount + ' issue' + (flaggedCount > 1 ? 's' : '') + ' flagged</span>'
+            : (submittedCount === allStaff.length ? '<span style="font-size:11px;font-weight:700;color:var(--green);">All submitted ✅</span>' : '')) +
+        '</div>' +
+        rows;
+    } catch (err) {
+      console.warn('[LYS Dashboard] loadEodStatus failed:', err);
+    }
+  }
+
+  function bindEodToggle() {
+    var panel = document.getElementById('eod-panel');
+    var chevron = document.getElementById('eod-chevron');
+    var toggle = document.getElementById('eod-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function () {
+      var collapsed = panel.classList.toggle('collapsed');
+      chevron.textContent = collapsed ? '▼' : '▲';
+    });
   }
 
   // ── HTML escape ───────────────────────────────────────────────────────────

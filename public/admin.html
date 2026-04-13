@@ -39,7 +39,7 @@
   <div class="tasks-layout">
 
   <!-- Left Sidebar -->
-  <div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+  <div class="tasks-sidebar">
     <a href="/" class="staff-nav-btn" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
     </a>
@@ -85,6 +85,15 @@
 
     <!-- Admin Content (hidden until unlocked) -->
     <div id="admin-content" style="display:none;">
+
+      <!-- PIN not set warning -->
+      <div id="pin-not-set-warning" style="display:none;background:rgba(226,68,92,0.12);border:1px solid var(--red);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;align-items:flex-start;gap:12px;">
+        <span style="font-size:22px;flex-shrink:0;">⚠️</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:4px;">Admin PIN Not Set</div>
+          <div style="font-size:13px;color:var(--text-muted);">Anyone can delete projects until a PIN is configured. Scroll down to <strong style="color:var(--text);">Admin PIN</strong> to set one now.</div>
+        </div>
+      </div>
 
       <!-- Staff Management -->
       <div class="admin-section">
@@ -177,6 +186,8 @@
   <script src="js/utils.js"></script>
   <script>
     // ── Helpers ──────────────────────────────────────────────────────────────
+    let adminPin = '';
+
     async function api(method, url, body) {
       const opts = { method, headers: { 'Content-Type': 'application/json' } };
       if (body) opts.body = JSON.stringify(body);
@@ -189,8 +200,8 @@
     async function init() {
       const { pinSet } = await api('GET', '/api/admin/pin');
       if (!pinSet) {
-        // No PIN configured — allow straight in
-        showAdminContent();
+        // No PIN configured — allow straight in, but warn
+        showAdminContent(true);
       } else {
         document.getElementById('pin-gate').style.display = '';
         const gateBtn = document.getElementById('gate-pin-btn');
@@ -203,7 +214,7 @@
           gateBtn.disabled = true;
           try {
             const { ok } = await api('POST', '/api/admin/pin', { action: 'verify', pin });
-            if (ok) { showAdminContent(); }
+            if (ok) { adminPin = pin; showAdminContent(); }
             else { gateErr.textContent = 'Incorrect PIN.'; gateErr.style.display = 'block'; gateBtn.disabled = false; }
           } catch { gateErr.textContent = 'Error. Try again.'; gateErr.style.display = 'block'; gateBtn.disabled = false; }
         };
@@ -214,9 +225,11 @@
       }
     }
 
-    function showAdminContent() {
+    function showAdminContent(pinMissing) {
       document.getElementById('pin-gate').style.display = 'none';
       document.getElementById('admin-content').style.display = '';
+      const warn = document.getElementById('pin-not-set-warning');
+      if (warn) warn.style.display = pinMissing ? 'flex' : 'none';
       loadStaff();
       loadWorkers();
       loadLogs();
@@ -267,7 +280,7 @@
       tr.querySelector('[data-action="delete"]').addEventListener('click', async () => {
         if (!confirm(`Remove "${name}" from staff list?`)) return;
         try {
-          await api('DELETE', `/api/staff/${encodeURIComponent(name)}`);
+          await api('DELETE', `/api/staff/${encodeURIComponent(name)}`, { pin: adminPin });
           showToast(`${name} removed.`, 'success');
           await loadStaff();
         } catch (err) { showToast(err.message, 'error'); }
@@ -474,6 +487,8 @@
         document.getElementById('new-pin-input').value = '';
         document.getElementById('confirm-pin-input').value = '';
         showPinMsg('PIN saved successfully.', 'success');
+        const warn = document.getElementById('pin-not-set-warning');
+        if (warn) warn.style.display = 'none';
       } catch (err) { showPinMsg(err.message, 'error'); }
     });
 

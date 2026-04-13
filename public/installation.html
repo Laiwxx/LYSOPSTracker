@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,29 +9,79 @@
     body { background: var(--bg); }
     .install-page { max-width: 640px; margin: 0 auto; padding: 16px; }
 
-    .install-project-group {
+    /* ── Engineer selector ── */
+    .engineer-selector {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      margin-bottom: 16px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .engineer-selector label { font-size: 12px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+    .engineer-selector select {
+      flex: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      font-size: 13px;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    /* ── Section headers ── */
+    .install-section-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 24px 0 12px;
+    }
+    .install-section-hdr:first-of-type { margin-top: 4px; }
+    .install-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--text);
+    }
+    .install-section-sub { font-size: 11px; color: var(--text-muted); }
+
+    /* ── Project cards ── */
+    .install-project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 12px;
       overflow: hidden;
     }
-    .install-project-title {
+    .install-project-card.overdue { border-left: 3px solid var(--red); }
+    .install-card-header {
+      padding: 12px 16px;
       background: var(--sidebar-bg);
-      color: #fff;
-      padding: 10px 16px;
+      cursor: pointer;
+      user-select: none;
     }
-    .install-project-title-main {
+    .install-card-header:active { filter: brightness(0.92); }
+    .install-card-title {
       font-size: 13px;
       font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .install-project-meta {
+    .install-card-meta {
       font-size: 11px;
       color: rgba(255,255,255,0.6);
-      margin-top: 3px;
+      margin-top: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     .overdue-badge {
       background: rgba(226,68,92,0.25);
@@ -40,9 +90,25 @@
       padding: 1px 6px;
       font-size: 10px;
       font-weight: 700;
-      margin-left: 6px;
     }
+    .status-badge-sm {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .prog-bar-sm {
+      height: 4px;
+      background: var(--bg3);
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .prog-fill-sm { height: 100%; border-radius: 2px; transition: width 0.3s; }
+    .install-card-items { display: none; }
+    .install-card-items.open { display: block; }
 
+    /* ── Install items ── */
     .install-item {
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
@@ -104,7 +170,6 @@
       font-size: 10px; color: var(--text-muted);
       text-align: center; min-width: 36px;
     }
-
     .install-notes-input {
       width: 100%;
       margin-top: 8px;
@@ -119,7 +184,6 @@
       font-family: inherit;
     }
     .install-notes-input::placeholder { color: var(--text-muted); }
-
     .save-row {
       display: flex;
       align-items: center;
@@ -140,91 +204,52 @@
     .save-item-btn:disabled { background: var(--green); cursor: default; }
     .save-ok { font-size: 11px; color: var(--green); display: none; }
 
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    /* ── Tab bar ── */
-    .install-tabs {
-      display: flex;
-      border-bottom: 2px solid var(--border);
-      margin-bottom: 16px;
-    }
-    .install-tab {
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      margin-bottom: -2px;
-    }
-    .install-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-    /* ── My Requests ── */
-    .mreq-card {
+    /* ── Factory Status (Section B) ── */
+    .fstat-card {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      margin-bottom: 12px;
-      overflow: hidden;
+      margin-bottom: 10px;
+      padding: 12px 14px;
     }
-    .mreq-card.overdue { border-left: 3px solid var(--red); }
-    .mreq-header { padding: 12px 14px 8px; }
-    .mreq-item-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-    .mreq-meta {
-      font-size: 11px; color: var(--text-muted);
+    .fstat-card.ready { border-left: 3px solid var(--green); background: rgba(0,200,117,0.06); }
+    .fstat-item-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .fstat-meta {
+      font-size: 11px;
+      color: var(--text-muted);
       display: flex; flex-wrap: wrap; gap: 8px;
     }
-    .mreq-status-badge {
-      display: inline-block; padding: 2px 8px;
-      border-radius: 10px; font-size: 11px; font-weight: 700;
+    .fstat-status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
     }
-    .mreq-status-New           { background: rgba(51,102,255,0.15); color: var(--accent); }
-    .mreq-status-Acknowledged  { background: rgba(253,171,61,0.15); color: var(--amber); }
-    .mreq-status-In-Fabrication{ background: rgba(253,171,61,0.2);  color: #e0880a; }
-    .mreq-status-Ready         { background: rgba(0,200,117,0.15);  color: var(--green); }
-    .mreq-status-Delivered     { background: rgba(0,200,117,0.1);   color: var(--green); opacity:0.7; }
-    .mreq-status-Issue         { background: rgba(226,68,92,0.15);  color: var(--red); }
+    .fstat-status-New           { background: rgba(51,102,255,0.15); color: var(--accent); }
+    .fstat-status-Acknowledged  { background: rgba(253,171,61,0.15); color: var(--amber); }
+    .fstat-status-In-Fabrication{ background: rgba(253,171,61,0.2);  color: #e0880a; }
+    .fstat-status-Ready         { background: rgba(0,200,117,0.2);   color: var(--green); font-size: 12px; }
+    .fstat-status-Delivered     { background: rgba(0,200,117,0.1);   color: var(--green); opacity:0.7; }
+    .fstat-status-Issue         { background: rgba(226,68,92,0.15);  color: var(--red); }
+    .ready-collect-badge {
+      background: var(--green);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
 
-    /* Pipeline visual */
-    .mreq-pipeline {
-      display: flex; align-items: center;
-      padding: 8px 14px 10px;
-      gap: 0;
-      overflow-x: auto;
-    }
-    .mreq-step {
-      display: flex; flex-direction: column; align-items: center;
-      flex-shrink: 0;
-    }
-    .mreq-step-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--bg3); border: 2px solid var(--border);
-    }
-    .mreq-step-dot.done    { background: var(--green); border-color: var(--green); }
-    .mreq-step-dot.current { background: var(--accent); border-color: var(--accent); }
-    .mreq-step-dot.issue   { background: var(--red); border-color: var(--red); }
-    .mreq-step-label { font-size: 9px; color: var(--text-muted); margin-top: 3px; text-align: center; max-width: 52px; }
-    .mreq-step-label.active-label { color: var(--accent); font-weight: 700; }
-    .mreq-line {
-      flex: 1; height: 2px; background: var(--border); min-width: 12px; max-width: 28px;
-      margin-bottom: 13px;
-    }
-    .mreq-line.done { background: var(--green); }
-
-    /* New request form */
-    .new-req-form {
+    /* ── Request form (Section C) ── */
+    .req-form-card {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
       margin-bottom: 16px;
     }
-    .new-req-form h3 { font-size: 14px; margin: 0 0 12px; }
     .form-row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
     .form-field { flex: 1; min-width: 120px; }
     .form-field label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 3px; font-weight: 600; }
@@ -241,6 +266,36 @@
       border: none; border-radius: var(--radius);
       font-size: 14px; font-weight: 700; cursor: pointer;
     }
+    .form-submit-btn:disabled { background: var(--green); cursor: default; }
+
+    /* ── EOD section ── */
+    .eod-section {
+      background: var(--sidebar-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 8px;
+    }
+    .eod-section h2 { color: #fff; font-size: 15px; margin: 0 0 4px; }
+    .eod-section p { color: rgba(255,255,255,0.6); font-size: 12px; margin: 0 0 16px; }
+    .eod-submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .eod-submit-btn:disabled { background: var(--green); cursor: default; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
@@ -253,7 +308,7 @@
 <div class="tasks-layout">
 
 <!-- Left Sidebar -->
-<div class="tasks-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+<div class="tasks-sidebar">
   <a href="/" class="staff-nav-btn" style="text-decoration:none;">
     <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
   </a>
@@ -288,87 +343,111 @@
 <div class="tasks-main" style="overflow-y:auto;padding:0;">
 <div class="install-page">
 
-  <!-- Tab bar -->
-  <div class="install-tabs">
-    <div class="install-tab active" id="itab-install" onclick="switchITab('install')">🔧 Installation</div>
-    <div class="install-tab" id="itab-requests" onclick="switchITab('requests')">📋 My Requests</div>
+  <!-- ── Engineer Selector ── -->
+  <div class="engineer-selector">
+    <label>Site Engineer:</label>
+    <select id="engineer-select">
+      <option value="">— All Engineers —</option>
+      <option value="Teo Meei Haw">Teo Meei Haw</option>
+      <option value="Jun Jie">Jun Jie</option>
+    </select>
   </div>
 
-  <!-- Panel: Installation -->
-  <div id="ipanel-install">
-    <div id="install-projects">
-      <div class="empty-state">Loading…</div>
+  <!-- ── SECTION A: My Projects ── -->
+  <div class="install-section-hdr">
+    <div>
+      <div class="install-section-title">🏗 My Projects</div>
+      <div class="install-section-sub">Tap a project to log installation progress</div>
     </div>
-    <div style="height:40px;"></div>
+    <div id="proj-count" style="font-size:12px;color:var(--text-muted);"></div>
+  </div>
+  <div id="section-projects">
+    <div class="empty-state">Loading…</div>
   </div>
 
-  <!-- Panel: My Requests -->
-  <div id="ipanel-requests" style="display:none;">
-    <!-- New request form -->
-    <div class="new-req-form" id="new-req-form" style="display:none;">
-      <h3>+ New Factory Request</h3>
-      <div class="form-row">
-        <div class="form-field" style="flex:2;">
-          <label>Item / Description *</label>
-          <input type="text" id="nrf-item" placeholder="e.g. Bollard Base Plate">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label>Qty *</label>
-          <input type="number" id="nrf-qty" min="1" value="1" style="width:80px;">
-        </div>
-        <div class="form-field">
-          <label>Unit</label>
-          <input type="text" id="nrf-unit" placeholder="pcs / sets / m">
-        </div>
-        <div class="form-field">
-          <label>Need By *</label>
-          <input type="date" id="nrf-date">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label>Project</label>
-          <select id="nrf-project"><option value="">— Select Project —</option></select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label>Requested By *</label>
-          <input type="text" id="nrf-requester" placeholder="Your name">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-field">
-          <label>Notes</label>
-          <textarea id="nrf-notes" placeholder="Any special requirements?"></textarea>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="form-submit-btn" onclick="submitNewRequest()" style="flex:2;">📤 Submit to Factory</button>
-        <button class="form-submit-btn" onclick="document.getElementById('new-req-form').style.display='none'" style="flex:1;background:var(--bg3);color:var(--text);border:1px solid var(--border);">Cancel</button>
-      </div>
+  <!-- ── SECTION B: Factory Status ── -->
+  <div class="install-section-hdr">
+    <div>
+      <div class="install-section-title">📦 Factory Status</div>
+      <div class="install-section-sub">Status of items requested from factory</div>
     </div>
-
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div style="font-size:13px;font-weight:700;">Site → Factory Requests</div>
-      <button onclick="toggleNewReqForm()" style="padding:7px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:700;cursor:pointer;">+ New Request</button>
-    </div>
-
-    <div id="mreq-list">
-      <div class="empty-state">Loading…</div>
-    </div>
-    <div style="height:40px;"></div>
+    <span id="ready-badge" style="display:none;background:var(--green);color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:2px 8px;"></span>
+  </div>
+  <div id="section-factory-status">
+    <div class="empty-state">Loading…</div>
   </div>
 
+  <!-- ── SECTION C: Request from Factory ── -->
+  <div class="install-section-hdr">
+    <div>
+      <div class="install-section-title">📤 Request from Factory</div>
+      <div class="install-section-sub">Ask Chris to fabricate / prepare items</div>
+    </div>
+  </div>
+  <div class="req-form-card">
+    <div class="form-row">
+      <div class="form-field" style="flex:2;">
+        <label>Project *</label>
+        <select id="req-project"><option value="">— Select Project —</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field" style="flex:3;">
+        <label>Item Description *</label>
+        <input type="text" id="req-item" placeholder="e.g. Bollard Base Plate">
+      </div>
+      <div class="form-field" style="max-width:80px;">
+        <label>Qty *</label>
+        <input type="number" id="req-qty" min="1" value="1">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Urgency</label>
+        <select id="req-urgency">
+          <option value="Normal">Normal</option>
+          <option value="Urgent">Urgent</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Notes</label>
+        <textarea id="req-notes" placeholder="Special requirements, specs…"></textarea>
+      </div>
+    </div>
+    <button class="form-submit-btn" id="req-submit-btn">📤 Submit Request</button>
+    <div id="req-msg" style="display:none;margin-top:8px;font-size:12px;font-weight:600;"></div>
+  </div>
+
+  <!-- ── SECTION D: End of Day ── -->
+  <div class="install-section-hdr">
+    <div>
+      <div class="install-section-title">📋 End of Day</div>
+    </div>
+  </div>
+  <div class="eod-section">
+    <h2>Submit Today's Update</h2>
+    <p>Saves all counter changes and logs your EOD report.</p>
+    <textarea id="install-notes" placeholder="Any issues today? Access problems? Delays?" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius);padding:10px;color:#fff;font-size:13px;resize:vertical;min-height:60px;margin-bottom:12px;box-sizing:border-box;"></textarea>
+    <button class="eod-submit-btn" id="install-eod-btn">✅ Submit Today's Update</button>
+    <div id="eod-error-msg" style="display:none;margin-top:8px;color:#ff7b8e;font-size:12px;font-weight:600;"></div>
+  </div>
+
+  <div style="height:40px;"></div>
 </div><!-- /install-page -->
 </div><!-- /tasks-main -->
 </div><!-- /tasks-layout -->
 
 <script>
-let projectData = {};      // id → full project object
+'use strict';
+
+// ── State ──────────────────────────────────────────────────────────────────
+let projectData    = {};   // id → full project object
 let pendingUpdates = {};   // { pid: { idx: { doneQty, notes } } }
+let allActiveProjects = [];
+let currentEngineer = localStorage.getItem('currentEngineer') || '';
+let siteRequests = [];
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -376,25 +455,46 @@ document.getElementById('install-date').textContent = new Date().toLocaleDateStr
   weekday: 'short', day: 'numeric', month: 'short'
 });
 
+// ── Engineer selector ──────────────────────────────────────────────────────
+const engineerSel = document.getElementById('engineer-select');
+engineerSel.value = currentEngineer;
+engineerSel.addEventListener('change', () => {
+  currentEngineer = engineerSel.value;
+  localStorage.setItem('currentEngineer', currentEngineer);
+  renderProjects(allActiveProjects);
+  renderFactoryStatus();
+});
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 function isOverdue(proj) {
   const d = proj.endDate || proj.contractEndDate || proj.targetEndDate;
   return d && d < today;
 }
-
 function installPct(installation) {
   const total = installation.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
   const done  = installation.reduce((s, r) => s + (parseFloat(r.doneQty)  || 0), 0);
   return total > 0 ? Math.round(done / total * 100) : 0;
 }
-
-function formatDate(d) {
-  if (!d) return '—';
-  const dt = new Date(d + 'T00:00:00');
-  return dt.toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
+function statusColor(status) {
+  return { 'On Track': 'var(--green)', 'Active': 'var(--green)', 'Delayed': 'var(--red)', 'On Hold': 'var(--amber)', 'Completed': '#6b7294' }[status] || '#6b7294';
 }
 
+// ── Init ───────────────────────────────────────────────────────────────────
 async function init() {
-  const all = await fetch('/api/projects').then(r => r.json()).catch(() => []);
+  const [all, srAll] = await Promise.all([
+    fetch('/api/projects').then(r => r.json()).catch(() => []),
+    fetch('/api/site-requests').then(r => r.json()).catch(() => [])
+  ]);
+
+  siteRequests = srAll;
+
   const active = all.filter(p =>
     p.status === 'Active' || p.status === 'On Track' || p.status === 'Delayed'
   );
@@ -403,165 +503,190 @@ async function init() {
     active.map(p => fetch('/api/projects/' + p.id).then(r => r.json()).catch(() => null))
   );
 
-  const withInstall = fullProjects
+  allActiveProjects = fullProjects
     .filter(p => p && p.installation && p.installation.length > 0);
 
-  // Sort: overdue first, then by install % asc
-  withInstall.sort((a, b) => {
+  allActiveProjects.sort((a, b) => {
     const ao = isOverdue(a) ? 0 : 1, bo = isOverdue(b) ? 0 : 1;
     if (ao !== bo) return ao - bo;
     return installPct(a.installation) - installPct(b.installation);
   });
 
-  withInstall.forEach(p => {
+  allActiveProjects.forEach(p => {
     projectData[p.id] = p;
     pendingUpdates[p.id] = {};
   });
 
-  render(withInstall);
+  // Populate project selector
+  const projSel = document.getElementById('req-project');
+  projSel.innerHTML = '<option value="">— Select Project —</option>' +
+    allActiveProjects.map(p =>
+      `<option value="${esc(p.id)}" data-jc="${esc(p.jobCode||'')}" data-name="${esc(p.projectName||p.name||'')}">${esc((p.jobCode||'') + ' ' + (p.projectName||p.name||''))}</option>`
+    ).join('');
+
+  renderProjects(allActiveProjects);
+  renderFactoryStatus();
 }
 
-function render(list) {
-  const container = document.getElementById('install-projects');
-  container.innerHTML = '';
+// ── Section A: Render Projects ─────────────────────────────────────────────
+function renderProjects(list) {
+  const container = document.getElementById('section-projects');
 
-  if (!list.length) {
-    container.innerHTML = '<div class="empty-state">🏗️ No active installation items found</div>';
+  // Filter by selected engineer if a project has siteEngineer set
+  let filtered = list;
+  if (currentEngineer) {
+    filtered = list.filter(p =>
+      !p.siteEngineer || p.siteEngineer === currentEngineer
+    );
+  }
+
+  document.getElementById('proj-count').textContent = filtered.length + ' project' + (filtered.length !== 1 ? 's' : '');
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-state">🏗️ No active installation projects found</div>';
     return;
   }
 
-  list.forEach(proj => {
-    const endDate   = proj.endDate || proj.contractEndDate || proj.targetEndDate || '';
-    const overdue   = isOverdue(proj);
-    const pct       = installPct(proj.installation);
-    const engineer  = proj.siteEngineer || '—';
+  container.innerHTML = '';
+  filtered.forEach(proj => {
+    const endDate  = proj.endDate || proj.contractEndDate || proj.targetEndDate || '';
+    const overdue  = isOverdue(proj);
+    const pct      = installPct(proj.installation);
+    const pctColor = pct >= 100 ? 'var(--green)' : pct > 0 ? 'var(--accent)' : 'var(--text-muted)';
 
-    const group = document.createElement('div');
-    group.className = 'install-project-group';
+    const card = document.createElement('div');
+    card.className = 'install-project-card' + (overdue ? ' overdue' : '');
 
-    const overdueHtml = overdue ? '<span class="overdue-badge">OVERDUE</span>' : '';
-    group.innerHTML = `
-      <div class="install-project-title">
-        <div class="install-project-title-main">
-          ${esc(proj.jobCode || '')} · ${esc(proj.projectName || proj.name || '')}${overdueHtml}
+    card.innerHTML = `
+      <div class="install-card-header" onclick="toggleCard('${esc(proj.id)}')">
+        <div class="install-card-title">
+          <span>${esc(proj.jobCode || '')} · ${esc(proj.projectName || proj.name || '')}</span>
+          ${overdue ? '<span class="overdue-badge">OVERDUE</span>' : ''}
         </div>
-        <div class="install-project-meta">
-          <span>👷 ${esc(engineer)} &nbsp;·&nbsp; 📅 ${endDate ? formatDate(endDate) : '—'}</span>
+        <div class="install-card-meta">
+          <span>👤 ${esc(proj.siteEngineer || '—')} &nbsp;·&nbsp; 🏢 ${esc(proj.client || '—')}</span>
           <span style="color:#fff;font-weight:700;">${pct}% installed</span>
         </div>
+        <div class="prog-bar-sm">
+          <div class="prog-fill-sm" style="width:${pct}%;background:${pctColor};"></div>
+        </div>
+      </div>
+      <div class="install-card-items" id="items-${esc(proj.id)}"></div>
+    `;
+
+    container.appendChild(card);
+    buildItemsForCard(proj);
+  });
+}
+
+function toggleCard(pid) {
+  const el = document.getElementById('items-' + pid);
+  if (!el) return;
+  el.classList.toggle('open');
+}
+
+function buildItemsForCard(proj) {
+  const container = document.getElementById('items-' + proj.id);
+  if (!container) return;
+  container.innerHTML = '';
+
+  proj.installation.forEach((row, idx) => {
+    const totalQty    = parseFloat(row.totalQty) || 0;
+    const currentDone = parseFloat(row.doneQty)  || 0;
+    const rowPct      = totalQty > 0 ? Math.round(currentDone / totalQty * 100) : 0;
+    const pctColor    = rowPct >= 100 ? 'var(--green)' : rowPct > 0 ? 'var(--amber)' : 'var(--text-muted)';
+
+    const item = document.createElement('div');
+    item.className = 'install-item';
+    item.innerHTML = `
+      <div class="install-item-row">
+        <div class="install-item-info">
+          <div class="install-item-name">${esc(row.item || 'Item ' + (idx + 1))}</div>
+          <div class="install-item-sub">${esc(row.unit || '')}${row.unit && totalQty ? ' · ' : ''}${totalQty ? 'Total: ' + totalQty : ''}</div>
+        </div>
+        <div class="counter">
+          <button class="counter-btn minus" data-pid="${esc(proj.id)}" data-idx="${idx}">−</button>
+          <div class="counter-val" id="val-${esc(proj.id)}-${idx}" style="color:${rowPct >= 100 ? 'var(--green)' : 'var(--text)'};">${currentDone}</div>
+          <button class="counter-btn plus"  data-pid="${esc(proj.id)}" data-idx="${idx}">+</button>
+        </div>
+        <div class="counter-total">
+          <div>of</div>
+          <div style="font-weight:700;">${totalQty}</div>
+        </div>
+        <div class="install-pct-badge" id="pct-${esc(proj.id)}-${idx}" style="color:${pctColor};">${rowPct}%</div>
+      </div>
+      <textarea class="install-notes-input" id="notes-${esc(proj.id)}-${idx}" rows="1"
+        placeholder="Notes for this item…">${esc(row.notes || '')}</textarea>
+      <div class="save-row">
+        <button class="save-item-btn" id="save-${esc(proj.id)}-${idx}"
+          data-pid="${esc(proj.id)}" data-idx="${idx}">💾 Save</button>
+        <span class="save-ok" id="ok-${esc(proj.id)}-${idx}">✅ Saved</span>
       </div>
     `;
 
-    proj.installation.forEach((row, idx) => {
-      const totalQty    = parseFloat(row.totalQty) || 0;
-      const currentDone = parseFloat(row.doneQty)  || 0;
-      const rowPct      = totalQty > 0 ? Math.round(currentDone / totalQty * 100) : 0;
-      const pctColor    = rowPct >= 100 ? 'var(--green)' : rowPct > 0 ? 'var(--amber)' : 'var(--text-muted)';
+    container.appendChild(item);
+  });
 
-      const item = document.createElement('div');
-      item.className = 'install-item';
+  // Wire counter buttons
+  container.querySelectorAll('.counter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pid  = btn.dataset.pid;
+      const idx  = parseInt(btn.dataset.idx);
+      const row  = projectData[pid].installation[idx];
+      const total = parseFloat(row.totalQty) || 0;
+      let cur = pendingUpdates[pid][idx] !== undefined
+        ? pendingUpdates[pid][idx].doneQty
+        : (parseFloat(row.doneQty) || 0);
 
-      item.innerHTML = `
-        <div class="install-item-row">
-          <div class="install-item-info">
-            <div class="install-item-name">${esc(row.item || 'Item ' + (idx + 1))}</div>
-            <div class="install-item-sub">${esc(row.unit || '')}${row.unit && totalQty ? ' · ' : ''}${totalQty ? 'Total: ' + totalQty : ''}</div>
-          </div>
-          <div class="counter">
-            <button class="counter-btn minus" data-pid="${esc(proj.id)}" data-idx="${idx}">−</button>
-            <div class="counter-val" id="val-${esc(proj.id)}-${idx}" style="color:${rowPct >= 100 ? 'var(--green)' : 'var(--text)'};">${currentDone}</div>
-            <button class="counter-btn plus"  data-pid="${esc(proj.id)}" data-idx="${idx}">+</button>
-          </div>
-          <div class="counter-total">
-            <div>of</div>
-            <div style="font-weight:700;">${totalQty}</div>
-          </div>
-          <div class="install-pct-badge" id="pct-${esc(proj.id)}-${idx}" style="color:${pctColor};">${rowPct}%</div>
-        </div>
-        <textarea class="install-notes-input" id="notes-${esc(proj.id)}-${idx}" rows="1"
-          placeholder="Notes for this item…">${esc(row.notes || '')}</textarea>
-        <div class="save-row">
-          <button class="save-item-btn" id="save-${esc(proj.id)}-${idx}"
-            data-pid="${esc(proj.id)}" data-idx="${idx}">💾 Save</button>
-          <span class="save-ok" id="ok-${esc(proj.id)}-${idx}">✅ Saved</span>
-        </div>
-      `;
+      if (btn.classList.contains('plus'))  cur = Math.min(total, cur + 1);
+      if (btn.classList.contains('minus')) cur = Math.max(0, cur - 1);
 
-      group.appendChild(item);
+      if (!pendingUpdates[pid][idx]) pendingUpdates[pid][idx] = {};
+      pendingUpdates[pid][idx].doneQty = cur;
+
+      const valEl = document.getElementById('val-' + pid + '-' + idx);
+      valEl.textContent = cur;
+      valEl.style.color = (total > 0 && cur >= total) ? 'var(--green)' : 'var(--text)';
+
+      const pctVal = total > 0 ? Math.round(cur / total * 100) : 0;
+      const pctEl  = document.getElementById('pct-' + pid + '-' + idx);
+      pctEl.textContent = pctVal + '%';
+      pctEl.style.color = pctVal >= 100 ? 'var(--green)' : pctVal > 0 ? 'var(--amber)' : 'var(--text-muted)';
     });
+  });
 
-    // Wire counter buttons
-    group.querySelectorAll('.counter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const pid  = btn.dataset.pid;
-        const idx  = parseInt(btn.dataset.idx);
-        const row  = projectData[pid].installation[idx];
-        const total = parseFloat(row.totalQty) || 0;
-        let cur = pendingUpdates[pid][idx] !== undefined
-          ? pendingUpdates[pid][idx].doneQty
-          : (parseFloat(row.doneQty) || 0);
-
-        if (btn.classList.contains('plus'))  cur = Math.min(total, cur + 1);
-        if (btn.classList.contains('minus')) cur = Math.max(0, cur - 1);
-
-        if (!pendingUpdates[pid][idx]) pendingUpdates[pid][idx] = {};
-        pendingUpdates[pid][idx].doneQty = cur;
-
-        const valEl = document.getElementById('val-' + pid + '-' + idx);
-        valEl.textContent = cur;
-        valEl.style.color = (total > 0 && cur >= total) ? 'var(--green)' : 'var(--text)';
-
-        const pctVal = total > 0 ? Math.round(cur / total * 100) : 0;
-        const pctEl = document.getElementById('pct-' + pid + '-' + idx);
-        pctEl.textContent = pctVal + '%';
-        pctEl.style.color = pctVal >= 100 ? 'var(--green)' : pctVal > 0 ? 'var(--amber)' : 'var(--text-muted)';
-      });
-    });
-
-    // Wire save buttons
-    group.querySelectorAll('.save-item-btn').forEach(btn => {
-      btn.addEventListener('click', () => saveItem(btn.dataset.pid, parseInt(btn.dataset.idx)));
-    });
-
-    container.appendChild(group);
+  // Wire save buttons
+  container.querySelectorAll('.save-item-btn').forEach(btn => {
+    btn.addEventListener('click', () => saveItem(btn.dataset.pid, parseInt(btn.dataset.idx)));
   });
 }
 
 async function saveItem(pid, idx) {
-  const proj = projectData[pid];
+  const proj     = projectData[pid];
   if (!proj) return;
-
   const saveBtn  = document.getElementById('save-' + pid + '-' + idx);
   const notesEl  = document.getElementById('notes-' + pid + '-' + idx);
   const okEl     = document.getElementById('ok-' + pid + '-' + idx);
-
-  const doneQty = pendingUpdates[pid][idx] !== undefined
+  const doneQty  = pendingUpdates[pid][idx] !== undefined
     ? pendingUpdates[pid][idx].doneQty
     : (parseFloat(proj.installation[idx].doneQty) || 0);
   const notes = notesEl ? notesEl.value.trim() : '';
 
   saveBtn.disabled = true;
   saveBtn.textContent = '⏳ Saving…';
-
   try {
     const r = await fetch('/api/projects/' + pid + '/installation/' + idx, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ doneQty, notes })
     });
-
     if (r.ok) {
       const updated = await r.json();
       proj.installation[idx] = updated;
       delete pendingUpdates[pid][idx];
-
       saveBtn.textContent = '✅ Saved';
       if (okEl) okEl.style.display = 'inline';
-      setTimeout(() => {
-        saveBtn.textContent = '💾 Save';
-        saveBtn.disabled = false;
-        if (okEl) okEl.style.display = 'none';
-      }, 2000);
+      setTimeout(() => { saveBtn.textContent = '💾 Save'; saveBtn.disabled = false; if (okEl) okEl.style.display = 'none'; }, 2000);
     } else {
       saveBtn.textContent = '❌ Error — Retry';
       saveBtn.disabled = false;
@@ -572,173 +697,185 @@ async function saveItem(pid, idx) {
   }
 }
 
-function esc(s) {
-  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
+// ── Section B: Factory Status ──────────────────────────────────────────────
+function renderFactoryStatus() {
+  const container = document.getElementById('section-factory-status');
 
-// ── Tab switching ──────────────────────────────────────────────────────────────
-function switchITab(tab) {
-  document.getElementById('ipanel-install').style.display  = tab === 'install'  ? '' : 'none';
-  document.getElementById('ipanel-requests').style.display = tab === 'requests' ? '' : 'none';
-  document.getElementById('itab-install').classList.toggle('active',  tab === 'install');
-  document.getElementById('itab-requests').classList.toggle('active', tab === 'requests');
-  if (tab === 'requests') loadMyRequests();
-}
-
-// ── My Requests ────────────────────────────────────────────────────────────────
-const SR_STEPS = ['New', 'Acknowledged', 'In Fabrication', 'Ready', 'Delivered'];
-
-async function loadMyRequests() {
-  try {
-    const reqs = await fetch('/api/site-requests').then(r => r.json());
-    await loadProjectsForForm();
-    renderMyRequests(reqs);
-  } catch {
-    document.getElementById('mreq-list').innerHTML = '<div class="empty-state">Failed to load requests</div>';
+  // Filter by current engineer
+  let myReqs = siteRequests.filter(r => r.status !== 'Delivered');
+  if (currentEngineer) {
+    myReqs = myReqs.filter(r => !r.requestedBy || r.requestedBy === currentEngineer);
   }
-}
 
-let allProjectsForForm = [];
-async function loadProjectsForForm() {
-  if (allProjectsForForm.length) return;
-  try {
-    const ps = await fetch('/api/projects').then(r => r.json());
-    allProjectsForForm = ps.filter(p => p.status !== 'Completed');
-    const sel = document.getElementById('nrf-project');
-    if (!sel) return;
-    sel.innerHTML = '<option value="">— Select Project —</option>' +
-      allProjectsForForm.map(p =>
-        `<option value="${esc(p.id)}" data-jc="${esc(p.jobCode||'')}" data-name="${esc(p.projectName||p.name||'')}">${esc((p.jobCode||'') + ' ' + (p.projectName||p.name||''))}</option>`
-      ).join('');
-  } catch {}
-}
-
-function renderMyRequests(reqs) {
-  const today = new Date().toISOString().split('T')[0];
-  // Sort: undelivered first, then by neededByDate asc
-  const sorted = reqs.slice().sort((a, b) => {
-    const aDone = a.status === 'Delivered' ? 1 : 0;
-    const bDone = b.status === 'Delivered' ? 1 : 0;
-    if (aDone !== bDone) return aDone - bDone;
+  // Sort: Ready first (needs collection), then by date
+  myReqs.sort((a, b) => {
+    const aReady = a.status === 'Ready' ? 0 : 1;
+    const bReady = b.status === 'Ready' ? 0 : 1;
+    if (aReady !== bReady) return aReady - bReady;
     if (!a.neededByDate) return 1;
     if (!b.neededByDate) return -1;
     return a.neededByDate.localeCompare(b.neededByDate);
   });
 
-  const container = document.getElementById('mreq-list');
-  if (!sorted.length) {
-    container.innerHTML = '<div class="empty-state">No requests yet. Tap + New Request to get started.</div>';
+  const readyCount = myReqs.filter(r => r.status === 'Ready').length;
+  const badge = document.getElementById('ready-badge');
+  if (badge) {
+    badge.textContent = readyCount + ' ready to collect';
+    badge.style.display = readyCount > 0 ? '' : 'none';
+  }
+
+  if (!myReqs.length) {
+    container.innerHTML = '<div class="empty-state">No pending factory requests</div>';
     return;
   }
+
   container.innerHTML = '';
-
-  sorted.forEach(req => {
-    const overdue = req.status !== 'Delivered' && req.neededByDate && req.neededByDate < today;
-    const card = document.createElement('div');
-    card.className = 'mreq-card' + (overdue ? ' overdue' : '');
-
+  myReqs.forEach(req => {
+    const isReady   = req.status === 'Ready';
     const statusKey = req.status.replace(/ /g, '-');
-    const neededFmt = req.neededByDate ? formatIDate(req.neededByDate) : '—';
-    const stepIdx   = SR_STEPS.indexOf(req.status);
-
-    // Build pipeline
-    let pipelineHtml = '<div class="mreq-pipeline">';
-    SR_STEPS.forEach((step, i) => {
-      const isDone    = req.status !== 'Issue' && i < stepIdx;
-      const isCurrent = i === stepIdx && req.status !== 'Issue';
-      const isIssue   = req.status === 'Issue' && i === stepIdx;
-      const dotClass  = isIssue ? 'issue' : isDone ? 'done' : isCurrent ? 'current' : '';
-      const lblClass  = (isCurrent || isIssue) ? 'active-label' : '';
-      pipelineHtml += `<div class="mreq-step">
-        <div class="mreq-step-dot ${dotClass}"></div>
-        <div class="mreq-step-label ${lblClass}">${esc(step)}</div>
-      </div>`;
-      if (i < SR_STEPS.length - 1) {
-        pipelineHtml += `<div class="mreq-line ${isDone ? 'done' : ''}"></div>`;
-      }
-    });
-    if (req.status === 'Issue') {
-      pipelineHtml += `</div><div style="padding:0 14px 8px;font-size:11px;color:var(--red);">🚩 Issue: ${esc(req.issueReason || 'Contact Chris')}</div>`;
-    } else {
-      pipelineHtml += '</div>';
-    }
-
-    card.innerHTML = `
-      <div class="mreq-header">
-        <div class="mreq-item-name">
-          ${esc(req.item)}
-          <span class="mreq-status-badge mreq-status-${statusKey}">${esc(req.status)}</span>
-        </div>
-        <div class="mreq-meta">
-          <span>📦 ${esc(String(req.quantity||''))} ${esc(req.unit||'')}</span>
-          ${req.projectJobCode||req.projectName ? `<span>📋 ${esc(req.projectJobCode||req.projectName)}</span>` : ''}
-          <span>📅 Needed: <strong>${esc(neededFmt)}</strong>${overdue ? ' <span style="color:var(--red);">⚠ OVERDUE</span>' : ''}</span>
-          ${req.estimatedReadyDate ? `<span>🏭 Est. ready: ${formatIDate(req.estimatedReadyDate)}</span>` : ''}
-          ${req.chrisNotes ? `<span style="color:var(--text);">Chris: ${esc(req.chrisNotes)}</span>` : ''}
-          <span style="color:var(--text-muted);">By ${esc(req.requestedBy)}</span>
+    const card      = document.createElement('div');
+    card.className  = 'fstat-card' + (isReady ? ' ready' : '');
+    card.innerHTML  = `
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <div style="flex:1;min-width:0;">
+          <div class="fstat-item-name">
+            ${esc(req.item)}
+            <span class="fstat-status-badge fstat-status-${statusKey}">${esc(req.status)}</span>
+            ${isReady ? '<span class="ready-collect-badge">📦 COLLECT NOW</span>' : ''}
+          </div>
+          <div class="fstat-meta">
+            <span>📦 ${esc(String(req.quantity || ''))} ${esc(req.unit || '')}</span>
+            ${req.projectJobCode || req.projectName ? `<span>📋 ${esc(req.projectJobCode || req.projectName)}</span>` : ''}
+            ${req.neededByDate ? `<span>📅 Needed: ${formatDate(req.neededByDate)}</span>` : ''}
+            ${req.estimatedReadyDate ? `<span>🏭 Est. ready: ${formatDate(req.estimatedReadyDate)}</span>` : ''}
+            ${req.chrisNotes ? `<span style="color:var(--text);">Chris: ${esc(req.chrisNotes)}</span>` : ''}
+          </div>
         </div>
       </div>
-      ${pipelineHtml}
     `;
     container.appendChild(card);
   });
 }
 
-function toggleNewReqForm() {
-  const form = document.getElementById('new-req-form');
-  form.style.display = form.style.display === 'none' ? '' : 'none';
-}
+// ── Section C: Submit Request ──────────────────────────────────────────────
+document.getElementById('req-submit-btn').addEventListener('click', async () => {
+  const btn     = document.getElementById('req-submit-btn');
+  const msgEl   = document.getElementById('req-msg');
+  const projSel = document.getElementById('req-project');
+  const item    = document.getElementById('req-item').value.trim();
+  const qty     = parseFloat(document.getElementById('req-qty').value) || 1;
+  const urgency = document.getElementById('req-urgency').value;
+  const notes   = document.getElementById('req-notes').value.trim();
+  const projOpt = projSel.selectedIndex > 0 ? projSel.options[projSel.selectedIndex] : null;
+  const eng     = currentEngineer || 'Site Engineer';
 
-async function submitNewRequest() {
-  const item      = document.getElementById('nrf-item').value.trim();
-  const qty       = parseFloat(document.getElementById('nrf-qty').value) || 1;
-  const unit      = document.getElementById('nrf-unit').value.trim();
-  const date      = document.getElementById('nrf-date').value;
-  const requester = document.getElementById('nrf-requester').value.trim();
-  const notes     = document.getElementById('nrf-notes').value.trim();
-  const projSel   = document.getElementById('nrf-project');
-  const projOpt   = projSel && projSel.selectedIndex > 0 ? projSel.options[projSel.selectedIndex] : null;
+  if (!item) { showMsg('Item description is required.', 'error'); return; }
 
-  if (!item || !date || !requester) {
-    alert('Item, Need By date, and your name are required.');
-    return;
-  }
+  // Compute neededByDate from urgency
+  const msOffset  = urgency === 'Urgent' ? 86400000 : 7 * 86400000;
+  const needDate  = new Date(Date.now() + msOffset).toISOString().split('T')[0];
 
   const body = {
-    item, quantity: qty, unit, neededByDate: date,
-    requestedBy: requester, notes,
-    projectId:       projOpt ? projOpt.value : '',
-    projectJobCode:  projOpt ? projOpt.dataset.jc : '',
-    projectName:     projOpt ? projOpt.dataset.name : ''
+    item, quantity: qty, unit: 'pcs',
+    neededByDate: needDate,
+    requestedBy: eng,
+    notes: (urgency === 'Urgent' ? '[URGENT] ' : '') + notes,
+    projectId:      projOpt ? projOpt.value : '',
+    projectJobCode: projOpt ? projOpt.dataset.jc : '',
+    projectName:    projOpt ? projOpt.dataset.name : ''
   };
 
+  btn.disabled = true;
+  btn.textContent = '⏳ Submitting…';
   try {
     const r = await fetch('/api/site-requests', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-    if (!r.ok) {
-      const err = await r.json().catch(() => ({}));
-      throw new Error(err.error || 'Submit failed');
-    }
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Submit failed');
+    const newReq = await r.json();
+    siteRequests.unshift(newReq);
+
     // Reset form
-    ['nrf-item','nrf-unit','nrf-requester','nrf-notes'].forEach(id => { document.getElementById(id).value = ''; });
-    document.getElementById('nrf-qty').value = 1;
-    document.getElementById('nrf-date').value = '';
-    if (projSel) projSel.selectedIndex = 0;
-    document.getElementById('new-req-form').style.display = 'none';
-    await loadMyRequests();
+    document.getElementById('req-item').value = '';
+    document.getElementById('req-qty').value = 1;
+    document.getElementById('req-urgency').value = 'Normal';
+    document.getElementById('req-notes').value = '';
+    projSel.selectedIndex = 0;
+
+    showMsg('Request submitted! Chris will be notified.', 'success');
+    renderFactoryStatus();
   } catch (e) {
-    alert('Error: ' + e.message);
+    showMsg('Error: ' + e.message, 'error');
   }
+  btn.disabled = false;
+  btn.textContent = '📤 Submit Request';
+});
+
+function showMsg(text, type) {
+  const el = document.getElementById('req-msg');
+  el.textContent = text;
+  el.style.color = type === 'error' ? 'var(--red)' : 'var(--green)';
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
 }
 
-function formatIDate(d) {
-  if (!d) return '—';
-  const dt = new Date(d + 'T00:00:00');
-  return dt.toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
-}
+// ── Section D: EOD ─────────────────────────────────────────────────────────
+document.getElementById('install-eod-btn').addEventListener('click', async () => {
+  const btn   = document.getElementById('install-eod-btn');
+  const notes = document.getElementById('install-notes').value.trim();
+  const eng   = currentEngineer || 'Site Engineer';
+  btn.textContent = '⏳ Saving…';
+  btn.disabled = true;
+
+  try {
+    // Save any unsaved counter changes
+    const savePromises = [];
+    for (const [pid, idxMap] of Object.entries(pendingUpdates)) {
+      for (const [idx, data] of Object.entries(idxMap)) {
+        if (data.doneQty !== undefined) {
+          const proj = projectData[pid];
+          const notesVal = (document.getElementById('notes-' + pid + '-' + idx) || {}).value || '';
+          savePromises.push(
+            fetch('/api/projects/' + pid + '/installation/' + parseInt(idx), {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ doneQty: data.doneQty, notes: notesVal })
+            }).then(r => r.json()).then(updated => {
+              if (proj) proj.installation[parseInt(idx)] = updated;
+              delete pendingUpdates[pid][idx];
+            })
+          );
+        }
+      }
+    }
+    await Promise.all(savePromises);
+
+    // Submit EOD log
+    const eodRes = await fetch('/api/eod-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        staffName: eng,
+        role: 'Site Engineer',
+        notes,
+        date: today,
+        hours: 9
+      })
+    });
+    if (!eodRes.ok) throw new Error('Failed to submit EOD log');
+
+    btn.textContent = '✅ Submitted! Good work today.';
+    pendingUpdates = {};
+    setTimeout(() => { btn.textContent = '✅ Submit Today\'s Update'; btn.disabled = false; }, 4000);
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '✅ Submit Today\'s Update';
+    const errEl = document.getElementById('eod-error-msg');
+    if (errEl) { errEl.textContent = err.message; errEl.style.display = 'block'; }
+  }
+});
 
 init();
 </script>

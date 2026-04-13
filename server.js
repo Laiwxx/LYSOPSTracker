@@ -63,7 +63,7 @@ app.use((req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const APP_URL = process.env.APP_URL || 'http://localhost:3000';
+const APP_URL = process.env.APP_URL || 'https://lys-ops.cloud';
 const DATA_FILE  = path.join(__dirname, 'data', 'projects.json');
 const STAFF_FILE = path.join(__dirname, 'config', 'staff.json');
 const ADMIN_FILE = path.join(__dirname, 'config', 'admin.json');
@@ -96,7 +96,6 @@ app.get('/feedback',     (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('/installation', (req, res) => res.sendFile(path.join(__dirname, 'public', 'installation.html')));
 app.get('/planning',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'planning.html')));
 app.get('/attendance',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'attendance.html')));
-app.get('/monday',       (req, res) => res.sendFile(path.join(__dirname, 'public', 'monday.html')));
 
 // DO (Delivery Order) photo upload
 app.post('/api/upload-do', upload.single('file'), (req, res) => {
@@ -124,6 +123,7 @@ const MONDAY_FLAGS_FILE  = path.join(__dirname, 'data', 'monday-flags.json');
 const SUPPLIERS_FILE     = path.join(__dirname, 'data', 'suppliers.json');
 const PRICES_FILE        = path.join(__dirname, 'data', 'prices.json');
 const PO_FILE            = path.join(__dirname, 'data', 'purchase-orders.json');
+const PR_FILE            = path.join(__dirname, 'data', 'purchase-requisitions.json');
 
 // ── Email helper ──────────────────────────────────────────────────────────────
 async function sendEmail(toEmail, toName, subject, htmlBody) {
@@ -437,6 +437,11 @@ app.post('/api/staff', (req, res) => {
 // DELETE /api/staff/:name — remove staff member and any role aliases pointing to them
 app.delete('/api/staff/:name', (req, res) => {
   try {
+    const pin = req.body?.pin || req.headers["x-admin-pin"];
+    const adminData = readAdmin();
+    if (adminData.pin && pin !== adminData.pin) {
+      return res.status(403).json({ error: "Invalid PIN" });
+    }
     const staff = readStaff();
     const name = decodeURIComponent(req.params.name);
     if (!staff[name]) return res.status(404).json({ error: 'Not found' });
@@ -717,6 +722,11 @@ app.put('/api/projects/:id', async (req, res) => {
 // --- API: Delete project ---
 app.delete('/api/projects/:id', (req, res) => {
   try {
+    const pin = req.body?.pin || req.headers["x-admin-pin"];
+    const adminData = readAdmin();
+    if (adminData.pin && pin !== adminData.pin) {
+      return res.status(403).json({ error: "Invalid PIN" });
+    }
     const projects = readProjects();
     const idx = projects.findIndex(p => p.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Not found' });
@@ -807,6 +817,25 @@ app.put('/api/projects/:id/fabrication/:idx', (req, res) => {
     if (!project.fabrication || !project.fabrication[idx]) return res.status(404).json({ error: 'Item not found' });
     const oldItem = { ...project.fabrication[idx] };
     Object.assign(project.fabrication[idx], req.body);
+
+    // ── Task 5: FAB cycle time tracking (silent) ──────────────────────────
+    const fabItem    = project.fabrication[idx];
+    const oldQtyDone = parseFloat(oldItem.qtyDone) || 0;
+    const newQtyDone = parseFloat(fabItem.qtyDone) || 0;
+    const qtyTotal   = parseFloat(fabItem.totalQty) || 0;
+    const nowISO     = new Date().toISOString();
+    if (oldQtyDone === 0 && newQtyDone > 0 && !fabItem.fab_started_at) {
+      fabItem.fab_started_at = nowISO;
+    }
+    if (qtyTotal > 0 && newQtyDone >= qtyTotal && !fabItem.fab_completed_at) {
+      fabItem.fab_completed_at = nowISO;
+    }
+    if (fabItem.fab_started_at && fabItem.fab_completed_at && !fabItem.cycle_days) {
+      const startMs = new Date(fabItem.fab_started_at).getTime();
+      const endMs   = new Date(fabItem.fab_completed_at).getTime();
+      fabItem.cycle_days = Math.round((endMs - startMs) / 86400000 * 10) / 10;
+    }
+
     writeProjects(projects);
     const changes = Object.keys(req.body)
       .filter(k => String(req.body[k]) !== String(oldItem[k]))
@@ -1054,13 +1083,8 @@ app.post('/api/remind', async (req, res) => {
   }
 
   try {
-    const accessToken = await getAccessToken();
-    if (!accessToken) {
-      return res.status(503).json({ error: 'Outlook not configured. Set AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_CLIENT_SECRET, SENDER_EMAIL in .env' });
-    }
-
     const subject = `[Action Required] ${stageName} – ${projectName}`;
-    const body = `
+    const htmlBody = `
 <p>Hi ${ownerName || ownerEmail},</p>
 <p>This is a reminder that the following project stage requires your attention:</p>
 <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
@@ -1073,21 +1097,7 @@ app.post('/api/remind', async (req, res) => {
 <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>
 `.trim();
 
-    await fetch(`https://graph.microsoft.com/v1.0/users/${senderEmail}/sendMail`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: {
-          subject,
-          body: { contentType: 'HTML', content: body },
-          toRecipients: [{ emailAddress: { address: ownerEmail } }]
-        }
-      })
-    });
-
+    await sendEmail(ownerEmail, ownerName, subject, htmlBody);
     res.json({ ok: true, sentTo: ownerEmail });
   } catch (err) {
     logError('route.post.remind', err);
@@ -1480,11 +1490,13 @@ app.get('/api/tasks/kanban', (req, res) => {
 // ── EOD log ───────────────────────────────────────────────────────────────────
 app.post('/api/eod-log', postRateLimit, (req, res) => {
   try {
-  const staffName  = sanitizeStr(req.body.staffName, 100);
+  const staffName   = sanitizeStr(req.body.staffName, 100);
   if (!staffName) return res.status(400).json({ error: 'staffName required' });
   const date        = req.body.date ? sanitizeStr(req.body.date, 10) : '';
-  const totalHours  = req.body.totalHours;
-  const notes       = sanitizeStr(req.body.notes, 2000);
+  const hours       = parseFloat(req.body.hours || req.body.totalHours) || 0;
+  const summary     = sanitizeStr(req.body.summary || req.body.notes || '', 2000);
+  const issues      = sanitizeStr(req.body.issues || '', 2000);
+  const notes       = sanitizeStr(req.body.notes || req.body.summary || '', 2000);
   const taskEntries = Array.isArray(req.body.taskEntries) ? req.body.taskEntries : [];
   if (date && !isValidDate(date)) return res.status(400).json({ error: 'Invalid date (YYYY-MM-DD expected)' });
   const logs = readEOD();
@@ -1494,8 +1506,11 @@ app.post('/api/eod-log', postRateLimit, (req, res) => {
     staffName,
     date: logDate,
     submittedAt: new Date().toISOString(),
-    totalHours: parseFloat(totalHours) || 0,
+    totalHours: hours,
+    hours,
     notes: notes || '',
+    summary: summary || '',
+    issues: issues || '',
     taskEntries: taskEntries || []
   };
   // Duplicate guard: replace existing entry for same staff + date
@@ -1638,6 +1653,11 @@ app.put('/api/claims/:id', (req, res) => {
 // DELETE
 app.delete('/api/claims/:id', (req, res) => {
   try {
+    const pin = req.body?.pin || req.headers["x-admin-pin"];
+    const adminData = readAdmin();
+    if (adminData.pin && pin !== adminData.pin) {
+      return res.status(403).json({ error: "Invalid PIN" });
+    }
     let claims = readClaims();
     claims = claims.filter(c => c.id !== req.params.id);
     writeClaims(claims);
@@ -1649,6 +1669,11 @@ app.get('/api/eod-log', (req, res) => {
   try {
   const logs = readEOD();
   const date = req.query.date || new Date().toISOString().split('T')[0];
+  // When staffName is provided, return just that person's logs for that date as an array
+  if (req.query.staffName) {
+    const staffName = sanitizeStr(req.query.staffName, 100);
+    return res.json(logs.filter(l => l.date === date && l.staffName === staffName));
+  }
   const allStaff = getStaffNames().filter(n => n !== 'Lai Wei Xiang');
   const todayLogs = logs.filter(l => l.date === date);
   const submitted = todayLogs.map(l => l.staffName);
@@ -1702,6 +1727,7 @@ app.get('/api/tasks/history', (req, res) => {
 
 // 9am weekdays — consolidated checks (sequential to prevent concurrent read/write to tasks.json)
 cron.schedule('0 9 * * 1-5', async () => {
+  try {
   const today = new Date().toISOString().split('T')[0];
   const now = new Date();
 
@@ -1834,11 +1860,12 @@ cron.schedule('0 9 * * 1-5', async () => {
   }
   if (tasksChanged) writeTasks(allTasks);
   console.log('[CRON] Unacknowledged task reminder check done');
-
+  } catch (e) { logError('cron.9am-checks', e); }
 }, { timezone: 'Asia/Singapore' });
 
 // Trigger 2: Noon weekdays — remind Chris about unacknowledged DRs > 24hrs
 cron.schedule('0 12 * * 1-5', async () => {
+  try {
   console.log('[CRON] Noon delivery request reminder check...');
   const projects = readProjects();
   const yesterday = new Date(Date.now() - 86400000).toISOString();
@@ -1859,10 +1886,68 @@ cron.schedule('0 12 * * 1-5', async () => {
       }
     }
   }
+  } catch (e) { logError('cron.noon-dr', e); }
+}, { timezone: 'Asia/Singapore' });
+
+// 6pm weekdays — EOD reminder to staff who haven't submitted yet (with task status)
+cron.schedule('0 18 * * 1-5', async () => {
+  try {
+  console.log('[CRON] 6pm EOD reminder running...');
+  const today = new Date().toISOString().split('T')[0];
+  const logs = readEOD();
+  const submitted = logs.filter(l => l.date === today).map(l => l.staffName);
+  const staffToRemind = ['Chris', 'Rena', 'Alex Mac', 'Salve', 'Teo Meei Haw', 'Jun Jie']
+    .filter(n => !submitted.includes(n));
+
+  if (!staffToRemind.length) {
+    console.log('[CRON] 6pm EOD: all staff submitted — no reminders needed');
+    return;
+  }
+
+  const tasks = readTasks();
+  let sent = 0;
+  for (const name of staffToRemind) {
+    const email = getStaffEmail(name);
+    if (!email) { console.warn('[EMAIL SKIP] No email for:', name); continue; }
+    const firstName = name.split(' ')[0];
+
+    // Today's tasks for this person
+    const todayTasks = tasks.filter(t => t.assignedTo === name && t.dueDate === today && !t.archived);
+    const taskRowsHtml = todayTasks.length > 0
+      ? todayTasks.map(t => {
+          const icon  = t.status === 'Done' ? '✅' : '⚠️';
+          const color = t.status === 'Done' ? '#00c875' : '#fdab3d';
+          const strike = t.status === 'Done' ? 'text-decoration:line-through;' : '';
+          return `<li style="padding:5px 0;border-bottom:1px solid #eee;list-style:none;font-size:13px;">`+
+            `${icon} <span style="color:${color};${strike}">${t.title}</span>` +
+            (t.category ? ` <span style="color:#aaa;font-size:11px;">[${t.category}]</span>` : '') +
+            `</li>`;
+        }).join('')
+      : `<li style="padding:5px 0;list-style:none;font-size:13px;color:#888;">No tasks assigned today.</li>`;
+
+    const htmlBody =
+      `<div style="font-family:Arial,sans-serif;max-width:520px;color:#222;">` +
+      `<p style="margin:0 0 12px;">Hi ${firstName},</p>` +
+      `<p style="margin:0 0 16px;">This is a reminder to submit your <strong>EOD report</strong> for today.</p>` +
+      `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin-bottom:8px;">Today's Tasks</div>` +
+      `<ul style="padding:0;margin:0 0 20px;">${taskRowsHtml}</ul>` +
+      `<p style="margin:0 0 20px;">` +
+        `<a href="${APP_URL}/my-tasks#${firstName.toLowerCase()}" ` +
+        `style="background:#3366ff;color:#fff;padding:9px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">` +
+        `Submit EOD Report →</a></p>` +
+      `<p style="margin:0;font-size:11px;color:#aaa;">LYS Ops Tracker</p>` +
+      `</div>`;
+
+    await sendEmail(email, name, 'EOD Reminder — Please submit your report for today', htmlBody);
+    sent++;
+  }
+  console.log(`[CRON] 6pm EOD reminders sent: ${sent}`);
+  } catch (e) { logError('cron.6pm-eod-reminder', e); }
 }, { timezone: 'Asia/Singapore' });
 
 // Trigger 5: 6:15pm weekdays — flag + email Lai if EOD not submitted
 cron.schedule('15 18 * * 1-5', async () => {
+  try {
   console.log('[CRON] 6:15pm EOD check running...');
   const today = new Date().toISOString().split('T')[0];
   const logs = readEOD();
@@ -1890,10 +1975,12 @@ cron.schedule('15 18 * * 1-5', async () => {
       );
     }
   }
+  } catch (e) { logError('cron.eod-flag', e); }
 }, { timezone: 'Asia/Singapore' });
 
 // 7pm weekdays — remind staff who haven't submitted EOD log
 cron.schedule('0 19 * * 1-5', async () => {
+  try {
   console.log('[CRON] 7pm EOD staff reminder running...');
   const today = new Date().toISOString().split('T')[0];
   const logs = readEOD();
@@ -1914,10 +2001,12 @@ cron.schedule('0 19 * * 1-5', async () => {
     sent++;
   }
   console.log(`[CRON] EOD staff reminders sent: ${sent}`);
+  } catch (e) { logError('cron.eod-staff-reminder', e); }
 }, { timezone: 'Asia/Singapore' });
 
 // Every Monday 12:01am — archive last week's done tasks
 cron.schedule('1 0 * * 1', () => {
+  try {
   console.log('[CRON] Weekly archive running...');
   const tasks = readTasks();
   const currentWeek = getWeekStart();
@@ -1931,6 +2020,7 @@ cron.schedule('1 0 * * 1', () => {
   });
   writeTasks(tasks);
   console.log(`[CRON] Archived ${count} tasks`);
+  } catch (e) { logError('cron.weekly-archive', e); }
 }, { timezone: 'Asia/Singapore' });
 
 // ── Manpower Planning ─────────────────────────────────────────────────────────
@@ -2500,6 +2590,16 @@ const RECURRING_DEFS = {
   'Alex Mac_monday': [
     { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
   ],
+  'Salve': [
+    { title: 'Check completed installations — trigger claim submissions',          category: 'Operations' },
+    { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
+    { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
+    { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
+    { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+  ],
+  'Salve_monday': [
+    { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
+  ],
   'Teo Meei Haw': [
     { title: 'Set today\'s installation target — project, item, qty, location',    category: 'Operations' },
     { title: 'Check factory readiness for items needed this week',                 category: 'Operations' },
@@ -2531,14 +2631,43 @@ function getSGTContext() {
   return { today: `${yyyy}-${mm}-${dd}`, dayOfWeek: nowSGT.getDay() }; // 0=Sun,1=Mon...
 }
 
+function cleanDuplicateRecurringTasks() {
+  try {
+    const todaySGT = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"})).toISOString().slice(0,10);
+    const tasks = readTasks();
+    const seen = new Map(); // key: "assignedTo|title" -> index of first occurrence
+    const toRemove = new Set();
+    tasks.forEach((t, i) => {
+      if (t.taskType !== 'Recurring') return;
+      if ((t.dueDate || '').slice(0,10) !== todaySGT) return;
+      const key = `${t.assignedTo}|${t.title}`;
+      if (seen.has(key)) {
+        toRemove.add(i);
+      } else {
+        seen.set(key, i);
+      }
+    });
+    if (toRemove.size > 0) {
+      const cleaned = tasks.filter((_, i) => !toRemove.has(i));
+      writeTasks(cleaned);
+      console.log(`[STARTUP] Removed ${toRemove.size} duplicate recurring tasks`);
+    } else {
+      console.log(`[STARTUP] No duplicate recurring tasks found`);
+    }
+  } catch (e) {
+    console.error('[STARTUP] cleanDuplicateRecurringTasks failed:', e.message);
+  }
+}
+
 async function createDailyRecurringTasks() {
+  try {
   const { today, dayOfWeek } = getSGTContext();
   const isMonday = dayOfWeek === 1;
   const tasks = readTasks();
   const newTasks = [];
   let _idSeq = 0; // ensure unique IDs even within same ms
 
-  const people = ['Chris', 'Rena', 'Alex Mac', 'Teo Meei Haw', 'Jun Jie'];
+  const people = ['Chris', 'Rena', 'Alex Mac', 'Salve', 'Teo Meei Haw', 'Jun Jie'];
   for (const person of people) {
     const daily   = RECURRING_DEFS[person]             || [];
     const monday  = isMonday ? (RECURRING_DEFS[`${person}_monday`] || []) : [];
@@ -2546,10 +2675,11 @@ async function createDailyRecurringTasks() {
 
     for (const def of allDefs) {
       // Dedup: skip if same assignedTo + title already created today
+      const todaySGT = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"})).toISOString().slice(0,10);
       const exists = tasks.some(t =>
         t.assignedTo === person &&
         t.title === def.title &&
-        t.createdAt && t.createdAt.startsWith(today)
+        (t.createdAt || t.dueDate || "").slice(0,10) === todaySGT
       );
       if (exists) continue;
 
@@ -2588,9 +2718,53 @@ async function createDailyRecurringTasks() {
     const roles = [...new Set(newTasks.map(t => t.assignedTo))];
     logActivity('recurring-tasks.created', { date: today, count: newTasks.length, roles });
     console.log(`[RECURRING] Created ${newTasks.length} tasks for ${today} (${roles.join(', ')})`);
+
+    // ── Task 4: Send each person their task list by email ─────────────────
+    const nowSGT = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+    const dayName = nowSGT.toLocaleDateString('en-SG', { weekday: 'long' });
+    const dateFmt = nowSGT.toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' });
+    const emailPromises = [];
+    for (const person of people) {
+      const personEmail = getStaffEmail(person);
+      if (!personEmail) {
+        console.warn(`[RECURRING] No email for ${person} — skipping daily task email`);
+        continue;
+      }
+      const personTasks = newTasks.filter(t => t.assignedTo === person);
+      if (!personTasks.length) continue;
+      const taskListHtml = personTasks.map((t, i) =>
+        `<li style="padding:7px 0;border-bottom:1px solid #eee;list-style:none;display:flex;align-items:flex-start;gap:8px;">` +
+        `<span style="color:#3366ff;font-size:13px;font-weight:700;flex-shrink:0;min-width:20px;">${i + 1}.</span>` +
+        `<div><span style="font-size:13px;">${t.title}</span> ` +
+        `<span style="display:inline-block;font-size:10px;font-weight:700;color:#fff;background:#3366ff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">${t.category}</span></div>` +
+        `</li>`
+      ).join('');
+      const firstName = person.split(' ')[0];
+      const htmlBody =
+        `<div style="font-family:Arial,sans-serif;max-width:520px;color:#222;">` +
+        `<p style="margin:0 0 4px;font-size:15px;font-weight:700;">Good morning ${firstName} 👋</p>` +
+        `<p style="margin:0 0 16px;font-size:12px;color:#888;">${dayName}, ${dateFmt}</p>` +
+        `<p style="margin:0 0 10px;font-size:13px;">Here are your <strong>${personTasks.length} task${personTasks.length !== 1 ? 's' : ''}</strong> for today:</p>` +
+        `<ul style="padding:0;margin:0 0 20px;">${taskListHtml}</ul>` +
+        `<p style="margin:0 0 20px;">` +
+        `<a href="${APP_URL}/my-tasks#${firstName.toLowerCase()}" ` +
+        `style="background:#3366ff;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;display:inline-block;">` +
+        `Open My Tasks →</a></p>` +
+        `<p style="margin:0 0 0;padding:12px 16px;background:#fff8e6;border-left:3px solid #fdab3d;border-radius:4px;font-size:12px;color:#b45309;">` +
+        `📋 Remember to submit your EOD report by 6pm</p>` +
+        `<p style="margin:12px 0 0;font-size:11px;color:#aaa;">LYS Ops Tracker</p>` +
+        `</div>`;
+      emailPromises.push(
+        sendEmail(personEmail, person, `Good morning ${firstName} — Your tasks for ${dayName}, ${dateFmt}`, htmlBody)
+          .catch(e => console.error(`[RECURRING] Email failed for ${person}:`, e.message))
+      );
+    }
+    await Promise.all(emailPromises);
+    console.log(`[RECURRING] Daily task emails sent for ${today}`);
   } else {
     console.log(`[RECURRING] ${today}: all recurring tasks already exist — skipped`);
   }
+  } catch (e) { logError('cron.daily-recurring', e); }
 }
 
 // Schedule: 8:45am SGT, Mon–Fri
@@ -2607,6 +2781,8 @@ function readPrices()       { try { if (!fs.existsSync(PRICES_FILE)) return []; 
 function writePrices(d)     { const tmp = PRICES_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PRICES_FILE); }
 function readPOs()          { try { if (!fs.existsSync(PO_FILE)) return []; return safeReadJSON(PO_FILE); } catch { return []; } }
 function writePOs(d)        { const tmp = PO_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PO_FILE); }
+function readPRs()          { try { if (!fs.existsSync(PR_FILE)) return []; return safeReadJSON(PR_FILE); } catch { return []; } }
+function writePRs(d)        { const tmp = PR_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PR_FILE); }
 
 // Auto-flag Overdue: promisedDate < today and status !== Delivered
 function applyOverdueFlag(pos) {
@@ -2815,7 +2991,307 @@ app.put('/api/purchase-orders/:id', (req, res) => {
   } catch (e) { logError('route.put.purchase-orders', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
+app.delete("/api/purchase-orders/:id", (req, res) => {
+  const pin = req.body?.pin || req.headers["x-admin-pin"];
+  const adminData = readAdmin();
+  if (adminData.pin && pin !== adminData.pin) return res.status(403).json({ error: "Invalid PIN" });
+  const orders = readPOs();
+  const idx = orders.findIndex(o => o.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: "Not found" });
+  orders.splice(idx, 1);
+  writePOs(orders);
+  logActivity("purchase-order.deleted", { id: req.params.id });
+  res.json({ ok: true });
+});
+
+// ── Historical PR Import ──────────────────────────────────────────────────────
+function importPRHistory() {
+  if (fs.existsSync(PR_FILE)) return; // already imported
+  const xlsxFile = path.join(__dirname, 'data', 'pr-control-list.xlsx');
+  if (!fs.existsSync(xlsxFile)) { console.log('[PROCUREMENT] No pr-control-list.xlsx — skipping import'); return; }
+  try {
+    const XLSX = require('xlsx');
+    const wb = XLSX.readFile(xlsxFile);
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    function excelDateToISO(serial) {
+      if (!serial || typeof serial !== 'number') return null;
+      return new Date(Math.round((serial - 25569) * 86400000)).toISOString().split('T')[0];
+    }
+    const grouped = {}, order = [];
+    for (const row of rows.slice(1)) {
+      const prNum = row[0] ? String(row[0]).trim() : null;
+      if (!prNum) continue;
+      if (!grouped[prNum]) { grouped[prNum] = []; order.push(prNum); }
+      grouped[prNum].push(row);
+    }
+    const prs = [];
+    for (const prNum of order) {
+      const rowSet = grouped[prNum], first = rowSet[0];
+      const poNumber    = first[1] ? String(first[1]).trim() : null;
+      const requestDate = excelDateToISO(first[2]);
+      const projectCode = first[3] ? String(first[3]).trim() : null;
+      const site        = first[4] ? String(first[4]).trim() : null;
+      const items = rowSet.map(r => ({
+        description: r[5] ? String(r[5]).trim() : null,
+        qty:         r[6] != null ? (parseFloat(r[6]) || null) : null,
+        unit: null, unitPrice: null, requiredDate: null,
+        qtyArrived:  r[7] != null ? (parseFloat(r[7]) || 0) : 0,
+        arriveDate:  excelDateToISO(r[8]),
+        outstanding: r[9] != null ? (parseFloat(r[9]) || 0) : 0
+      })).filter(i => i.description || i.qty != null);
+      const totalArrived     = items.reduce((s, i) => s + (i.qtyArrived || 0), 0);
+      const totalOutstanding = items.reduce((s, i) => s + (i.outstanding || 0), 0);
+      let status;
+      if      (totalArrived > 0 && totalOutstanding === 0) status = 'Delivered';
+      else if (totalArrived > 0)                           status = 'Partial';
+      else if (poNumber)                                   status = 'Ordered';
+      else                                                 status = 'Pending';
+      prs.push({ id: prNum, prNumber: prNum, poNumber, requestDate, projectCode, site, items, status,
+        supplier: null, eta: null, urgency: 'Normal', notes: null,
+        submittedBy: 'Import', createdBy: 'Import', importedAt: new Date().toISOString() });
+    }
+    writePRs(prs);
+    console.log(`[PROCUREMENT] Imported ${prs.length} PRs from historical data`);
+  } catch (e) { console.error('[PROCUREMENT] Import failed:', e.message); }
+}
+
+// ── Purchase Requisitions API ─────────────────────────────────────────────────
+app.get('/api/purchase-requisitions', (req, res) => {
+  try {
+    let prs = readPRs();
+    const today = new Date().toISOString().split('T')[0];
+    prs = prs.map(pr => {
+      if (pr.status !== 'Delivered' && pr.eta && pr.eta < today) {
+        const hasOutstanding = (pr.items || []).some(i => (i.outstanding || 0) > 0);
+        if (hasOutstanding || pr.status === 'Ordered') return { ...pr, status: 'Overdue' };
+      }
+      return pr;
+    });
+    prs.sort((a, b) => {
+      const numA = parseInt(((a.prNumber || '').match(/(\d+)$/) || [])[1] || '0');
+      const numB = parseInt(((b.prNumber || '').match(/(\d+)$/) || [])[1] || '0');
+      return numB !== numA ? numB - numA : (b.prNumber || '').localeCompare(a.prNumber || '');
+    });
+    res.json(prs);
+  } catch (e) { logError('route.get.purchase-requisitions', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+app.post('/api/purchase-requisitions', postRateLimit, async (req, res) => {
+  try {
+    const prs = readPRs();
+    const b   = req.body;
+    const yr  = new Date().getFullYear().toString().slice(2);
+    const allSeqs = prs.map(p => parseInt(((p.prNumber || '').match(/(\d+)$/) || [])[1] || '0'));
+    const nextSeq = (allSeqs.length ? Math.max(...allSeqs) : 0) + 1;
+    const prNumber = `PR${yr}-${String(nextSeq).padStart(3, '0')}`;
+    const items = Array.isArray(b.items) ? b.items.map(it => ({
+      description:  String(it.description || '').trim().slice(0, 500),
+      qty:          parseFloat(it.qty) || 0,
+      unit:         String(it.unit || '').trim().slice(0, 50),
+      unitPrice:    null, requiredDate: it.requiredDate ? String(it.requiredDate).trim().slice(0, 10) : null,
+      qtyArrived:   0, arriveDate: null, outstanding: parseFloat(it.qty) || 0
+    })) : [];
+    const pr = {
+      id: prNumber, prNumber, poNumber: null,
+      requestDate:  new Date().toISOString().split('T')[0],
+      projectCode:  String(b.projectCode || '').trim().slice(0, 100),
+      site:         String(b.site || '').trim().slice(0, 200),
+      items, status: 'Pending', supplier: null, eta: null,
+      urgency:      ['Normal','Urgent'].includes(b.urgency) ? b.urgency : 'Normal',
+      notes:        String(b.notes || '').trim().slice(0, 1000),
+      submittedBy:  String(b.submittedBy || '').trim().slice(0, 100),
+      createdBy:    String(b.submittedBy || '').trim().slice(0, 100),
+      createdAt:    new Date().toISOString()
+    };
+    prs.push(pr);
+    writePRs(prs);
+    logActivity('pr.created', { id: pr.id, prNumber, projectCode: pr.projectCode });
+    res.status(201).json(pr);
+    // Email Rena + CC Lai
+    const renaEmail = getStaffEmail('Rena') || 'enquiry@laiyewseng.com.sg';
+    const laiEmail  = getStaffEmail('Lai Wei Xiang') || 'laiwx@laiyewseng.com.sg';
+    const itemsSummary = pr.items.map(i => `${i.description || '—'} (${i.qty} ${i.unit})`).join('; ') || '—';
+    try {
+      const accessToken = await getAccessToken();
+      if (accessToken && process.env.SENDER_EMAIL) {
+        const toAddr = process.env.EMAIL_TEST_OVERRIDE || renaEmail;
+        const ccAddr = process.env.EMAIL_TEST_OVERRIDE || laiEmail;
+        await fetch(`https://graph.microsoft.com/v1.0/users/${process.env.SENDER_EMAIL}/sendMail`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: {
+            subject: `New PR: ${prNumber} — ${pr.projectCode || 'General'}`,
+            body: { contentType: 'HTML', content:
+              `<p>Hi Rena,</p><p>A new Purchase Requisition has been submitted.</p>
+              <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PR Number</td><td>${prNumber}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${pr.projectCode || '—'}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Site</td><td>${pr.site || '—'}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Urgency</td><td>${pr.urgency}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Items</td><td>${itemsSummary}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Submitted By</td><td>${pr.submittedBy || '—'}</td></tr>
+                ${pr.notes ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${pr.notes}</td></tr>` : ''}
+              </table>
+              <p><a href="${APP_URL}/procurement">Open Procurement →</a></p>` },
+            toRecipients: [{ emailAddress: { address: toAddr, name: 'Rena' } }],
+            ccRecipients: [{ emailAddress: { address: ccAddr, name: 'Lai Wei Xiang' } }]
+          }})
+        });
+        console.log(`[EMAIL] New PR notification → Rena (CC: Lai)`);
+      }
+    } catch (mailErr) { console.error('[EMAIL] PR notify failed:', mailErr.message); }
+  } catch (e) { logError('route.post.purchase-requisitions', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
+});
+
+app.put('/api/purchase-requisitions/:id', async (req, res) => {
+  try {
+    const prs = readPRs();
+    const idx = prs.findIndex(p => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'PR not found' });
+    const b = req.body, pr = { ...prs[idx], items: prs[idx].items ? prs[idx].items.map(i => ({ ...i })) : [] };
+    const oldStatus = pr.status, hadPO = !!pr.poNumber;
+    if (b.poNumber    !== undefined) pr.poNumber    = String(b.poNumber    || '').trim().slice(0, 100) || null;
+    if (b.supplier    !== undefined) pr.supplier    = String(b.supplier    || '').trim().slice(0, 200) || null;
+    if (b.eta         !== undefined) pr.eta         = String(b.eta         || '').trim().slice(0, 10)  || null;
+    if (b.notes       !== undefined) pr.notes       = String(b.notes       || '').trim().slice(0, 1000);
+    if (b.site        !== undefined) pr.site        = String(b.site        || '').trim().slice(0, 200);
+    if (b.projectCode !== undefined) pr.projectCode = String(b.projectCode || '').trim().slice(0, 100);
+    if (Array.isArray(b.items)) {
+      b.items.forEach((upd, i) => {
+        if (!pr.items[i]) return;
+        if (upd.unitPrice  !== undefined) pr.items[i].unitPrice  = parseFloat(upd.unitPrice) || null;
+        if (upd.qtyArrived !== undefined) {
+          pr.items[i].qtyArrived = parseFloat(upd.qtyArrived) || 0;
+          pr.items[i].arriveDate = upd.arriveDate ? String(upd.arriveDate).trim().slice(0, 10) : (pr.items[i].arriveDate || new Date().toISOString().split('T')[0]);
+          pr.items[i].outstanding = Math.max(0, (pr.items[i].qty || 0) - pr.items[i].qtyArrived);
+        }
+      });
+    }
+    const today2 = new Date().toISOString().split('T')[0];
+    const totalArrived     = pr.items.reduce((s, i) => s + (i.qtyArrived || 0), 0);
+    const totalOutstanding = pr.items.reduce((s, i) => s + (i.outstanding != null ? i.outstanding : (i.qty || 0)), 0);
+    if      (totalArrived > 0 && totalOutstanding === 0) pr.status = 'Delivered';
+    else if (totalArrived > 0)                           pr.status = 'Partial';
+    else if (pr.poNumber && pr.eta && pr.eta < today2)   pr.status = 'Overdue';
+    else if (pr.poNumber)                                pr.status = 'Ordered';
+    else                                                 pr.status = 'Pending';
+    if (b.status && ['Pending','Ordered','Partial','Delivered','Overdue'].includes(b.status)) pr.status = b.status;
+    pr.updatedAt = new Date().toISOString();
+    prs[idx] = pr;
+    writePRs(prs);
+    logActivity('pr.updated', { id: pr.id, status: pr.status });
+    res.json(pr);
+    // Email: PO created → Chris
+    if (pr.poNumber && !hadPO) {
+      const chrisEmail = getStaffEmail('Chris');
+      if (chrisEmail) {
+        sendEmail(chrisEmail, 'Chris',
+          `PO Created for ${pr.prNumber}: ${pr.supplier || 'Supplier TBC'}, ETA: ${pr.eta || 'TBC'}, PO#: ${pr.poNumber}`,
+          `<p>Hi Chris,</p><p>A Purchase Order has been created for <strong>${pr.prNumber}</strong>.</p>
+          <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${pr.projectCode || '—'}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PO Number</td><td>${pr.poNumber}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${pr.supplier || '—'}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">ETA</td><td>${pr.eta || 'TBC'}</td></tr>
+          </table>
+          <p><a href="${APP_URL}/procurement">Open Procurement →</a></p>`
+        ).catch(() => {});
+      }
+      // Auto-update price book when Rena enters unit prices at processing time
+      if (pr.supplier) {
+        const prices = readPrices();
+        let pricesChanged = false;
+        for (const item of pr.items) {
+          if (!item.description || !item.unitPrice) continue;
+          const existing = prices.find(p =>
+            p.material.toLowerCase() === item.description.toLowerCase() &&
+            p.supplierName.toLowerCase() === pr.supplier.toLowerCase()
+          );
+          if (existing) {
+            existing.unitPrice  = item.unitPrice;
+            existing.date       = today2;
+            existing.updatedAt  = new Date().toISOString();
+          } else {
+            prices.push({
+              id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+              material: item.description, grade: '', unitPrice: item.unitPrice, unit: item.unit || '',
+              supplierId: '', supplierName: pr.supplier, date: today2,
+              notes: `Auto-added from ${pr.prNumber}`, createdAt: new Date().toISOString()
+            });
+          }
+          pricesChanged = true;
+        }
+        if (pricesChanged) writePrices(prices);
+      }
+    }
+    // Email: fully delivered → Chris
+    if (pr.status === 'Delivered' && oldStatus !== 'Delivered') {
+      const chrisEmail = getStaffEmail('Chris');
+      if (chrisEmail) {
+        const itemsList = pr.items.map(i => `${i.description || '—'} (${i.qtyArrived || 0} ${i.unit || ''})`).join(', ');
+        sendEmail(chrisEmail, 'Chris',
+          `Materials Delivered: ${pr.prNumber} — ${pr.projectCode || ''} ✅`,
+          `<p>Hi Chris,</p><p>Materials for <strong>${pr.prNumber}</strong> have been fully delivered.</p>
+          <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${pr.projectCode || '—'}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${pr.supplier || '—'}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Items</td><td>${itemsList}</td></tr>
+          </table>
+          <p>Materials are ready to use ✅</p><p><a href="${APP_URL}/procurement">Open Procurement →</a></p>`
+        ).catch(() => {});
+      }
+      // Auto-update price book for items that have unitPrice + supplier set
+      const prices = readPrices();
+      let pricesChanged = false;
+      for (const item of pr.items) {
+        if (!item.description || !item.unitPrice || !pr.supplier) continue;
+        const existing = prices.find(p =>
+          p.material.toLowerCase() === item.description.toLowerCase() &&
+          p.supplierName.toLowerCase() === pr.supplier.toLowerCase()
+        );
+        if (existing) {
+          existing.unitPrice = item.unitPrice; existing.date = today2; existing.updatedAt = new Date().toISOString();
+        } else {
+          prices.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            material: item.description, grade: '', unitPrice: item.unitPrice, unit: item.unit || '',
+            supplierId: '', supplierName: pr.supplier, date: today2,
+            notes: `Auto-added from ${pr.prNumber}`, createdAt: new Date().toISOString() });
+        }
+        pricesChanged = true;
+      }
+      if (pricesChanged) writePrices(prices);
+    }
+  } catch (e) { logError('route.put.purchase-requisitions', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
+});
+
+app.delete('/api/purchase-requisitions/:id', (req, res) => {
+  try {
+    const { pin } = req.body;
+    const admin = readAdmin();
+    if (admin.pin && pin !== admin.pin) return res.status(403).json({ error: 'Invalid PIN' });
+    const prs = readPRs();
+    const idx = prs.findIndex(p => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'PR not found' });
+    const removed = prs.splice(idx, 1)[0];
+    writePRs(prs);
+    logActivity('pr.deleted', { id: removed.id, prNumber: removed.prNumber });
+    res.json({ ok: true });
+  } catch (e) { logError('route.delete.purchase-requisitions', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
 startupCheck();
+importPRHistory();
+cleanDuplicateRecurringTasks();
+// Recalculate stale derived fields for all projects on startup
+try {
+  const _recalcProjects = readProjects();
+  _recalcProjects.forEach(p => deriveFields(p));
+  writeProjects(_recalcProjects);
+  console.log(`[STARTUP] Recalculated derived fields for ${_recalcProjects.length} projects`);
+} catch (e) {
+  console.error('[STARTUP] Recalc failed:', e.message);
+}
 // Log record counts so you can see data state on startup
 try {
   const _projects  = readProjects();

@@ -20,27 +20,5 @@
     "status": "Paid",
     "notes": " Ref: 124522",
     "createdAt": "2026-04-11T15:45:02.292Z"
-  },
-  {
-    "id": "mnuiboce",
-    "projectId": "bd-xxx26-v3-taman-jurong",
-    "projectJobCode": "",
-    "projectName": "",
-    "claimNumber": "Pc0-194934",
-    "description": "Bollard Install",
-    "claimAmount": 50000,
-    "submittedDate": "2026-04-11",
-    "submittedBy": "",
-    "certificationDue": "2026-05-02",
-    "certifiedDate": null,
-    "certifiedAmount": null,
-    "invoiceNumber": null,
-    "invoiceRaisedDate": null,
-    "paymentDue": null,
-    "paymentReceivedDate": null,
-    "paymentReceivedAmount": null,
-    "status": "Awaiting Certification",
-    "notes": "",
-    "createdAt": "2026-04-11T15:46:06.974Z"
   }
 ]

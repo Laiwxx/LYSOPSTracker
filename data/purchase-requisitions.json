@@ -1,0 +1,5249 @@
+[
+  {
+    "id": "PR25-234",
+    "prNumber": "PR25-234",
+    "poNumber": null,
+    "requestDate": "2025-09-19",
+    "projectCode": "PJ009824",
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-235",
+    "prNumber": "PR25-235",
+    "poNumber": null,
+    "requestDate": "2025-09-22",
+    "projectCode": "BD19021",
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-236",
+    "prNumber": "PR25-236",
+    "poNumber": null,
+    "requestDate": "2025-10-14",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-237",
+    "prNumber": "PR25-237",
+    "poNumber": null,
+    "requestDate": "2025-10-14",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-238",
+    "prNumber": "PR25-238",
+    "poNumber": null,
+    "requestDate": "2025-10-14",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-239",
+    "prNumber": "PR25-239",
+    "poNumber": null,
+    "requestDate": "2025-10-15",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-240",
+    "prNumber": "PR25-240",
+    "poNumber": null,
+    "requestDate": "2025-10-15",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-241",
+    "prNumber": "PR25-241",
+    "poNumber": null,
+    "requestDate": "2025-10-15",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-242",
+    "prNumber": "PR25-242",
+    "poNumber": null,
+    "requestDate": "2025-10-15",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-243",
+    "prNumber": "PR25-243",
+    "poNumber": null,
+    "requestDate": "2025-10-17",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-244",
+    "prNumber": "PR25-244",
+    "poNumber": null,
+    "requestDate": "2025-10-17",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-245",
+    "prNumber": "PR25-245",
+    "poNumber": null,
+    "requestDate": "2025-10-17",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-246",
+    "prNumber": "PR25-246",
+    "poNumber": null,
+    "requestDate": "2025-10-21",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-247",
+    "prNumber": "PR25-247",
+    "poNumber": null,
+    "requestDate": "2025-10-21",
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-248",
+    "prNumber": "PR25-248",
+    "poNumber": null,
+    "requestDate": "2025-10-24",
+    "projectCode": "BD21923",
+    "site": "Neil Road-DNR",
+    "items": [
+      {
+        "description": "M/S 8' X 20' X 15mmT",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": "2026-11-01",
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-249",
+    "prNumber": "PR25-249",
+    "poNumber": null,
+    "requestDate": null,
+    "projectCode": null,
+    "site": null,
+    "items": [],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-250",
+    "prNumber": "PR25-250",
+    "poNumber": null,
+    "requestDate": "2025-10-29",
+    "projectCode": "BD25526",
+    "site": "Parry Ave",
+    "items": [
+      {
+        "description": "S/S PLATE 4' X 8 ' X 6mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S PIPE ⌀ 114 x 3 mmT x 6 m",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 5,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S ANCHOR BOLT M12 X 120 mm",
+        "qty": 110,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 150,
+        "arriveDate": null,
+        "outstanding": -40
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-251",
+    "prNumber": "PR25-251",
+    "poNumber": null,
+    "requestDate": "2025-10-20",
+    "projectCode": "BD25426",
+    "site": "WCP",
+    "items": [
+      {
+        "description": "M/S Galvanized Flat Bar 50 × 3 mmT × 6M",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-252",
+    "prNumber": "PR25-252",
+    "poNumber": null,
+    "requestDate": "2025-10-30",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "M/S ANGLE BAR 38 x  38 x 4 mmT x 6 meter",
+        "qty": 14,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 14,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-253",
+    "prNumber": "PR25-253",
+    "poNumber": null,
+    "requestDate": "2025-10-30",
+    "projectCode": "BD21923",
+    "site": "DNR",
+    "items": [
+      {
+        "description": "M/S Plate 8' X 20' X 15mmT",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 4,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-254",
+    "prNumber": "PR25-254",
+    "poNumber": null,
+    "requestDate": "2025-10-30",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "M16 HIT-V (8.8) Hilti bolts, length 250 mm",
+        "qty": 330,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 330
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-255",
+    "prNumber": "PR25-255",
+    "poNumber": null,
+    "requestDate": "2025-10-31",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "Nippon Hi-Pon 20-04 (Primer – Grey)",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      },
+      {
+        "description": "Nippon Hi-Pon 50-01 (Topcoat – Grey)",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      },
+      {
+        "description": "Galvanizing Paint",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.207Z"
+  },
+  {
+    "id": "PR25-256",
+    "prNumber": "PR25-256",
+    "poNumber": null,
+    "requestDate": "2025-11-03",
+    "projectCode": "BD24725",
+    "site": "Vivo City",
+    "items": [
+      {
+        "description": "M/S Plate 8' X 20' X 15mmT",
+        "qty": 9,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 8
+      },
+      {
+        "description": "M/S Plate 4' X 8' X 6mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S Plate 4' X 8' X 3mmT",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-257",
+    "prNumber": "PR25-257",
+    "poNumber": null,
+    "requestDate": "2025-11-04",
+    "projectCode": "PL00624",
+    "site": "W/S",
+    "items": [
+      {
+        "description": "CO2 Cylinder",
+        "qty": 15,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 15,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-258",
+    "prNumber": "PR25-258",
+    "poNumber": null,
+    "requestDate": "2025-11-04",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "Hilti hammer Drillbits Dia M18 x 300 mm",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 4,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-259",
+    "prNumber": "PR25-259",
+    "poNumber": null,
+    "requestDate": "2025-11-04",
+    "projectCode": "PJ10225",
+    "site": "Blk 341",
+    "items": [
+      {
+        "description": "Nippon Paint RAL 7012",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-260",
+    "prNumber": "PR25-260",
+    "poNumber": null,
+    "requestDate": "2025-11-04",
+    "projectCode": "BD24025",
+    "site": "ED189 Boon Lay",
+    "items": [
+      {
+        "description": "M20 HIT-V (8.8) Hilti bolts, length 300 mm",
+        "qty": 70,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 70,
+        "arriveDate": "2025-11-05",
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-261",
+    "prNumber": "PR25-261",
+    "poNumber": null,
+    "requestDate": "2025-11-04",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "M/S Plate 4' x 8 ' x 16 mm",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-262",
+    "prNumber": "PR25-262",
+    "poNumber": null,
+    "requestDate": "2025-11-05",
+    "projectCode": "BD25426",
+    "site": "WCP",
+    "items": [
+      {
+        "description": "M/S SHS 75 x 75 x 3 mm length 6 m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S SHS 120 x 120 x 5 mm length 12 m",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 4
+      },
+      {
+        "description": "M/S Flat Bar  50 x 3mm",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Flat Bar  100 x 3 mm",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 5,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-263",
+    "prNumber": "PR25-263",
+    "poNumber": null,
+    "requestDate": "2025-11-05",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "M/S HN450×200×14×9  length 9m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-264",
+    "prNumber": "PR25-264",
+    "poNumber": null,
+    "requestDate": "2025-11-05",
+    "projectCode": "BD24025",
+    "site": "DE189 Boon Lay",
+    "items": [
+      {
+        "description": "M/S pipe Ø273 x 8mmT  length 6m",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      },
+      {
+        "description": "M/S Plate 8' x 20'  x 25 mmT",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-265",
+    "prNumber": "PR25-265",
+    "poNumber": null,
+    "requestDate": "2025-11-06",
+    "projectCode": "PL00624",
+    "site": "Work shop",
+    "items": [
+      {
+        "description": "M/S SHS 100  x 100 x 3 mmT length 6 m",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      },
+      {
+        "description": "M/S SHS 50 x 50 x 3 mmT length 6 m",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-266",
+    "prNumber": "PR25-266",
+    "poNumber": null,
+    "requestDate": "2025-11-06",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "Rebar Ø13mm × 6m",
+        "qty": 30,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 30
+      },
+      {
+        "description": "I-Beam 200 x 100 x 7 mmT - length 6m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": "2025-11-25",
+        "outstanding": 0
+      },
+      {
+        "description": "Lip Channel 150  x 65 x 6 mmT - length 6 m",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 10,
+        "arriveDate": "2025-11-25",
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-267",
+    "prNumber": "PR25-267",
+    "poNumber": null,
+    "requestDate": "2025-11-07",
+    "projectCode": "BD25426",
+    "site": "WCP",
+    "items": [
+      {
+        "description": "Galvinizing Wire mash 2600 x 2400 mm",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-268",
+    "prNumber": "PR25-268",
+    "poNumber": null,
+    "requestDate": "2025-11-11",
+    "projectCode": "PL00624",
+    "site": "W/S",
+    "items": [
+      {
+        "description": "CO2 Cylinder",
+        "qty": 15,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 15
+      },
+      {
+        "description": "DA Cyliner",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 3
+      },
+      {
+        "description": "O2 Cylinder",
+        "qty": 8,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 8
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-269",
+    "prNumber": "PR25-269",
+    "poNumber": null,
+    "requestDate": "2025-11-11",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "M/S iBeam 155 x 105 x 6 mmT - Length 6 meter",
+        "qty": 18,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 10,
+        "arriveDate": null,
+        "outstanding": 8
+      },
+      {
+        "description": "M/S iBeam 155 x 155 x 8 mmT - Length 6 meter",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      },
+      {
+        "description": "M/S Angle Bar 75 x 75 x 6 mmT - Length 6 meter",
+        "qty": 12,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 12
+      },
+      {
+        "description": "M/S SHS 80 x 80 x 6 mmT  - Length 6 meter",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 3
+      },
+      {
+        "description": "M/S SHS 200 x 200 x 8 mmT  - Length 6 meter",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      },
+      {
+        "description": "M/S C - Channel 152 x 51 x 6 mmT  - Length 6 meter",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S RHS 100 x 50 x 5 mmT  - Length 6 meter",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-270",
+    "prNumber": "PR25-270",
+    "poNumber": null,
+    "requestDate": "2025-11-11",
+    "projectCode": "PL00624",
+    "site": "W/S",
+    "items": [
+      {
+        "description": "EQUIVIS ZS 46",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-271",
+    "prNumber": "PR25-271",
+    "poNumber": null,
+    "requestDate": "2025-11-11",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "HILTI HIT RE-500 - 0.5 litre",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 20
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-272",
+    "prNumber": "PR25-272",
+    "poNumber": null,
+    "requestDate": "2025-11-12",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "M/S Plate 4' x 8 ' x 16 mm G355",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-273",
+    "prNumber": "PR25-273",
+    "poNumber": null,
+    "requestDate": "2025-11-12",
+    "projectCode": "BD21923",
+    "site": "Neil Road-DNR",
+    "items": [
+      {
+        "description": "PVC Pipe Ø 50mm x 6mmT x 6m",
+        "qty": 16,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 16
+      },
+      {
+        "description": "PVC 50mm Elbow (L-Joint)",
+        "qty": 25,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 25
+      },
+      {
+        "description": "PVC 100mm Elbow (L-Joint)",
+        "qty": 12,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 12
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-274",
+    "prNumber": "PR25-274",
+    "poNumber": null,
+    "requestDate": "2025-11-14",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "I-Beam 300 × 150 × 6 mm, Length 6 meters",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-275",
+    "prNumber": "PR25-275",
+    "poNumber": null,
+    "requestDate": "2025-11-17",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Atlantic CHT711 (E71T-1C) flux core wire -1.2mm",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": "2025-11-21",
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-276",
+    "prNumber": "PR25-276",
+    "poNumber": null,
+    "requestDate": "2025-11-18",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "M/S Plate 5' x 10 ' x 10 mm G355",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-277",
+    "prNumber": "PR25-277",
+    "poNumber": null,
+    "requestDate": "2025-11-20",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "M/S C - Channel 150 x 75 x 8 mmT - Length 6 meter",
+        "qty": 7,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 7
+      },
+      {
+        "description": "M/S Angle Bar 75 x 75 x 6 mmT - Length 6 meter",
+        "qty": 7,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 7
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-278",
+    "prNumber": "PR25-278",
+    "poNumber": null,
+    "requestDate": "2025-11-20",
+    "projectCode": "BD24025",
+    "site": "DE189 Boon Lay",
+    "items": [
+      {
+        "description": "M/S J-Bolt M24 (see Attach Picture)",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 20
+      },
+      {
+        "description": "M/S piple Ø 273mm x 10 mmT x 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-279",
+    "prNumber": "PR25-279",
+    "poNumber": null,
+    "requestDate": "2025-11-21",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "CO2 Cylinder",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 20
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-280",
+    "prNumber": "PR25-280",
+    "poNumber": null,
+    "requestDate": "2025-11-24",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "M/S Angle Bar 75 x 75 x 6 mmT - Length 6 meter",
+        "qty": 14,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 14
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-281",
+    "prNumber": "PR25-281",
+    "poNumber": null,
+    "requestDate": "2025-11-25",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "M/S RHS 75 x 50 x 5 mm length 6m",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 3
+      },
+      {
+        "description": "M/S Flat Bar 50 x 6 mm length 6m",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      },
+      {
+        "description": "M/S Flat Bar 32 x 3 mm length 6m",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      },
+      {
+        "description": "M/S Round bar Ø 20 mm length 6m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-282",
+    "prNumber": "PR25-282",
+    "poNumber": null,
+    "requestDate": "2025-11-26",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Orcon cylinder",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-283",
+    "prNumber": "PR25-283",
+    "poNumber": null,
+    "requestDate": "2025-11-26",
+    "projectCode": "BD21923",
+    "site": "DNR",
+    "items": [
+      {
+        "description": "Rader Detector (Picture 1 )",
+        "qty": 8,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 8
+      },
+      {
+        "description": "Network Cable CAT 6 (P/N444P44406) (picture 2 )",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-284",
+    "prNumber": "PR25-284",
+    "poNumber": null,
+    "requestDate": "2025-12-02",
+    "projectCode": "BD24025",
+    "site": "DE189 Boon Lay",
+    "items": [
+      {
+        "description": "M/S pipe Ø273 x 8mmT  length 6m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-285",
+    "prNumber": "PR25-285",
+    "poNumber": null,
+    "requestDate": "2025-12-02",
+    "projectCode": "BD24025",
+    "site": "DE189 Bedok",
+    "items": [
+      {
+        "description": "M/S pipe Ø273 x 8 mmT  length 6m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      },
+      {
+        "description": "M/S Plate 8' x 20'  x 25 mmT",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-286",
+    "prNumber": "PR25-286",
+    "poNumber": null,
+    "requestDate": "2025-12-02",
+    "projectCode": "BD25426",
+    "site": "WCP",
+    "items": [
+      {
+        "description": "M/S ANGLE BAR 50 x  50 x 4 mmT x 6 meter",
+        "qty": 43,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 43
+      },
+      {
+        "description": "M/S Flat Bar  40 x 5 mmT - 6 m",
+        "qty": 34,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 34
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-287",
+    "prNumber": "PR25-287",
+    "poNumber": null,
+    "requestDate": "2025-12-03",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "O2 Cylinder",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 5,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "DA Cyliner",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "CO2 Cylinder",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 10,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-288",
+    "prNumber": "PR25-288",
+    "poNumber": null,
+    "requestDate": "2025-12-03",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "M/S Angle Bar 100 x 100 x 9 mmT - Length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S Angle Bar  75 x 75 x 6 mmT - Length 6m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      },
+      {
+        "description": "M/S Unistrut Channel Strut 41 x 41 x 2.5mmT - Length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S Unistrut Channel Strut 41 x 21 x 2.5mmT - Length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-289",
+    "prNumber": "PR25-289",
+    "poNumber": null,
+    "requestDate": "2025-12-04",
+    "projectCode": "PJ10826",
+    "site": "RWS-WW Atoll wall",
+    "items": [
+      {
+        "description": "I-Beam 300 × 150 × 6 mm, Length 12 meters",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "I-Beam 300 × 150 × 6 mm, Length 6  meters",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S Plate 5' x 10 ' x 25 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 5' x 10 ' x 16mmT",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 4
+      },
+      {
+        "description": "M/S Plate 5' x 10 ' x 10mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-290",
+    "prNumber": "PR25-290",
+    "poNumber": null,
+    "requestDate": "2025-12-04",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "M/S SHS 32 x 32 x 5 mm - Length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-291",
+    "prNumber": "PR25-291",
+    "poNumber": null,
+    "requestDate": "2025-12-04",
+    "projectCode": "BD24725",
+    "site": "Vivo City",
+    "items": [
+      {
+        "description": "M/S Angle Bar 60 x 60 x 5mmT - Length 6m",
+        "qty": 6,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 6
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-292",
+    "prNumber": "PR25-292",
+    "poNumber": null,
+    "requestDate": "2025-12-04",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "UPVC Pipe Ø 100mm x 6mmT - Length 6m (Heavy Duty)",
+        "qty": 125,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 125,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "UPVC Pipe Ø 100mm Elbow long bend 90 degree (Heavy Duty)",
+        "qty": 40,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 40,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "UPVC Pipe Ø 100mm T Join (Heavy Duty)",
+        "qty": 75,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 75,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "UPVC Pipe Ø 100mm Socket - Long type  (Heavy Duty)",
+        "qty": 100,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 100,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "UPVC Pipe Ø 50mm x 6mmT x - Length 6m (Heavy Duty)",
+        "qty": 34,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 34,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "UPVC Pipe Ø 50mm Elbow long bend (Heavy Duty)",
+        "qty": 15,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 15,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": null,
+        "qty": 50,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 50,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "UPVC Pipe Ø 50mm Socket - Long type  (Heavy Duty)",
+        "qty": 100,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 100,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "PVC Glue",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "10mm Rope length 1000m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-293",
+    "prNumber": "PR25-293",
+    "poNumber": null,
+    "requestDate": "2025-12-05",
+    "projectCode": "BD24025",
+    "site": "DE189",
+    "items": [
+      {
+        "description": "M/S pipe Ø273 x 8 mmT  length 6m",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S pipe Ø219 x 16 mmT  length 6m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 8' x 20'  x 25 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 8' x 20'  x 28 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-294",
+    "prNumber": "PR25-294",
+    "poNumber": null,
+    "requestDate": "2025-12-08",
+    "projectCode": "BDxxx25",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "M/S pipe Ø139.7 x 8 mmT  length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 8' x 20'  x 6 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-295",
+    "prNumber": "PR25-295",
+    "poNumber": null,
+    "requestDate": "2025-12-09",
+    "projectCode": "PJ10025",
+    "site": "ICAB",
+    "items": [
+      {
+        "description": "M/S Plate 8' x 20'  x 6 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-296",
+    "prNumber": "PR25-296",
+    "poNumber": null,
+    "requestDate": "2025-12-09",
+    "projectCode": "PJ10025",
+    "site": "ICAB",
+    "items": [
+      {
+        "description": "17 core control cable (see attach Picture)",
+        "qty": 1000,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1000
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-297",
+    "prNumber": "PR25-297",
+    "poNumber": null,
+    "requestDate": "2025-12-09",
+    "projectCode": "BD24725",
+    "site": "Vivo City",
+    "items": [
+      {
+        "description": "M10 Rod - 3 meter",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      },
+      {
+        "description": "M10 Nut",
+        "qty": 450,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 450
+      },
+      {
+        "description": "M10 Washer",
+        "qty": 450,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 450
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-298",
+    "prNumber": "PR25-298",
+    "poNumber": null,
+    "requestDate": "2025-12-12",
+    "projectCode": "BD25325",
+    "site": "TT Tuas",
+    "items": [
+      {
+        "description": "Rebar Ø13mm × 6m",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 20
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-299",
+    "prNumber": "PR25-299",
+    "poNumber": null,
+    "requestDate": "2025-12-12",
+    "projectCode": "PJ10425",
+    "site": "RWS-WW",
+    "items": [
+      {
+        "description": "M/S I beam 100 x 100 x 9mm - length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S I beam 150 x100 x 6 mm - length 3 m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-300",
+    "prNumber": "PR25-300",
+    "poNumber": null,
+    "requestDate": "2025-12-15",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "CO2 Cylinder",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 20,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-301",
+    "prNumber": "PR25-301",
+    "poNumber": null,
+    "requestDate": "2025-12-15",
+    "projectCode": "PL00624",
+    "site": "PJ10225",
+    "items": [
+      {
+        "description": "M/S Galavanished Angle Bar 50 X50 x 6 mm - Length 6 m",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-302",
+    "prNumber": "PR25-302",
+    "poNumber": null,
+    "requestDate": "2025-12-15",
+    "projectCode": "BD25426",
+    "site": "WCP",
+    "items": [
+      {
+        "description": "M/S Flat Bar  40 x 5 mmT - 6 m",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-303",
+    "prNumber": "PR25-303",
+    "poNumber": null,
+    "requestDate": "2025-12-15",
+    "projectCode": "BD25426",
+    "site": "DE189 TPY",
+    "items": [
+      {
+        "description": "M/S pipe Ø273 x 10 mmT  length 916 mm",
+        "qty": 58,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 58
+      },
+      {
+        "description": "M/S pipe Ø273 x 8 mmT  length 916 mm",
+        "qty": 40,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 40
+      },
+      {
+        "description": "M/S pipe Ø273 x 8 mmT  length 863.5 mm",
+        "qty": 110,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 110
+      },
+      {
+        "description": "M/S pipe Ø273 x 8 mmT  length 916 mm",
+        "qty": 36,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 36
+      },
+      {
+        "description": "M/S pipe Ø273 x 8 mmT  length 916 mm",
+        "qty": 25,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 25
+      },
+      {
+        "description": "M/S pipe Ø273 x 8 mmT  length 916 mm",
+        "qty": 18,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 18
+      },
+      {
+        "description": "M/S pipe Ø219.1 x 16 mmT  length 916 mm",
+        "qty": 24,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 24
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-304",
+    "prNumber": "PR25-304",
+    "poNumber": null,
+    "requestDate": "2025-12-18",
+    "projectCode": "PJ10425",
+    "site": "RWS Water World",
+    "items": [
+      {
+        "description": "M/S plate 5' x 10' x 25mm s355",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-305",
+    "prNumber": "PR25-305",
+    "poNumber": null,
+    "requestDate": "2025-12-18",
+    "projectCode": "PJ10425",
+    "site": "RWS Water World",
+    "items": [
+      {
+        "description": "M/S Angle Bar 42x42x3mm - length  6meter S355",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-306",
+    "prNumber": "PR25-306",
+    "poNumber": null,
+    "requestDate": "2025-12-18",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Welding Rod RB-26 (2.6mm) per ctn",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 20,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Welding Rod RB-26 (3.2mm) per ctn",
+        "qty": 15,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 15,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Welding Rod LB-52 (3.2mm) per ctn",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-307",
+    "prNumber": "PR25-307",
+    "poNumber": null,
+    "requestDate": "2025-12-26",
+    "projectCode": "PJ10425",
+    "site": "RWS Water World",
+    "items": [
+      {
+        "description": "M/S Angle Bar 75 x 75 x 5mm - length 6 m",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Hollow 125 x 125 x 5 mm - length 6 m",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-308",
+    "prNumber": "PR25-308",
+    "poNumber": null,
+    "requestDate": "2025-12-28",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "SP30 3 Bollard array Rebar cage",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 5,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-309",
+    "prNumber": "PR25-309",
+    "poNumber": null,
+    "requestDate": "2025-12-31",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "CO2 cylinder",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 20,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "O2 cylinder",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 5,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Da cylinder",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-310",
+    "prNumber": "PR25-310",
+    "poNumber": null,
+    "requestDate": "2025-12-31",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Vacuum Machine  78 liter  Amount 1308",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "Vacuum Machine 78 liter  Amount 1308",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-311",
+    "prNumber": "PR25-311",
+    "poNumber": null,
+    "requestDate": "2025-12-31",
+    "projectCode": "BD24725",
+    "site": "Vivo City",
+    "items": [
+      {
+        "description": "S/S Plate 4'x 8' x 3mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "S/S Flat Bar 50 x 3 mmT - Length 6 m",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR25-312",
+    "prNumber": "PR25-312",
+    "poNumber": null,
+    "requestDate": "2025-12-31",
+    "projectCode": "PJ10726",
+    "site": "Clementi Close Metal",
+    "items": [
+      {
+        "description": "S/S pipe  Ø 50 x 2mmT - Length 6m",
+        "qty": 8,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 8,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S pipe  Ø 20 x 2mmT - Length 6m",
+        "qty": 7,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 7,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S pipe  Ø 42 x 2mmT - Length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S Ellbow  Ø 50 x 2mmT",
+        "qty": 12,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 12,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-001",
+    "prNumber": "PR26-001",
+    "poNumber": null,
+    "requestDate": "2026-01-05",
+    "projectCode": "BDxxx26",
+    "site": "BDxxx26",
+    "items": [
+      {
+        "description": "S/S pipe Ø 168.3 x 3mmT - length 6 m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-002",
+    "prNumber": "PR26-002",
+    "poNumber": null,
+    "requestDate": "2026-01-06",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Electical work for the new workshop",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-003",
+    "prNumber": "PR26-003",
+    "poNumber": null,
+    "requestDate": "2026-01-08",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Foklift Rental 5 ton",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-004",
+    "prNumber": "PR26-004",
+    "poNumber": null,
+    "requestDate": "2026-01-08",
+    "projectCode": "BD21923",
+    "site": "DNR",
+    "items": [
+      {
+        "description": "S/S RHS 15 x 35 x 2 mm - length 6m (Hairline Finish)",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-005",
+    "prNumber": "PR26-005",
+    "poNumber": null,
+    "requestDate": "2026-01-08",
+    "projectCode": "BD25426",
+    "site": "DE189 TPY",
+    "items": [
+      {
+        "description": "M/S J-Bolt M24",
+        "qty": 476,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 462,
+        "arriveDate": null,
+        "outstanding": 14
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-006",
+    "prNumber": "PR26-006",
+    "poNumber": null,
+    "requestDate": "2026-01-10",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Container office",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-007",
+    "prNumber": "PR26-007",
+    "poNumber": null,
+    "requestDate": "2026-01-11",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "Razor Mesh Fence Panel",
+        "qty": 115,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 115
+      },
+      {
+        "description": "Anti-Climb Welded Wire Mesh Panel 1800 H",
+        "qty": 34,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 34
+      },
+      {
+        "description": "Anti-Climb Welded Wire Mesh Panel 2100 H",
+        "qty": 82,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 82
+      },
+      {
+        "description": "M/S ANGLE BAR 50x50x3mmT - length 12 m",
+        "qty": 48,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 48,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S SHS 75x75x3mmT - length 6 m",
+        "qty": 60,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 60,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Flat Bar 50x3mmT - Length 12m",
+        "qty": 48,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 48,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S plate 8' x 4 x' 6mmT",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-008",
+    "prNumber": "PR26-008",
+    "poNumber": null,
+    "requestDate": "2026-01-12",
+    "projectCode": "BDxxx25",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "M/S pipe Ø139.7 x 10 mmT  length 6m",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 3
+      },
+      {
+        "description": "M/S Plate 8' x 20'  x 25 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "S/S pipe Ø 168.3 x 3mmT - length 6 m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-009",
+    "prNumber": "PR26-009",
+    "poNumber": null,
+    "requestDate": "2026-01-19",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Orcon cylinder",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-010",
+    "prNumber": "PR26-010",
+    "poNumber": null,
+    "requestDate": "2026-01-20",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "Rebar Ø13mm × 6m",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 20,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-011",
+    "prNumber": "PR26-011",
+    "poNumber": null,
+    "requestDate": "2026-01-21",
+    "projectCode": "BD19021",
+    "site": "C821A",
+    "items": [
+      {
+        "description": "S/S Bending and Cuting",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-012",
+    "prNumber": "PR26-012",
+    "poNumber": null,
+    "requestDate": "2026-01-19",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Orcon cylinder",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 4,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-013",
+    "prNumber": "PR26-013",
+    "poNumber": null,
+    "requestDate": "2026-01-23",
+    "projectCode": "BD19121",
+    "site": "DNR",
+    "items": [
+      {
+        "description": "Gate Rope Cartridge",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-014",
+    "prNumber": "PR26-014",
+    "poNumber": null,
+    "requestDate": "2026-01-23",
+    "projectCode": "BD19121",
+    "site": "DNR",
+    "items": [
+      {
+        "description": "Strocke Cylinder (see attach picture)",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "S/S Hex Bolt M48 x 100mm  SCREW THREAD PITCH 5MM",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "Oilite Bush Bearing Ø 80 x 32mm  (see attach picture)",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "Pin Assembly from (ATG Access)",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-015",
+    "prNumber": "PR26-015",
+    "poNumber": null,
+    "requestDate": "2026-01-25",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "SP30 3 Bollard array Rebar cage",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 5,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-016",
+    "prNumber": "PR26-016",
+    "poNumber": null,
+    "requestDate": "2026-01-27",
+    "projectCode": "BD19121",
+    "site": "DNR",
+    "items": [
+      {
+        "description": "Threaded Conical Rubber Buffer",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-017",
+    "prNumber": "PR26-017",
+    "poNumber": null,
+    "requestDate": "2026-01-28",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "SP30 4 Bollard array Rebar cage",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-018",
+    "prNumber": "PR26-018",
+    "poNumber": null,
+    "requestDate": "2026-01-28",
+    "projectCode": "BD19021",
+    "site": "C821A",
+    "items": [
+      {
+        "description": "Control box engaraving Engraving",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-019",
+    "prNumber": "PR26-019",
+    "poNumber": null,
+    "requestDate": "2026-01-29",
+    "projectCode": "BD25726",
+    "site": "Shaw Tower",
+    "items": [
+      {
+        "description": "M/S pipe Ø139.7 x 8 mmT  length 6m",
+        "qty": 8,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 8
+      },
+      {
+        "description": "M/S Plate 4' x 10'  x 25 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S Plate 4' x 8'  x 12 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 4' x 8'  x 6 mmT",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S Sleeve (see Attach Picture) - Hairline Finishes",
+        "qty": 43,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 43
+      },
+      {
+        "description": "M16 × 3000 mm Anchor Rod, Grade 8.8, HDG",
+        "qty": 51,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 51
+      },
+      {
+        "description": "M16 Nut",
+        "qty": 550,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 550
+      },
+      {
+        "description": "M16 Washer",
+        "qty": 550,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 550
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-020",
+    "prNumber": "PR26-020",
+    "poNumber": null,
+    "requestDate": "2026-01-29",
+    "projectCode": "BD19021",
+    "site": "RTS",
+    "items": [
+      {
+        "description": "M/S Angle Bar 50 x  50 x 5mmT - 6 m",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      },
+      {
+        "description": "M/S Angle Bar 50 x  50 x 3mmT - 6 m",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      },
+      {
+        "description": "M/S Round bar Ø 25 mm length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-021",
+    "prNumber": "PR26-021",
+    "poNumber": null,
+    "requestDate": "2026-02-02",
+    "projectCode": "BD25626",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "M/S Plate 4' x 10'  x 25 mmT",
+        "qty": 6,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 4
+      },
+      {
+        "description": "M/S Plate 4' x 8'  x 12 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S pipe Ø139.7 x 10 mmT  length 6m",
+        "qty": 11,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 11,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S Sleeve (see Attach Picture) - satin finish",
+        "qty": 72,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 72
+      },
+      {
+        "description": "M20 × 3000 mm Anchor Rod, Grade 8.8",
+        "qty": 79,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 79
+      },
+      {
+        "description": "M20 Nut",
+        "qty": 950,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 950
+      },
+      {
+        "description": "M16 Washer",
+        "qty": 950,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 950
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-022",
+    "prNumber": "PR26-022",
+    "poNumber": null,
+    "requestDate": "2026-02-02",
+    "projectCode": "BD25225",
+    "site": "Clementi Close",
+    "items": [
+      {
+        "description": "SP30 4 array rebar cage",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-023",
+    "prNumber": "PR26-023",
+    "poNumber": null,
+    "requestDate": "2026-02-03",
+    "projectCode": "BD24725",
+    "site": "Vivo City",
+    "items": [
+      {
+        "description": "S/S M16 × 3000 mm Anchor Rod",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      },
+      {
+        "description": "S/S M10 Nut",
+        "qty": 250,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 250
+      },
+      {
+        "description": "S/S M10 Washer",
+        "qty": 250,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 250
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-024",
+    "prNumber": "PR26-024",
+    "poNumber": null,
+    "requestDate": "2026-02-03",
+    "projectCode": "BD24725",
+    "site": "RTS",
+    "items": [
+      {
+        "description": "M/S M10 Galvanized Hex Nut",
+        "qty": 600,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 600
+      },
+      {
+        "description": "M/S M10 Galvanized Flat Washer",
+        "qty": 1200,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1200
+      },
+      {
+        "description": "M/S M10 × 45 mm Galvanized Hex Bolt",
+        "qty": 600,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 600
+      },
+      {
+        "description": "M/S M8 × 15 mm Hex Bolt",
+        "qty": 400,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 400
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-025",
+    "prNumber": "PR26-025",
+    "poNumber": "0065/CH",
+    "requestDate": "2026-02-04",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "Checker plate 5' X 10' x 10 mmT",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 3,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Checker plate 4' X 8' x 10 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Checker plate 8' X 20' x 12 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-026",
+    "prNumber": "PR26-026",
+    "poNumber": null,
+    "requestDate": "2026-02-04",
+    "projectCode": "BD24025",
+    "site": "DE189",
+    "items": [
+      {
+        "description": "3M (4081) Arrow Sticker 900 mm x 300 (attach pic sample)",
+        "qty": 307,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 307
+      },
+      {
+        "description": "3M (4081) Arrow Sticker 720 mm x 300",
+        "qty": 36,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 36
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-027",
+    "prNumber": "PR26-027",
+    "poNumber": "0044/CS",
+    "requestDate": "2026-02-05",
+    "projectCode": "BD25526",
+    "site": "Parry Ave",
+    "items": [
+      {
+        "description": "M/S pipe Ø139.7 x 10 mmT  length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 4' x 8'  x 25 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 4' x 8'  x 12 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 4' x 8'  x 3 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Plate 4' x 8'  x 6 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S Plate 4' x 8'  x 3 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S pipe Ø219 x 3 mmT  length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M20 × 3000 mm Anchor Rod, Grade 8.8",
+        "qty": 6,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 6
+      },
+      {
+        "description": "M20 Nut",
+        "qty": 60,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 60
+      },
+      {
+        "description": "M20 Washer",
+        "qty": 60,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 60
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-028",
+    "prNumber": "PR26-028",
+    "poNumber": "0030/HH",
+    "requestDate": "2026-02-09",
+    "projectCode": "BD22524",
+    "site": "Serangoon Polyclinic",
+    "items": [
+      {
+        "description": "Bollard lifting trolley",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-029",
+    "prNumber": "PR26-029",
+    "poNumber": null,
+    "requestDate": "2026-02-11",
+    "projectCode": "BD24725",
+    "site": "RTS",
+    "items": [
+      {
+        "description": "S/S Plate 4' x 8'  x 15 mmT S316",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-030",
+    "prNumber": "PR26-030",
+    "poNumber": null,
+    "requestDate": "2026-02-13",
+    "projectCode": "PJ10025",
+    "site": "ICAB",
+    "items": [
+      {
+        "description": "Grouting cement (Brand Davco)",
+        "qty": 50,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 50
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-031",
+    "prNumber": "PR26-031",
+    "poNumber": null,
+    "requestDate": "2026-02-13",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "SP30 rebar cage",
+        "qty": 7,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 7
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-032",
+    "prNumber": "PR26-032",
+    "poNumber": "0046/CH",
+    "requestDate": "2026-02-20",
+    "projectCode": "BDxxx26",
+    "site": "T5-ERS",
+    "items": [
+      {
+        "description": "M/S SHS 200 x 200 x 8mm - 6 m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S RHS 100 x 75 x 6mm - 6 m",
+        "qty": 8,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 8
+      },
+      {
+        "description": "M/S SHS 75 x 75 x 3 mm - 6 m",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 4,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Angle Bar 65 x 65 x 6 mm - 6 m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Flat Bar 50 x 3 mm - 6m",
+        "qty": 11,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 11,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Ø 4 mm Wired Mesh 25 x 75 mm 5710 x 3100mm",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-033",
+    "prNumber": "PR26-033",
+    "poNumber": null,
+    "requestDate": "2026-02-26",
+    "projectCode": "BD22724",
+    "site": "RTS",
+    "items": [
+      {
+        "description": "Auto Bollard Bearing Sleeve (see Attach Picture)",
+        "qty": 43,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 43
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-034",
+    "prNumber": "PR26-034",
+    "poNumber": "0056/CS",
+    "requestDate": "2026-02-27",
+    "projectCode": "BD25626",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "M/S pipe Ø139.7 x 10 mmT  length 6m",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 3
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-035",
+    "prNumber": "PR26-035",
+    "poNumber": "0095/KS",
+    "requestDate": "2026-02-27",
+    "projectCode": "BD25726",
+    "site": "Shaw Tower",
+    "items": [
+      {
+        "description": "S/S Sleeve (see Attach Picture) - Hairline Finishes",
+        "qty": 43,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-036",
+    "prNumber": "PR26-036",
+    "poNumber": "0095/KS",
+    "requestDate": "2026-02-27",
+    "projectCode": "BD25626",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "S/S Sleeve (see Attach Picture) - satin finish",
+        "qty": 72,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-037",
+    "prNumber": "PR26-037",
+    "poNumber": "0087/AE",
+    "requestDate": "2026-03-05",
+    "projectCode": "BD25626",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "M/S Plate 5' x 10'  x 6 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-038",
+    "prNumber": "PR26-038",
+    "poNumber": "0065/CH",
+    "requestDate": "2026-03-05",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "M/S Plate 8' x 20' x 15mm",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 3
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-039",
+    "prNumber": "PR26-039",
+    "poNumber": "0067/WK",
+    "requestDate": "2026-03-09",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "O2 cylinder",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 5,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Da cylinder",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "CO2 cylinder",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 10,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-040",
+    "prNumber": "PR26-040",
+    "poNumber": "0071/AE",
+    "requestDate": "2026-03-10",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "M/S ANGLE BAR 50x50x3mmT - length 6 m",
+        "qty": 15,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 15,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S SHS 75x75x3mmT - length 6 m",
+        "qty": 15,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 15
+      },
+      {
+        "description": "M/S Flat Bar 50x3mmT - Length 6 m",
+        "qty": 30,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 30,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-041",
+    "prNumber": "PR26-041",
+    "poNumber": "0069/CS",
+    "requestDate": "2026-03-10",
+    "projectCode": "BD25626",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "M/S pipe Ø168.3 x 8 mmT  length 6m",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 10,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-042",
+    "prNumber": "PR26-042",
+    "poNumber": "0070/HG",
+    "requestDate": "2026-03-10",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "Rebar Ø10mm x 6m",
+        "qty": 100,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 100
+      },
+      {
+        "description": "Rebar Ø13mm x 6m",
+        "qty": 50,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 50
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-043",
+    "prNumber": "PR26-043",
+    "poNumber": null,
+    "requestDate": "2026-03-11",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "M/S pipe Ø219 x 10 mmT - length 1650mm",
+        "qty": 400,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 400
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-044",
+    "prNumber": "PR26-044",
+    "poNumber": "0079/PA",
+    "requestDate": "2026-03-13",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "Blocker Rebar Mesh",
+        "qty": 6,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 6,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Rebar Hoops",
+        "qty": 70,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 70,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-045",
+    "prNumber": "PR26-045",
+    "poNumber": "0086/RI",
+    "requestDate": "2026-03-15",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "Rebar 3 array",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Rebar 4 array",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-046",
+    "prNumber": "PR26-046",
+    "poNumber": "0081/CH",
+    "requestDate": "2026-03-16",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "M/S SHS 200 x 200 x 10 mm - 6 m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S PFC C-Channel 100 x 50 x 5 mmT - 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S RHS 100 x 50 x 5mmT - 12m (change to 6 m)",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 2
+      },
+      {
+        "description": "M/S RHS 100 x 50 x 5mmT - 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S RHS 50 x 25 x 3mmT - 12m (change to 6 m)",
+        "qty": 9,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 9,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Angle Bar 50 x 50 x 5 mmT - 12m (change to 6 m)",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-047",
+    "prNumber": "PR26-047",
+    "poNumber": "0080/AE",
+    "requestDate": "2026-03-16",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "M/S Angle Bar 50 x 50 x 5 mmT",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 10,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Round bar Ø 25 mm length 6m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 2,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M/S Round bar Ø 38 mm length 6m (polished surface)",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      },
+      {
+        "description": "M/S Round bar Ø 50 mm length 6m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-048",
+    "prNumber": "PR26-048",
+    "poNumber": "0084/IS",
+    "requestDate": "2026-03-16",
+    "projectCode": "BD25626",
+    "site": "Project Legend",
+    "items": [
+      {
+        "description": "M20 × 3000 mm Threaded Rod, Grade 8.8",
+        "qty": 140,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 140
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-049",
+    "prNumber": "PR26-049",
+    "poNumber": "0089/RI",
+    "requestDate": "2026-03-18",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "Rebar 3 array",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "Rebar 4 array -Special",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "Rebar 3 array - Special",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Partial",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-050",
+    "prNumber": "PR26-050",
+    "poNumber": "0085/AE",
+    "requestDate": "2026-03-18",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "M/S Plate 8' x 20' x 50mm",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 1,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Delivered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-051",
+    "prNumber": "PR26-051",
+    "poNumber": "0093/FY",
+    "requestDate": "2026-03-24",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "M/S Chain, Ø 20 mm - length 60 m",
+        "qty": 2,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 2
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-052",
+    "prNumber": "PR26-052",
+    "poNumber": "0092/WK",
+    "requestDate": "2026-03-25",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "CO2 cylinder",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-053",
+    "prNumber": "PR26-053",
+    "poNumber": "0094/CH",
+    "requestDate": "2026-03-25",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "M/S Flat bar 50 x 3 mmT",
+        "qty": 100,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 100
+      },
+      {
+        "description": "M/S Flat bar 50 x 6 mmT",
+        "qty": 100,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 100
+      },
+      {
+        "description": "M/S Flat bar 50 x 9 mmT",
+        "qty": 100,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 100
+      },
+      {
+        "description": "M10 Galvanized Bolt Length 30 mm",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M10 Galvanized Nut",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "M10 Galvanized Washer",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S M10 Nut",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S M10 Washer",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      },
+      {
+        "description": "S/S M10 × 3000 mm Threaded Rod",
+        "qty": null,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 0
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-054",
+    "prNumber": "PR26-054",
+    "poNumber": "0105/HS",
+    "requestDate": "2026-04-02",
+    "projectCode": "BD19121",
+    "site": "DNR",
+    "items": [
+      {
+        "description": "M/S Ibeam 254 x 102 UB28",
+        "qty": 3,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 3
+      },
+      {
+        "description": "M/S Angle bar 150 x 75 x 10mmT - length 6 m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S Ø 130 Round bar - length 1 m",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      },
+      {
+        "description": "M/S tube 279 OD , 229 ID - Length 1295 mm",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-055",
+    "prNumber": "PR26-055",
+    "poNumber": null,
+    "requestDate": "2026-04-06",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "S/S Plate 4 ' x 8 ' x 15 mmT",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-056",
+    "prNumber": "PR26-056",
+    "poNumber": "0104/TC",
+    "requestDate": "2026-04-06",
+    "projectCode": "PL00624",
+    "site": "Workshop",
+    "items": [
+      {
+        "description": "Welding Rod RB-26 (2.6mm)",
+        "qty": 20,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 20
+      },
+      {
+        "description": "Welding Rod RB-26 (3.2mm)",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      },
+      {
+        "description": "Atlantic CHT711 (E71T-1C) flux core wire -1.2mm",
+        "qty": 72,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 72
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-057",
+    "prNumber": "PR26-057",
+    "poNumber": "0103/RI",
+    "requestDate": "2026-04-06",
+    "projectCode": "BD24025",
+    "site": "DE189",
+    "items": [
+      {
+        "description": "Rebar 5 array - Special",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-058",
+    "prNumber": "PR26-058",
+    "poNumber": "0111/MC",
+    "requestDate": "2026-04-09",
+    "projectCode": "BD25526",
+    "site": "Parry Ave",
+    "items": [
+      {
+        "description": "S/S sleeve Coating",
+        "qty": 6,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 6
+      }
+    ],
+    "status": "Ordered",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-059",
+    "prNumber": "PR26-059",
+    "poNumber": null,
+    "requestDate": "2026-04-09",
+    "projectCode": "BD22724",
+    "site": "T232 - RTS",
+    "items": [
+      {
+        "description": "Rebar 3 array",
+        "qty": 10,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 10
+      },
+      {
+        "description": "Rebar 4 array",
+        "qty": 4,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 4
+      },
+      {
+        "description": "Rebar 5 array",
+        "qty": 5,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 5
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  },
+  {
+    "id": "PR26-060",
+    "prNumber": "PR26-060",
+    "poNumber": null,
+    "requestDate": "2026-04-10",
+    "projectCode": "BD25225",
+    "site": "NAKANO - DC  Boon Lay",
+    "items": [
+      {
+        "description": "Rebar 3 array -Special",
+        "qty": 1,
+        "unit": null,
+        "unitPrice": null,
+        "requiredDate": null,
+        "qtyArrived": 0,
+        "arriveDate": null,
+        "outstanding": 1
+      }
+    ],
+    "status": "Pending",
+    "supplier": null,
+    "eta": null,
+    "urgency": "Normal",
+    "notes": null,
+    "submittedBy": "Import",
+    "createdBy": "Import",
+    "importedAt": "2026-04-13T02:00:52.208Z"
+  }
+]

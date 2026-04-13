@@ -279,7 +279,7 @@
 <div class="tasks-layout">
 
   <!-- Left Sidebar -->
-  <div class="tasks-sidebar" id="main-sidebar" style="min-width:220px;flex-shrink:0;width:220px;">
+  <div class="tasks-sidebar" id="main-sidebar">
     <a href="/" class="staff-nav-btn" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
     </a>
@@ -395,6 +395,19 @@
     <div style="padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;">
       <button class="btn btn-ghost" id="nt-cancel">Cancel</button>
       <button class="btn" id="nt-save" style="background:var(--accent);color:#fff;flex:1;font-weight:600;">Create Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- EOD Form Modal -->
+<div id="eod-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border-radius:12px;width:92%;max-width:480px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+    <div style="padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:15px;font-weight:700;">📋 Submit EOD Log</div>
+      <button id="eod-modal-close" style="background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;line-height:1;padding:0 2px;">×</button>
+    </div>
+    <div id="eod-modal-body" style="padding:18px 22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;">
+      <!-- content injected by openEodModal() -->
     </div>
   </div>
 </div>
@@ -767,6 +780,15 @@ function buildTaskCard(task) {
     ? '<div style="font-size:11px;color:var(--green);margin-top:6px;display:flex;align-items:center;gap:8px;">✔ Marked as Seen by ' + esc(task.acknowledgedBy || task.assignedTo || '') + ' · ' + task.acknowledgedAt.split('T')[0] + '<button class="unack-btn" data-id="' + task.id + '" style="font-size:10px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-decoration:underline;">Undo</button></div>'
     : '<button class="ack-btn" data-id="' + task.id + '" data-name="' + esc(task.assignedTo || 'Team') + '" style="margin-top:6px;padding:3px 10px;font-size:11px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;color:var(--text);">Mark as Seen</button>';
 
+  // Special EOD button for "Submit EOD log" tasks
+  const isEodTask = task.title === 'Submit EOD log';
+  const eodBtnHtml = isEodTask && task.status !== 'Done'
+    ? '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' +
+        '<button class="eod-open-btn" data-name="' + esc(task.assignedTo || '') + '" data-taskid="' + esc(task.id) + '" ' +
+        'style="background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;width:100%;">📋 Fill in EOD Form</button>' +
+      '</div>'
+    : '';
+
   card.innerHTML =
     (task.projectId
       ? '<a class="task-project" href="/project.html?id=' + esc(task.projectId) + '" style="text-decoration:none;cursor:pointer;">' + esc(task.projectJobCode || '') + (task.projectJobCode && task.projectName ? ' · ' : '') + esc(task.projectName || '') + ' →</a>'
@@ -783,7 +805,8 @@ function buildTaskCard(task) {
       ).join('') +
       '<button class="status-btn del-task-btn" data-id="' + task.id + '" style="margin-left:auto;color:var(--red);border-color:rgba(226,68,92,0.3);font-size:11px;">🗑 Delete</button>' +
     '</div>' +
-    ackHtml;
+    ackHtml +
+    eodBtnHtml;
 
   card.querySelectorAll('.status-btn[data-status]').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -812,10 +835,18 @@ function buildTaskCard(task) {
   if (ackBtn) {
     ackBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
-      await fetch('/api/tasks/' + ackBtn.dataset.id + '/acknowledge', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: ackBtn.dataset.name })
-      });
+      try {
+        const res = await fetch('/api/tasks/' + ackBtn.dataset.id + '/acknowledge', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: ackBtn.dataset.name })
+        });
+        if (!res.ok) {
+          const err = await res.text();
+          console.error('[ACK] Acknowledge failed for task', ackBtn.dataset.id, ':', res.status, err);
+        }
+      } catch (err) {
+        console.error('[ACK] Acknowledge request error for task', ackBtn.dataset.id, ':', err);
+      }
       reloadAndRender();
     });
   }
@@ -829,6 +860,14 @@ function buildTaskCard(task) {
         body: JSON.stringify({ acknowledgedAt: null, acknowledgedBy: null })
       });
       reloadAndRender();
+    });
+  }
+
+  const eodOpenBtn = card.querySelector('.eod-open-btn');
+  if (eodOpenBtn) {
+    eodOpenBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEodModal(eodOpenBtn.dataset.name, eodOpenBtn.dataset.taskid);
     });
   }
 
@@ -1133,14 +1172,47 @@ async function buildEodSection(staffName) {
     warnTitle.textContent = '⚠️ EOD not submitted for today';
     card.appendChild(warnTitle);
 
-    // Summary field
-    const f1 = document.createElement('div');
-    f1.className = 'eod-form-field';
-    f1.innerHTML = '<label>What did you work on today? <span style="color:var(--red);">*</span></label>';
-    const summaryTA = document.createElement('textarea');
-    summaryTA.placeholder = 'Brief summary of work done today…';
-    f1.appendChild(summaryTA);
-    card.appendChild(f1);
+    // Today's task summary with per-task hours inputs
+    const myTodayTasks = allTasks.filter(t => t.assignedTo === staffName && t.dueDate === todayStr && t.title !== 'Submit EOD log');
+    const taskHourInputs = []; // { taskId, input }
+    if (myTodayTasks.length > 0) {
+      const taskSummary = document.createElement('div');
+      taskSummary.style.cssText = 'margin-bottom:14px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);';
+      const tsLabel = document.createElement('div');
+      tsLabel.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:8px;';
+      tsLabel.textContent = "Today's Tasks";
+      taskSummary.appendChild(tsLabel);
+      myTodayTasks.forEach(t => {
+        const row = document.createElement('div');
+        row.style.cssText = 'font-size:12px;padding:4px 0;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);';
+        const isDone = t.status === 'Done' || !!t.completedAt;
+        const isInProgress = t.status === 'In Progress';
+        const statusSpan = document.createElement('span');
+        statusSpan.style.flexShrink = '0';
+        statusSpan.textContent = isDone ? '✅' : (isInProgress ? '🔄' : '⚠️');
+        const titleSpan = document.createElement('span');
+        titleSpan.style.cssText = 'flex:1;color:' + (isDone ? 'var(--green)' : 'var(--text)') + ';' + (isDone ? 'text-decoration:line-through;opacity:0.6;' : '');
+        titleSpan.textContent = t.title;
+        const hrsInput = document.createElement('input');
+        hrsInput.type = 'number';
+        hrsInput.min = '0';
+        hrsInput.max = '24';
+        hrsInput.step = '0.5';
+        hrsInput.value = '0';
+        hrsInput.placeholder = '0';
+        hrsInput.style.cssText = 'width:55px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px;flex-shrink:0;';
+        const hrsLabel = document.createElement('span');
+        hrsLabel.textContent = 'hrs';
+        hrsLabel.style.cssText = 'font-size:11px;color:var(--text-muted);flex-shrink:0;';
+        taskHourInputs.push({ taskId: t.id, input: hrsInput });
+        row.appendChild(statusSpan);
+        row.appendChild(titleSpan);
+        row.appendChild(hrsInput);
+        row.appendChild(hrsLabel);
+        taskSummary.appendChild(row);
+      });
+      card.appendChild(taskSummary);
+    }
 
     // Issues field
     const f2 = document.createElement('div');
@@ -1152,18 +1224,21 @@ async function buildEodSection(staffName) {
     f2.appendChild(issuesTA);
     card.appendChild(f2);
 
-    // Hours field
+    // Total hours display (auto-sum)
     const f3 = document.createElement('div');
     f3.className = 'eod-form-field';
     f3.innerHTML = '<label>Hours worked</label>';
-    const hoursInput = document.createElement('input');
-    hoursInput.type = 'number';
-    hoursInput.min = '0';
-    hoursInput.max = '24';
-    hoursInput.step = '0.5';
-    hoursInput.value = '8';
-    f3.appendChild(hoursInput);
+    const totalDisplay = document.createElement('div');
+    totalDisplay.style.cssText = 'font-size:13px;color:var(--text);padding:4px 0;font-weight:600;';
+    totalDisplay.textContent = 'Total: 0 hrs';
+    f3.appendChild(totalDisplay);
     card.appendChild(f3);
+
+    function updateSectionTotal() {
+      const total = taskHourInputs.reduce((s, e) => s + (parseFloat(e.input.value) || 0), 0);
+      totalDisplay.textContent = 'Total: ' + total + ' hrs';
+    }
+    taskHourInputs.forEach(e => e.input.addEventListener('input', updateSectionTotal));
 
     // Submit button
     const submitBtn = document.createElement('button');
@@ -1177,16 +1252,13 @@ async function buildEodSection(staffName) {
     card.appendChild(errMsg);
 
     submitBtn.addEventListener('click', async () => {
-      const summary = summaryTA.value.trim();
-      if (!summary) {
-        errMsg.textContent = 'Please fill in what you worked on today.';
-        errMsg.style.display = '';
-        summaryTA.focus();
-        return;
-      }
       errMsg.style.display = 'none';
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting…';
+      const totalHours = taskHourInputs.reduce((s, x) => s + (parseFloat(x.input.value) || 0), 0);
+      const taskEntries = taskHourInputs.map(x => ({ taskId: x.taskId, hours: parseFloat(x.input.value) || 0 }));
+      const issuesVal = issuesTA.value.trim();
+      const autoSummary = taskHourInputs.map(x => { const task = allTasks.find(y => y.id === x.taskId); return task ? task.title : ''; }).filter(Boolean).join(', ');
       try {
         const r = await fetch('/api/eod-log', {
           method: 'POST',
@@ -1194,21 +1266,33 @@ async function buildEodSection(staffName) {
           body: JSON.stringify({
             staffName,
             date:    todayStr,
-            summary,
-            issues:  issuesTA.value.trim(),
-            hours:   parseFloat(hoursInput.value) || 8
+            summary: autoSummary,
+            issues:  issuesVal,
+            hours:   totalHours,
+            taskEntries
           })
         });
         if (!r.ok) throw new Error('Server error ' + r.status);
+
+        // Mark "Submit EOD log" task Done and remove its card
+        const eodTask = allTasks.find(t => t.assignedTo === staffName && t.title === 'Submit EOD log' && t.status !== 'Done');
+        if (eodTask) {
+          await fetch('/api/tasks/' + eodTask.id, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'Done', completedAt: new Date().toISOString() })
+          });
+          const eodBtn = document.querySelector('.eod-open-btn[data-taskid="' + eodTask.id + '"]');
+          if (eodBtn) eodBtn.closest('.task-card')?.remove();
+        }
 
         // Replace form with success view
         card.className = 'eod-submitted-card';
         card.innerHTML =
           '<div class="eod-submitted-title">✅ EOD submitted for today</div>' +
-          '<div class="eod-submitted-summary">' + esc(summary) + '</div>' +
-          (issuesTA.value.trim() ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;"><strong>Issues/Blockers:</strong> ' + esc(issuesTA.value.trim()) + '</div>' : '') +
-          '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Hours worked: ' + esc(String(parseFloat(hoursInput.value) || 8)) + '</div>';
-      } catch (e) {
+          (issuesVal ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;"><strong>Issues/Blockers:</strong> ' + esc(issuesVal) + '</div>' : '') +
+          '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Total hours: ' + totalHours + '</div>';
+      } catch (err) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit EOD';
         errMsg.textContent = 'Failed to submit. Please try again.';
@@ -1221,6 +1305,181 @@ async function buildEodSection(staffName) {
 
   return section;
 }
+
+// ── EOD Modal ─────────────────────────────────────────────────────────────────
+async function openEodModal(staffName, taskId) {
+  const modal = document.getElementById('eod-modal');
+  const body  = document.getElementById('eod-modal-body');
+  if (!modal || !body) return;
+
+  body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Loading…</div>';
+  modal.style.display = 'flex';
+
+  // Check if EOD already submitted today
+  let existing = null;
+  try {
+    const r = await fetch('/api/eod-log?staffName=' + encodeURIComponent(staffName) + '&date=' + todayStr);
+    const data = await r.json();
+    if (Array.isArray(data) && data.length > 0) existing = data[0];
+  } catch {}
+
+  if (existing) {
+    // Show read-only submitted view
+    body.innerHTML =
+      '<div style="background:rgba(0,200,117,0.08);border:1px solid rgba(0,200,117,0.3);border-radius:var(--radius);padding:16px;">' +
+        '<div style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:10px;">✅ EOD already submitted for today</div>' +
+        '<div class="eod-form-field"><label>What you worked on</label>' +
+          '<div style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;">' + esc(existing.summary || existing.notes || '—') + '</div></div>' +
+        (existing.issues ? '<div class="eod-form-field"><label>Issues / Blockers</label><div style="font-size:13px;color:var(--text);">' + esc(existing.issues) + '</div></div>' : '') +
+        '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;">Hours worked: ' + esc(String(existing.hours || existing.totalHours || 8)) + '</div>' +
+      '</div>' +
+      '<div style="margin-top:16px;"><button onclick="document.getElementById(\'eod-modal\').style.display=\'none\';" style="width:100%;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;color:var(--text);">Close</button></div>';
+    return;
+  }
+
+  // Build form with per-task hours inputs (DOM-based)
+  body.innerHTML = '';
+  const _eodTodayTasks = allTasks.filter(t => t.assignedTo === staffName && t.dueDate === todayStr && t.title !== 'Submit EOD log');
+  const modalTaskInputs = []; // { taskId, input }
+
+  if (_eodTodayTasks.length > 0) {
+    const summaryDiv = document.createElement('div');
+    summaryDiv.style.cssText = 'margin-bottom:14px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);';
+    const summaryLabel = document.createElement('div');
+    summaryLabel.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:8px;';
+    summaryLabel.textContent = "Today's Tasks";
+    summaryDiv.appendChild(summaryLabel);
+    _eodTodayTasks.forEach(t => {
+      const isDone = t.status === 'Done' || !!t.completedAt;
+      const isInProgress = t.status === 'In Progress';
+      const row = document.createElement('div');
+      row.style.cssText = 'font-size:12px;padding:4px 0;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);';
+      const statusSpan = document.createElement('span');
+      statusSpan.style.flexShrink = '0';
+      statusSpan.textContent = isDone ? '✅' : (isInProgress ? '🔄' : '⚠️');
+      const titleSpan = document.createElement('span');
+      titleSpan.style.cssText = 'flex:1;color:' + (isDone ? 'var(--green)' : 'var(--text)') + ';' + (isDone ? 'text-decoration:line-through;opacity:0.6;' : '');
+      titleSpan.textContent = t.title;
+      const hrsInput = document.createElement('input');
+      hrsInput.type = 'number';
+      hrsInput.min = '0';
+      hrsInput.max = '24';
+      hrsInput.step = '0.5';
+      hrsInput.value = '0';
+      hrsInput.placeholder = '0';
+      hrsInput.style.cssText = 'width:55px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px;flex-shrink:0;';
+      const hrsLabel = document.createElement('span');
+      hrsLabel.textContent = 'hrs';
+      hrsLabel.style.cssText = 'font-size:11px;color:var(--text-muted);flex-shrink:0;';
+      modalTaskInputs.push({ taskId: t.id, input: hrsInput });
+      row.appendChild(statusSpan);
+      row.appendChild(titleSpan);
+      row.appendChild(hrsInput);
+      row.appendChild(hrsLabel);
+      summaryDiv.appendChild(row);
+    });
+    body.appendChild(summaryDiv);
+  }
+
+  // Issues field
+  const mIssuesField = document.createElement('div');
+  mIssuesField.className = 'eod-form-field';
+  const mIssuesLabel = document.createElement('label');
+  mIssuesLabel.textContent = 'Any issues or blockers?';
+  const mIssuesTA = document.createElement('textarea');
+  mIssuesTA.placeholder = 'Leave blank if none…';
+  mIssuesTA.style.cssText = 'width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:13px;font-family:inherit;box-sizing:border-box;resize:vertical;min-height:52px;';
+  mIssuesField.appendChild(mIssuesLabel);
+  mIssuesField.appendChild(mIssuesTA);
+  body.appendChild(mIssuesField);
+
+  // Total hours display (auto-sum)
+  const mHoursField = document.createElement('div');
+  mHoursField.className = 'eod-form-field';
+  const mHoursLabel = document.createElement('label');
+  mHoursLabel.textContent = 'Hours worked';
+  const mTotalDisplay = document.createElement('div');
+  mTotalDisplay.style.cssText = 'font-size:13px;color:var(--text);padding:4px 0;font-weight:600;';
+  mTotalDisplay.textContent = 'Total: 0 hrs';
+  mHoursField.appendChild(mHoursLabel);
+  mHoursField.appendChild(mTotalDisplay);
+  body.appendChild(mHoursField);
+
+  function updateModalTotal() {
+    const total = modalTaskInputs.reduce((s, e) => s + (parseFloat(e.input.value) || 0), 0);
+    mTotalDisplay.textContent = 'Total: ' + total + ' hrs';
+  }
+  modalTaskInputs.forEach(e => e.input.addEventListener('input', updateModalTotal));
+
+  // Error div
+  const mErrDiv = document.createElement('div');
+  mErrDiv.style.cssText = 'font-size:12px;color:var(--red);display:none;margin-top:4px;';
+  body.appendChild(mErrDiv);
+
+  // Button row
+  const mBtnRow = document.createElement('div');
+  mBtnRow.style.cssText = 'display:flex;gap:8px;margin-top:4px;';
+  const mCancelBtn = document.createElement('button');
+  mCancelBtn.style.cssText = 'flex:1;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;color:var(--text);';
+  mCancelBtn.textContent = 'Cancel';
+  mCancelBtn.onclick = () => { modal.style.display = 'none'; };
+  const mSubmitBtn = document.createElement('button');
+  mSubmitBtn.style.cssText = 'flex:2;padding:10px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;';
+  mSubmitBtn.textContent = 'Submit EOD';
+  mBtnRow.appendChild(mCancelBtn);
+  mBtnRow.appendChild(mSubmitBtn);
+  body.appendChild(mBtnRow);
+
+  mSubmitBtn.onclick = async () => {
+    mErrDiv.style.display = 'none';
+    mSubmitBtn.disabled = true;
+    mSubmitBtn.textContent = 'Submitting…';
+    const totalHours = modalTaskInputs.reduce((s, x) => s + (parseFloat(x.input.value) || 0), 0);
+    const taskEntries = modalTaskInputs.map(x => ({ taskId: x.taskId, hours: parseFloat(x.input.value) || 0 }));
+    const issuesVal = mIssuesTA.value.trim();
+    const autoSummary = modalTaskInputs.map(x => { const task = allTasks.find(y => y.id === x.taskId); return task ? task.title : ''; }).filter(Boolean).join(', ');
+    try {
+      const r = await fetch('/api/eod-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          staffName,
+          date:    todayStr,
+          summary: autoSummary,
+          issues:  issuesVal,
+          hours:   totalHours,
+          taskEntries
+        })
+      });
+      if (!r.ok) throw new Error('Server error ' + r.status);
+
+      // Mark the linked EOD task as Done
+      if (taskId) {
+        await fetch('/api/tasks/' + taskId, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'Done', completedAt: new Date().toISOString() })
+        });
+      }
+
+      modal.style.display = 'none';
+      reloadAndRender();
+    } catch (err) {
+      mSubmitBtn.disabled = false;
+      mSubmitBtn.textContent = 'Submit EOD';
+      mErrDiv.textContent = 'Failed to submit. Please try again.';
+      mErrDiv.style.display = '';
+    }
+  };
+}
+
+// Close EOD modal on backdrop click
+document.getElementById('eod-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+document.getElementById('eod-modal-close').addEventListener('click', function() {
+  document.getElementById('eod-modal').style.display = 'none';
+});
 
 function buildSidebarProjects(projects) {
   const container = document.getElementById('sidebar-projects');

@@ -1936,6 +1936,38 @@ tr.clickable:hover td { background: var(--bg3); }
 .factory-item-row.ticket-status-ready        { border-left: 3px solid var(--green); }
 .factory-item-row.ticket-status-delivered    { border-left: none; }
 
+/* MOBILE (≤768px) — new additions */
+@media (max-width: 768px) {
+  /* Header: hide Export button, keep only Admin */
+  .topbar-export { display: none !important; }
+
+  /* Prevent iOS auto-zoom on inputs (requires font-size ≥ 16px) */
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Buttons: minimum 44px touch target (Apple HIG) */
+  .btn:not(.btn-sm):not(.btn-xs):not(.filter-chip) { min-height: 44px; }
+
+  /* No horizontal page overflow */
+  body { overflow-x: hidden; }
+
+  /* Cards/tables don't cause horizontal scroll */
+  .card { overflow-x: hidden; }
+
+  /* Project page: remove fixed height so tab content is never clipped on mobile */
+  .project-layout { height: auto; min-height: 0; }
+  .project-content { overflow-y: visible; }
+}
+
 /* MOBILE (≤599px) */
 @media (max-width: 599px) {
   /* Topbar */
@@ -1955,36 +1987,71 @@ tr.clickable:hover td { background: var(--bg3); }
   }
   .tasks-sidebar {
     order: 2;
+    display: flex;
     flex-direction: row;
     overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     height: auto;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 56px;
     padding: 4px 8px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
     border-right: none;
     border-top: 1px solid rgba(255,255,255,0.08);
     gap: 2px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
   }
   .tasks-sidebar::-webkit-scrollbar { display: none; }
-  .tasks-main { order: 1; overflow-y: auto; }
+  .tasks-main { order: 1; overflow-y: auto; min-height: 0; }
   .tasks-sidebar-label { display: none; }
   #sidebar-projects { display: none; }
-  /* staff-nav-list becomes a horizontal row so its children join the bottom bar */
   #staff-nav-list { display: flex; flex-direction: row; gap: 2px; }
   .staff-nav-btn {
+    display: flex;
     flex-direction: column;
-    padding: 6px 8px;
-    min-width: 52px;
+    align-items: center;
+    min-width: 64px;
+    max-width: 64px;
+    padding: 6px 4px;
+    flex-shrink: 0;
+    min-height: 48px;
     width: auto;
     font-size: 10px;
     gap: 2px;
     border-radius: var(--radius-sm);
     justify-content: center;
     margin-bottom: 0;
+    white-space: normal;
+  }
+  /* ↓ Icon: 24×24 in bottom nav */
+  .tasks-sidebar .staff-nav-btn .staff-initial {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    margin: 0 auto;
+  }
+  /* ↓ Labels: 10px, ellipsis truncation */
+  .tasks-sidebar .staff-nav-btn > span:not(.staff-initial):not([id]) {
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60px;
   }
   .staff-nav-btn .nav-label { display: block !important; font-size: 10px; white-space: nowrap; }
-  .staff-initial { width: 22px; height: 22px; font-size: 9px; margin: 0 auto; }
+  .staff-initial { width: 24px; height: 24px; font-size: 14px; margin: 0 auto; }
   .tasks-sidebar [style*="margin-top:auto"] { display: none; }
+  /* "New Project" button — compact in bottom nav */
+  .tasks-sidebar a[href*="new-project"] {
+    background: rgba(51,102,255,0.25) !important;
+    margin-top: 0 !important;
+    border-radius: var(--radius-sm) !important;
+  }
+  /* Pad content above the nav bar */
+  .tasks-main { padding-bottom: 70px; }
 
   /* KPI Grid */
   .kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -2030,23 +2097,26 @@ tr.clickable:hover td { background: var(--bg3); }
     overflow-y: auto;
   }
 
-  /* Project page sidebar → bottom icon strip */
+  /* Project page sidebar → bottom tab bar */
   .project-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .project-sidebar {
     order: 2;
+    display: flex;
     flex-direction: row;
     overflow-x: auto;
-    height: auto;
-    padding: 6px;
-    border-right: none;
-    border-top: 1px solid rgba(255,255,255,0.08);
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    height: auto;
+    padding: 4px 6px;
+    border-right: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    gap: 2px;
   }
   .project-sidebar::-webkit-scrollbar { display: none; }
-  .project-content { order: 1; }
-  .proj-tab-btn { min-width: 48px; flex-direction: column; font-size: 10px; padding: 6px 8px; }
-  .proj-tab-icon { font-size: 18px; }
+  .project-content { order: 1; min-height: 0; }
+  .proj-tab-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 60px; max-width: 60px; flex-shrink: 0; font-size: 11px; padding: 6px 4px; white-space: normal; gap: 2px; }
+  .proj-tab-icon { font-size: 20px; }
   .project-sidebar [style*="margin-top:auto"] { display: none; }
 
   /* Misc */
@@ -2136,25 +2206,26 @@ tr.clickable:hover td { background: var(--bg3); }
 }
 @media (max-width: 599px) {
   .project-layout { display: block; }
-  /* Sidebar fixed at bottom on mobile — always visible */
+  /* Sidebar fixed at bottom on mobile — always visible, horizontally scrollable */
   .project-sidebar {
     position: fixed;
     bottom: 0; left: 0; right: 0;
     z-index: 150;
-    flex-direction: row;
+    display: block;
     overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
     height: auto;
     padding: 4px 6px;
     border-right: none;
     border-top: 1px solid rgba(255,255,255,0.12);
     scrollbar-width: none;
-    gap: 2px;
   }
   .project-sidebar::-webkit-scrollbar { display: none; }
   /* Content scrolls freely, padded at bottom so it clears fixed sidebar */
   .project-content { padding: 12px 12px 80px; }
-  .proj-tab-btn { min-width: 52px; flex-direction: column; font-size: 10px; padding: 6px 8px; gap: 2px; justify-content: center; }
-  .proj-tab-btn span:not(.proj-tab-icon) { display: block !important; font-size: 10px; }
+  .proj-tab-btn { display: inline-flex; vertical-align: top; min-width: 60px; flex-direction: column; font-size: 11px; padding: 6px 8px; gap: 2px; justify-content: center; white-space: normal; }
+  .proj-tab-btn span:not(.proj-tab-icon) { display: block !important; font-size: 11px; }
   .proj-tab-icon { font-size: 18px; }
   .project-sidebar [style*="margin-top:auto"] { display: none; }
 }

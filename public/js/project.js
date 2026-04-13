@@ -241,7 +241,7 @@ function bindHeaderEvents() {
     showPinModal(async (pin) => {
       const result = await api('POST', '/api/admin/pin', { action: 'verify', pin });
       if (!result.ok) return false;
-      await api('DELETE', `/api/projects/${projectId}`);
+      await api('DELETE', `/api/projects/${projectId}`, { pin });
       window.location.href = 'index.html';
       return true;
     });
@@ -276,8 +276,8 @@ function showPinModal(onConfirm) {
   };
   const doCancel = () => cleanup();
 
-  confirm.addEventListener('click', doConfirm);
-  cancel.addEventListener('click', doCancel);
+  confirm.addEventListener('click', doConfirm, { once: true });
+  cancel.addEventListener('click', doCancel, { once: true });
   modal.addEventListener('click', e => { if (e.target === modal) doCancel(); }, { once: true });
 
   // Note: closing brace for bindHeaderEvents is removed — we now close it above
@@ -334,6 +334,7 @@ function renderFields() {
   const textFields = [
     'client', 'contact', 'mainCon', 'consultant',
     'startDate', 'endDate', 'contractValue', 'voValue',
+    'fabLeadTimeDays',
     'projectManager', 'qs', 'factoryManager', 'drafter',
     'purchaser', 'sales', 'siteEngineer',
     'latestNotes',
@@ -1266,57 +1267,31 @@ function renderFabrication() {
 
   if (!Array.isArray(project.fabrication)) project.fabrication = [];
 
-  const isFabComplete = (row) =>
-    FAB_DONE_STATUSES.includes(row.status) &&
-    Number(row.qtyDone) > 0 && Number(row.qtyDone) >= Number(row.totalQty) &&
-    Number(row.qtySent) > 0 && Number(row.qtySent) >= Number(row.totalQty);
-
-  // Show all rows — fully complete rows get green tint, incomplete stay normal
-  project.fabrication.forEach((row, idx) => {
-    const tr = buildFabRow(row, idx);
-    tr.dataset.fabIdx = idx;
-    tr.draggable = true;
-    if (isFabComplete(row)) {
-      tr.style.background = 'rgba(0, 200, 117, 0.06)';
-      tr.style.borderLeft = '3px solid var(--green)';
-      tr.title = 'Complete — drag to Completion section below';
-    } else {
-      tr.title = 'Drag down to Completion when ready';
-    }
-    tr.addEventListener('dragstart', e => {
-      _fabDragIdx = idx;
-      e.dataTransfer.effectAllowed = 'move';
-      setTimeout(() => tr.style.opacity = '0.4', 0);
+  if (!project.fabrication.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">No fabrication items — add via /factory</td></tr>';
+  } else {
+    project.fabrication.forEach((row) => {
+      const totalQty = Number(row.totalQty) || 0;
+      const doneQty  = Number(row.qtyDone)  || 0;
+      const isDone   = FAB_DONE_STATUSES.includes(row.status) && doneQty >= totalQty && totalQty > 0;
+      const tr = document.createElement('tr');
+      if (isDone) { tr.style.background = 'rgba(0,200,117,0.06)'; tr.style.borderLeft = '3px solid var(--green)'; }
+      tr.innerHTML = `
+        <td style="padding:8px 10px;font-size:13px;">${escHtml(row.item || '—')}</td>
+        <td style="padding:8px 10px;font-size:13px;text-align:right;">${totalQty || '—'}</td>
+        <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.unit || '—')}</td>
+        <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.process || '—')}</td>
+        <td style="padding:8px 10px;font-size:13px;text-align:right;font-weight:600;color:${doneQty >= totalQty && totalQty > 0 ? 'var(--green)' : 'var(--text)'};">${doneQty}</td>
+        <td style="padding:8px 10px;"><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.07);">${escHtml(row.status || '—')}</span></td>
+        <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.started || '—')}</td>
+        <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.done || '—')}</td>
+        <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.targetDeliveryDate || '—')}</td>
+      `;
+      tbody.appendChild(tr);
     });
-    tr.addEventListener('dragend', () => tr.style.opacity = '');
-    tbody.appendChild(tr);
-  });
-
-  // Make tbody a drop target for dragging cards back from Completion
-  tbody.addEventListener('dragover', e => { e.preventDefault(); tbody.style.outline = '2px dashed var(--amber)'; });
-  tbody.addEventListener('dragleave', () => tbody.style.outline = '');
-  tbody.addEventListener('drop', e => {
-    e.preventDefault();
-    tbody.style.outline = '';
-    if (_fabDragIdx === null) return;
-    project.fabrication[_fabDragIdx].status = 'In Progress';
-    _fabDragIdx = null;
-    renderFabrication(); updateFabLiveSummary(); debouncedSave();
-    showToast('Moved back to In Progress', 'success');
-  });
+  }
 
   updateFabPct(); updateFabLiveSummary(); renderProcessTimeline();
-
-  document.getElementById('fab-add-btn').onclick = () => {
-    project.fabrication.push({
-      item: '', totalQty: 0, process: '', qtyDone: 0,
-      qtySent: 0, status: '', started: '', done: '',
-    });
-    const idx = project.fabrication.length - 1;
-    tbody.appendChild(buildFabRow(project.fabrication[idx], idx));
-    updateFabPct();
-    debouncedSave();
-  };
 }
 
 function buildFabRow(row, idx) {
@@ -1673,68 +1648,30 @@ function renderInstallation() {
   tbody.innerHTML = '';
   if (!Array.isArray(project.installation)) project.installation = [];
 
-  let _instDragIdx = null;
-
-  // Show all rows — fully installed rows get green tint but remain editable
-  project.installation.forEach((row, idx) => {
-    const isDone = row.totalQty > 0 && Number(row.doneQty) >= Number(row.totalQty);
-    {
-      const tr = buildInstallRow(row, idx);
-      if (isDone) {
-        tr.style.background = 'rgba(0, 200, 117, 0.06)';
-        tr.style.borderLeft = '3px solid var(--green)';
-        tr.title = 'Fully installed — drag down to Completion or edit to change';
-      }
-      tr.dataset.instIdx = idx;
-      tr.draggable = true;
-      if (!isDone) tr.title = 'Drag down to mark fully installed';
-      tr.addEventListener('dragstart', e => {
-        _instDragIdx = idx;
-        e.dataTransfer.effectAllowed = 'move';
-        setTimeout(() => tr.style.opacity = '0.4', 0);
-      });
-      tr.addEventListener('dragend', () => tr.style.opacity = '');
+  if (!project.installation.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">No installation items — add via /installation</td></tr>';
+  } else {
+    project.installation.forEach((row) => {
+      const totalQty = Number(row.totalQty) || 0;
+      const doneQty  = Number(row.doneQty)  || 0;
+      const pct      = totalQty > 0 ? Math.round(doneQty / totalQty * 100) : 0;
+      const pctColor = pct >= 100 ? 'var(--green)' : pct > 0 ? 'var(--amber)' : 'var(--text-muted)';
+      const isDone   = totalQty > 0 && doneQty >= totalQty;
+      const tr = document.createElement('tr');
+      if (isDone) { tr.style.background = 'rgba(0,200,117,0.06)'; tr.style.borderLeft = '3px solid var(--green)'; }
+      tr.innerHTML = `
+        <td style="padding:8px 10px;font-size:13px;">${escHtml(row.item || '—')}</td>
+        <td style="padding:8px 10px;font-size:13px;text-align:right;">${totalQty || '—'}</td>
+        <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.unit || '—')}</td>
+        <td style="padding:8px 10px;font-size:13px;text-align:right;font-weight:600;color:${pct >= 100 ? 'var(--green)' : 'var(--text)'};">${doneQty}</td>
+        <td style="padding:8px 10px;font-size:13px;font-weight:700;color:${pctColor};">${pct}%</td>
+        <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.notes || '—')}</td>
+      `;
       tbody.appendChild(tr);
-    }
-  });
-
-  // Make install summary drop zone
-  const instSummary = document.getElementById('install-live-summary');
-  if (instSummary) {
-    instSummary.ondragover = e => { e.preventDefault(); instSummary.style.outline = '2px dashed var(--green)'; };
-    instSummary.ondragleave = () => instSummary.style.outline = '';
-    instSummary.ondrop = e => {
-      e.preventDefault();
-      instSummary.style.outline = '';
-      if (_instDragIdx === null) return;
-      const row = project.installation[_instDragIdx];
-      row.doneQty = row.totalQty; // mark fully installed
-      _instDragIdx = null;
-      renderInstallation(); updateInstallLiveSummary(); debouncedSave();
-      showToast('Marked fully installed ✓', 'success');
-    };
+    });
   }
 
-  // tbody drop zone: drag card back up = reset to 0
-  tbody.addEventListener('dragover', e => { e.preventDefault(); tbody.style.outline = '2px dashed var(--amber)'; });
-  tbody.addEventListener('dragleave', () => tbody.style.outline = '');
-  tbody.addEventListener('drop', e => {
-    e.preventDefault();
-    tbody.style.outline = '';
-    if (_instDragIdx === null) return;
-    project.installation[_instDragIdx].doneQty = 0;
-    _instDragIdx = null;
-    renderInstallation(); updateInstallLiveSummary(); debouncedSave();
-    showToast('Moved back to Progress', 'success');
-  });
-
   updateInstallPct();
-
-  document.getElementById('install-add-btn').onclick = () => {
-    project.installation.push({ item: '', totalQty: 0, doneQty: 0, claimBasis: '', notes: '' });
-    renderInstallation();
-    debouncedSave();
-  };
 }
 
 function buildInstallRow(row, idx) {
@@ -2627,14 +2564,14 @@ async function renderClaimsTab() {
 
     // Wire delete buttons
     listEl.querySelectorAll('.claim-delete-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        if (!confirm('Delete this claim?')) return;
-        try {
-          await api('DELETE', `/api/claims/${btn.dataset.id}`, null);
+      btn.addEventListener('click', () => {
+        showPinModal(async (pin) => {
+          const result = await api('POST', '/api/admin/pin', { action: 'verify', pin });
+          if (!result.ok) return false;
+          await api('DELETE', `/api/claims/${btn.dataset.id}`, { pin });
           renderClaimsTab();
-        } catch (e) {
-          showToast('Delete failed', 'error');
-        }
+          return true;
+        });
       });
     });
   }
