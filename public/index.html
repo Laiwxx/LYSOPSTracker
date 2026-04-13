@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="LYS OPS">
   <link rel="manifest" href="/manifest.json">
   <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="/js/chart.min.js"></script>
 </head>
 <body>
   <!-- topbar -->
@@ -62,35 +62,32 @@
   <div class="page tasks-main" style="overflow-y:auto;">
     <div class="dash-sections">
 
-      <!-- 1. KPI Cards -->
-      <div class="kpi-grid" style="margin-bottom:16px;">
-        <div class="kpi-card" style="border-top:3px solid var(--accent);">
+      <!-- 1. KPI Cards — Portfolio Summary -->
+      <div class="kpi-grid" style="margin-bottom:20px;grid-template-columns:repeat(4,1fr);gap:14px;">
+        <div class="kpi-card" style="border-top:3px solid var(--accent);padding:18px 20px;">
           <div class="kpi-label">Total Portfolio</div>
-          <div class="kpi-value" id="hero-portfolio">—</div>
+          <div class="kpi-value" id="hero-portfolio" style="font-size:26px;">—</div>
           <div class="kpi-sub" id="hero-portfolio-sub"></div>
         </div>
-        <div class="kpi-card" style="border-top:3px solid var(--amber);">
-          <div class="kpi-label">Outstanding</div>
-          <div class="kpi-value" id="hero-outstanding" style="color:var(--amber);">—</div>
-          <div class="kpi-sub">unclaimed</div>
-        </div>
-        <div class="kpi-card" style="border-top:3px solid var(--green);">
+        <div class="kpi-card" style="border-top:3px solid var(--green);padding:18px 20px;">
           <div class="kpi-label">Active Projects</div>
-          <div class="kpi-value" id="hero-active" style="color:var(--green);">—</div>
+          <div class="kpi-value" id="hero-active" style="color:var(--green);font-size:26px;">—</div>
           <div class="kpi-sub" id="hero-active-sub"></div>
         </div>
-        <div class="kpi-card" style="border-top:3px solid var(--red);">
-          <div class="kpi-label">Overdue Tasks</div>
-          <div class="kpi-value" id="hero-overdue" style="color:var(--red);">—</div>
-          <div class="kpi-sub">needs attention</div>
+        <div class="kpi-card" style="border-top:3px solid var(--blue,#3366ff);padding:18px 20px;">
+          <div class="kpi-label">Fabrication</div>
+          <div class="kpi-value" id="hero-fab" style="color:var(--blue,#3366ff);font-size:26px;">—</div>
+          <div class="kpi-sub">portfolio avg</div>
+        </div>
+        <div class="kpi-card" style="border-top:3px solid var(--amber);padding:18px 20px;">
+          <div class="kpi-label">Installation</div>
+          <div class="kpi-value" id="hero-install" style="color:var(--amber);font-size:26px;">—</div>
+          <div class="kpi-sub">portfolio avg</div>
         </div>
       </div>
 
-      <!-- 2. Status pills -->
-      <div class="status-row" id="status-row" style="margin-bottom:16px;"></div>
-
-      <!-- 3. Weekly Movement (moved above alert strip) -->
-      <div class="action-panel" id="monday-panel" style="margin-bottom:16px;border-color:rgba(255,255,255,0.12);">
+      <!-- Weekly Brief -->
+      <div class="action-panel" id="monday-panel" style="margin-bottom:20px;border-color:rgba(255,255,255,0.12);">
           <div class="action-panel-header" id="monday-toggle">
             <span class="title">📅 WEEKLY MOVEMENT</span>
             <span id="wm-date-label" style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:10px;"></span>
@@ -104,46 +101,16 @@
           </div>
         </div>
 
-      <!-- 4. Alert Strip -->
-      <div id="task-alert-panel" class="card" style="margin-bottom:16px;display:none;border-left:4px solid var(--red);"></div>
-
-
-
-      <!-- 5. Claims Pipeline -->
-      <div class="card" id="claims-pipeline-summary" style="margin-bottom:16px;padding:12px 16px;"></div>
+      <!-- Claims Pipeline -->
+      <div class="card" id="claims-pipeline-summary" style="margin-bottom:20px;padding:16px 20px;"></div>
 
       <!-- Project Cards -->
-      <div id="project-list" style="margin-bottom:16px;"></div>
+      <div id="project-list" style="margin-bottom:20px;"></div>
 
-
-
-      <!-- 7. Ops Panels — collapsed by default -->
+      <!-- Ops Panels -->
       <div style="margin-top:24px;">
 
-
-
-        <!-- EOD Status Panel -->
-        <div class="action-panel" id="eod-panel" style="margin-bottom:8px;">
-          <div class="action-panel-header" id="eod-toggle">
-            <span class="title" id="eod-title">EOD STATUS</span>
-            <span style="font-size:12px;color:var(--text-muted);" id="eod-chevron">▼</span>
-          </div>
-          <div class="action-panel-body">
-            <div id="eod-status-list" style="padding:0 16px;"></div>
-          </div>
-        </div>
-
-        <div class="action-panel collapsed" id="action-panel" style="margin-bottom:8px;">
-          <div class="action-panel-header" id="action-toggle">
-            <span class="title" id="action-title">NEEDS ATTENTION</span>
-            <span style="font-size:12px;color:var(--text-muted);" id="action-chevron">▼</span>
-          </div>
-          <div class="action-panel-body">
-            <div class="attention-list" id="attention-list"></div>
-          </div>
-        </div>
-
-        <div class="action-panel collapsed" id="factory-panel" style="margin-bottom:8px;">
+        <div class="action-panel" id="factory-panel" style="margin-bottom:8px;">
           <div class="action-panel-header" id="factory-toggle">
             <span class="title" id="factory-title">FACTORY</span>
             <span style="font-size:12px;color:var(--text-muted);" id="factory-chevron">▼</span>
@@ -152,7 +119,6 @@
             <div id="factory-queue-list"></div>
           </div>
         </div>
-
 
       </div>
 

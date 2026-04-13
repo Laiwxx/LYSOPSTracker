@@ -268,6 +268,85 @@
       font-size: 14px;
       line-height: 1;
     }
+
+    /* ── Compact task list (personal view redesign) ── */
+    .task-list-section { margin-bottom: 2px; }
+    .task-section-hdr {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 12px; cursor: pointer;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.7px; color: var(--text-muted);
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+      user-select: none; -webkit-user-select: none;
+    }
+    .task-section-hdr:hover { background: var(--bg2); }
+    .task-section-chevron {
+      margin-left: auto; font-size: 14px; font-weight: 400;
+      transition: transform 0.2s; display: inline-block; line-height: 1;
+    }
+    .task-section-chevron.collapsed { transform: rotate(-90deg); }
+    .task-section-body.collapsed { display: none; }
+    .task-row {
+      display: flex; align-items: center;
+      padding: 10px 12px; border-bottom: 1px solid var(--border);
+      min-height: 44px; cursor: pointer;
+      background: var(--bg2); transition: background 0.1s;
+      gap: 0;
+    }
+    .task-row:hover { background: var(--bg3); }
+    .task-row.is-done { opacity: 0.5; }
+    .task-row-icon { width: 24px; flex-shrink: 0; font-size: 16px; line-height: 1; }
+    .task-row-title {
+      flex: 1; font-size: 14px;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      min-width: 0; padding-right: 8px;
+    }
+    .task-row-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .task-cat-badge {
+      font-size: 10px; padding: 2px 5px; border-radius: 4px;
+      background: rgba(255,255,255,0.06); color: var(--text-muted);
+      border: 1px solid var(--border); white-space: nowrap;
+      max-width: 64px; overflow: hidden; text-overflow: ellipsis;
+    }
+    .task-row-hrs {
+      width: 50px; font-size: 13px; text-align: center;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 4px; padding: 3px 4px; color: var(--text);
+      -moz-appearance: textfield;
+    }
+    .task-row-hrs::-webkit-outer-spin-button,
+    .task-row-hrs::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .task-row-hrs-lbl { font-size: 11px; color: var(--text-muted); }
+    .task-expand-panel {
+      display: none; padding: 10px 12px 12px 48px;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+    }
+    .task-expand-panel.open { display: block; }
+    .task-expand-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+    .task-expand-btn {
+      padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--bg3); cursor: pointer; color: var(--text);
+    }
+    .task-expand-btn:hover { filter: brightness(1.1); }
+    .xbtn-done    { background: var(--green)  !important; color: #fff !important; border-color: var(--green)  !important; }
+    .xbtn-inprog  { background: var(--accent) !important; color: #fff !important; border-color: var(--accent) !important; }
+    .xbtn-pending { background: var(--amber)  !important; color: #fff !important; border-color: var(--amber)  !important; }
+    .xbtn-del     { color: var(--red) !important; border-color: rgba(226,68,92,0.3) !important; font-size: 11px !important; }
+    .task-expand-notes { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-top: 6px; }
+    .task-expand-ack   { font-size: 11px; color: var(--green); margin-top: 6px; }
+    .task-expand-meta  { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    /* Fixed EOD submit button (personal view only) */
+    .eod-fixed-btn {
+      position: fixed; bottom: 60px; left: 0; right: 0; z-index: 100;
+      padding: 13px 16px; background: var(--green); color: #fff;
+      font-size: 15px; font-weight: 700; border: none; cursor: pointer;
+      text-align: center; display: none;
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.35);
+    }
+    .eod-fixed-btn:hover { filter: brightness(1.08); }
+    /* Extra bottom padding so fixed btn doesn't cover EOD section */
+    .personal-view-wrap { padding-bottom: 72px; }
   </style>
 </head>
 <body>
@@ -417,6 +496,8 @@ const todayStr = new Date().toISOString().split('T')[0];
 let allTasks = [];
 let staffList = [];
 let projectsList = [];
+const rowHoursMap = {}; // taskId → hours value, persisted across re-renders
+let _viewRenderToken = 0; // increments on each render to cancel superseded async renders
 
 // ── Avatar color palette (deterministic by name) ──────────────────────────
 const AVATAR_COLORS = [
@@ -496,8 +577,12 @@ async function reloadAndRender() {
 
 // ── MODE 1: Team Overview Grid ────────────────────────────────────────────
 async function renderTeamGrid() {
+  const myToken = ++_viewRenderToken;
   const root = document.getElementById('view-root');
   root.innerHTML = '';
+  // Hide personal-view-only fixed EOD button
+  const eodFixBtn = document.getElementById('eod-fixed-btn');
+  if (eodFixBtn) eodFixBtn.style.display = 'none';
 
   // Group tasks by assignedTo
   const groups = {};
@@ -533,6 +618,7 @@ async function renderTeamGrid() {
       eodMap[name] = false;
     }
   }));
+  if (myToken !== _viewRenderToken) return; // superseded
 
   // Build staff data
   const withTasks = [];
@@ -616,8 +702,17 @@ async function renderTeamGrid() {
 
 // ── MODE 2: Personal View ─────────────────────────────────────────────────
 async function renderPersonalView(name) {
+  const myToken = ++_viewRenderToken;
   const root = document.getElementById('view-root');
   root.innerHTML = '';
+  window._eodTotalUpdater = null;
+
+  // Show fixed EOD button (personal view only)
+  const eodFixBtn = document.getElementById('eod-fixed-btn');
+  if (eodFixBtn) {
+    eodFixBtn.style.display = '';
+    eodFixBtn.dataset.name = name;
+  }
 
   const wrap = document.createElement('div');
   wrap.className = 'personal-view-wrap';
@@ -629,32 +724,28 @@ async function renderPersonalView(name) {
   back.innerHTML = '← Team';
   wrap.appendChild(back);
 
-  // Header
+  // Header — exclude "Submit EOD log" task (handled separately via fixed button)
+  const myTasks  = allTasks.filter(t => t.assignedTo === name && t.title !== 'Submit EOD log');
+  const doneCnt  = myTasks.filter(t => t.status === 'Done').length;
+  const totalCnt = myTasks.length;
+  const overdue  = myTasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < todayStr);
+  const unacked  = myTasks.filter(t => t.status !== 'Done' && !t.acknowledgedAt && t.assignedTo && t.assignedTo !== 'Unassigned').length;
+
   const hdr = document.createElement('div');
   hdr.className = 'personal-header';
-
   const av = document.createElement('div');
   av.className = 'personal-avatar';
   av.style.background = avatarColor(name);
   av.textContent = initials(name);
 
   const hdrText = document.createElement('div');
-
-  const myTasks    = allTasks.filter(t => t.assignedTo === name);
-  const overdue    = myTasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < todayStr);
-  const active     = myTasks.filter(t => t.status === 'In Progress').length;
-  const unacked    = myTasks.filter(t => t.status !== 'Done' && !t.acknowledgedAt && t.assignedTo && t.assignedTo !== 'Unassigned').length;
-
+  const dateLabel = new Date().toLocaleDateString('en-SG', { weekday: 'short', day: 'numeric', month: 'short' });
   const badgeParts = [];
   if (overdue.length) badgeParts.push('<span class="pill pill-red" style="font-size:10px;vertical-align:middle;">' + overdue.length + ' overdue</span>');
-  if (unacked)        badgeParts.push('<span class="pill pill-amber" style="font-size:10px;vertical-align:middle;">' + unacked + ' Pending Review</span>');
-
+  if (unacked)        badgeParts.push('<span class="pill pill-amber" style="font-size:10px;vertical-align:middle;">' + unacked + ' unseen</span>');
   hdrText.innerHTML =
-    '<div class="personal-title">' + esc(name.split(' ')[0]) + "'s Tasks" +
+    '<div class="personal-title">' + esc(name.split(' ')[0]) + ' — ' + doneCnt + '/' + totalCnt + ' done · ' + dateLabel +
       (badgeParts.length ? ' &nbsp;' + badgeParts.join(' ') : '') +
-    '</div>' +
-    '<div class="personal-subtitle">' + myTasks.length + ' task' + (myTasks.length !== 1 ? 's' : '') +
-      (active ? ' · ' + active + ' in progress' : '') +
     '</div>';
 
   const addTaskBtn = document.createElement('button');
@@ -668,157 +759,187 @@ async function renderPersonalView(name) {
   hdr.appendChild(addTaskBtn);
   wrap.appendChild(hdr);
 
-  // Sort tasks: overdue first, then by due date asc, then no date
-  const overdueList = myTasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < todayStr);
-  const rest        = myTasks.filter(t => !(t.status !== 'Done' && t.dueDate && t.dueDate < todayStr));
-  rest.sort((a, b) => {
-    if (!a.dueDate && !b.dueDate) return 0;
-    if (!a.dueDate) return 1;
-    if (!b.dueDate) return -1;
-    return a.dueDate < b.dueDate ? -1 : 1;
-  });
-  const sorted = [...overdueList, ...rest];
-
-  if (sorted.length === 0) {
+  if (myTasks.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
     empty.textContent = 'No tasks assigned to ' + name + '.';
     wrap.appendChild(empty);
   } else {
-    sorted.forEach(t => wrap.appendChild(buildTaskCard(t)));
+    const pendingTasks    = myTasks.filter(t => t.status === 'Pending');
+    const inProgressTasks = myTasks.filter(t => t.status === 'In Progress');
+    const doneTasks       = myTasks.filter(t => t.status === 'Done');
+
+    if (pendingTasks.length > 0)
+      wrap.appendChild(buildTaskSection('⚠️ Pending', pendingTasks, true));
+    if (inProgressTasks.length > 0)
+      wrap.appendChild(buildTaskSection('🔄 In Progress', inProgressTasks, true));
+    if (doneTasks.length > 0)
+      wrap.appendChild(buildTaskSection('✅ Done', doneTasks, false));
   }
 
-  // ── Focus List (3 most urgent upcoming tasks) ──────────────────────────
-  const focusTasks = myTasks
-    .filter(t => t.status !== 'Done' && t.dueDate)
-    .sort((a, b) => a.dueDate < b.dueDate ? -1 : 1)
-    .slice(0, 3);
-
-  if (focusTasks.length > 0) {
-    const focusCard = document.createElement('div');
-    focusCard.style.cssText = 'background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-top:20px;border-top:3px solid var(--accent);';
-    const focusTitle = document.createElement('div');
-    focusTitle.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);margin-bottom:12px;';
-    focusTitle.textContent = 'Focus List — Work on These Now';
-    focusCard.appendChild(focusTitle);
-
-    focusTasks.forEach(t => {
-      const now = new Date();
-      const due = new Date(t.dueDate + 'T00:00:00');
-      const diffDays = Math.round((due - now) / 86400000);
-      const isOverdue = diffDays < 0;
-      const daysLabel = isOverdue
-        ? Math.abs(diffDays) + 'd overdue'
-        : diffDays === 0 ? 'Due today'
-        : diffDays + 'd left';
-      const daysColor = isOverdue ? 'var(--red)' : diffDays <= 2 ? 'var(--amber)' : 'var(--text-muted)';
-
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);';
-      row.innerHTML =
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(t.title) + '</div>' +
-          '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + esc(t.projectJobCode || t.projectName || 'No project') + '</div>' +
-        '</div>' +
-        '<div style="text-align:right;flex-shrink:0;">' +
-          '<div style="font-size:11px;font-weight:700;color:' + daysColor + ';">' + daysLabel + '</div>' +
-          '<div style="font-size:10px;color:var(--text-muted);">' + t.dueDate + '</div>' +
-        '</div>';
-      focusCard.appendChild(row);
-    });
-
-    // Remove last border
-    const rows = focusCard.querySelectorAll('div[style*="border-bottom"]');
-    if (rows.length) rows[rows.length - 1].style.borderBottom = 'none';
-
-    wrap.appendChild(focusCard);
-  }
-
-  // EOD section — always at the bottom
+  // EOD section at the bottom
   const eodSection = await buildEodSection(name);
+  if (myToken !== _viewRenderToken) return; // superseded by a newer render
   wrap.appendChild(eodSection);
 
+  root.innerHTML = '';
   root.appendChild(wrap);
 }
 
-// ── Full task card (personal view) ────────────────────────────────────────
-function buildTaskCard(task) {
-  const card = document.createElement('div');
-  const isOverdue = task.status !== 'Done' && task.dueDate && task.dueDate < todayStr;
-  const statusClass = 'status-' + task.status.toLowerCase().replace(/\s+/g, '');
-  card.className = 'task-card ' + statusClass + (isOverdue ? ' overdue' : '');
+// ── Compact task section + row helpers ───────────────────────────────────
 
-  let dueBadge = '';
-  if (task.dueDate) {
-    if (task.dueDate < todayStr)
-      dueBadge = '<span class="due-badge due-overdue">Overdue · ' + task.dueDate + '</span>';
-    else if (task.dueDate === todayStr)
-      dueBadge = '<span class="due-badge due-today">Due Today</span>';
-    else
-      dueBadge = '<span class="due-badge due-upcoming">Due ' + task.dueDate + '</span>';
-  }
+function buildTaskSection(label, tasks, expanded) {
+  const section = document.createElement('div');
+  section.className = 'task-list-section';
 
-  const activeStatus = {
-    'Pending': 'active-pending', 'In Progress': 'active-inprogress',
-    'Done': 'active-done', 'Blocked': 'active-blocked'
-  };
-  const typeStyles = {
-    'Self Task':      { color:'#00c875', bg:'rgba(0,200,117,0.1)',  icon:'👤' },
-    'Requested Task': { color:'#fdab3d', bg:'rgba(253,171,61,0.1)', icon:'📋' },
-    'Ticket Task':    { color:'#a25ddc', bg:'rgba(162,93,220,0.1)', icon:'🎫' },
-    'Project Task':   { color:'var(--accent)', bg:'rgba(51,102,255,0.1)', icon:'' },
-  };
-  const ts = typeStyles[task.taskType] || { color:'var(--text-muted)', bg:'rgba(255,255,255,0.06)', icon:'' };
-  const typeBadge = '<span style="font-size:10px;font-weight:700;color:' + ts.color + ';background:' + ts.bg + ';border-radius:4px;padding:2px 7px;white-space:nowrap;">' + (ts.icon ? ts.icon + ' ' : '') + esc(task.taskType || 'Task') + '</span>';
+  const hdr = document.createElement('div');
+  hdr.className = 'task-section-hdr';
+  const labelSpan = document.createElement('span');
+  labelSpan.textContent = label + ' (' + tasks.length + ')';
+  const chevron = document.createElement('span');
+  chevron.className = 'task-section-chevron' + (expanded ? '' : ' collapsed');
+  chevron.textContent = '›';
+  hdr.appendChild(labelSpan);
+  hdr.appendChild(chevron);
 
-  const priBadgeColors = { 'Low': ['#6b7294','rgba(107,114,148,0.15)'], 'Medium': ['#3366ff','rgba(51,102,255,0.12)'], 'High': ['#e2445c','rgba(226,68,92,0.12)'] };
-  const [priColor, priBg] = priBadgeColors[task.priority] || priBadgeColors['Low'];
-  const priorityBadge = task.priority ? '<span style="font-size:10px;font-weight:700;color:' + priColor + ';background:' + priBg + ';border-radius:4px;padding:1px 6px;">' + esc(task.priority) + '</span>' : '';
-  const descSnippet = task.description ? '<div style="font-size:12px;color:var(--text-muted);margin-top:2px;margin-bottom:6px;line-height:1.5;">' + esc(task.description.slice(0, 120)) + (task.description.length > 120 ? '…' : '') + '</div>' : '';
+  const body = document.createElement('div');
+  body.className = 'task-section-body' + (expanded ? '' : ' collapsed');
 
-  const ackHtml = task.acknowledgedAt
-    ? '<div style="font-size:11px;color:var(--green);margin-top:6px;display:flex;align-items:center;gap:8px;">✔ Marked as Seen by ' + esc(task.acknowledgedBy || task.assignedTo || '') + ' · ' + task.acknowledgedAt.split('T')[0] + '<button class="unack-btn" data-id="' + task.id + '" style="font-size:10px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-decoration:underline;">Undo</button></div>'
-    : '<button class="ack-btn" data-id="' + task.id + '" data-name="' + esc(task.assignedTo || 'Team') + '" style="margin-top:6px;padding:3px 10px;font-size:11px;border-radius:10px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;color:var(--text);">Mark as Seen</button>';
-
-  // Special EOD button for "Submit EOD log" tasks
-  const isEodTask = task.title === 'Submit EOD log';
-  const eodBtnHtml = isEodTask && task.status !== 'Done'
-    ? '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' +
-        '<button class="eod-open-btn" data-name="' + esc(task.assignedTo || '') + '" data-taskid="' + esc(task.id) + '" ' +
-        'style="background:var(--green);color:#fff;border:none;border-radius:var(--radius);padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;width:100%;">📋 Fill in EOD Form</button>' +
-      '</div>'
-    : '';
-
-  card.innerHTML =
-    (task.projectId
-      ? '<a class="task-project" href="/project.html?id=' + esc(task.projectId) + '" style="text-decoration:none;cursor:pointer;">' + esc(task.projectJobCode || '') + (task.projectJobCode && task.projectName ? ' · ' : '') + esc(task.projectName || '') + ' →</a>'
-      : '<div class="task-project">' + esc(task.projectJobCode || 'No project') + '</div>'
-    ) +
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">' +
-      '<div class="task-title" style="margin:0;">' + esc(task.title) + '</div>' + typeBadge + priorityBadge +
-    '</div>' +
-    descSnippet +
-    '<div class="task-meta">' + dueBadge + (task.requestedBy ? ' <span style="font-size:11px;color:var(--text-muted);">· Requested by: ' + esc(task.requestedBy) + '</span>' : '') + '</div>' +
-    '<div class="task-status-row">' +
-      ['Pending', 'In Progress', 'Done'].map(s =>
-        '<button class="status-btn ' + (task.status === s ? activeStatus[s] : '') + '" data-status="' + s + '" data-id="' + task.id + '">' + s + '</button>'
-      ).join('') +
-      '<button class="status-btn del-task-btn" data-id="' + task.id + '" style="margin-left:auto;color:var(--red);border-color:rgba(226,68,92,0.3);font-size:11px;">🗑 Delete</button>' +
-    '</div>' +
-    ackHtml +
-    eodBtnHtml;
-
-  card.querySelectorAll('.status-btn[data-status]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      await fetch('/api/tasks/' + btn.dataset.id, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: btn.dataset.status })
-      });
-      reloadAndRender();
-    });
+  hdr.addEventListener('click', () => {
+    const nowCollapsed = body.classList.toggle('collapsed');
+    chevron.classList.toggle('collapsed', nowCollapsed);
   });
 
-  card.querySelector('.del-task-btn').addEventListener('click', async (e) => {
+  tasks.forEach(t => {
+    const { row, panel } = buildCompactRow(t);
+    body.appendChild(row);
+    body.appendChild(panel);
+  });
+
+  section.appendChild(hdr);
+  section.appendChild(body);
+  return section;
+}
+
+function buildCompactRow(task) {
+  const isDone   = task.status === 'Done';
+  const isInProg = task.status === 'In Progress';
+  const icon     = isDone ? '✅' : (isInProg ? '🔄' : '⚠️');
+
+  // Row
+  const row = document.createElement('div');
+  row.className = 'task-row' + (isDone ? ' is-done' : '');
+
+  const iconEl = document.createElement('div');
+  iconEl.className = 'task-row-icon';
+  iconEl.textContent = icon;
+
+  const titleEl = document.createElement('div');
+  titleEl.className = 'task-row-title';
+  titleEl.textContent = task.title;
+  titleEl.title = task.title;
+
+  const rightEl = document.createElement('div');
+  rightEl.className = 'task-row-right';
+
+  // Category badge (abbreviated task type)
+  const typeShort = { 'Self Task': 'Self', 'Requested Task': 'Req', 'Ticket Task': 'Ticket', 'Project Task': 'Proj' };
+  const catBadge = document.createElement('div');
+  catBadge.className = 'task-cat-badge';
+  catBadge.textContent = typeShort[task.taskType] || (task.taskType || 'Task');
+  catBadge.title = task.taskType || '';
+
+  // Hours input — persists across re-renders via rowHoursMap
+  const hrsInput = document.createElement('input');
+  hrsInput.type = 'number';
+  hrsInput.min = '0'; hrsInput.max = '24'; hrsInput.step = '0.5';
+  hrsInput.className = 'task-row-hrs';
+  hrsInput.value = rowHoursMap[task.id] !== undefined ? rowHoursMap[task.id] : '';
+  hrsInput.placeholder = '0';
+  hrsInput.addEventListener('click', e => e.stopPropagation());
+  hrsInput.addEventListener('input', () => {
+    rowHoursMap[task.id] = hrsInput.value;
+    if (typeof window._eodTotalUpdater === 'function') window._eodTotalUpdater();
+  });
+
+  const hrsLbl = document.createElement('span');
+  hrsLbl.className = 'task-row-hrs-lbl';
+  hrsLbl.textContent = 'hrs';
+
+  rightEl.appendChild(catBadge);
+  rightEl.appendChild(hrsInput);
+  rightEl.appendChild(hrsLbl);
+  row.appendChild(iconEl);
+  row.appendChild(titleEl);
+  row.appendChild(rightEl);
+
+  // Expand panel
+  const panel = document.createElement('div');
+  panel.className = 'task-expand-panel';
+
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'task-expand-actions';
+
+  const isEodTask = task.title === 'Submit EOD log';
+
+  if (isEodTask && !isDone) {
+    // Special EOD button
+    const eodBtn = document.createElement('button');
+    eodBtn.className = 'task-expand-btn xbtn-done';
+    eodBtn.textContent = '📋 Fill EOD Form';
+    eodBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openEodModal(task.assignedTo || '', task.id);
+    });
+    actionsDiv.appendChild(eodBtn);
+  } else {
+    if (!isDone) {
+      const doneBtn = document.createElement('button');
+      doneBtn.className = 'task-expand-btn xbtn-done';
+      doneBtn.textContent = '✅ Mark Done';
+      doneBtn.addEventListener('click', e => { e.stopPropagation(); updateTaskStatus(task.id, 'Done'); });
+      actionsDiv.appendChild(doneBtn);
+    }
+    if (!isInProg && !isDone) {
+      const progBtn = document.createElement('button');
+      progBtn.className = 'task-expand-btn xbtn-inprog';
+      progBtn.textContent = '🔄 In Progress';
+      progBtn.addEventListener('click', e => { e.stopPropagation(); updateTaskStatus(task.id, 'In Progress'); });
+      actionsDiv.appendChild(progBtn);
+    }
+    if (isDone || isInProg) {
+      const pendBtn = document.createElement('button');
+      pendBtn.className = 'task-expand-btn xbtn-pending';
+      pendBtn.textContent = '⚠️ Reset to Pending';
+      pendBtn.addEventListener('click', e => { e.stopPropagation(); updateTaskStatus(task.id, 'Pending'); });
+      actionsDiv.appendChild(pendBtn);
+    }
+  }
+
+  // Acknowledge / unacknowledge
+  if (!task.acknowledgedAt) {
+    const ackBtn = document.createElement('button');
+    ackBtn.className = 'task-expand-btn';
+    ackBtn.style.fontSize = '11px';
+    ackBtn.textContent = '👁 Mark as Seen';
+    ackBtn.addEventListener('click', async e => {
+      e.stopPropagation();
+      try {
+        await fetch('/api/tasks/' + task.id + '/acknowledge', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: task.assignedTo || 'Team' })
+        });
+      } catch (err) { console.error('[ACK] error:', err); }
+      reloadAndRender();
+    });
+    actionsDiv.appendChild(ackBtn);
+  }
+
+  // Delete
+  const delBtn = document.createElement('button');
+  delBtn.className = 'task-expand-btn xbtn-del';
+  delBtn.textContent = '🗑 Delete';
+  delBtn.addEventListener('click', async e => {
     e.stopPropagation();
     if (!confirm('Delete "' + task.title + '"? Cannot be undone.')) return;
     const reason = prompt('Reason for deleting? (required)');
@@ -830,32 +951,20 @@ function buildTaskCard(task) {
     });
     reloadAndRender();
   });
+  actionsDiv.appendChild(delBtn);
+  panel.appendChild(actionsDiv);
 
-  const ackBtn = card.querySelector('.ack-btn');
-  if (ackBtn) {
-    ackBtn.addEventListener('click', async (e) => {
+  // Acknowledged info + undo
+  if (task.acknowledgedAt) {
+    const ackInfo = document.createElement('div');
+    ackInfo.className = 'task-expand-ack';
+    ackInfo.innerHTML =
+      '✔ Seen by ' + esc(task.acknowledgedBy || task.assignedTo || '') + ' · ' + task.acknowledgedAt.split('T')[0] +
+      ' <button style="font-size:10px;color:var(--text-muted);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;" class="unack-inline-btn">Undo</button>';
+    panel.appendChild(ackInfo);
+    ackInfo.querySelector('.unack-inline-btn').addEventListener('click', async e => {
       e.stopPropagation();
-      try {
-        const res = await fetch('/api/tasks/' + ackBtn.dataset.id + '/acknowledge', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: ackBtn.dataset.name })
-        });
-        if (!res.ok) {
-          const err = await res.text();
-          console.error('[ACK] Acknowledge failed for task', ackBtn.dataset.id, ':', res.status, err);
-        }
-      } catch (err) {
-        console.error('[ACK] Acknowledge request error for task', ackBtn.dataset.id, ':', err);
-      }
-      reloadAndRender();
-    });
-  }
-
-  const unackBtn = card.querySelector('.unack-btn');
-  if (unackBtn) {
-    unackBtn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      await fetch('/api/tasks/' + unackBtn.dataset.id, {
+      await fetch('/api/tasks/' + task.id, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ acknowledgedAt: null, acknowledgedBy: null })
       });
@@ -863,15 +972,47 @@ function buildTaskCard(task) {
     });
   }
 
-  const eodOpenBtn = card.querySelector('.eod-open-btn');
-  if (eodOpenBtn) {
-    eodOpenBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openEodModal(eodOpenBtn.dataset.name, eodOpenBtn.dataset.taskid);
-    });
+  // Description / notes
+  if (task.description) {
+    const notes = document.createElement('div');
+    notes.className = 'task-expand-notes';
+    notes.textContent = task.description.slice(0, 200) + (task.description.length > 200 ? '…' : '');
+    panel.appendChild(notes);
   }
 
-  return card;
+  // Meta row: project · due date · requested by
+  const metaParts = [];
+  if (task.projectJobCode || task.projectName)
+    metaParts.push((task.projectJobCode || '') + (task.projectJobCode && task.projectName ? ' · ' : '') + (task.projectName || ''));
+  if (task.dueDate) {
+    const isOverdue = task.status !== 'Done' && task.dueDate < todayStr;
+    metaParts.push((isOverdue ? '🔴 Overdue · ' : 'Due ') + task.dueDate);
+  }
+  if (task.requestedBy) metaParts.push('Requested by: ' + task.requestedBy);
+  if (metaParts.length) {
+    const meta = document.createElement('div');
+    meta.className = 'task-expand-meta';
+    meta.textContent = metaParts.join(' · ');
+    panel.appendChild(meta);
+  }
+
+  // Toggle expand / collapse on row tap
+  let expanded = false;
+  row.addEventListener('click', () => {
+    expanded = !expanded;
+    panel.classList.toggle('open', expanded);
+    row.style.background = expanded ? 'var(--bg3)' : '';
+  });
+
+  return { row, panel };
+}
+
+async function updateTaskStatus(taskId, status) {
+  await fetch('/api/tasks/' + taskId, {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  reloadAndRender();
 }
 
 // ── New Task modal ────────────────────────────────────────────────────────
@@ -1172,47 +1313,8 @@ async function buildEodSection(staffName) {
     warnTitle.textContent = '⚠️ EOD not submitted for today';
     card.appendChild(warnTitle);
 
-    // Today's task summary with per-task hours inputs
-    const myTodayTasks = allTasks.filter(t => t.assignedTo === staffName && t.dueDate === todayStr && t.title !== 'Submit EOD log');
-    const taskHourInputs = []; // { taskId, input }
-    if (myTodayTasks.length > 0) {
-      const taskSummary = document.createElement('div');
-      taskSummary.style.cssText = 'margin-bottom:14px;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);';
-      const tsLabel = document.createElement('div');
-      tsLabel.style.cssText = 'font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:8px;';
-      tsLabel.textContent = "Today's Tasks";
-      taskSummary.appendChild(tsLabel);
-      myTodayTasks.forEach(t => {
-        const row = document.createElement('div');
-        row.style.cssText = 'font-size:12px;padding:4px 0;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);';
-        const isDone = t.status === 'Done' || !!t.completedAt;
-        const isInProgress = t.status === 'In Progress';
-        const statusSpan = document.createElement('span');
-        statusSpan.style.flexShrink = '0';
-        statusSpan.textContent = isDone ? '✅' : (isInProgress ? '🔄' : '⚠️');
-        const titleSpan = document.createElement('span');
-        titleSpan.style.cssText = 'flex:1;color:' + (isDone ? 'var(--green)' : 'var(--text)') + ';' + (isDone ? 'text-decoration:line-through;opacity:0.6;' : '');
-        titleSpan.textContent = t.title;
-        const hrsInput = document.createElement('input');
-        hrsInput.type = 'number';
-        hrsInput.min = '0';
-        hrsInput.max = '24';
-        hrsInput.step = '0.5';
-        hrsInput.value = '0';
-        hrsInput.placeholder = '0';
-        hrsInput.style.cssText = 'width:55px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px;flex-shrink:0;';
-        const hrsLabel = document.createElement('span');
-        hrsLabel.textContent = 'hrs';
-        hrsLabel.style.cssText = 'font-size:11px;color:var(--text-muted);flex-shrink:0;';
-        taskHourInputs.push({ taskId: t.id, input: hrsInput });
-        row.appendChild(statusSpan);
-        row.appendChild(titleSpan);
-        row.appendChild(hrsInput);
-        row.appendChild(hrsLabel);
-        taskSummary.appendChild(row);
-      });
-      card.appendChild(taskSummary);
-    }
+    // Hours come from the compact task list (rowHoursMap) — no duplicate inputs here.
+    const myListTasks = allTasks.filter(t => t.assignedTo === staffName && t.title !== 'Submit EOD log');
 
     // Issues field
     const f2 = document.createElement('div');
@@ -1224,21 +1326,23 @@ async function buildEodSection(staffName) {
     f2.appendChild(issuesTA);
     card.appendChild(f2);
 
-    // Total hours display (auto-sum)
+    // Total hours display (live auto-sum from compact task list hours inputs)
     const f3 = document.createElement('div');
     f3.className = 'eod-form-field';
-    f3.innerHTML = '<label>Hours worked</label>';
+    f3.innerHTML = '<label>Total hours (from task list above)</label>';
     const totalDisplay = document.createElement('div');
     totalDisplay.style.cssText = 'font-size:13px;color:var(--text);padding:4px 0;font-weight:600;';
-    totalDisplay.textContent = 'Total: 0 hrs';
     f3.appendChild(totalDisplay);
     card.appendChild(f3);
 
-    function updateSectionTotal() {
-      const total = taskHourInputs.reduce((s, e) => s + (parseFloat(e.input.value) || 0), 0);
-      totalDisplay.textContent = 'Total: ' + total + ' hrs';
+    function sumRowHours() {
+      return myListTasks.reduce((s, t) => s + (parseFloat(rowHoursMap[t.id]) || 0), 0);
     }
-    taskHourInputs.forEach(e => e.input.addEventListener('input', updateSectionTotal));
+    function updateSectionTotal() {
+      totalDisplay.textContent = 'Total: ' + sumRowHours() + ' hrs';
+    }
+    updateSectionTotal();
+    window._eodTotalUpdater = updateSectionTotal;
 
     // Submit button
     const submitBtn = document.createElement('button');
@@ -1255,10 +1359,14 @@ async function buildEodSection(staffName) {
       errMsg.style.display = 'none';
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting…';
-      const totalHours = taskHourInputs.reduce((s, x) => s + (parseFloat(x.input.value) || 0), 0);
-      const taskEntries = taskHourInputs.map(x => ({ taskId: x.taskId, hours: parseFloat(x.input.value) || 0 }));
+      const totalHours = sumRowHours();
+      const taskEntries = myListTasks
+        .map(t => ({ taskId: t.id, hours: parseFloat(rowHoursMap[t.id]) || 0 }))
+        .filter(e => e.hours > 0);
       const issuesVal = issuesTA.value.trim();
-      const autoSummary = taskHourInputs.map(x => { const task = allTasks.find(y => y.id === x.taskId); return task ? task.title : ''; }).filter(Boolean).join(', ');
+      const autoSummary = taskEntries
+        .map(e => { const task = allTasks.find(y => y.id === e.taskId); return task ? task.title : ''; })
+        .filter(Boolean).join(', ');
       try {
         const r = await fetch('/api/eod-log', {
           method: 'POST',
@@ -1287,6 +1395,7 @@ async function buildEodSection(staffName) {
         }
 
         // Replace form with success view
+        window._eodTotalUpdater = null;
         card.className = 'eod-submitted-card';
         card.innerHTML =
           '<div class="eod-submitted-title">✅ EOD submitted for today</div>' +
@@ -1365,7 +1474,7 @@ async function openEodModal(staffName, taskId) {
       hrsInput.min = '0';
       hrsInput.max = '24';
       hrsInput.step = '0.5';
-      hrsInput.value = '0';
+      hrsInput.value = rowHoursMap[t.id] || '0';
       hrsInput.placeholder = '0';
       hrsInput.style.cssText = 'width:55px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px;flex-shrink:0;';
       const hrsLabel = document.createElement('span');
@@ -1497,5 +1606,11 @@ function buildSidebarProjects(projects) {
 
 init();
 </script>
+
+<!-- Fixed EOD button — personal view only, sits above bottom nav on mobile -->
+<button id="eod-fixed-btn" class="eod-fixed-btn" onclick="openEodModal(this.dataset.name, null)">
+  📋 Submit EOD →
+</button>
+
 </body>
 </html>

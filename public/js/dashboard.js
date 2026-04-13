@@ -7,19 +7,15 @@
   let allProjects = [];
   let activeStatus = 'all';
   let searchQuery = '';
+  let showAllProjects = false;
 
   // ── Boot ───────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
     loadSummary();
-    loadActions();
     loadFactoryQueue();
     loadProjects();
-    renderTaskAlerts();
-    loadSiteRequestAlerts();
-    loadOverduePOAlerts();
     loadWeeklyBrief();
     loadEodStatus();
-    bindActionToggle();
     bindFactoryToggle();
     bindMondayToggle();
     bindEodToggle();
@@ -31,8 +27,11 @@
   async function loadSummary() {
     try {
       const s = await api('GET', '/api/summary');
-      document.getElementById('hero-portfolio').textContent = fmtCurrencyShort(s.totalContract + s.totalVO);
-      document.getElementById('hero-outstanding').textContent = fmtCurrencyShort(s.outstanding || 0);
+      var heroPortfolio = document.getElementById('hero-portfolio');
+      if (heroPortfolio) {
+        var totalVal = (parseFloat(s.totalContract) || 0) + (parseFloat(s.totalVO) || 0);
+        heroPortfolio.textContent = fmtCurrencyShort(totalVal);
+      }
 
       // Active projects = total minus completed
       var active = (s.total || 0) - (s.completed || 0);
@@ -43,27 +42,18 @@
       var heroPortfolioSub = document.getElementById('hero-portfolio-sub');
       if (heroPortfolioSub) heroPortfolioSub.textContent = (s.total || 0) + ' projects';
 
+      // Portfolio-average FAB / Install
+      var fabPct  = s.overallFabPct  || s.avgFabPct  || 0;
+      var instPct = s.overallInstallPct || s.avgInstallPct || 0;
+      var heroFab = document.getElementById('hero-fab');
+      if (heroFab) heroFab.textContent = fabPct + '%';
+      var heroInstall = document.getElementById('hero-install');
+      if (heroInstall) heroInstall.textContent = instPct + '%';
+
       // Total chip count
       var totalCount = document.getElementById('chip-total-count');
       if (totalCount) totalCount.textContent = s.total;
 
-      // Status chips
-      const row = document.getElementById('status-row');
-      row.innerHTML = [
-        { label: 'On Track',  count: s.onTrack,   pill: 'pill-green',  status: 'On Track' },
-        { label: 'Delayed',   count: s.delayed,   pill: 'pill-red',    status: 'Delayed' },
-        { label: 'On Hold',   count: s.onHold,    pill: 'pill-amber',  status: 'On Hold' },
-        { label: 'Completed', count: s.completed, pill: 'pill-grey',   status: 'Completed' },
-      ].map(function (x) {
-        return '<div class="status-chip ' + x.pill + '" data-status="' + x.status + '" style="cursor:pointer;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px;margin-right:6px;">' +
-          '<span style="font-size:15px;font-weight:800;">' + x.count + '</span>' +
-          '<span>' + x.label + '</span>' +
-          '</div>';
-      }).join('');
-
-      // Overall progress bars
-      var fabPct  = s.overallFabPct  || s.avgFabPct  || 0;
-      var instPct = s.overallInstallPct || s.avgInstallPct || 0;
       var progEl  = document.getElementById('overall-progress');
       if (progEl) {
         var fabColor  = fabPct  >= 80 ? 'var(--green)' : fabPct  >= 40 ? 'var(--amber)' : 'var(--red)';
@@ -85,20 +75,9 @@
           '</div>';
       }
 
-      // Make status chips clickable filters
-      row.querySelectorAll('.status-chip').forEach(function (chip) {
-        chip.addEventListener('click', function () {
-          var s = chip.dataset.status;
-          document.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('active'); });
-          var matchBtn = document.querySelector('.filter-chip[data-status="' + s + '"]');
-          if (matchBtn) matchBtn.classList.add('active');
-          activeStatus = s;
-          renderProjects();
-        });
-      });
     } catch (err) {
       console.error('[LYS Dashboard] loadSummary failed:', err);
-      ['hero-portfolio','hero-outstanding','hero-active','hero-overdue'].forEach(function(id) {
+      ['hero-portfolio','hero-active','hero-fab','hero-install'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.textContent = 'Error';
       });
@@ -779,11 +758,24 @@
     return '<span class="pill ' + cls + '">' + (status || '—') + '</span>';
   }
 
+  window._toggleAllProjects = function() {
+    showAllProjects = !showAllProjects;
+    renderProjects();
+  };
+
+  function isActiveFabInstall(p) {
+    var fab = parseFloat(p.fabPercent) || 0;
+    var inst = parseFloat(p.installPercent) || 0;
+    var stage = (p.currentStage || '').toLowerCase();
+    return fab > 0 || inst > 0 || stage.indexOf('fabrication') !== -1 || stage.indexOf('installation') !== -1;
+  }
+
   function renderProjects() {
     var container = document.getElementById('project-list');
     var q = searchQuery.toLowerCase();
 
     var filtered = allProjects.filter(function (p) {
+      if (!showAllProjects && !isActiveFabInstall(p)) return false;
       var matchStatus = activeStatus === 'all' || p.status === activeStatus;
       var matchSearch = !q ||
         (p.jobCode || '').toLowerCase().includes(q) ||
@@ -799,12 +791,29 @@
       return (order[a.status] !== undefined ? order[a.status] : 9) - (order[b.status] !== undefined ? order[b.status] : 9);
     });
 
+    var labelText = showAllProjects
+      ? '\uD83D\uDCC2 All Projects (' + filtered.length + ')'
+      : '\uD83C\uDFD7\uFE0F Active — In Fabrication / Installation (' + filtered.length + ' project' + (filtered.length === 1 ? '' : 's') + ')';
+
+    var labelHtml =
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px;">' +
+        '<div class="section-label" style="margin:0;font-size:13px;">' + labelText + '</div>' +
+      '</div>';
+
+    var footerLinkText = showAllProjects ? '\u2190 Show Active Only' : 'View All Projects \u2192';
+    var footerHtml =
+      '<div style="text-align:center;margin-top:12px;">' +
+        '<a href="#" onclick="event.preventDefault();window._toggleAllProjects();" style="font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;">' + footerLinkText + '</a>' +
+      '</div>';
+
     if (!filtered.length) {
-      container.innerHTML = '<div class="empty-state">No projects found</div>';
+      container.innerHTML = labelHtml +
+        '<div class="empty-state">No projects currently in fabrication or installation</div>' +
+        footerHtml;
       return;
     }
 
-    container.innerHTML = filtered.map(function (p) {
+    container.innerHTML = labelHtml + filtered.map(function (p) {
       var statusClass = 'status-' + (p.status || '').toLowerCase().replace(/\s/g, '');
       var fabPct     = calcFabPct(p);
       var installPct = calcInstallPct(p);
@@ -861,7 +870,7 @@
         '</div>' +
         (note ? '<div class="project-card-note">' + esc(note) + '</div>' : '') +
       '</div>';
-    }).join('');
+    }).join('') + footerHtml;
   }
 
   // ── Sidebar Projects ──────────────────────────────────────────────────────

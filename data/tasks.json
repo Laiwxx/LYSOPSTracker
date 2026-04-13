@@ -10,7 +10,8 @@
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.352Z",
-    "overdueEmailSent": true
+    "overdueEmailSent": true,
+    "completedAt": "2026-04-13T07:03:26.793Z"
   },
   {
     "id": "1776008741352-gcm4u9j57f5",
@@ -19,7 +20,7 @@
     "assignedTo": "Chris",
     "taskType": "Recurring",
     "requestedBy": "System",
-    "status": "Pending",
+    "status": "In Progress",
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.352Z",
@@ -36,7 +37,8 @@
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
-    "overdueEmailSent": true
+    "overdueEmailSent": true,
+    "completedAt": "2026-04-13T07:03:31.470Z"
   },
   {
     "id": "1776008741353-w53r3yxgigf",
@@ -49,7 +51,8 @@
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
-    "overdueEmailSent": true
+    "overdueEmailSent": true,
+    "completedAt": "2026-04-13T07:03:33.125Z"
   },
   {
     "id": "1776008741353-qib7frb6t1",
@@ -58,11 +61,12 @@
     "assignedTo": "Chris",
     "taskType": "Recurring",
     "requestedBy": "System",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
-    "overdueEmailSent": true
+    "overdueEmailSent": true,
+    "completedAt": "2026-04-13T07:03:34.422Z"
   },
   {
     "id": "1776008741353-etszilqdfx",
@@ -182,7 +186,11 @@
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
-    "overdueEmailSent": true
+    "overdueEmailSent": true,
+    "completedAt": "2026-04-13T07:04:00.099Z",
+    "acknowledgedAt": "2026-04-13T07:04:04.855Z",
+    "acknowledgedBy": "Alex Mac",
+    "statusChangedAt": "2026-04-13T07:04:04.855Z"
   },
   {
     "id": "1776008741353-4f8o0y8l0h3",
@@ -195,7 +203,10 @@
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
-    "overdueEmailSent": true
+    "overdueEmailSent": true,
+    "acknowledgedAt": "2026-04-13T07:04:07.940Z",
+    "acknowledgedBy": "Alex Mac",
+    "statusChangedAt": "2026-04-13T07:04:07.940Z"
   },
   {
     "id": "1776008741353-z7b1t2ay9v",
@@ -937,7 +948,10 @@
     ],
     "weekOf": "2026-04-13",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "acknowledgedAt": "2026-04-13T07:04:13.225Z",
+    "acknowledgedBy": "Alex Mac",
+    "statusChangedAt": "2026-04-13T07:04:13.225Z"
   },
   {
     "id": "mnwh0jc9nl3",

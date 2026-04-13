@@ -4248,15 +4248,15 @@
     "contact": "",
     "mainCon": "",
     "consultant": "",
-    "startDate": "",
-    "endDate": "",
+    "startDate": "2024-11-13",
+    "endDate": "2026-03-31",
     "projectManager": "Lai Wei Xiang",
     "qs": "Salve",
     "factoryManager": "Chris",
     "drafter": "Senthil",
     "purchaser": "Rena",
     "sales": "Janessa",
-    "siteEngineer": "",
+    "siteEngineer": "Teo Meei Haw",
     "status": "On Track",
     "currentStage": "Quotation",
     "actionBy": "Sales",
@@ -4750,7 +4750,8 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "fabLeadTimeDays": 90
   },
   {
     "id": "bd-25325-sam-lain-tt-tuas",

@@ -404,8 +404,74 @@ function bindTabEvents() {
 // ── Summary Tab ──────────────────────────────────────────────────────────────
 async function renderSummaryTab() {
   const container = document.getElementById('tab-summary');
-  if (!container || !project) return;
+  if (!container) return;
+  // Always paint a loading state so the tab is never mysteriously blank.
+  container.innerHTML = '<div style="padding:24px;color:var(--text-muted);font-size:13px;">Loading summary…</div>';
+  if (!project) {
+    container.innerHTML = '<div style="padding:24px;color:var(--red);font-size:13px;">Project data not loaded.</div>';
+    return;
+  }
+  try {
+    await _renderSummaryTabInner(container);
+  } catch (err) {
+    console.error('[renderSummaryTab] failed:', err);
+    container.innerHTML = _renderSummaryFallback(err);
+    container.querySelectorAll('[data-retry-summary]').forEach(b =>
+      b.addEventListener('click', () => renderSummaryTab())
+    );
+  }
+}
 
+function _renderSummaryFallback(err) {
+  const p = project || {};
+  const cv   = parseFloat(p.contractValue) || 0;
+  const vo   = parseFloat(p.voValue)       || 0;
+  const paid = parseFloat(p.paidAmount)    || 0;
+  const claimsPct = (cv + vo) > 0 ? Math.round(paid / (cv + vo) * 100) : 0;
+  const fabPct  = Number.isFinite(+p.fabPercent)     ? Math.round(+p.fabPercent)     : 0;
+  const instPct = Number.isFinite(+p.installPercent) ? Math.round(+p.installPercent) : 0;
+  const stages = Array.isArray(p.stages) ? p.stages : [];
+  const stagesDone = stages.filter(s => s.status === 'Completed').length;
+  const stagesList = stages.map(s => {
+    const color = s.status === 'Completed'   ? 'var(--green)'
+               : s.status === 'In Progress' ? 'var(--accent)'
+               : 'var(--text-muted)';
+    return `<li style="padding:4px 0;color:${color};font-size:12px;">
+      <strong>${escHtml(s.name || '—')}</strong>
+      <span style="color:var(--text-muted);margin-left:6px;">${escHtml(s.status || '—')}</span>
+    </li>`;
+  }).join('');
+  return `
+    <div style="padding:8px;">
+      <div style="background:rgba(226,68,92,0.08);border:1px solid rgba(226,68,92,0.3);border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:4px;">⚠️ Summary rendering error</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">${escHtml(err && err.message || String(err))}</div>
+        <button data-retry-summary style="font-size:11px;padding:4px 12px;border-radius:12px;background:var(--bg3);border:1px solid var(--border);color:var(--text);cursor:pointer;">↻ Retry</button>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="section-label">Project Health</div>
+        <div style="font-size:13px;line-height:1.9;">
+          <div>Status: <strong>${escHtml(p.status || 'On Track')}</strong></div>
+          <div>Contract Value: <strong>$${cv.toLocaleString()}</strong>${vo ? ' <span style="color:var(--text-muted);">(+ VO $' + vo.toLocaleString() + ')</span>' : ''}</div>
+          <div>Claims: <strong>${claimsPct}%</strong> <span style="color:var(--text-muted);">($${(paid/1000).toFixed(0)}k paid)</span></div>
+          <div>Fabrication: <strong>${fabPct}%</strong></div>
+          <div>Installation: <strong>${instPct}%</strong></div>
+        </div>
+      </div>
+      ${p.latestNotes ? `
+        <div class="card" style="margin-bottom:14px;">
+          <div class="section-label">Latest Notes</div>
+          <div style="font-size:13px;white-space:pre-wrap;line-height:1.5;">${escHtml(p.latestNotes)}</div>
+        </div>` : ''}
+      ${stages.length ? `
+        <div class="card" style="margin-bottom:14px;">
+          <div class="section-label">Stages (${stagesDone}/${stages.length} done)</div>
+          <ul style="list-style:none;padding:0;margin:0;">${stagesList}</ul>
+        </div>` : ''}
+    </div>`;
+}
+
+async function _renderSummaryTabInner(container) {
   // 1. Progress calculations
   const fabRows   = project.fabrication   || [];
   const installRows = project.installation || [];
