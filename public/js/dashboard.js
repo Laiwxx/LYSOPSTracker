@@ -433,11 +433,59 @@
     var panel = document.getElementById('monday-panel');
     var chevron = document.getElementById('monday-chevron');
     var toggle = document.getElementById('monday-toggle');
-    if (!toggle) return;
-    toggle.addEventListener('click', function () {
-      var collapsed = panel.classList.toggle('collapsed');
-      chevron.textContent = collapsed ? '' : '';
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        var collapsed = panel.classList.toggle('collapsed');
+        chevron.textContent = collapsed ? '▼' : '▲';
+      });
+    }
+    var mcPanel = document.getElementById('mc-panel');
+    var mcChevron = document.getElementById('mc-chevron');
+    var mcToggle = document.getElementById('mc-toggle');
+    if (mcToggle) {
+      mcToggle.addEventListener('click', function () {
+        var collapsed = mcPanel.classList.toggle('collapsed');
+        mcChevron.textContent = collapsed ? '▼' : '▲';
+      });
+    }
+  }
+
+  function renderTodayMC(assignments, workerMap, todayKey) {
+    var listEl = document.getElementById('mc-list');
+    var countEl = document.getElementById('mc-count-label');
+    if (!listEl) return;
+    var entries = [];
+    var seen = {};
+    Object.keys(assignments || {}).forEach(function(wId) {
+      var row = assignments[wId];
+      var a = row && row[todayKey];
+      if (!a || !a.type) return;
+      if (a.type !== 'MC' && a.type !== 'Off') return;
+      if (seen[wId]) return;
+      seen[wId] = true;
+      var name = (workerMap[wId] && workerMap[wId].name) || wId;
+      entries.push({ name: name, type: a.type, notes: a.notes || '' });
     });
+    if (countEl) countEl.textContent = entries.length ? entries.length + ' worker' + (entries.length > 1 ? 's' : '') : '';
+    if (!entries.length) {
+      listEl.innerHTML =
+        '<div style="color:var(--text-muted);font-size:13px;padding:6px 2px;">All present today ✅</div>';
+      return;
+    }
+    var chipStyle =
+      'display:inline-flex;align-items:center;gap:6px;' +
+      'background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.4);' +
+      'border-radius:8px;padding:5px 10px;margin:3px 4px 3px 0;' +
+      'font-size:12px;color:#fca5a5;font-weight:600;';
+    listEl.innerHTML =
+      '<div style="display:flex;flex-wrap:wrap;">' +
+        entries.map(function(e) {
+          var icon = e.type === 'MC' ? '🤒' : '🌴';
+          var note = e.notes ? ' <span style="opacity:0.65;font-weight:400;">· ' + esc(e.notes) + '</span>' : '';
+          return '<span style="' + chipStyle + '">' + icon + ' ' + esc(e.name) +
+                 ' <span style="opacity:0.7;font-weight:500;">(' + esc(e.type) + ')</span>' + note + '</span>';
+        }).join('') +
+      '</div>';
   }
 
   async function loadWeeklyBrief() {
@@ -463,22 +511,53 @@
     };
 
     try {
-      // Derive this week's Monday
-      var now    = new Date();
-      var dow    = now.getDay();
-      var monday = new Date(now);
-      monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
-      monday.setHours(0, 0, 0, 0);
-      var weekStart = monday.toISOString().split('T')[0];
+      // Get today's date in SGT as YYYY-MM-DD
+      var now = new Date();
+      var sgtOffset = 8 * 60; // SGT is UTC+8
+      var sgtDate = new Date(now.getTime() + (sgtOffset + now.getTimezoneOffset()) * 60000);
+      var day = sgtDate.getDay(); // 0=Sun, 1=Mon...
+      var diff = sgtDate.getDate() - (day === 0 ? 6 : day - 1);
+      var monday = new Date(sgtDate);
+      monday.setDate(diff);
+      var weekStart = monday.getFullYear() + '-' + String(monday.getMonth()+1).padStart(2,'0') + '-' + String(monday.getDate()).padStart(2,'0');
 
-      // Fetch data
+      function fmtYMD(dt) {
+        return dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+      }
+      function hasAssignments(a) {
+        if (!a) return false;
+        var keys = Object.keys(a);
+        for (var i = 0; i < keys.length; i++) {
+          var row = a[keys[i]];
+          if (row && ['mon','tue','wed','thu','fri','sat'].some(function(d){ return row[d] && row[d].type; })) return true;
+        }
+        return false;
+      }
+
+      // Fetch data — try current week, fall back to previous week if empty
       var plan        = await api('GET', '/api/manpower-plan?weekStart=' + weekStart);
       var assignments = (plan && plan.assignments) ? plan.assignments : {};
+      if (!hasAssignments(assignments)) {
+        var prevMonday = new Date(monday);
+        prevMonday.setDate(prevMonday.getDate() - 7);
+        var prevWeekStart = fmtYMD(prevMonday);
+        var prevPlan = await api('GET', '/api/manpower-plan?weekStart=' + prevWeekStart);
+        var prevAssignments = (prevPlan && prevPlan.assignments) ? prevPlan.assignments : {};
+        if (hasAssignments(prevAssignments)) {
+          weekStart = prevWeekStart;
+          monday = prevMonday;
+          plan = prevPlan;
+          assignments = prevAssignments;
+        }
+      }
       var workers     = await api('GET', '/api/workers?active=true');
 
-      // Lookup maps
+      // Lookup maps — include supply workers from plan
       var workerMap = {};
       workers.forEach(function(w) { workerMap[w.id] = w; });
+      // Add supply workers to the map so their names resolve correctly
+      var supplyWorkers = (plan && plan.supplyWorkers) || [];
+      supplyWorkers.forEach(function(sw) { workerMap[sw.id] = sw; });
 
       var jobCodeMap = {};
       allProjects.forEach(function(p) {
@@ -502,11 +581,14 @@
         }
       });
 
+      var seenWorkerDay = {}; // dedupe: workerid+day
       Object.keys(assignments).forEach(function(wId) {
         var name = (workerMap[wId] && workerMap[wId].name) || wId;
         DAY_KEYS.forEach(function(d) {
           var a = assignments[wId][d];
-          if (a && a.type && summary[d][a.type] !== undefined) {
+          var dedupeKey = wId + '|' + d;
+          if (a && a.type && summary[d][a.type] !== undefined && !seenWorkerDay[dedupeKey]) {
+            seenWorkerDay[dedupeKey] = true;
             summary[d][a.type].push({
               name:        name,
               jobCode:     jobCodeMap[a.projectId] || '',
@@ -517,6 +599,12 @@
           }
         });
       });
+
+      // Today's day key (sun=0 … sat=6) — derive from SGT date
+      var todayKey = ['sun','mon','tue','wed','thu','fri','sat'][sgtDate.getDay()];
+
+      // Render Today's MC / Absent panel from the same assignments data
+      renderTodayMC(assignments, workerMap, todayKey);
 
       var hasAny = DAY_KEYS.some(function(d) {
         return summary[d].Fabrication.length + summary[d].Installation.length + summary[d].Driver.length > 0;
@@ -530,9 +618,6 @@
           '</div>';
         return;
       }
-
-      // Today's day key (sun=0 … sat=6)
-      var todayKey = ['sun','mon','tue','wed','thu','fri','sat'][now.getDay()];
 
       // ── Worker chip ──────────────────────────────────────────────────────
       function chip(w, cfg) {

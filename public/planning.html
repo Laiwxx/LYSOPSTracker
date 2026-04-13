@@ -252,8 +252,8 @@
     /* ── Popup ───────────────────────────────────────── */
     .popup-overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 1000;
+      background: rgba(0,0,0,0.65);
+      z-index: 99999;
       display: none; align-items: center; justify-content: center;
     }
     .popup-overlay.open { display: flex; }
@@ -595,6 +595,7 @@
     </div>
     <div class="popup-actions">
       <button class="pop-cancel" id="popup-cancel">Cancel</button>
+      <button class="pop-clear" id="popup-clear" style="background:var(--red);color:#fff;border:none;border-radius:var(--radius);padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;">🗑 Clear</button>
       <button class="pop-save" id="popup-save">Save</button>
     </div>
   </div>
@@ -621,11 +622,13 @@ let popupDay     = null;
 
 // ── Date helpers ───────────────────────────────────────
 function getMonday(d) {
-  const dt = new Date(d);
-  const day = dt.getDay();
-  dt.setDate(dt.getDate() - (day === 0 ? 6 : day - 1));
-  dt.setHours(0,0,0,0);
-  return dt;
+  // Use SGT (UTC+8) to determine the correct week
+  const sgt = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+  const day = sgt.getDay();
+  sgt.setDate(sgt.getDate() - (day === 0 ? 6 : day - 1));
+  sgt.setHours(0, 0, 0, 0);
+  // Return as UTC date with same calendar date
+  return new Date(sgt.getFullYear(), sgt.getMonth(), sgt.getDate());
 }
 function toStr(d) { return d.toISOString().split('T')[0]; }
 function weekDates() {
@@ -710,6 +713,19 @@ async function loadWeek() {
       const data = await r.json();
       plan          = data.assignments    || {};
       supplyWorkers = data.supplyWorkers  || [];
+      // If no supply workers this week, carry over from previous week
+      if (supplyWorkers.length === 0) {
+        const prevDate = new Date(weekStart);
+        prevDate.setDate(prevDate.getDate() - 7);
+        const prevWs = prevDate.getFullYear() + '-' + String(prevDate.getMonth()+1).padStart(2,'0') + '-' + String(prevDate.getDate()).padStart(2,'0');
+        try {
+          const prevR = await fetch('/api/manpower-plan?weekStart=' + prevWs);
+          if (prevR.ok) {
+            const prevData = await prevR.json();
+            supplyWorkers = (prevData.supplyWorkers || []).map(w => ({ ...w }));
+          }
+        } catch {}
+      }
     } else {
       plan = {}; supplyWorkers = [];
     }
@@ -819,13 +835,13 @@ function buildRow(w, isSupply) {
     const td  = document.createElement('td');
     td.className = 'td-cell' + (isMobileHidden(day) ? ' hidden-day' : '');
     const dayData  = (plan[w.id] || {})[day] || {};
-    const readonly = !!(dayData._auto || dayData.type === 'MC' || dayData.type === 'Off');
+    const readonly = !!(dayData._auto);
 
     if (readonly) {
       td.classList.add('readonly');
-    } else {
-      td.addEventListener('click', () => openPopup(w, day));
     }
+    // All cells clickable — even MC/readonly so user can clear them
+    td.addEventListener('click', () => openPopup(w, day));
     td.appendChild(buildChip(dayData));
     tr.appendChild(td);
   });
@@ -917,6 +933,30 @@ function showFields(type) {
 }
 
 document.getElementById('popup-cancel').addEventListener('click', closePopup);
+
+document.getElementById('popup-clear').addEventListener('click', async () => {
+  if (plan[popupWorker.id]) delete plan[popupWorker.id][popupDay];
+  // Also clear from attendance so it doesn't come back on refresh
+  const dayIndex = DAYS.indexOf(popupDay);
+  const dates = weekDates();
+  const dateStr = toStr(dates[dayIndex]);
+  if (attendance[dateStr] && attendance[dateStr][popupWorker.id]) {
+    delete attendance[dateStr][popupWorker.id];
+    // Persist attendance clear to server
+    try {
+      const existing = await fetch('/api/attendance?date=' + dateStr).then(r => r.json()).catch(() => ({ records: [] }));
+      const records = (existing.records || []).filter(r => r.workerId !== popupWorker.id);
+      await fetch('/api/attendance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: dateStr, records })
+      });
+    } catch(e) { console.error('Clear attendance failed:', e); }
+  }
+  closePopup();
+  render();
+  setTimeout(() => document.getElementById('save-btn') && document.getElementById('save-btn').click(), 100);
+});
 document.getElementById('popup-overlay').addEventListener('click', e => {
   if (e.target.id === 'popup-overlay') closePopup();
 });
@@ -970,7 +1010,7 @@ document.getElementById('popup-save').addEventListener('click', () => {
   } else if (type === 'MC') {
     // Mark MC in plan (as auto-derived so it won't be saved to plan file)
     // and persist to attendance.json so it survives week reload
-    plan[popupWorker.id][popupDay] = { type: 'MC', notes: 'MC', _auto: true };
+    plan[popupWorker.id][popupDay] = { type: 'MC', notes: 'MC' };
     saveMCToAttendance(popupWorker, popupDay);
   } else {
     plan[popupWorker.id][popupDay] = {
@@ -984,6 +1024,8 @@ document.getElementById('popup-save').addEventListener('click', () => {
 
   closePopup();
   render();
+  // Auto-save after every assignment
+  setTimeout(() => document.getElementById('save-btn') && document.getElementById('save-btn').click(), 100);
 });
 
 function closePopup() {
@@ -1029,6 +1071,8 @@ function addSupplyWorker() {
     plan[id] = {};
     tr.remove();
     render();
+    // Auto-save when supply worker added
+    document.getElementById('save-btn') && document.getElementById('save-btn').click();
   });
 
   document.getElementById('cancel-supply-btn').addEventListener('click', () => tr.remove());

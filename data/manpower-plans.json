@@ -41,5 +41,187 @@
     },
     "supplyWorkers": [],
     "savedAt": "2026-04-11T15:47:44.023Z"
+  },
+  {
+    "weekStart": "2026-04-13",
+    "assignments": {
+      "wi-sekar-ganesh": {
+        "mon": {
+          "type": "Fabrication",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wi-mahadevan-maharajan": {
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-xxx26-hwa-seng-t5-ers",
+          "projectName": "Installation of Crash Rated Road Blockers @ Changi Aiport Terminal 5",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wi-perumal-kamaraj": {
+        "mon": {
+          "type": "Installation",
+          "projectId": "bd-23525-china-harbour-8sw",
+          "projectName": "8 Shenton Way",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wi-mariyappan-malayandi": {
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-23525-china-harbour-8sw",
+          "projectName": "8 Shenton Way",
+          "location": "",
+          "notes": ""
+        },
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-21222-qa-ica-kallang",
+          "projectName": "ICA Kallang",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776084873026": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      }
+    },
+    "supplyWorkers": [
+      {
+        "id": "supply-1776084873026",
+        "name": "Muruku",
+        "company": "GreenMark Pte Ltd",
+        "role": "Worker",
+        "code": "EXT"
+      }
+    ],
+    "savedAt": "2026-04-13T12:55:17.797Z"
+  },
+  {
+    "weekStart": "2026-04-12",
+    "assignments": {
+      "supply-1776085481481": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "ss-yap-teck-huat": {
+        "tue": {
+          "type": "Driver",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wi-palanisamy-manikandan": {
+        "tue": {
+          "type": "MC",
+          "notes": "MC"
+        }
+      },
+      "wi-kannaiyan-jaishankar": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-chin-poh-fatt": {
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": ""
+        },
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": ""
+        },
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-ee-kok-keong": {
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": ""
+        },
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-23925-chong-pang-id",
+          "projectName": "Chong Pang Integrated Development",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-pow-kin-pheng": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-19121-rbss-dnr",
+          "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-tan-yock-wan": {
+        "fri": {
+          "type": "MC",
+          "notes": "MC"
+        }
+      },
+      "wm-lin-chee-cheong": {
+        "fri": {
+          "type": "MC",
+          "notes": "MC"
+        }
+      }
+    },
+    "supplyWorkers": [
+      {
+        "id": "supply-1776085481481",
+        "name": "Muruku",
+        "company": "GreenMark Pte Ltd",
+        "role": "Worker",
+        "code": "EXT"
+      }
+    ],
+    "savedAt": "2026-04-13T14:42:00.733Z"
   }
 ]

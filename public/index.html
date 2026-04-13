@@ -101,6 +101,18 @@
           </div>
         </div>
 
+      <!-- Today's MC / Absent -->
+      <div class="action-panel" id="mc-panel" style="margin-bottom:20px;border-color:rgba(255,255,255,0.12);">
+        <div class="action-panel-header" id="mc-toggle">
+          <span class="title">🤒 TODAY'S MC / ABSENT</span>
+          <span id="mc-count-label" style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:10px;"></span>
+          <span style="font-size:12px;color:var(--text-muted);margin-left:auto;" id="mc-chevron">▼</span>
+        </div>
+        <div class="action-panel-body">
+          <div id="mc-list" style="padding:8px 0;"></div>
+        </div>
+      </div>
+
       <!-- Claims Pipeline -->
       <div class="card" id="claims-pipeline-summary" style="margin-bottom:20px;padding:16px 20px;"></div>
 
@@ -127,7 +139,7 @@
 
   <div class="toast" id="toast"></div>
   <script src="js/utils.js"></script>
-  <script src="js/dashboard.js"></script>
+  <script src="js/dashboard.js?v=20260413"></script>
   </div>
 </body>
 </html>

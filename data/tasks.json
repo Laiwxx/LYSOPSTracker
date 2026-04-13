@@ -1445,30 +1445,5 @@
     "acknowledgedAt": "2026-04-13T04:34:30.175Z",
     "acknowledgedBy": "Chris",
     "statusChangedAt": "2026-04-13T04:34:30.175Z"
-  },
-  {
-    "id": "mnwp9t8p",
-    "projectId": "pj10025-ica-kallang",
-    "projectJobCode": "PJ10025 - ICA Kallang",
-    "projectName": "",
-    "title": "fwfwqfgwgweg",
-    "description": "",
-    "taskType": "Requested Task",
-    "assignedTo": "Lai Wei Xiang",
-    "createdBy": "Chris",
-    "createdAt": "2026-04-13T04:36:09.673Z",
-    "dueDate": "2026-04-16",
-    "status": "In Progress",
-    "priority": "Medium",
-    "hoursLogged": [],
-    "completedAt": null,
-    "linkedMeetingNoteIdx": null,
-    "tags": [],
-    "weekOf": "2026-04-13",
-    "archived": false,
-    "archivedAt": null,
-    "acknowledgedAt": "2026-04-13T04:36:52.729Z",
-    "acknowledgedBy": "Lai Wei Xiang",
-    "statusChangedAt": "2026-04-13T04:36:17.008Z"
   }
 ]
