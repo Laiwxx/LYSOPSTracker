@@ -1,20 +1,5 @@
 [
   {
-    "id": "1776008741352-zrnkke7pi7o",
-    "title": "Take attendance — mark MC/absent workers",
-    "category": "People",
-    "assignedTo": "Chris",
-    "taskType": "Recurring",
-    "requestedBy": "System",
-    "status": "Pending",
-    "priority": "Normal",
-    "dueDate": "2026-04-12",
-    "createdAt": "2026-04-12T15:45:41.352Z",
-    "overdueEmailSent": true,
-    "completedAt": "2026-04-13T07:03:26.793Z",
-    "ackReminderSentAt": "2026-04-14T01:00:00.007Z"
-  },
-  {
     "id": "1776008741352-gcm4u9j57f5",
     "title": "Review today's fabrication priorities across all projects",
     "category": "Operations",
@@ -339,12 +324,13 @@
     "assignedTo": "Jun Jie",
     "taskType": "Recurring",
     "requestedBy": "System",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-14T01:00:00.007Z"
+    "ackReminderSentAt": "2026-04-14T01:00:00.007Z",
+    "completedAt": "2026-04-14T11:06:50.401Z"
   },
   {
     "id": "1776008741353-ks6x138b5dc",
@@ -353,12 +339,13 @@
     "assignedTo": "Jun Jie",
     "taskType": "Recurring",
     "requestedBy": "System",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-14T01:00:00.007Z"
+    "ackReminderSentAt": "2026-04-14T01:00:00.007Z",
+    "completedAt": "2026-04-14T11:04:48.414Z"
   },
   {
     "id": "1776008741353-yesbjmauob",
@@ -367,12 +354,13 @@
     "assignedTo": "Jun Jie",
     "taskType": "Recurring",
     "requestedBy": "System",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-14T01:00:00.007Z"
+    "ackReminderSentAt": "2026-04-14T01:00:00.007Z",
+    "completedAt": "2026-04-14T11:05:36.946Z"
   },
   {
     "id": "1776008741353-fp91nfectqi",
@@ -381,12 +369,13 @@
     "assignedTo": "Jun Jie",
     "taskType": "Recurring",
     "requestedBy": "System",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-14T01:00:00.007Z"
+    "ackReminderSentAt": "2026-04-14T01:00:00.007Z",
+    "completedAt": "2026-04-14T11:05:48.198Z"
   },
   {
     "id": "1776008741353-t2y7tobkylj",
@@ -395,12 +384,13 @@
     "assignedTo": "Jun Jie",
     "taskType": "Recurring",
     "requestedBy": "System",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "dueDate": "2026-04-12",
     "createdAt": "2026-04-12T15:45:41.353Z",
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-14T01:00:00.007Z"
+    "ackReminderSentAt": "2026-04-14T01:00:00.007Z",
+    "completedAt": "2026-04-14T11:07:17.338Z"
   },
   {
     "id": "mnwh0jc91i1",
@@ -1370,10 +1360,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-13T00:45:00.010Z",
     "dueDate": "2026-04-13",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:05:51.588Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -1398,10 +1388,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-13T00:45:00.010Z",
     "dueDate": "2026-04-13",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:05.632Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -1426,10 +1416,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-13T00:45:00.010Z",
     "dueDate": "2026-04-13",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:09.417Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -1454,10 +1444,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-13T00:45:00.010Z",
     "dueDate": "2026-04-13",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:18.889Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -1510,10 +1500,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-13T00:45:00.010Z",
     "dueDate": "2026-04-13",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:23.827Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -2291,10 +2281,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-14T00:45:00.012Z",
     "dueDate": "2026-04-14",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:26.577Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -2317,10 +2307,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-14T00:45:00.012Z",
     "dueDate": "2026-04-14",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:43.444Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -2343,10 +2333,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-14T00:45:00.012Z",
     "dueDate": "2026-04-14",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:45.496Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -2369,10 +2359,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-14T00:45:00.012Z",
     "dueDate": "2026-04-14",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-14T11:06:47.404Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"

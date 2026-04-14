@@ -72,17 +72,49 @@ const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 // Multer: PDF uploads only, max 20 MB
+const uploadStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
+  filename:    (req, file, cb) => {
+    const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    cb(null, `${Date.now()}-${safe}`);
+  }
+});
+
+// PDF-only (used by DO photo route, kept strict)
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-    filename:    (req, file, cb) => {
-      const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-      cb(null, `${Date.now()}-${safe}`);
-    }
-  }),
+  storage: uploadStorage,
   fileFilter: (req, file, cb) => cb(null, file.mimetype === 'application/pdf'),
   limits: { fileSize: 20 * 1024 * 1024 }
 });
+
+// Images + PDF (used by project upload route — FAB photos, drawings, docs)
+const uploadImageOrPdf = multer({
+  storage: uploadStorage,
+  fileFilter: (req, file, cb) => {
+    const ok = file.mimetype === 'application/pdf' || /^image\//.test(file.mimetype);
+    cb(null, ok);
+  },
+  limits: { fileSize: 20 * 1024 * 1024 }
+});
+
+// ── Basic Auth gate (pre-launch testing) ──────────────────────────────────────
+// Single shared username/password stored in env. Remove these env vars to disable.
+if (process.env.BASIC_AUTH_USER && process.env.BASIC_AUTH_PASSWORD) {
+  const expectedUser = process.env.BASIC_AUTH_USER;
+  const expectedPass = process.env.BASIC_AUTH_PASSWORD;
+  app.use((req, res, next) => {
+    const hdr = req.headers.authorization || '';
+    if (hdr.startsWith('Basic ')) {
+      const decoded = Buffer.from(hdr.slice(6), 'base64').toString('utf8');
+      const idx = decoded.indexOf(':');
+      const user = idx >= 0 ? decoded.slice(0, idx) : decoded;
+      const pass = idx >= 0 ? decoded.slice(idx + 1) : '';
+      if (user === expectedUser && pass === expectedPass) return next();
+    }
+    res.setHeader('WWW-Authenticate', 'Basic realm="LYS Ops Tracker", charset="UTF-8"');
+    res.status(401).send('Authentication required');
+  });
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -126,12 +158,30 @@ const PO_FILE            = path.join(__dirname, 'data', 'purchase-orders.json');
 const PR_FILE            = path.join(__dirname, 'data', 'purchase-requisitions.json');
 
 // ── Email helper ──────────────────────────────────────────────────────────────
-async function sendEmail(toEmail, toName, subject, htmlBody) {
+// cc may be a string, an array of strings, or omitted.
+async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
   const senderEmail = process.env.SENDER_EMAIL;
   if (!senderEmail) return;
 
   // TEST MODE: override recipient so all emails go to Lai during testing
   const recipient = process.env.EMAIL_TEST_OVERRIDE || toEmail;
+
+  // Normalize cc → array, de-dupe, drop self-cc and the recipient, drop falsy
+  let ccList = Array.isArray(cc) ? cc.slice() : cc ? [cc] : [];
+  ccList = ccList.filter(Boolean);
+  if (process.env.EMAIL_TEST_OVERRIDE) {
+    // In test mode every email is already redirected to Lai — no CC leak to staff.
+    ccList = [];
+  } else {
+    const seen = new Set([String(recipient).toLowerCase()]);
+    ccList = ccList.filter(e => {
+      const k = String(e).toLowerCase();
+      if (seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    });
+  }
+  const ccRecipients = ccList.map(e => ({ emailAddress: { address: e } }));
 
   try {
     const accessToken = await getAccessToken();
@@ -139,19 +189,19 @@ async function sendEmail(toEmail, toName, subject, htmlBody) {
       console.warn(`[EMAIL SKIP] No access token — skipping email to ${recipient} ("${subject}")`);
       return;
     }
+    const message = {
+      subject,
+      body: { contentType: 'HTML', content: htmlBody },
+      toRecipients: [{ emailAddress: { address: recipient, name: toName || recipient } }]
+    };
+    if (ccRecipients.length) message.ccRecipients = ccRecipients;
     const res = await fetch(`https://graph.microsoft.com/v1.0/users/${senderEmail}/sendMail`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        message: {
-          subject,
-          body: { contentType: 'HTML', content: htmlBody },
-          toRecipients: [{ emailAddress: { address: recipient, name: toName || recipient } }]
-        }
-      })
+      body: JSON.stringify({ message })
     });
     if (!res.ok) {
       // Log the full Graph API error response so we can diagnose failures
@@ -166,6 +216,104 @@ async function sendEmail(toEmail, toName, subject, htmlBody) {
   } catch (e) {
     console.error('[EMAIL] Exception sending to', recipient, ':', e.message);
     logError('email.send.exception', e, { to: recipient, subject });
+  }
+}
+
+// ── Outlook Calendar helpers (Graph API /events) ─────────────────────────────
+// Requires Calendars.ReadWrite application permission on the Azure app.
+// If the assignee has no dueDate, no event is created.
+// All events are created in the staff member's own calendar (not the sender's).
+
+function _taskEventBody(task, assignedByName) {
+  const lines = [];
+  lines.push(`<p><strong>${task.title}</strong></p>`);
+  if (task.description) lines.push(`<p>${task.description}</p>`);
+  if (task.projectJobCode || task.projectName) {
+    lines.push(`<p><em>Project:</em> ${task.projectJobCode || ''} ${task.projectName || ''}</p>`);
+  }
+  if (assignedByName) lines.push(`<p><em>Assigned by:</em> ${assignedByName}</p>`);
+  lines.push(`<p><a href="${APP_URL}/my-tasks">Open in LYS Ops Tracker →</a></p>`);
+  return lines.join('');
+}
+
+// Build a start/end pair for the task. Calendar events need a time window —
+// we default to a 30-minute block at 9am SGT on the due date so it lands
+// as an all-morning reminder rather than a full-day event that's easy to miss.
+function _taskEventWindow(dueDate) {
+  // dueDate is a YYYY-MM-DD string (local SGT).
+  return {
+    start: { dateTime: `${dueDate}T09:00:00`, timeZone: 'Asia/Singapore' },
+    end:   { dateTime: `${dueDate}T09:30:00`, timeZone: 'Asia/Singapore' },
+  };
+}
+
+// Create a calendar event on the assignee's mailbox for this task.
+// Returns { eventId, ownerEmail } or null on failure. Non-throwing.
+// Respects CALENDAR_TEST_OVERRIDE — when set, every event is routed to
+// that single mailbox (mirrors EMAIL_TEST_OVERRIDE so pre-launch testing
+// doesn't spam real staff calendars).
+async function createTaskCalendarEvent(task, assigneeEmail, assignedByName) {
+  if (!task || !task.dueDate || !assigneeEmail) return null;
+  const accessToken = await getAccessToken();
+  if (!accessToken) { console.warn('[CAL SKIP] No access token'); return null; }
+  const targetEmail = process.env.CALENDAR_TEST_OVERRIDE || assigneeEmail;
+  const testMode = !!process.env.CALENDAR_TEST_OVERRIDE;
+  const { start, end } = _taskEventWindow(task.dueDate);
+  const subject = testMode
+    ? `[TEST — would go to ${assigneeEmail}] [Task] ${task.title}`
+    : `[Task] ${task.title}`;
+  const bodyHtml = testMode
+    ? `<p style="background:#fef3c7;border:1px solid #f59e0b;padding:8px;border-radius:4px;font-size:12px;"><strong>TEST MODE:</strong> this event would normally go to <strong>${assigneeEmail}</strong>. CALENDAR_TEST_OVERRIDE is active.</p>${_taskEventBody(task, assignedByName)}`
+    : _taskEventBody(task, assignedByName);
+  const body = {
+    subject,
+    body: { contentType: 'HTML', content: bodyHtml },
+    start,
+    end,
+    isReminderOn: true,
+    reminderMinutesBeforeStart: 60,
+    categories: ['LYS Ops Tracker'],
+    showAs: 'busy',
+  };
+  try {
+    const res = await fetch(`https://graph.microsoft.com/v1.0/users/${targetEmail}/events`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      console.error(`[CAL] Create failed for ${targetEmail}: ${res.status} ${res.statusText} — ${errText}`);
+      logError('calendar.create', new Error(`${res.status} ${res.statusText}`), { targetEmail, subject: body.subject });
+      return null;
+    }
+    const json = await res.json();
+    console.log(`[CAL] Event created for ${targetEmail}${testMode ? ' (TEST MODE, real assignee ' + assigneeEmail + ')' : ''} — ${json.id}`);
+    return json.id ? { eventId: json.id, ownerEmail: targetEmail } : null;
+  } catch (e) {
+    console.error('[CAL] Exception creating event:', e.message);
+    logError('calendar.create.exception', e, { targetEmail });
+    return null;
+  }
+}
+
+// Delete a calendar event from the assignee's mailbox. Non-throwing.
+async function deleteTaskCalendarEvent(userEmail, eventId) {
+  if (!userEmail || !eventId) return;
+  const accessToken = await getAccessToken();
+  if (!accessToken) return;
+  try {
+    const res = await fetch(`https://graph.microsoft.com/v1.0/users/${userEmail}/events/${eventId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${accessToken}` },
+    });
+    if (!res.ok && res.status !== 404) {
+      console.warn(`[CAL] Delete failed for ${userEmail} event ${eventId}: ${res.status}`);
+    } else {
+      console.log(`[CAL] Event deleted for ${userEmail} — ${eventId}`);
+    }
+  } catch (e) {
+    console.warn('[CAL] Exception deleting event:', e.message);
   }
 }
 
@@ -482,10 +630,57 @@ app.post('/api/admin/pin', (req, res) => {
   } catch (e) { logError('route.post.admin.pin', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// POST /api/projects/:id/upload — upload a PDF for a document
-app.post('/api/projects/:id/upload', upload.single('file'), (req, res) => {
+// DELETE /api/projects/:id/upload/:filename — remove a FAB photo / document
+app.delete('/api/projects/:id/upload/:filename', (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'No PDF uploaded or wrong file type' });
+    const { id, filename } = req.params;
+    if (!/^[\w.\-]+$/.test(filename)) return res.status(400).json({ error: 'Invalid filename' });
+
+    const projects = readProjects();
+    const project = projects.find(p => p.id === id);
+    if (!project) return res.status(404).json({ error: 'Project not found' });
+
+    project.documents = Array.isArray(project.documents) ? project.documents : [];
+    const before = project.documents.length;
+    const removed = project.documents.find(d => d && d.filename === filename);
+    project.documents = project.documents.filter(d => !(d && d.filename === filename));
+    if (project.documents.length === before) return res.status(404).json({ error: 'File not referenced by this project' });
+
+    writeProjects(projects);
+
+    const diskPath = path.join(UPLOADS_DIR, filename);
+    let fileDeleted = false;
+    try {
+      if (fs.existsSync(diskPath)) { fs.unlinkSync(diskPath); fileDeleted = true; }
+    } catch (unlinkErr) { logError('route.delete.upload.unlink', unlinkErr, { filename }); }
+
+    logActivity('project.upload.deleted', {
+      projectId: id,
+      jobCode: project.jobCode || '',
+      filename,
+      originalName: removed && removed.originalName || filename,
+      itemName: removed && removed.itemName || '',
+      fileDeleted
+    });
+    res.json({ ok: true, fileDeleted });
+  } catch (e) { logError('route.delete.upload', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// POST /api/projects/:id/upload — upload an image or PDF (FAB photos, drawings, docs)
+app.post('/api/projects/:id/upload', uploadImageOrPdf.single('file'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded or unsupported type (allowed: images, PDF)' });
+    const project = readProjects().find(p => p.id === req.params.id);
+    logActivity('project.upload', {
+      projectId: req.params.id,
+      jobCode: project ? project.jobCode : '',
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      itemName: (req.body && req.body.itemName) || '',
+      uploadedBy: (req.body && req.body.uploadedBy) || ''
+    });
     res.json({ filename: req.file.filename, originalName: req.file.originalname });
   } catch (e) { logError('route.post.upload', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -562,7 +757,7 @@ app.get('/api/actions', (req, res) => {
 // --- API: List all projects (summary fields) ---
 app.get('/api/projects', (req, res) => {
   try {
-    const projects = readProjects();
+    const projects = readProjects().map(p => deriveFields(p));
     const summary = projects.map(p => ({
       id: p.id,
       jobCode: p.jobCode,
@@ -590,7 +785,7 @@ app.get('/api/projects/:id', (req, res) => {
     const projects = readProjects();
     const project = projects.find(p => p.id === req.params.id);
     if (!project) return res.status(404).json({ error: 'Not found' });
-    res.json(project);
+    res.json(deriveFields(project));
   } catch (e) { logError('route.get.projects.id', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -608,6 +803,10 @@ app.post('/api/projects', (req, res) => {
   } catch (e) { logError('route.post.projects', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
+// Per-item stage lists — single source of truth for fab + install pipelines
+const FAB_STAGES     = ['Not Started', 'In Progress', 'QC Check', 'Ready for Delivery', 'Delivered'];
+const INSTALL_STAGES = ['Not Started', 'In Progress', 'Installed', 'Verified'];
+
 // ── Derive computed fields from live sub-arrays ──────────────────────────────
 // Call this on every project before saving to keep derived fields accurate.
 function deriveFields(p) {
@@ -617,11 +816,33 @@ function deriveFields(p) {
   const fabDone  = fabRows.reduce((s, r) => s + (parseFloat(r.qtyDone)  || 0), 0);
   p.fabPercent   = fabTotal > 0 ? Math.round(fabDone  / fabTotal  * 100) : 0;
 
+  // Fab per-item stage: normalize + forward-only auto-advance from qty.
+  // Only Not Started → In Progress is automatic; every other transition is manual.
+  fabRows.forEach(r => {
+    if (!FAB_STAGES.includes(r.status)) r.status = 'Not Started';
+    const done = parseFloat(r.qtyDone) || 0;
+    if (done > 0 && r.status === 'Not Started') r.status = 'In Progress';
+  });
+
   // installPercent — from installation array
   const instRows  = p.installation || [];
   const instTotal = instRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
   const instDone  = instRows.reduce((s, r) => s + (parseFloat(r.doneQty)  || 0), 0);
   p.installPercent = instTotal > 0 ? Math.round(instDone / instTotal * 100) : 0;
+
+  // Install per-item stage: backfill from qty if missing, then forward-only auto-advance.
+  instRows.forEach(r => {
+    if (!INSTALL_STAGES.includes(r.status)) {
+      const total = parseFloat(r.totalQty) || 0;
+      const done  = parseFloat(r.doneQty)  || 0;
+      if      (total > 0 && done >= total) r.status = 'Installed';
+      else if (done > 0)                   r.status = 'In Progress';
+      else                                 r.status = 'Not Started';
+    } else {
+      const done = parseFloat(r.doneQty) || 0;
+      if (done > 0 && r.status === 'Not Started') r.status = 'In Progress';
+    }
+  });
 
   // paidAmount — sum of paid payment milestones
   const milestones = p.paymentMilestones || [];
@@ -858,6 +1079,7 @@ app.put('/api/projects/:id/fabrication/:idx', (req, res) => {
       fabItem.cycle_days = Math.round((endMs - startMs) / 86400000 * 10) / 10;
     }
 
+    deriveFields(project);
     writeProjects(projects);
     const changes = Object.keys(req.body)
       .filter(k => String(req.body[k]) !== String(oldItem[k]))
@@ -878,6 +1100,7 @@ app.put('/api/projects/:id/installation/:idx', (req, res) => {
     if (!project.installation || !project.installation[idx]) return res.status(404).json({ error: 'Item not found' });
     const oldItem = { ...project.installation[idx] };
     Object.assign(project.installation[idx], req.body);
+    deriveFields(project);
     writeProjects(projects);
     const changes = Object.keys(req.body)
       .filter(k => String(req.body[k]) !== String(oldItem[k]))
@@ -1331,6 +1554,22 @@ app.post('/api/tasks', postRateLimit, (req, res) => {
         </div>`
       ).catch(() => {});
       logActivity('email.sent', { to: task.assignedTo, subject: 'New Task: ' + task.title });
+
+      // Create calendar event on the assignee's Outlook calendar (if task has a due date)
+      if (task.dueDate) {
+        createTaskCalendarEvent(task, assignEmail, assignedBy)
+          .then(result => {
+            if (result && result.eventId) {
+              const latest = readTasks();
+              const i = latest.findIndex(t => t.id === task.id);
+              if (i !== -1) {
+                latest[i].calendarEventId = result.eventId;
+                latest[i].calendarEventOwner = result.ownerEmail;
+                writeTasks(latest);
+              }
+            }
+          }).catch(() => {});
+      }
     } else {
       console.warn('[EMAIL SKIP] No email for:', task.assignedTo);
     }
@@ -1346,6 +1585,9 @@ app.put('/api/tasks/:id', (req, res) => {
   const updates = req.body;
   const oldAssignee = tasks[idx].assignedTo;
   const oldStatus   = tasks[idx].status;
+  const oldDueDate  = tasks[idx].dueDate;
+  const oldEventId  = tasks[idx].calendarEventId;
+  const oldEventOwner = tasks[idx].calendarEventOwner;
   if (updates.status === 'Done' && tasks[idx].status !== 'Done') {
     updates.completedAt = new Date().toISOString();
   }
@@ -1356,6 +1598,49 @@ app.put('/api/tasks/:id', (req, res) => {
   tasks[idx] = { ...tasks[idx], ...updates };
   writeTasks(tasks);
   res.json(tasks[idx]);
+
+  // ── Calendar event lifecycle on update ──────────────────────────────────
+  const newAssignee = tasks[idx].assignedTo;
+  const newDueDate  = tasks[idx].dueDate;
+  const newStatus   = tasks[idx].status;
+  const assigneeChanged = updates.assignedTo && updates.assignedTo !== oldAssignee;
+  const dueDateChanged  = updates.dueDate !== undefined && updates.dueDate !== oldDueDate;
+  const markedDone      = updates.status === 'Done' && oldStatus !== 'Done';
+
+  // If done → delete the event (no need for a future reminder)
+  if (markedDone && oldEventId && oldEventOwner) {
+    deleteTaskCalendarEvent(oldEventOwner, oldEventId).catch(() => {});
+    const refresh = readTasks();
+    const j = refresh.findIndex(t => t.id === req.params.id);
+    if (j !== -1) {
+      refresh[j].calendarEventId = null;
+      refresh[j].calendarEventOwner = null;
+      writeTasks(refresh);
+    }
+  } else if ((assigneeChanged || dueDateChanged) && !markedDone) {
+    // Delete old event (if any) and create a new one for the (possibly new) assignee.
+    if (oldEventId && oldEventOwner) {
+      deleteTaskCalendarEvent(oldEventOwner, oldEventId).catch(() => {});
+    }
+    if (newDueDate && newAssignee) {
+      const assigneeEmail = getStaffEmail(newAssignee);
+      if (assigneeEmail) {
+        const assignedByName = tasks[idx].createdBy && tasks[idx].createdBy !== newAssignee ? tasks[idx].createdBy : null;
+        createTaskCalendarEvent(tasks[idx], assigneeEmail, assignedByName)
+          .then(result => {
+            if (result && result.eventId) {
+              const refresh = readTasks();
+              const j = refresh.findIndex(t => t.id === req.params.id);
+              if (j !== -1) {
+                refresh[j].calendarEventId = result.eventId;
+                refresh[j].calendarEventOwner = result.ownerEmail;
+                writeTasks(refresh);
+              }
+            }
+          }).catch(() => {});
+      }
+    }
+  }
 
   // Trigger 1: Send assignment email if assignee changed to a new person
   if (updates.assignedTo && updates.assignedTo !== oldAssignee) {
@@ -1486,9 +1771,14 @@ app.post('/api/tasks/:id/hours', (req, res) => {
 app.delete('/api/tasks/:id', (req, res) => {
   try {
     let tasks = readTasks();
+    const gone = tasks.find(t => t.id === req.params.id);
     tasks = tasks.filter(t => t.id !== req.params.id);
     writeTasks(tasks);
     res.json({ ok: true });
+    // Clean up the matching calendar event if one was created.
+    if (gone && gone.calendarEventId && gone.calendarEventOwner) {
+      deleteTaskCalendarEvent(gone.calendarEventOwner, gone.calendarEventId).catch(() => {});
+    }
   } catch (e) { logError('route.delete.tasks', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -1778,103 +2068,130 @@ cron.schedule('0 9 * * 1-5', async () => {
   console.log(`[CRON] Overdue task emails sent: ${overdue.length}`);
 
   // ── Check 2: SOP claims deadline alerts ───────────────────────────────────
+  // Spec: fire 1 week and 3 days before certificationDue, plus on the day
+  // the deadline passes. Primary recipient is the QS assigned to the project
+  // (projects.qs — either Salve or Alex Mac). CC only the boss so leadership
+  // has visibility — Alex Chew is finance/invoices, not certification, so
+  // she is NOT on this CC list.
   console.log('[CRON] 9am SOP claims deadline check...');
   const claims = readClaims();
+  const projectsForClaims = readProjects();
+  const projById = {};
+  projectsForClaims.forEach(p => { projById[p.id] = p; });
+  const in7days = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
   const in3days = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
+  const bossEmail = getStaffEmail('Lai Wei Xiang') || getStaffEmail('Lai Weixiang') || process.env.SENDER_EMAIL;
   let claimsChanged = false;
   for (const claim of claims) {
-    if (claim.status === 'Awaiting Certification' && claim.certificationDue) {
-      if (claim.certificationDue === in3days) {
-        const alexEmail = getStaffEmail('Alex Mac');
-        if (alexEmail) {
-          await sendEmail(alexEmail, 'Alex Mac',
-            `[SOP Alert] Certification due in 3 days — ${claim.projectJobCode || ''} ${claim.claimNumber}`,
-            `<p>Hi Alex,</p>
-            <p>Progress claim <strong>${claim.claimNumber}</strong> for <strong>${claim.projectJobCode || ''}</strong> certification is due in 3 days (${claim.certificationDue}).</p>
-            <p>If client has not responded, please chase now.</p>
-            <p>Amount: $${Number(claim.claimAmount || 0).toLocaleString()}</p>
-            <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`
-          );
-        }
-      }
-      if (claim.certificationDue < today && !claim.certOverdueEmailSent) {
-        const alexEmail = getStaffEmail('Alex Mac');
-        if (alexEmail) {
-          await sendEmail(alexEmail, 'Alex Mac',
-            `[URGENT] SOP Deadline Passed — ${claim.projectJobCode || ''} ${claim.claimNumber}`,
-            `<p>Hi Alex,</p>
-            <p>The SOP Act certification deadline has passed for <strong>${claim.claimNumber}</strong> on ${claim.projectJobCode || ''}.</p>
-            <p>Amount at risk: $${Number(claim.claimAmount || 0).toLocaleString()}</p>
-            <p>Consider issuing a Payment Response Notice under SOP Act.</p>
-            <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`
-          );
-          claim.certOverdueEmailSent = true;
-          claimsChanged = true;
-        }
-      }
+    if (claim.status !== 'Awaiting Certification' || !claim.certificationDue) continue;
+    // Per-project QS — fall back to claim.submittedBy if project has no QS assigned.
+    const project = projById[claim.projectId];
+    const qsName  = (project && project.qs) || claim.submittedBy || '';
+    const qsEmail = qsName ? getStaffEmail(qsName) : null;
+    if (!qsEmail) { console.warn('[CLAIM CRON] No QS email for claim', claim.claimNumber, 'project', claim.projectJobCode); continue; }
+    const qsCc = [bossEmail].filter(Boolean);
+    const money = `$${Number(claim.claimAmount || 0).toLocaleString()}`;
+    const projLabel = `${claim.projectJobCode || ''} ${claim.claimNumber}`.trim();
+
+    // 1-week-before reminder (once)
+    if (claim.certificationDue === in7days && !claim.cert7DayEmailSent) {
+      await sendEmail(qsEmail, qsName,
+        `[SOP Alert] Certification due in 1 week — ${projLabel}`,
+        `<p>Hi ${qsName},</p>
+        <p>Progress claim <strong>${claim.claimNumber}</strong> for <strong>${claim.projectJobCode || ''}</strong> is due for certification in 1 week (${claim.certificationDue}).</p>
+        <p>Amount: ${money}</p>
+        <p>Please check with the client and chase early if needed.</p>
+        <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`,
+        qsCc
+      );
+      claim.cert7DayEmailSent = true;
+      claimsChanged = true;
+    }
+
+    // 3-days-before reminder (once)
+    if (claim.certificationDue === in3days && !claim.cert3DayEmailSent) {
+      await sendEmail(qsEmail, qsName,
+        `[SOP Alert] Certification due in 3 days — ${projLabel}`,
+        `<p>Hi ${qsName},</p>
+        <p>Progress claim <strong>${claim.claimNumber}</strong> for <strong>${claim.projectJobCode || ''}</strong> certification is due in 3 days (${claim.certificationDue}).</p>
+        <p>If client has not responded, please chase now.</p>
+        <p>Amount: ${money}</p>
+        <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`,
+        qsCc
+      );
+      claim.cert3DayEmailSent = true;
+      claimsChanged = true;
+    }
+
+    // Deadline passed (once)
+    if (claim.certificationDue < today && !claim.certOverdueEmailSent) {
+      await sendEmail(qsEmail, qsName,
+        `[URGENT] SOP Deadline Passed — ${projLabel}`,
+        `<p>Hi ${qsName},</p>
+        <p>The SOP Act certification deadline has passed for <strong>${claim.claimNumber}</strong> on ${claim.projectJobCode || ''}.</p>
+        <p>Amount at risk: ${money}</p>
+        <p>Consider issuing a Payment Response Notice under SOP Act.</p>
+        <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`,
+        qsCc
+      );
+      claim.certOverdueEmailSent = true;
+      claimsChanged = true;
     }
   }
   if (claimsChanged) writeClaims(claims);
   console.log('[CRON] SOP claims check done');
 
   // ── Check 3: Unacknowledged task reminders ────────────────────────────────
+  // Capped escalation ladder: day 1 reminder, day 2 reminder, day 3 reminder
+  // + BOSS FLAG (huge red flag — not using the tool). After day 3 we stop
+  // nagging: the escalation to the boss is the signal, not continued noise.
   console.log('[CRON] 9am unacknowledged task reminder check...');
+  const MAX_ACK_REMINDERS = 3;
   const allTasks = readTasks();
-  const cutoff = new Date(now - 24 * 60 * 60 * 1000).toISOString();
+  const dayMs = 24 * 60 * 60 * 1000;
+  const cutoff = new Date(now - dayMs).toISOString();
   let tasksChanged = false;
   for (const task of allTasks) {
     if (!task.assignedTo || task.acknowledgedAt || task.status === 'Done') continue;
     if (!task.createdAt || task.createdAt > cutoff) continue;
     if (task.ackReminderSentAt && task.ackReminderSentAt > cutoff) continue;
+    const sentSoFar = task.ackReminderCount || 0;
+    if (sentSoFar >= MAX_ACK_REMINDERS) continue; // ladder exhausted — boss was already flagged
     const assigneeEmail = getStaffEmail(task.assignedTo);
     if (!assigneeEmail) { console.warn('[EMAIL SKIP] No email for:', task.assignedTo); continue; }
+    const reminderNum = sentSoFar + 1;
     const ccEmails = [];
     if (task.requestedBy) {
       const rbEmail = getStaffEmail(task.requestedBy);
       if (rbEmail) ccEmails.push(rbEmail);
     }
+    // On the final (3rd) reminder, also escalate to the boss.
+    const isFinal = reminderNum === MAX_ACK_REMINDERS;
+    if (isFinal) {
+      const bossEmail = getStaffEmail('Lai Wei Xiang') || getStaffEmail('Lai Weixiang') || process.env.SENDER_EMAIL;
+      if (bossEmail) ccEmails.push(bossEmail);
+    }
     try {
-      if (ccEmails.length > 0) {
-        const senderEmail = process.env.SENDER_EMAIL;
-        const accessToken = await getAccessToken();
-        if (accessToken && senderEmail) {
-          const recipient = process.env.EMAIL_TEST_OVERRIDE || assigneeEmail;
-          const ccRecipients = ccEmails.map(e => ({ emailAddress: { address: e } }));
-          await fetch(`https://graph.microsoft.com/v1.0/users/${senderEmail}/sendMail`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              message: {
-                subject: `[Reminder] Please acknowledge: ${task.title}`,
-                body: {
-                  contentType: 'HTML',
-                  content: `<p>Hi ${task.assignedTo},</p>
-                  <p>You have an unacknowledged task assigned to you:</p>
-                  <p><strong>${task.title}</strong></p>
-                  <p>Please acknowledge this task so the requester knows you have received it.</p>
-                  <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>
-                  <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>`
-                },
-                toRecipients: [{ emailAddress: { address: recipient, name: task.assignedTo } }],
-                ccRecipients
-              }
-            })
-          });
-          console.log(`[CRON] Ack reminder sent to ${assigneeEmail} (CC: ${ccEmails.join(', ')}) for task: ${task.title}`);
-        }
-      } else {
-        await sendEmail(assigneeEmail, task.assignedTo,
-          `[Reminder] Please acknowledge: ${task.title}`,
-          `<p>Hi ${task.assignedTo},</p>
-          <p>You have an unacknowledged task assigned to you:</p>
+      const subject = isFinal
+        ? `[FINAL FLAG] Still unacknowledged after 3 days: ${task.title}`
+        : `[Reminder ${reminderNum}/${MAX_ACK_REMINDERS}] Please acknowledge: ${task.title}`;
+      const htmlBody = isFinal
+        ? `<p>Hi ${task.assignedTo},</p>
+          <p>This task has been sitting unacknowledged for <strong>3 days</strong>. The boss has been CC'd on this reminder — please acknowledge or raise any blockers now.</p>
+          <p><strong>${task.title}</strong></p>
+          <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>
+          <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker — final reminder, no further nags will be sent.</p>`
+        : `<p>Hi ${task.assignedTo},</p>
+          <p>You have an unacknowledged task assigned to you (reminder ${reminderNum} of ${MAX_ACK_REMINDERS}):</p>
           <p><strong>${task.title}</strong></p>
           <p>Please acknowledge this task so the requester knows you have received it.</p>
           <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>
-          <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>`
-        );
-        console.log(`[CRON] Ack reminder sent to ${assigneeEmail} for task: ${task.title}`);
-      }
+          <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>`;
+      await sendEmail(assigneeEmail, task.assignedTo, subject, htmlBody, ccEmails);
+      console.log(`[CRON] Ack reminder ${reminderNum}/${MAX_ACK_REMINDERS}${isFinal ? ' (BOSS FLAG)' : ''} → ${assigneeEmail} for task: ${task.title}`);
       task.ackReminderSentAt = now.toISOString();
+      task.ackReminderCount = reminderNum;
+      if (isFinal) task.ackBossFlaggedAt = now.toISOString();
       tasksChanged = true;
     } catch (e) {
       console.error(`[CRON] Ack reminder failed for task ${task.id}:`, e.message);
@@ -1882,6 +2199,47 @@ cron.schedule('0 9 * * 1-5', async () => {
   }
   if (tasksChanged) writeTasks(allTasks);
   console.log('[CRON] Unacknowledged task reminder check done');
+
+  // ── Check 4: Yesterday's missing EOD — re-alert boss ─────────────────────
+  // At 6:30pm yesterday we wrote a flag file listing anyone who hadn't
+  // submitted. If that flag still has names AND those people still haven't
+  // caught up overnight, ping the boss again at 9am.
+  console.log('[CRON] 9am yesterday EOD re-check...');
+  try {
+    const y = new Date(Date.now() - 86400000);
+    const yDay = y.getDay(); // 0=Sun, 6=Sat — skip weekends (no EOD expected)
+    if (yDay !== 0 && yDay !== 6) {
+      const yesterday = y.toISOString().split('T')[0];
+      const history = readEODHistory();
+      const histEntry = history.find(h => h.date === yesterday);
+      if (histEntry && Array.isArray(histEntry.missing) && histEntry.missing.length) {
+        // Recheck: did anyone submit overnight? Remove them from the list.
+        const logs = readEOD();
+        const submittedYesterday = logs.filter(l => l.date === yesterday).map(l => l.staffName);
+        const stillMissing = histEntry.missing.filter(n => !submittedYesterday.includes(n));
+        if (stillMissing.length) {
+          const laiEmail = process.env.SENDER_EMAIL;
+          if (laiEmail) {
+            await sendEmail(laiEmail, 'Lai Wei Xiang',
+              `[EOD Alert] Still missing from yesterday (${yesterday}): ${stillMissing.length} staff`,
+              `<p>The following staff have <strong>still not submitted</strong> their EOD log for yesterday (${yesterday}):</p>
+              <ul>${stillMissing.map(n => `<li><strong>${n}</strong></li>`).join('')}</ul>
+              <p>6:30pm flag was sent yesterday. They have not caught up overnight.</p>
+              <p><a href="${APP_URL}/tasks">View Tasks Dashboard →</a></p>`
+            );
+            console.log(`[CRON] 9am next-day EOD re-alert sent to boss: ${stillMissing.join(', ')}`);
+          }
+          // Update history entry to reflect overnight submissions
+          histEntry.stillMissingAt9am = stillMissing;
+          fs.writeFileSync(EOD_HISTORY_FILE, JSON.stringify(history, null, 2));
+        } else {
+          console.log('[CRON] 9am next-day EOD re-check: everyone caught up overnight');
+        }
+      } else {
+        console.log('[CRON] 9am next-day EOD re-check: no missing from yesterday');
+      }
+    }
+  } catch (e) { logError('cron.9am-eod-recheck', e); }
   } catch (e) { logError('cron.9am-checks', e); }
 }, { timezone: 'Asia/Singapore' });
 
@@ -1967,10 +2325,10 @@ cron.schedule('0 18 * * 1-5', async () => {
   } catch (e) { logError('cron.6pm-eod-reminder', e); }
 }, { timezone: 'Asia/Singapore' });
 
-// Trigger 5: 6:15pm weekdays — flag + email Lai if EOD not submitted
-cron.schedule('15 18 * * 1-5', async () => {
+// Trigger 5: 6:30pm weekdays — flag + email Lai if EOD not submitted
+cron.schedule('30 18 * * 1-5', async () => {
   try {
-  console.log('[CRON] 6:15pm EOD check running...');
+  console.log('[CRON] 6:30pm EOD check running...');
   const today = new Date().toISOString().split('T')[0];
   const logs = readEOD();
   const submitted = logs.filter(l => l.date === today).map(l => l.staffName);
@@ -2000,31 +2358,9 @@ cron.schedule('15 18 * * 1-5', async () => {
   } catch (e) { logError('cron.eod-flag', e); }
 }, { timezone: 'Asia/Singapore' });
 
-// 7pm weekdays — remind staff who haven't submitted EOD log
-cron.schedule('0 19 * * 1-5', async () => {
-  try {
-  console.log('[CRON] 7pm EOD staff reminder running...');
-  const today = new Date().toISOString().split('T')[0];
-  const logs = readEOD();
-  const submitted = logs.filter(l => l.date === today).map(l => l.staffName);
-  const missing = getStaffNames()
-    .filter(n => n !== 'Lai Wei Xiang')
-    .filter(n => !submitted.includes(n));
-
-  let sent = 0;
-  for (const name of missing) {
-    const email = getStaffEmail(name);
-    if (!email) continue;
-    await sendEmail(email, name,
-      '[Reminder] Please submit your EOD log',
-      `<p>Hi ${name}, please submit your end-of-day log before 8pm today.</p>
-      <p><a href="${APP_URL}">Submit EOD Log →</a></p>`
-    );
-    sent++;
-  }
-  console.log(`[CRON] EOD staff reminders sent: ${sent}`);
-  } catch (e) { logError('cron.eod-staff-reminder', e); }
-}, { timezone: 'Asia/Singapore' });
+// Note: the 7pm duplicate staff reminder was removed — 6pm covers staff,
+// 6:30pm flags the boss. Next-day 9am re-alert to boss is handled inside
+// the 9am cron below (see "Check 4: Yesterday's missing EOD").
 
 // Every Monday 12:01am — archive last week's done tasks
 cron.schedule('1 0 * * 1', () => {
@@ -2302,6 +2638,17 @@ function writeSiteRequests(records) {
   fs.renameSync(tmp, SITE_REQUESTS_FILE);
 }
 
+// GET /api/system-map — returns the docs/PAGES.md file for the admin System Map panel
+app.get('/api/system-map', (req, res) => {
+  try {
+    const mdPath = path.join(__dirname, 'docs', 'PAGES.md');
+    if (!fs.existsSync(mdPath)) return res.status(404).json({ error: 'System map not found' });
+    const md = fs.readFileSync(mdPath, 'utf8');
+    const stat = fs.statSync(mdPath);
+    res.json({ markdown: md, mtime: stat.mtime.toISOString() });
+  } catch (e) { logError('route.get.system-map', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
 const VALID_SR_STATUSES = ['New', 'Acknowledged', 'In Fabrication', 'Ready', 'Delivered', 'Issue'];
 
 // GET /api/site-requests — all requests, newest first
@@ -2372,7 +2719,9 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
   } catch (e) { logError('route.post.site-requests', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// PUT /api/site-requests/:id — update status / Chris response
+// PUT /api/site-requests/:id — update status, Chris response, OR core fields.
+// Permissive model: any field can be edited at any status. Every change is logged
+// with actor + diff + previousStatus so the audit trail is the accountability layer.
 app.put('/api/site-requests/:id', (req, res) => {
   try {
   const all = readSiteRequests();
@@ -2381,6 +2730,23 @@ app.put('/api/site-requests/:id', (req, res) => {
 
   const record = all[idx];
   const oldStatus = record.status;
+  const actor = sanitizeStr(req.body._actor || '', 80) || 'unknown';
+
+  // Capture pre-edit snapshot of all editable fields so we can emit a clean diff.
+  const snapshot = {
+    status: record.status,
+    item: record.item,
+    quantity: record.quantity,
+    unit: record.unit,
+    neededByDate: record.neededByDate,
+    notes: record.notes,
+    projectId: record.projectId,
+    projectJobCode: record.projectJobCode,
+    projectName: record.projectName,
+    estimatedReadyDate: record.estimatedReadyDate,
+    chrisNotes: record.chrisNotes,
+    issueReason: record.issueReason
+  };
 
   if (req.body.status !== undefined) {
     const s = sanitizeStr(req.body.status, 30);
@@ -2391,6 +2757,15 @@ app.put('/api/site-requests/:id', (req, res) => {
   if (req.body.chrisNotes !== undefined)         record.chrisNotes         = sanitizeStr(req.body.chrisNotes, 1000);
   if (req.body.issueReason !== undefined)        record.issueReason        = sanitizeStr(req.body.issueReason, 1000);
 
+  if (req.body.item         !== undefined) record.item         = sanitizeStr(req.body.item, 200);
+  if (req.body.quantity     !== undefined) record.quantity     = parseFloat(req.body.quantity) || 0;
+  if (req.body.unit         !== undefined) record.unit         = sanitizeStr(req.body.unit, 20);
+  if (req.body.neededByDate !== undefined) record.neededByDate = sanitizeStr(req.body.neededByDate, 20);
+  if (req.body.notes        !== undefined) record.notes        = sanitizeStr(req.body.notes, 1000);
+  if (req.body.projectId      !== undefined) record.projectId      = sanitizeStr(req.body.projectId, 80);
+  if (req.body.projectJobCode !== undefined) record.projectJobCode = sanitizeStr(req.body.projectJobCode, 80);
+  if (req.body.projectName    !== undefined) record.projectName    = sanitizeStr(req.body.projectName, 200);
+
   if (record.status === 'Acknowledged' && !record.acknowledgedAt) {
     record.acknowledgedAt = new Date().toISOString();
   }
@@ -2398,9 +2773,23 @@ app.put('/api/site-requests/:id', (req, res) => {
     record.deliveredAt = new Date().toISOString();
   }
 
+  // Build change diff vs pre-edit snapshot
+  const changes = {};
+  Object.keys(snapshot).forEach(k => {
+    if (String(snapshot[k] ?? '') !== String(record[k] ?? '')) {
+      changes[k] = { from: snapshot[k], to: record[k] };
+    }
+  });
+
   all[idx] = record;
   writeSiteRequests(all);
-  logActivity('site-request.updated', { id: record.id, status: record.status, from: oldStatus });
+  logActivity('site-request.updated', {
+    id: record.id,
+    actor,
+    previousStatus: oldStatus,
+    newStatus: record.status,
+    changes
+  });
 
   // Notify site engineer when Ready
   if (record.status === 'Ready' && oldStatus !== 'Ready') {
@@ -2446,6 +2835,31 @@ app.put('/api/site-requests/:id', (req, res) => {
 
   res.json(record);
   } catch (e) { logError('route.put.site-requests', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// DELETE /api/site-requests/:id — permissive, audit-logged.
+// Actor is read from query string (?actor=Teo) since DELETE has no body in most clients.
+app.delete('/api/site-requests/:id', (req, res) => {
+  try {
+    const all = readSiteRequests();
+    const idx = all.findIndex(r => r.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Site request not found' });
+    const record = all[idx];
+    const actor = sanitizeStr(req.query.actor || '', 80) || 'unknown';
+    all.splice(idx, 1);
+    writeSiteRequests(all);
+    logActivity('site-request.deleted', {
+      id: record.id,
+      actor,
+      previousStatus: record.status,
+      projectId: record.projectId || '',
+      projectJobCode: record.projectJobCode || '',
+      item: record.item || '',
+      quantity: record.quantity || 0,
+      requestedBy: record.requestedBy || ''
+    });
+    res.json({ ok: true });
+  } catch (e) { logError('route.delete.site-requests', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // ── Monday Flags API ─────────────────────────────────────────────────────────

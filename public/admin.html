@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Admin Settings — LYS OPS</title>
-  <link rel="stylesheet" href="css/style.css?v=1776140199">
+  <link rel="stylesheet" href="css/style.css?v=1776178384">
   <style>
     .staff-inline-input {
       background: var(--bg2);
@@ -163,6 +163,21 @@
         </div>
       </div>
 
+      <!-- System Map (collapsed reference of every page + automation) -->
+      <div class="admin-section" id="system-map-section">
+        <div class="admin-section-title" id="sysmap-toggle" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:10px;">
+          <span id="sysmap-chevron" style="font-size:13px;color:var(--text-muted);">▸</span>
+          <span>System Map</span>
+          <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:8px;">What each page does — reference only, click to expand</span>
+          <span id="sysmap-mtime" style="font-size:10px;color:var(--text-muted);font-weight:400;margin-left:auto;"></span>
+        </div>
+        <div id="sysmap-body" style="display:none;padding-top:14px;">
+          <div id="sysmap-content" style="font-size:13px;line-height:1.55;color:var(--text);">
+            <div style="color:var(--text-muted);padding:12px 0;">Loading…</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Activity Logs -->
       <div class="admin-section" id="logs-section">
         <div class="admin-section-title">System Logs</div>
@@ -183,7 +198,7 @@
   </div><!-- /tasks-layout -->
 
   <div class="toast" id="toast"></div>
-  <script src="js/utils.js?v=1776140199"></script>
+  <script src="js/utils.js?v=1776178384"></script>
   <script>
     // ── Helpers ──────────────────────────────────────────────────────────────
     let adminPin = '';
@@ -554,6 +569,120 @@
         container.innerHTML = '<div style="color:var(--red);padding:12px 0;">Failed to load logs: ' + escHtml(err.message) + '</div>';
       }
     }
+
+    // ── System Map (collapsible — renders docs/PAGES.md via /api/system-map) ──
+    (function() {
+      var loaded = false;
+
+      function esc(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      }
+
+      // Minimal markdown → HTML renderer. Handles:
+      //   # / ## / ### headers, **bold**, `code`, unordered lists (- / *),
+      //   pipe tables, horizontal rules (---), paragraphs, and blank lines.
+      // Intentionally not a full markdown parser — keep it small so the
+      // admin page stays dependency-free.
+      function renderMarkdown(md) {
+        var lines = md.split(/\r?\n/);
+        var out = [];
+        var i = 0;
+        function inline(s) {
+          s = esc(s);
+          s = s.replace(/`([^`]+)`/g, '<code style="background:var(--bg2);padding:1px 5px;border-radius:3px;font-size:12px;">$1</code>');
+          s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+          return s;
+        }
+        while (i < lines.length) {
+          var line = lines[i];
+          if (!line.trim()) { i++; continue; }
+          // Horizontal rule
+          if (/^---+\s*$/.test(line)) { out.push('<hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">'); i++; continue; }
+          // Headers
+          var h = line.match(/^(#{1,6})\s+(.*)$/);
+          if (h) {
+            var level = h[1].length;
+            var size = level === 1 ? '20px' : level === 2 ? '16px' : '14px';
+            var margin = level === 1 ? '24px 0 10px' : level === 2 ? '20px 0 8px' : '14px 0 6px';
+            var color = level === 1 ? 'var(--accent)' : 'var(--text)';
+            out.push('<div style="font-size:' + size + ';font-weight:700;color:' + color + ';margin:' + margin + ';">' + inline(h[2]) + '</div>');
+            i++; continue;
+          }
+          // Table (pipe syntax): header row followed by --- separator
+          if (line.indexOf('|') !== -1 && i + 1 < lines.length && /^\s*\|?[\s|:-]+\|[\s|:-]*$/.test(lines[i + 1])) {
+            var headers = line.split('|').map(function(c) { return c.trim(); }).filter(function(c) { return c; });
+            i += 2;
+            var rows = [];
+            while (i < lines.length && lines[i].indexOf('|') !== -1) {
+              rows.push(lines[i].split('|').map(function(c) { return c.trim(); }).filter(function(c) { return c; }));
+              i++;
+            }
+            var thead = '<thead><tr>' + headers.map(function(h) {
+              return '<th style="text-align:left;padding:6px 10px;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">' + inline(h) + '</th>';
+            }).join('') + '</tr></thead>';
+            var tbody = '<tbody>' + rows.map(function(r) {
+              return '<tr>' + r.map(function(c) {
+                return '<td style="padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:top;">' + inline(c) + '</td>';
+              }).join('') + '</tr>';
+            }).join('') + '</tbody>';
+            out.push('<table style="border-collapse:collapse;width:100%;margin:10px 0;font-size:12px;">' + thead + tbody + '</table>');
+            continue;
+          }
+          // Unordered list
+          if (/^\s*[-*]\s+/.test(line)) {
+            var items = [];
+            while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+              items.push(lines[i].replace(/^\s*[-*]\s+/, ''));
+              i++;
+            }
+            out.push('<ul style="margin:6px 0 12px 22px;padding:0;">' + items.map(function(it) {
+              return '<li style="margin:3px 0;">' + inline(it) + '</li>';
+            }).join('') + '</ul>');
+            continue;
+          }
+          // Paragraph — gather consecutive non-blank, non-header lines
+          var para = [line];
+          i++;
+          while (i < lines.length && lines[i].trim() && !/^(#{1,6})\s/.test(lines[i]) && !/^\s*[-*]\s+/.test(lines[i]) && !/^---+\s*$/.test(lines[i])) {
+            para.push(lines[i]);
+            i++;
+          }
+          out.push('<p style="margin:8px 0;">' + inline(para.join(' ')) + '</p>');
+        }
+        return out.join('');
+      }
+
+      async function loadSystemMap() {
+        if (loaded) return;
+        var content = document.getElementById('sysmap-content');
+        try {
+          var res = await fetch('/api/system-map');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          var data = await res.json();
+          content.innerHTML = renderMarkdown(data.markdown || '');
+          var mtimeEl = document.getElementById('sysmap-mtime');
+          if (mtimeEl && data.mtime) {
+            var d = new Date(data.mtime);
+            mtimeEl.textContent = 'updated ' + d.toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
+          }
+          loaded = true;
+        } catch (err) {
+          content.innerHTML = '<div style="color:var(--red);padding:12px 0;">Failed to load system map: ' + esc(err.message) + '</div>';
+        }
+      }
+
+      var toggle = document.getElementById('sysmap-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', function() {
+          var body = document.getElementById('sysmap-body');
+          var chevron = document.getElementById('sysmap-chevron');
+          var isOpen = body.style.display !== 'none';
+          body.style.display = isOpen ? 'none' : '';
+          chevron.textContent = isOpen ? '▸' : '▾';
+          if (!isOpen) loadSystemMap();
+        });
+      }
+    })();
 
     init();
   </script>

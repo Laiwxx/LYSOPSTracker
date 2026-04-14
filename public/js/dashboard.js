@@ -16,8 +16,8 @@
     loadProjects();
     loadWeeklyBrief();
     loadTodayMCFromAttendance();
-    // Auto-refresh weekly movement every 5 minutes
-    setInterval(function() { loadWeeklyBrief(); loadTodayMCFromAttendance(); }, 60 * 1000);
+    // Auto-refresh weekly movement + today's MC every 2 minutes
+    setInterval(function() { loadWeeklyBrief(); loadTodayMCFromAttendance(); }, 2 * 60 * 1000);
     loadEodStatus();
     bindFactoryToggle();
     bindMondayToggle();
@@ -30,11 +30,6 @@
   async function loadSummary() {
     try {
       const s = await api('GET', '/api/summary');
-      var heroPortfolio = document.getElementById('hero-portfolio');
-      if (heroPortfolio) {
-        var totalVal = (parseFloat(s.totalContract) || 0) + (parseFloat(s.totalVO) || 0);
-        heroPortfolio.textContent = fmtCurrencyShort(totalVal);
-      }
 
       // Active projects = total minus completed
       var active = (s.total || 0) - (s.completed || 0);
@@ -42,8 +37,6 @@
       if (heroActive) heroActive.textContent = active;
       var heroActiveSub = document.getElementById('hero-active-sub');
       if (heroActiveSub) heroActiveSub.textContent = 'of ' + (s.total || 0) + ' projects';
-      var heroPortfolioSub = document.getElementById('hero-portfolio-sub');
-      if (heroPortfolioSub) heroPortfolioSub.textContent = (s.total || 0) + ' projects';
 
       // Portfolio-average FAB / Install
       var fabPct  = s.overallFabPct  || s.avgFabPct  || 0;
@@ -80,166 +73,10 @@
 
     } catch (err) {
       console.error('[LYS Dashboard] loadSummary failed:', err);
-      ['hero-portfolio','hero-active','hero-fab','hero-install'].forEach(function(id) {
+      ['hero-active','hero-fab','hero-install'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.textContent = 'Error';
       });
-    }
-  }
-
-  // ── Needs Attention ───────────────────────────────────────────────────────
-  async function loadActions() {
-    try {
-      const actions = await api('GET', '/api/actions');
-      const pending = actions.filter(function (a) {
-        return a.stageStatus === 'Pending' || a.stageStatus === 'In Progress' || a.stageStatus === 'Overdue' || a.stageStatus === 'Delayed';
-      });
-
-      document.getElementById('action-title').textContent = 'NEEDS ATTENTION (' + pending.length + ')';
-      const list = document.getElementById('attention-list');
-
-      if (!pending.length) {
-        list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">All clear — no pending actions</div>';
-        return;
-      }
-
-      // Group by owner, sort each group by daysInStatus desc
-      var groups = {};
-      pending.forEach(function (a) {
-        var owner = a.owner || 'Unassigned';
-        if (!groups[owner]) groups[owner] = [];
-        groups[owner].push(a);
-      });
-      Object.keys(groups).forEach(function (o) {
-        groups[o].sort(function (a, b) { return b.daysInStatus - a.daysInStatus; });
-      });
-      var owners = Object.keys(groups).sort(function (a, b) {
-        return Math.max(...groups[b].map(function (x) { return x.daysInStatus; })) -
-               Math.max(...groups[a].map(function (x) { return x.daysInStatus; }));
-      });
-
-      list.innerHTML = owners.map(function (owner) {
-        var items = groups[owner].map(function (a) {
-          var overdue = a.daysInStatus > 5;
-          return '<div class="attention-item' + (overdue ? ' overdue' : '') + '">' +
-            '<span class="att-stage">' + esc(a.stageName) + '</span>' +
-            '<span class="att-project">' + esc(a.jobCode) + '</span>' +
-            '<span class="att-days' + (overdue ? ' overdue' : '') + '">' + a.daysInStatus + 'd</span>' +
-            '<button class="btn btn-amber btn-sm" onclick="sendReminder(\'' + esc(a.projectId) + '\',' + a.stageNum + ',\'' + esc(a.owner) + '\',\'' + esc(a.stageName) + '\',\'' + esc(a.projectName) + '\',\'' + esc(a.jobCode) + '\',' + a.daysInStatus + ')">!</button>' +
-            '</div>';
-        }).join('');
-        return '<div class="att-owner-group">' +
-          '<div class="att-owner-header">' + esc(owner) + ' <span class="att-owner-count">' + groups[owner].length + '</span></div>' +
-          items +
-          '</div>';
-      }).join('');
-    } catch (err) {
-      console.error('loadActions error:', err);
-      var list = document.getElementById('attention-list');
-      list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">Failed to load actions</div>';
-    }
-  }
-
-  // ── Site Request Alerts (NEEDS ATTENTION) ─────────────────────────────────
-  async function loadSiteRequestAlerts() {
-    try {
-      const reqs = await api('GET', '/api/site-requests');
-      const now = Date.now();
-      const oneDayMs = 24 * 60 * 60 * 1000;
-
-      // Unacknowledged > 24 hrs
-      const stale = reqs.filter(function (r) {
-        if (r.status !== 'New') return false;
-        return (now - new Date(r.createdAt).getTime()) > oneDayMs;
-      });
-
-      // New requests count for Factory badge
-      const newCount = reqs.filter(function (r) { return r.status === 'New'; }).length;
-      var factoryLink = document.getElementById('sidebar-factory-link');
-      var factoryBadge = document.getElementById('sidebar-factory-badge');
-      if (factoryBadge) {
-        factoryBadge.textContent = newCount;
-        factoryBadge.style.display = newCount > 0 ? 'inline-flex' : 'none';
-      }
-
-      if (!stale.length) return;
-
-      // Inject stale requests into the attention list
-      var list = document.getElementById('attention-list');
-      if (!list) return;
-
-      var existingContent = list.innerHTML;
-      var srHtml = '<div class="att-owner-group">' +
-        '<div class="att-owner-header">Chris (Factory) <span class="att-owner-count">' + stale.length + ' unacknowledged</span></div>' +
-        stale.map(function (r) {
-          var hrs = Math.floor((now - new Date(r.createdAt).getTime()) / 3600000);
-          return '<div class="attention-item overdue">' +
-            '<span class="att-stage">Site Request</span>' +
-            '<span class="att-project">' + esc(r.item) + (r.projectJobCode ? ' · ' + esc(r.projectJobCode) : '') + '</span>' +
-            '<span class="att-days overdue">' + hrs + 'h</span>' +
-            '<a href="/factory" style="text-decoration:none;"><button class="btn btn-amber btn-sm">View</button></a>' +
-            '</div>';
-        }).join('') +
-        '</div>';
-
-      // Prepend to list (most urgent first)
-      if (list.innerHTML.includes('All clear')) {
-        list.innerHTML = srHtml;
-      } else {
-        list.innerHTML = srHtml + existingContent;
-      }
-
-      // Update title count
-      var titleEl = document.getElementById('action-title');
-      if (titleEl) {
-        var match = titleEl.textContent.match(/\((\d+)\)/);
-        var existing = match ? parseInt(match[1]) : 0;
-        titleEl.textContent = 'NEEDS ATTENTION (' + (existing + stale.length) + ')';
-      }
-    } catch (e) {
-      console.error('loadSiteRequestAlerts error:', e);
-    }
-  }
-
-  // ── Overdue PO Alerts (NEEDS ATTENTION) ──────────────────────────────────
-  async function loadOverduePOAlerts() {
-    try {
-      var pos = await api('GET', '/api/purchase-orders');
-      var overdue = pos.filter(function(p) { return p.status === 'Overdue'; });
-      if (!overdue.length) return;
-
-      var list = document.getElementById('attention-list');
-      if (!list) return;
-
-      var poHtml = '<div class="att-owner-group">' +
-        '<div class="att-owner-header">Procurement <span class="att-owner-count">' + overdue.length + ' overdue PO' + (overdue.length !== 1 ? 's' : '') + '</span></div>' +
-        overdue.map(function(p) {
-          var daysOverdue = p.promisedDate ? Math.floor((Date.now() - new Date(p.promisedDate).getTime()) / 86400000) : '?';
-          return '<div class="attention-item overdue">' +
-            '<span class="att-stage">PO Overdue</span>' +
-            '<span class="att-project">' + esc(p.material) + (p.supplierName ? ' · ' + esc(p.supplierName) : '') + (p.projectJobCode ? ' · ' + esc(p.projectJobCode) : '') + '</span>' +
-            '<span class="att-days overdue">' + daysOverdue + 'd</span>' +
-            '<a href="/procurement" style="text-decoration:none;"><button class="btn btn-danger btn-sm">View</button></a>' +
-            '</div>';
-        }).join('') +
-        '</div>';
-
-      // Prepend to attention list
-      if (list.innerHTML.includes('All clear')) {
-        list.innerHTML = poHtml;
-      } else {
-        list.innerHTML = poHtml + list.innerHTML;
-      }
-
-      // Update title count
-      var titleEl = document.getElementById('action-title');
-      if (titleEl) {
-        var match = titleEl.textContent.match(/\((\d+)\)/);
-        var existing = match ? parseInt(match[1]) : 0;
-        titleEl.textContent = 'NEEDS ATTENTION (' + (existing + overdue.length) + ')';
-      }
-    } catch (e) {
-      console.error('loadOverduePOAlerts error:', e);
     }
   }
 
@@ -261,26 +98,45 @@
       var fabMap = {};
       fabStatusArr.forEach(function (p) { fabMap[p.projectId] = p; });
 
-      var totalItems = queue.reduce(function (s, p) { return s + p.items.length; }, 0);
-      var urgent = queue.reduce(function (s, p) {
+      var totalItemsAll = queue.reduce(function (s, p) { return s + p.items.length; }, 0);
+
+      // Attention-only filter: only items that need a decision today —
+      // overdue delivery tickets, new (unseen by Chris) tickets, or ready-awaiting-pickup.
+      function needsAttention(i) {
+        if (i.isOverdue) return true;
+        if (i.deliveryRequested && i.ticketStatus === 'New') return true;
+        if (i.deliveryRequested && i.ticketStatus === 'Ready') return true;
+        return false;
+      }
+      var filteredQueue = queue
+        .map(function (p) {
+          return Object.assign({}, p, { items: p.items.filter(needsAttention) });
+        })
+        .filter(function (p) { return p.items.length > 0; });
+
+      var attentionCount = filteredQueue.reduce(function (s, p) { return s + p.items.length; }, 0);
+      var overdueCount = filteredQueue.reduce(function (s, p) {
         return s + p.items.filter(function (i) { return i.isOverdue; }).length;
       }, 0);
-      var newTickets = queue.reduce(function (s, p) {
-        return s + p.items.filter(function (i) { return i.deliveryRequested && i.ticketStatus === 'New'; }).length;
+      var newTickets = filteredQueue.reduce(function (s, p) {
+        return s + p.items.filter(function (i) { return i.ticketStatus === 'New'; }).length;
       }, 0);
 
       titleEl.innerHTML = 'FACTORY' +
-        (totalItems ? ' — ' + totalItems + ' item' + (totalItems > 1 ? 's' : '') : '') +
-        (urgent ? ' · ' + urgent + ' overdue' : '') +
+        (attentionCount ? ' — ' + attentionCount + ' needs attention' : '') +
+        (overdueCount ? ' · ' + overdueCount + ' overdue' : '') +
         (newTickets ? '<span class="panel-badge">' + newTickets + ' new</span>' : '');
 
-      if (!queue.length || !totalItems) {
-        list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">No active fabrication items</div>';
+      if (!attentionCount) {
+        var msg = totalItemsAll
+          ? '✓ Factory on track — ' + totalItemsAll + ' item' + (totalItemsAll > 1 ? 's' : '') + ' moving, nothing needs you'
+          : 'No active fabrication items';
+        list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px;">' + msg + '</div>';
         return;
       }
 
       // Sort: projects with overdue items first, then by fab % ascending
-      var sorted = queue.slice().sort(function (a, b) {
+      var sorted = filteredQueue.slice().sort(function (a, b) {
         var aOver = a.items.some(function (i) { return i.isOverdue; }) ? 0 : 1;
         var bOver = b.items.some(function (i) { return i.isOverdue; }) ? 0 : 1;
         if (aOver !== bOver) return aOver - bOver;
@@ -306,20 +162,9 @@
             '<span style="font-size:11px;font-weight:700;color:' + barColor + ';width:34px;text-align:right;">' + fabPct + '%</span>' +
           '</div>';
 
-        // Status chips row
+        // Status chips dropped in attention-only mode — they summarised all items,
+        // not the filtered subset, and just added noise.
         var chipsHtml = '';
-        if (fab && fab.statusCounts) {
-          var chipOrder = ['In Progress', 'QC Check', 'Ready for Delivery', 'Not Started', 'Delivered', 'Completed'];
-          var chips = chipOrder
-            .filter(function (s) { return fab.statusCounts[s]; })
-            .map(function (s) {
-              var c = statusColors[s] || 'var(--text-muted)';
-              return '<span style="font-size:11px;color:' + c + ';font-weight:600;margin-right:10px;">● ' + fab.statusCounts[s] + ' ' + s + '</span>';
-            }).join('');
-          if (chips) {
-            chipsHtml = '<div style="padding:2px 14px 6px;">' + chips + '</div>';
-          }
-        }
 
         // Item rows
         var itemsHtml = p.items.map(function (item) {
@@ -823,15 +668,6 @@
     }
   }
 
-  function bindActionToggle() {
-    var panel = document.getElementById('action-panel');
-    var chevron = document.getElementById('action-chevron');
-    document.getElementById('action-toggle').addEventListener('click', function () {
-      var collapsed = panel.classList.toggle('collapsed');
-      chevron.textContent = collapsed ? '▼' : '▲';
-    });
-  }
-
   // ── Send Reminder (global) ────────────────────────────────────────────────
   window.sendReminder = async function (projectId, stageNum, owner, stageName, projectName, jobCode, days) {
     if (!confirm('Send reminder to ' + owner + ' for "' + stageName + '" on ' + projectName + '?')) return;
@@ -1159,6 +995,9 @@
 
 
   // ── Filters ───────────────────────────────────────────────────────────────
+  // The dashboard currently renders neither filter chips nor a search box;
+  // these bindings are left in place so the page picks them up automatically
+  // if they're added back to index.html.
   function bindFilters() {
     document.querySelectorAll('.filter-chip').forEach(function (chip) {
       chip.addEventListener('click', function () {
@@ -1169,10 +1008,12 @@
       });
     });
     var search = document.getElementById('search-input');
-    search.addEventListener('input', debounce(function () {
-      searchQuery = search.value;
-      renderProjects();
-    }, 200));
+    if (search) {
+      search.addEventListener('input', debounce(function () {
+        searchQuery = search.value;
+        renderProjects();
+      }, 200));
+    }
   }
 
   // ── Progress calc helpers ─────────────────────────────────────────────────
@@ -1358,39 +1199,6 @@
         }
       }
     } catch(e) { console.error('claims pipeline error:', e); }
-  }
-
-  // ── Task alert panel (overdue tasks) ─────────────────────────────────────
-  async function renderTaskAlerts() {
-    try {
-      const tasks = await fetch('/api/tasks').then(r => r.json());
-      const today = new Date().toISOString().split('T')[0];
-      const overdue = tasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'Done');
-
-      // Update overdue KPI card
-      var heroOverdue = document.getElementById('hero-overdue');
-      if (heroOverdue) heroOverdue.textContent = overdue.length;
-
-      const panel = document.getElementById('task-alert-panel');
-      if (!panel || overdue.length === 0) return;
-      panel.style.display = '';
-      panel.style.padding = '12px 16px';
-      panel.innerHTML =
-        '<div class="section-label" style="color:var(--red);margin-bottom:8px;">' +
-          '\u26A0\uFE0F Overdue Tasks (' + overdue.length + ')' +
-          ' <a href="/tasks" style="font-size:11px;float:right;color:var(--accent);">View all \u2192</a>' +
-        '</div>' +
-        overdue.slice(0, 5).map(t =>
-          '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">' +
-            '<div>' +
-              '<div style="font-size:13px;font-weight:500;">' + esc(t.title) + '</div>' +
-              '<div style="font-size:11px;color:var(--text-muted);">' + esc(t.assignedTo || 'Unassigned') + (t.projectJobCode ? ' \u00B7 ' + esc(t.projectJobCode) : '') + '</div>' +
-            '</div>' +
-            '<span class="pill pill-red">' + esc(t.dueDate) + '</span>' +
-          '</div>'
-        ).join('') +
-        (overdue.length > 5 ? '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;"><a href="/tasks">View all ' + overdue.length + ' overdue \u2192</a></div>' : '');
-    } catch (err) { console.warn('[LYS Dashboard] renderTaskAlerts failed:', err); }
   }
 
   // ── EOD Status Panel ──────────────────────────────────────────────────────

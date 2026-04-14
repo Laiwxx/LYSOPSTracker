@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776140199">
+  <link rel="stylesheet" href="/css/style.css?v=1776178384">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -1067,12 +1067,15 @@ document.getElementById('popup-save').addEventListener('click', () => {
     plan[popupWorker.id][popupDay] = { type: 'MC', notes: 'MC' };
     saveMCToAttendance(popupWorker, popupDay);
   } else {
+    // projectId/projectName persist for Installation AND Fabrication — both need to
+    // know which project the worker is assigned to. Transport/Off/other types leave blank.
+    const keepsProject = (type === 'Installation' || type === 'Fabrication');
     plan[popupWorker.id][popupDay] = {
       type,
-      projectId:   type === 'Installation' ? projId   : '',
-      projectName: type === 'Installation' && proj ? (proj.projectName || proj.name || '') : '',
-      location:    type === 'Installation' ? notes    : '',
-      notes:       type !== 'Installation' ? notes    : notes
+      projectId:   keepsProject ? projId : '',
+      projectName: keepsProject && proj ? (proj.projectName || proj.name || '') : '',
+      location:    type === 'Installation' ? notes : '',
+      notes:       type === 'Installation' ? ''    : notes
     };
   }
 

@@ -261,3 +261,120 @@
 {"ts":"2026-04-14T02:55:25.778Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-14T02:55:26.730Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-14T04:17:43.207Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"doneQty","from":7,"to":0}]}
+{"ts":"2026-04-14T04:42:30.576Z","event":"site-request.updated","id":"mnx7ic3ro44b","status":"Issue","from":"New"}
+{"ts":"2026-04-14T04:42:32.180Z","event":"site-request.updated","id":"mnx7ic3ro44b","status":"Acknowledged","from":"Issue"}
+{"ts":"2026-04-14T04:42:36.469Z","event":"site-request.updated","id":"mnx7ic3ro44b","status":"In Fabrication","from":"Acknowledged"}
+{"ts":"2026-04-14T04:42:37.119Z","event":"site-request.updated","id":"mnx7ic3ro44b","status":"Ready","from":"In Fabrication"}
+{"ts":"2026-04-14T04:42:37.980Z","event":"site-request.updated","id":"mnx7ic3ro44b","status":"Delivered","from":"Ready"}
+{"ts":"2026-04-14T04:43:41.371Z","event":"pr.created","id":"PR26-313","prNumber":"PR26-313","projectCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-14T04:44:07.750Z","event":"pr.deleted","id":"PR26-313","prNumber":"PR26-313"}
+{"ts":"2026-04-14T06:26:11.642Z","event":"project.upload","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","filename":"1776147971602-LYS_Footer.png","originalName":"LYS Footer.png","mimetype":"image/png","size":112011,"itemName":"","uploadedBy":""}
+{"ts":"2026-04-14T06:26:16.471Z","event":"project.upload","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","filename":"1776147976469-LYS_Header.png","originalName":"LYS Header.png","mimetype":"image/png","size":8073,"itemName":"","uploadedBy":""}
+{"ts":"2026-04-14T06:28:25.206Z","event":"project.upload","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)","filename":"1776148105161-LYS_Footer.png","originalName":"LYS Footer.png","mimetype":"image/png","size":112011,"itemName":"","uploadedBy":""}
+{"ts":"2026-04-14T06:28:29.552Z","event":"project.upload","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","filename":"1776148109551-LYS_Header.png","originalName":"LYS Header.png","mimetype":"image/png","size":8073,"itemName":"","uploadedBy":""}
+{"ts":"2026-04-14T06:28:39.883Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T06:28:45.073Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:05:16.822Z","event":"attendance.saved","date":"2026-04-13","count":1}
+{"ts":"2026-04-14T07:05:16.917Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:05:20.139Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:05:24.117Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:05:27.242Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:05:30.902Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:05:34.972Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:05:56.784Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:06:01.517Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T07:06:55.930Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"doneQty","from":1,"to":0}]}
+{"ts":"2026-04-14T07:09:47.668Z","event":"project.upload.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","filename":"1776147976469-LYS_Header.png","originalName":"LYS Header.png","itemName":"SP30 Fixed Bollard","fileDeleted":true}
+{"ts":"2026-04-14T07:09:49.682Z","event":"project.upload.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","filename":"1776147971602-LYS_Footer.png","originalName":"LYS Footer.png","itemName":"SP30 Fixed Bollard","fileDeleted":true}
+{"ts":"2026-04-14T07:09:55.554Z","event":"project.upload.deleted","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)","filename":"1776148105161-LYS_Footer.png","originalName":"LYS Footer.png","itemName":"SP30 FIXED","fileDeleted":true}
+{"ts":"2026-04-14T07:10:02.854Z","event":"project.upload.deleted","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","filename":"1776148109551-LYS_Header.png","originalName":"LYS Header.png","itemName":"Engineered Bollard - Toh Payoh Interchange","fileDeleted":true}
+{"ts":"2026-04-14T08:25:52.796Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Not Started","to":"QC Check"}]}
+{"ts":"2026-04-14T08:27:22.738Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-14T08:29:47.328Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"QC Check","to":"Not Started"}]}
+{"ts":"2026-04-14T08:29:47.338Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
+{"ts":"2026-04-14T08:30:35.428Z","event":"attendance.saved","date":"2026-04-13","count":0}
+{"ts":"2026-04-14T08:30:35.566Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:30:37.030Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:30:38.179Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:30:39.443Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:31:51.496Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:32:01.489Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:34:21.426Z","event":"site-request.created","id":"mnyd7zhuahza","item":"SP30","requestedBy":"Site Engineer"}
+{"ts":"2026-04-14T08:35:20.744Z","event":"site-request.updated","id":"mnyd7zhuahza","status":"Acknowledged","from":"New"}
+{"ts":"2026-04-14T08:41:32.460Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:41:34.292Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:41:37.898Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:42:00.845Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:42:06.189Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:42:17.695Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:42:38.392Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:42:48.443Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:42:50.319Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T08:42:51.486Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T09:01:35.154Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T09:26:20.607Z","event":"site-request.created","id":"mnyf2u9q72rh","item":"Test Item","requestedBy":"Teo"}
+{"ts":"2026-04-14T09:26:20.661Z","event":"site-request.updated","id":"mnyf2u9q72rh","status":"New","from":"New"}
+{"ts":"2026-04-14T09:26:20.675Z","event":"site-request.updated","id":"mnyf2u9q72rh","status":"New","from":"New"}
+{"ts":"2026-04-14T09:36:03.467Z","event":"site-request.updated","id":"mnyf2u9q72rh","status":"Acknowledged","from":"New"}
+{"ts":"2026-04-14T10:38:42.814Z","event":"attendance.saved","date":"2026-04-14","count":1}
+{"ts":"2026-04-14T10:38:42.902Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:38:44.177Z","event":"attendance.saved","date":"2026-04-14","count":2}
+{"ts":"2026-04-14T10:38:44.267Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:38:45.688Z","event":"attendance.saved","date":"2026-04-15","count":1}
+{"ts":"2026-04-14T10:38:45.766Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:38:47.215Z","event":"attendance.saved","date":"2026-04-16","count":1}
+{"ts":"2026-04-14T10:38:47.299Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:38:48.558Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:40:08.254Z","event":"attendance.saved","date":"2026-04-16","count":0}
+{"ts":"2026-04-14T10:40:08.382Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:40:09.406Z","event":"attendance.saved","date":"2026-04-15","count":0}
+{"ts":"2026-04-14T10:40:09.530Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:40:10.453Z","event":"attendance.saved","date":"2026-04-14","count":1}
+{"ts":"2026-04-14T10:40:10.582Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:40:11.534Z","event":"attendance.saved","date":"2026-04-14","count":0}
+{"ts":"2026-04-14T10:40:11.661Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:40:12.781Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:41:47.786Z","event":"site-request.created","id":"mnyhrvgq2bzw","item":"SP30 Fixed Bollard","requestedBy":"Teo"}
+{"ts":"2026-04-14T10:41:47.870Z","event":"site-request.updated","id":"mnyhrvgq2bzw","actor":"Teo","previousStatus":"New","newStatus":"New","changes":{"quantity":{"from":4,"to":6},"notes":{"from":"","to":"urgent bump"}}}
+{"ts":"2026-04-14T10:41:47.905Z","event":"site-request.updated","id":"mnyhrvgq2bzw","actor":"Chris","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"},"estimatedReadyDate":{"from":null,"to":"2026-04-23"}}}
+{"ts":"2026-04-14T10:41:47.951Z","event":"site-request.updated","id":"mnyhrvgq2bzw","actor":"Teo","previousStatus":"Acknowledged","newStatus":"Acknowledged","changes":{"quantity":{"from":6,"to":8}}}
+{"ts":"2026-04-14T10:41:47.985Z","event":"site-request.deleted","id":"mnyhrvgq2bzw","actor":"Chris","previousStatus":"Acknowledged","projectId":"bd-19121-rbss-dnr","projectJobCode":"BD 19121","item":"SP30 Fixed Bollard","quantity":8,"requestedBy":"Teo"}
+{"ts":"2026-04-14T10:43:25.534Z","event":"site-request.deleted","id":"mnyd7zhuahza","actor":"Chris","previousStatus":"Acknowledged","projectId":"bd-25225-nakano-st-eng-dc","projectJobCode":"BD 25225- Nakano (ST Eng DC)","item":"SP30","quantity":30,"requestedBy":"Site Engineer"}
+{"ts":"2026-04-14T10:43:30.536Z","event":"site-request.deleted","id":"mnyf2u9q72rh","actor":"Chris","previousStatus":"Acknowledged","projectId":"bd-19121-rbss-dnr","projectJobCode":"BD 19121","item":"Test Item","quantity":3,"requestedBy":"Teo"}
+{"ts":"2026-04-14T10:46:24.035Z","event":"site-request.created","id":"mnyhxsmb4knb","item":"SP30 Fixed Bollard","requestedBy":"Site Engineer"}
+{"ts":"2026-04-14T10:46:38.094Z","event":"site-request.updated","id":"mnyhxsmb4knb","actor":"Chris","previousStatus":"New","newStatus":"New","changes":{"quantity":{"from":703,"to":7098}}}
+{"ts":"2026-04-14T10:46:54.409Z","event":"site-request.updated","id":"mnyhxsmb4knb","actor":"Chris","previousStatus":"New","newStatus":"New","changes":{"quantity":{"from":7098,"to":703}}}
+{"ts":"2026-04-14T10:48:32.637Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-14T10:48:33.705Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-14T10:48:34.026Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-14T10:48:35.474Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"Verified","to":"Installed"}]}
+{"ts":"2026-04-14T10:48:35.630Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"Installed","to":"In Progress"}]}
+{"ts":"2026-04-14T10:48:35.801Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
+{"ts":"2026-04-14T10:50:26.334Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:50:30.597Z","event":"attendance.saved","date":"2026-04-15","count":1}
+{"ts":"2026-04-14T10:50:30.680Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:50:49.635Z","event":"attendance.saved","date":"2026-04-15","count":0}
+{"ts":"2026-04-14T10:50:49.764Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T10:50:51.932Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:08:09.319Z","event":"project.upload","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","filename":"1776164889317-LYS_Header.png","originalName":"LYS Header.png","mimetype":"image/png","size":8073,"itemName":"","uploadedBy":""}
+{"ts":"2026-04-14T11:08:15.713Z","event":"project.upload.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","filename":"1776164889317-LYS_Header.png","originalName":"LYS Header.png","itemName":"SP30 Fixed Bollard","fileDeleted":true}
+{"ts":"2026-04-14T11:08:57.899Z","event":"attendance.saved","date":"2026-04-13","count":1}
+{"ts":"2026-04-14T11:08:57.988Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:08:59.497Z","event":"attendance.saved","date":"2026-04-14","count":1}
+{"ts":"2026-04-14T11:08:59.587Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:09:01.234Z","event":"attendance.saved","date":"2026-04-15","count":1}
+{"ts":"2026-04-14T11:09:01.323Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:09:04.756Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:12:27.855Z","event":"attendance.saved","date":"2026-04-13","count":0}
+{"ts":"2026-04-14T11:12:27.980Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:12:29.028Z","event":"attendance.saved","date":"2026-04-14","count":0}
+{"ts":"2026-04-14T11:12:29.164Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:12:30.089Z","event":"attendance.saved","date":"2026-04-15","count":0}
+{"ts":"2026-04-14T11:12:30.215Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:12:31.229Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T11:12:34.571Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T12:43:37.970Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T12:43:44.187Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T12:45:01.214Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T13:17:46.391Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T13:17:48.111Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}

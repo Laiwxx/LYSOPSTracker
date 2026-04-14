@@ -47,14 +47,14 @@
     "assignments": {},
     "supplyWorkers": [
       {
-        "id": "supply-1776084873026",
-        "name": "Muruku",
-        "company": "GreenMark Pte Ltd",
+        "id": "supply-1776156120782",
+        "name": "Muthu - GreenMark",
+        "company": "",
         "role": "Worker",
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-14T02:55:26.730Z"
+    "savedAt": "2026-04-14T13:17:48.110Z"
   },
   {
     "weekStart": "2026-04-12",

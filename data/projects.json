@@ -23,7 +23,7 @@
     "currentStage": "Job Code Created",
     "actionBy": "Accounts",
     "fabPercent": 0,
-    "installPercent": 6,
+    "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "",
     "stages": [
@@ -565,43 +565,49 @@
         "item": "Block S - City Scape Gate - 4.4 Meters",
         "totalQty": 1,
         "unit": "sets",
-        "doneQty": 1,
-        "notes": ""
+        "doneQty": 0,
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Block S - Auto Bollard Cova",
         "totalQty": 2,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Block S - Auto Bollard Cova",
         "totalQty": 3,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Block S - Auto Bollard Cova",
         "totalQty": 7,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Block S - Cova Road Blocker",
         "totalQty": 2,
         "unit": "set-of-1",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Block S - Cova Road Blocker",
         "totalQty": 1,
         "unit": "set-of-2",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -1047,31 +1053,36 @@
         "item": "Cova Road Blocker",
         "totalQty": 2,
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "SP400 Auto matic",
         "totalQty": 1,
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "M30 Arm Barrier",
         "totalQty": 1,
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "SP30 Fixed Bollard",
         "totalQty": 103,
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "SPTT Bollard",
         "totalQty": 5,
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [
@@ -1199,7 +1210,7 @@
     "projectManager": "Lai Wei Xiang",
     "qs": "Salve",
     "factoryManager": "Chris",
-    "drafter": "Senthil",
+    "drafter": "Murugan",
     "purchaser": "Rena",
     "sales": "Janessa",
     "siteEngineer": "",
@@ -1559,7 +1570,8 @@
         "totalQty": 50,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -1572,7 +1584,10 @@
         "item": "SP30 FIXED",
         "qty": 50,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
     "drawings": [
@@ -2066,7 +2081,8 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 730,
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -2523,10 +2539,12 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "SP400 Fixed Bollard - 36 No's\r\nSP400 With Single Bollard - 2 No's but ful Array\r\nSP400 Sleeve - 38 No's\r\nSP400 Rapid - 44 No's\r\nSP400 Rapid Sleeve - 44 No's\r\nSP30 Fixed Bollard - 4 No's\r\nSP30 Sleeve - 4 No's\r\nSafety Bollard - 70 No's ( B3/B4/B2 Drop Off)",
+        "item": "",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
     "scopeNotes": "",
@@ -2876,7 +2894,15 @@
         "allowMultiple": false
       }
     ],
-    "fabrication": [],
+    "fabrication": [
+      {
+        "item": "SP30 Fixed Bollard - 135 No's",
+        "totalQty": 1,
+        "unit": "units",
+        "qtyDone": 0,
+        "status": "Not Started"
+      }
+    ],
     "installation": [],
     "prpo": [],
     "paymentMilestones": [],
@@ -3793,49 +3819,56 @@
         "totalQty": 124,
         "unit": "pcs",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Engineered Bollard - Ang Mo Kio",
         "totalQty": 36,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Engineered Bollard - Seng Kang",
         "totalQty": 40,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Engineered Bollard - Bedok",
         "totalQty": 44,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Engineered Bollard - Toh Payoh Interchange",
         "totalQty": 66,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Engineered Bollard - Clementi",
         "totalQty": 29,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Engineered Bollard - Serangoon",
         "totalQty": 22,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -4259,7 +4292,7 @@
     "id": "bd-25225-nakano-st-eng-dc",
     "jobCode": "BD 25225- Nakano (ST Eng DC)",
     "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
-    "product": "127x SP30 Fixed Bollard, 1x Cova Sliding Gate - 6 Meters + HPU, 3x Cova Road Blocker 3 Meters, 1x SP400 Fixed Bollard Shallow Mounted",
+    "product": "127x SP30 Fixed Bollard, 1x Cova Sliding Gate - 6 Meters + HPU, 3x Cova Road Blocker 3 Meters, 22x SP400 Fixed Bollard Shallow Mounted",
     "contractValue": 662875,
     "voValue": 0,
     "client": "",
@@ -4278,8 +4311,8 @@
     "status": "On Track",
     "currentStage": "Quotation",
     "actionBy": "Sales",
-    "fabPercent": 0,
-    "installPercent": 5,
+    "fabPercent": 81,
+    "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
     "stages": [
@@ -4665,9 +4698,9 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 127,
         "unit": "units",
-        "qtyDone": 0,
+        "qtyDone": 100,
         "qtySent": 0,
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "",
         "done": ""
       },
@@ -4677,7 +4710,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "",
         "done": ""
       },
@@ -4685,19 +4718,19 @@
         "item": "Cova Road Blocker 3 Meters",
         "totalQty": 3,
         "unit": "set-of-1",
-        "qtyDone": 0,
+        "qtyDone": 2,
         "qtySent": 0,
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "",
         "done": ""
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
-        "totalQty": 1,
+        "totalQty": 22,
         "unit": "units",
-        "qtyDone": 0,
+        "qtyDone": 22,
         "qtySent": 0,
-        "status": "Not Started",
+        "status": "Delivered",
         "started": "",
         "done": ""
       }
@@ -4708,28 +4741,32 @@
         "totalQty": 127,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
         "totalQty": 1,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "Cova Road Blocker 3 Meters",
         "totalQty": 3,
         "unit": "set-of-1",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
-        "totalQty": 1,
+        "totalQty": 22,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -4744,25 +4781,37 @@
         "item": "SP30 Fixed Bollard",
         "qty": 127,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "Cova Road Blocker 3 Meters",
         "qty": 3,
         "unit": "set-of-1",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
-        "qty": 1,
+        "qty": 22,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
     "scopeNotes": "",
@@ -5926,14 +5975,16 @@
         "totalQty": 43,
         "unit": "pcs",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       },
       {
         "item": "PE Bollard with sleeve - 5 No's",
         "totalQty": 1,
         "unit": "pcs",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -6385,7 +6436,8 @@
         "totalQty": 1,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -6865,7 +6917,8 @@
         "totalQty": 1,
         "unit": "units",
         "doneQty": 0,
-        "notes": ""
+        "notes": "",
+        "status": "Not Started"
       }
     ],
     "prpo": [],

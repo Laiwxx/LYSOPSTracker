@@ -167,5 +167,17 @@
     "totalHours": 0,
     "notes": "",
     "taskEntries": []
+  },
+  {
+    "id": "mnyionnf",
+    "staffName": "Jun Jie",
+    "date": "2026-04-14",
+    "submittedAt": "2026-04-14T11:07:17.307Z",
+    "totalHours": 0,
+    "hours": 0,
+    "notes": "",
+    "summary": "",
+    "issues": "",
+    "taskEntries": []
   }
 ]

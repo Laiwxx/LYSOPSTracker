@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776140199">
+  <link rel="stylesheet" href="/css/style.css?v=1776178384">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 600px; margin: 0 auto; padding: 16px; }
@@ -29,6 +29,86 @@
       color: var(--text-muted);
     }
 
+    /* ── Priority banner ── */
+    .priority-banner {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .priority-banner-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .priority-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1.3;
+      background: var(--bg3);
+      margin-bottom: 4px;
+    }
+    .priority-row:last-child { margin-bottom: 0; }
+    .priority-row:active { filter: brightness(1.1); }
+    .priority-row-dot { font-size: 10px; flex-shrink: 0; }
+    .priority-row-main { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .priority-row-item { font-weight: 700; color: var(--text); }
+    .priority-row-proj { color: var(--text-muted); font-weight: 500; }
+    .priority-row-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .priority-empty {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 4px 2px;
+      font-style: italic;
+    }
+
+    /* ── Quick stats chips ── */
+    .quick-stats-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .stat-chip {
+      flex: 1;
+      min-width: 72px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.3;
+    }
+    .stat-chip b {
+      display: block;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .stat-chip.red   b { color: var(--red); }
+    .stat-chip.amber b { color: var(--amber); }
+    .stat-chip.green b { color: var(--green); }
+    .stat-chip.blue  b { color: var(--accent); }
+
     /* ── Priority queue cards ── */
     .pq-card {
       background: var(--bg2);
@@ -36,8 +116,12 @@
       border-radius: var(--radius);
       margin-bottom: 12px;
       overflow: hidden;
+      border-left: 3px solid var(--border);
     }
-    .pq-card.has-urgent { border-left: 3px solid var(--red); }
+    .pq-card.pri-red   { border-left-color: var(--red); }
+    .pq-card.pri-amber { border-left-color: var(--amber); }
+    .pq-card.pri-green { border-left-color: var(--green); }
+    .pq-card.pri-grey  { border-left-color: var(--border); }
     .pq-card-header {
       padding: 12px 14px;
       cursor: pointer;
@@ -91,24 +175,39 @@
     .pq-items { display: none; border-top: 1px solid var(--border); }
     .pq-card.expanded .pq-items { display: block; }
 
-    /* ── Existing counter styles ── */
+    /* ── FAB item row (compact, strict one-line) ── */
     .factory-item {
-      padding: 14px 16px;
+      padding: 8px 12px;
       border-bottom: 1px solid var(--border);
       display: flex;
-      align-items: center;
-      gap: 12px;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 52px;
+      transition: background 0.5s ease-out;
     }
     .factory-item:last-child { border-bottom: none; }
+    .factory-item.done-item { background: rgba(0,200,117,0.08); }
+    .factory-item.done-item .factory-item-name {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .factory-item.flash-highlight { background: rgba(51,102,255,0.22); }
+
+    .factory-item-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
     .factory-item-name {
       flex: 1;
-      font-size: 14px;
+      min-width: 0;
+      font-size: 13px;
       font-weight: 600;
-    }
-    .factory-item-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
     }
     .counter {
       display: flex;
@@ -116,13 +215,14 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
+      flex-shrink: 0;
     }
     .counter-btn {
-      width: 44px;
-      height: 44px;
+      width: 36px;
+      height: 36px;
       border: none;
       background: var(--bg3);
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -130,13 +230,14 @@
       justify-content: center;
       transition: background 0.1s;
       color: var(--text);
+      padding: 0;
     }
     .counter-btn:active { background: var(--accent); color: #fff; }
     .counter-btn.minus { color: var(--red); }
     .counter-btn.plus  { color: var(--green); }
     .counter-val {
-      width: 56px;
-      height: 44px;
+      width: 60px;
+      height: 36px;
       text-align: center;
       font-size: 18px;
       font-weight: 800;
@@ -155,110 +256,173 @@
       -webkit-appearance: none;
       margin: 0;
     }
-    .counter-total {
-      font-size: 11px;
+    .counter-of {
+      font-size: 10px;
       color: var(--text-muted);
-      text-align: center;
-      min-width: 40px;
+      flex-shrink: 0;
     }
-
-    /* ── Save button (appears when counters change) ── */
-    .pq-save-btn {
-      display: none;
-      width: 100%;
-      padding: 12px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-    }
-    .pq-save-btn:active { filter: brightness(0.9); }
-
-    /* ── FAB photo upload ── */
-    .pq-photo-section {
-      padding: 0 12px 14px;
-      border-top: 1px dashed var(--border);
-      margin-top: 4px;
-      padding-top: 12px;
-    }
-    .pq-photo-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
+    .counter-total {
+      font-size: 13px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 8px;
+      flex-shrink: 0;
+      min-width: 22px;
+      text-align: left;
     }
-    .pq-photo-hint {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-left: auto;
-    }
-    .pq-photo-row {
+
+    /* ── Per-item save + photo buttons ── */
+    .item-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 4px;
+      flex-shrink: 0;
     }
-    .pq-photo-pick {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
+    .item-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
       border-radius: var(--radius);
       background: var(--bg3);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 16px;
       cursor: pointer;
-      user-select: none;
-    }
-    .pq-photo-pick:active { filter: brightness(0.92); }
-    .pq-photo-pick input[type=file] { display: none; }
-    .pq-photo-status {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-    .pq-photo-status.ok    { color: var(--green); }
-    .pq-photo-status.err   { color: var(--red); }
-    .pq-photo-thumbs {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      padding: 0;
     }
-    .pq-photo-thumb {
-      width: 66px;
-      height: 66px;
-      border-radius: 8px;
+    .item-btn:active { filter: brightness(0.9); }
+    .item-btn.saved  { background: rgba(16,185,129,0.2); border-color: var(--green); color: var(--green); }
+    .item-btn.error  { background: rgba(226,68,92,0.15); border-color: var(--red); color: var(--red); }
+    .item-btn input[type=file] { display: none; }
+    .item-thumbs {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .item-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
       overflow: hidden;
       border: 1px solid var(--border);
       background: var(--bg3);
-      position: relative;
       display: block;
     }
-    .pq-photo-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .pq-photo-thumb .pq-photo-fallback {
+    .item-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* ── Per-item stage chip (second sub-row) ── */
+    .stage-row {
       display: flex;
-      width: 100%;
-      height: 100%;
       align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      color: var(--text-muted);
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 2px;
     }
+    .stage-back {
+      width: 30px; height: 30px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--bg3);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .stage-back:disabled { opacity: 0.3; cursor: default; }
+    .stage-back:not(:disabled):active { filter: brightness(0.9); }
+    .stage-chip {
+      padding: 5px 12px;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .stage-chip:active { filter: brightness(1.1); }
+    .stage-chip.s-not-started      { background: rgba(107,114,148,0.15); color: var(--text-muted); border-color: rgba(107,114,148,0.3); }
+    .stage-chip.s-in-progress      { background: rgba(51,102,255,0.15);  color: var(--accent);     border-color: var(--accent); }
+    .stage-chip.s-qc-check         { background: rgba(217,119,6,0.15);   color: var(--amber);      border-color: var(--amber); }
+    .stage-chip.s-ready-for-delivery { background: rgba(16,185,129,0.15); color: var(--green);     border-color: var(--green); }
+    .stage-chip.s-delivered        { background: rgba(16,185,129,0.22);  color: var(--green);      border-color: var(--green); }
+    .stage-chip.s-installed        { background: rgba(16,185,129,0.15);  color: var(--green);      border-color: var(--green); }
+    .stage-chip.s-verified         { background: rgba(16,185,129,0.22);  color: var(--green);      border-color: var(--green); }
+    .stage-chip.saving { opacity: 0.6; pointer-events: none; }
+
+    /* ── Per-card upload log ── */
+    .upload-log {
+      border-top: 1px dashed var(--border);
+      padding: 10px 14px 14px;
+      background: var(--bg);
+    }
+    .upload-log-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .upload-log-list { display: flex; flex-direction: column; gap: 6px; }
+    .upload-log-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
+    .upload-log-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 12px;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .upload-log-row:active { background: var(--bg3); }
+    .upload-log-thumb {
+      width: 36px; height: 36px; border-radius: 4px; overflow: hidden;
+      background: var(--bg3); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--text-muted);
+    }
+    .upload-log-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .upload-log-meta { flex: 1; min-width: 0; line-height: 1.4; text-decoration: none; color: var(--text); }
+    .upload-log-item { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .upload-log-sub  { font-size: 10px; color: var(--text-muted); }
+    .upload-log-del {
+      width: 26px; height: 26px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg3);
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .upload-log-del:hover { color: var(--red); border-color: var(--red); }
+
+    .item-thumb { position: relative; }
+    .item-thumb-del {
+      position: absolute;
+      top: -4px; right: -4px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text-muted);
+      font-size: 10px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      display: none;
+    }
+    .item-thumb:hover .item-thumb-del { display: block; }
+    .item-thumb-del:hover { color: var(--red); border-color: var(--red); }
 
     /* ── Manpower section ── */
     .mp-card {
@@ -373,28 +537,44 @@
       padding: 0 14px 10px;
       font-style: italic;
     }
-
-    /* ── EOD section ── */
-    .eod-section {
-      background: var(--sidebar-bg);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-top: 8px;
+    .sr-admin-row {
+      display: flex;
+      gap: 6px;
+      padding: 0 14px 10px;
+      border-top: 1px dashed var(--border);
+      padding-top: 8px;
+      margin-top: 2px;
     }
-    .eod-section h2 { color: #fff; font-size: 15px; margin: 0 0 4px; }
-    .eod-section p { color: rgba(255,255,255,0.6); font-size: 12px; margin: 0 0 16px; }
-    .eod-submit-btn {
-      width: 100%;
-      padding: 16px;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      font-size: 16px;
-      font-weight: 700;
+    .sr-admin-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
       cursor: pointer;
+      font-family: inherit;
     }
-    .eod-submit-btn:disabled { background: var(--green); cursor: default; }
+    .sr-admin-btn:active { filter: brightness(0.9); }
+    .sr-admin-btn.danger { color: var(--red); border-color: rgba(226,68,92,0.4); }
+    .sr-admin-btn.danger:hover { background: rgba(226,68,92,0.1); }
+    .sr-edit-panel {
+      display: none;
+      padding: 10px 14px 12px;
+      border-top: 1px dashed var(--border);
+      background: var(--bg);
+    }
+    .sr-edit-panel.open { display: block; }
+    .sr-edit-panel label {
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin: 6px 0 3px;
+    }
+
 
     .do-upload-btn {
       display: block;
@@ -491,6 +671,8 @@
     </div>
     <div id="pq-count" style="font-size:12px;color:var(--text-muted);"></div>
   </div>
+  <div id="pq-stats" class="quick-stats-bar"></div>
+  <div id="pq-banner"></div>
   <div id="section-pq">
     <div class="empty-state">Loading…</div>
   </div>
@@ -519,30 +701,19 @@
     <div class="empty-state">Loading…</div>
   </div>
 
-  <!-- ── SECTION D: End of Day ── -->
+  <!-- ── SECTION D: Delivery Orders ── -->
   <div class="factory-section-hdr">
     <div>
-      <div class="factory-section-title">📋 End of Day</div>
+      <div class="factory-section-title">📸 Delivery Orders</div>
+      <div class="factory-section-sub">Photo a DO when you receive one</div>
     </div>
   </div>
-
-  <!-- DO Upload -->
   <div style="margin-bottom:16px;">
-    <div class="section-label">Delivery Orders Received Today</div>
     <label class="do-upload-btn">
       📸 Photo a DO (tap to upload)
       <input type="file" accept="image/*,application/pdf" capture="environment" id="do-file-input" style="display:none;" multiple>
     </label>
     <div id="do-uploaded-list"></div>
-  </div>
-
-  <!-- EOD Submit -->
-  <div class="eod-section">
-    <h2>Submit Today's Update</h2>
-    <p>Saves all counter changes and logs your EOD. Takes 5 seconds.</p>
-    <textarea id="factory-notes" placeholder="Any issues today? Parts needed? Delays?" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius);padding:10px;color:#fff;font-size:13px;resize:vertical;min-height:60px;margin-bottom:12px;box-sizing:border-box;"></textarea>
-    <button class="eod-submit-btn" id="factory-eod-btn">✅ Submit Today's Update</button>
-    <div id="eod-error-msg" style="display:none;margin-top:8px;color:#ff7b8e;font-size:12px;font-weight:600;"></div>
   </div>
 
   <div style="height:40px;"></div>
@@ -596,6 +767,7 @@
 // ── Global state ───────────────────────────────────────────────────────────────
 let fabData    = {};  // { projectId: fullProjectData }
 let updates    = {};  // { projectId: { fabIdx: newQtyDone } }
+const FAB_STAGES = ['Not Started', 'In Progress', 'QC Check', 'Ready for Delivery', 'Delivered'];
 let siteRequests = [];
 const today    = new Date().toISOString().split('T')[0];
 
@@ -647,43 +819,90 @@ async function init() {
 }
 
 // ── SECTION A: Priority Queue ─────────────────────────────────────────────────
+
+// Single source of truth for item urgency.
+// Returns { date: 'YYYY-MM-DD'|null, source: string, daysLeft: number|null, color: 'red'|'amber'|'green'|'grey' }
+function computeItemDeadline(item, proj, fp, srIndex) {
+  const leadDays = parseInt(fp && fp.fabLeadTimeDays) || 14;
+  let date = null, source = 'none';
+
+  // 1. Item-level neededByDate (joined from site requests server-side)
+  if (item.neededByDate) { date = item.neededByDate; source = 'item-neededBy'; }
+
+  // 2. Cross-match site requests by projectId + item name
+  if (!date && srIndex) {
+    const name = String(item.description || item.item || '').toLowerCase().trim();
+    const matches = srIndex[proj.projectId] || [];
+    const hit = matches.find(r => {
+      const rn = String(r.item || '').toLowerCase().trim();
+      return rn && rn === name && r.neededByDate && r.status !== 'Delivered';
+    });
+    if (hit) { date = hit.neededByDate; source = 'site-request'; }
+  }
+
+  // 3. Fallback: project.endDate − leadDays
+  if (!date && proj.endDate) {
+    const endMs = new Date(proj.endDate + 'T00:00:00').getTime();
+    if (!isNaN(endMs)) {
+      const fabStart = new Date(endMs - leadDays * 86400000);
+      date = fabStart.toISOString().split('T')[0];
+      source = 'project-leadtime';
+    }
+  }
+
+  let daysLeft = null, color = 'grey';
+  if (date) {
+    const todayMs = new Date(today + 'T00:00:00').getTime();
+    const dMs     = new Date(date + 'T00:00:00').getTime();
+    daysLeft = Math.floor((dMs - todayMs) / 86400000);
+    if      (daysLeft <= 3) color = 'red';
+    else if (daysLeft <= 7) color = 'amber';
+    else                    color = 'green';
+  }
+  return { date, source, daysLeft, color };
+}
+
+const COLOR_RANK = { red: 0, amber: 1, green: 2, grey: 3 };
+const COLOR_DOT  = { red: '🔴', amber: '🟡', green: '🟢', grey: '⚪' };
+
+function formatDueLabel(d) {
+  if (!d.date) return '—';
+  if (d.daysLeft == null) return formatDate(d.date);
+  if (d.daysLeft <  0) return `⚠ ${Math.abs(d.daysLeft)}d overdue`;
+  if (d.daysLeft === 0) return 'Due today';
+  if (d.daysLeft === 1) return 'Due tomorrow';
+  return `${d.daysLeft}d · ${formatDate(d.date)}`;
+}
+
 async function renderPriorityQueue(queue, srAll) {
   const container = document.getElementById('section-pq');
+  const bannerEl  = document.getElementById('pq-banner');
+  const statsEl   = document.getElementById('pq-stats');
 
-  // Only show projects with incomplete fab items
   const active = queue.filter(proj =>
     proj.items && proj.items.some(it => it.doneQty < it.totalQty)
   );
 
   if (!active.length) {
     container.innerHTML = '<div class="empty-state">🎉 All fabrication items complete</div>';
+    if (bannerEl) bannerEl.innerHTML = '';
+    if (statsEl)  statsEl.innerHTML  = '';
     document.getElementById('pq-count').textContent = '0 projects';
     return;
   }
 
-  // Build a map: projectId → count of New site requests
-  const srByProject = {};
-  srAll.filter(r => r.status === 'New').forEach(r => {
-    const pid = r.projectId || '';
-    if (pid) srByProject[pid] = (srByProject[pid] || 0) + 1;
+  // Index site requests by projectId for cheap cross-match
+  const srIndex = {};
+  (srAll || []).forEach(r => {
+    if (!r.projectId) return;
+    (srIndex[r.projectId] = srIndex[r.projectId] || []).push(r);
+  });
+  const srNewByProject = {};
+  (srAll || []).filter(r => r.status === 'New').forEach(r => {
+    if (r.projectId) srNewByProject[r.projectId] = (srNewByProject[r.projectId] || 0) + 1;
   });
 
-  // Sort: (1) projects with pending SR first, (2) endDate ascending
-  active.sort((a, b) => {
-    const urgA = (srByProject[a.projectId] || 0) > 0 ? 1 : 0;
-    const urgB = (srByProject[b.projectId] || 0) > 0 ? 1 : 0;
-    if (urgB !== urgA) return urgB - urgA;
-    if (!a.endDate && !b.endDate) return 0;
-    if (!a.endDate) return 1;
-    if (!b.endDate) return -1;
-    return a.endDate < b.endDate ? -1 : 1;
-  });
-
-  document.getElementById('pq-count').textContent = active.length + ' project' + (active.length !== 1 ? 's' : '');
-
-  container.innerHTML = '';
-
-  // Load full project data for all active projects (for counters)
+  // Pre-load full project data (needed for fabLeadTimeDays, counters, etc.)
   const fullProjects = await Promise.all(
     active.map(p => fetch('/api/projects/' + p.projectId).then(r => r.json()).catch(() => null))
   );
@@ -691,10 +910,10 @@ async function renderPriorityQueue(queue, srAll) {
     if (fp) { fabData[fp.id] = fp; updates[fp.id] = updates[fp.id] || {}; }
   });
 
-  active.forEach((proj, i) => {
+  // Seed fabrication rows from queue items if project has none
+  active.forEach(proj => {
     const fp = fabData[proj.projectId];
     if (!fp) return;
-    // If fabrication[] is empty but queue has items, seed it from queue items
     if ((!fp.fabrication || !fp.fabrication.length) && proj.items && proj.items.length) {
       fp.fabrication = proj.items.map(it => ({
         item: it.description || it.item || '',
@@ -705,58 +924,125 @@ async function renderPriorityQueue(queue, srAll) {
         _fromScope: it.fromScope || false
       }));
     }
+  });
 
-    const fabRows = (fp.fabrication || []);
-    const incomplete = fabRows.filter((r, idx) => {
-      const current = updates[fp.id][idx] !== undefined ? updates[fp.id][idx] : (parseFloat(r.qtyDone) || 0);
-      return current < (parseFloat(r.totalQty) || 0);
+  // ── Flatten all incomplete items into one sortable list ────────────────
+  const flat = [];
+  active.forEach(proj => {
+    const fp = fabData[proj.projectId];
+    if (!fp) return;
+    (proj.items || []).forEach(it => {
+      const total = parseFloat(it.totalQty) || 0;
+      const done  = parseFloat(it.doneQty)  || 0;
+      if (done >= total && total > 0) return; // skip completed
+      const d = computeItemDeadline(it, proj, fp, srIndex);
+      flat.push({ proj, fp, item: it, idx: it.idx, d, total, done });
     });
+  });
+
+  flat.sort((a, b) => {
+    if (COLOR_RANK[a.d.color] !== COLOR_RANK[b.d.color]) return COLOR_RANK[a.d.color] - COLOR_RANK[b.d.color];
+    if (a.d.daysLeft != null && b.d.daysLeft != null) return a.d.daysLeft - b.d.daysLeft;
+    if (a.d.daysLeft != null) return -1;
+    if (b.d.daysLeft != null) return 1;
+    return 0;
+  });
+
+  // ── Quick stats bar ────────────────────────────────────────────────────
+  const redCount   = flat.filter(x => x.d.color === 'red').length;
+  const amberCount = flat.filter(x => x.d.color === 'amber').length;
+  let doneToday = 0, readyToShip = 0;
+  active.forEach(proj => {
+    const fp = fabData[proj.projectId];
+    if (!fp) return;
+    (fp.fabrication || []).forEach(r => {
+      if (r.fab_completed_at && String(r.fab_completed_at).slice(0,10) === today) doneToday++;
+      if (r.readyForDelivery) readyToShip++;
+    });
+  });
+  if (statsEl) {
+    statsEl.innerHTML =
+      `<div class="stat-chip red"><b>${redCount}</b>🔴 urgent</div>` +
+      `<div class="stat-chip amber"><b>${amberCount}</b>🟡 soon</div>` +
+      `<div class="stat-chip green"><b>${doneToday}</b>✅ done today</div>` +
+      `<div class="stat-chip blue"><b>${readyToShip}</b>📦 ready</div>`;
+  }
+
+  // ── Priority banner (red + amber, max 5) ───────────────────────────────
+  const banner = flat.filter(x => x.d.color === 'red' || x.d.color === 'amber').slice(0, 5);
+  if (bannerEl) {
+    if (!banner.length) {
+      bannerEl.innerHTML =
+        `<div class="priority-banner">` +
+          `<div class="priority-banner-title">📌 Fabrication Priorities</div>` +
+          `<div class="priority-empty">No urgent items — all deadlines are &gt; 7 days away or unset.</div>` +
+        `</div>`;
+    } else {
+      bannerEl.innerHTML =
+        `<div class="priority-banner">` +
+          `<div class="priority-banner-title">📌 Fabrication Priorities</div>` +
+          banner.map(x =>
+            `<div class="priority-row" data-pid="${escHtml(x.fp.id)}" data-idx="${x.idx}">` +
+              `<span class="priority-row-dot">${COLOR_DOT[x.d.color]}</span>` +
+              `<div class="priority-row-main">` +
+                `<span class="priority-row-item">${escHtml(x.item.description || x.item.item || '')}</span>` +
+                ` <span class="priority-row-proj">· ${escHtml(x.fp.jobCode || '')}</span>` +
+              `</div>` +
+              `<span class="priority-row-meta">${escHtml(formatDueLabel(x.d))} · ${x.done}/${x.total}</span>` +
+            `</div>`
+          ).join('') +
+        `</div>`;
+      bannerEl.querySelectorAll('.priority-row').forEach(row => {
+        row.addEventListener('click', () => jumpToItem(row.dataset.pid, parseInt(row.dataset.idx, 10)));
+      });
+    }
+  }
+
+  // ── Group flat items back by project, sorted by most-urgent item ──────
+  const projOrder = [];
+  const seen = new Set();
+  flat.forEach(x => {
+    if (seen.has(x.proj.projectId)) return;
+    seen.add(x.proj.projectId);
+    projOrder.push(x);
+  });
+
+  document.getElementById('pq-count').textContent = projOrder.length + ' project' + (projOrder.length !== 1 ? 's' : '');
+
+  container.innerHTML = '';
+  projOrder.forEach(first => {
+    const proj = first.proj;
+    const fp   = first.fp;
+    const fabRows = fp.fabrication || [];
+
+    // Most-urgent color across this project's items
+    const projItems = flat.filter(x => x.proj.projectId === proj.projectId);
+    const cardColor = projItems.reduce((c, x) =>
+      COLOR_RANK[x.d.color] < COLOR_RANK[c] ? x.d.color : c, 'grey');
 
     const totalQty = fabRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
     const doneQty  = fabRows.reduce((s, r) => s + (parseFloat(r.qtyDone)  || 0), 0);
     const pct      = totalQty > 0 ? Math.round(doneQty / totalQty * 100) : 0;
+    const itemsLeft = fabRows.filter(r => (parseFloat(r.qtyDone)||0) < (parseFloat(r.totalQty)||0)).length;
 
-    // Collect unique requesters and due dates from items
-    const requesters = [...new Set(proj.items.filter(it => it.requestedBy).map(it => it.requestedBy))];
-    const dueDates   = proj.items.filter(it => it.neededByDate).map(it => it.neededByDate);
-    const earliestDue = dueDates.sort()[0] || proj.endDate || '';
-    const daysLeft    = daysUntil(earliestDue);
-    const isUrgent    = (srByProject[proj.projectId] || 0) > 0 || (daysLeft !== null && daysLeft <= 3);
-
-    const dueFmt = earliestDue
-      ? (daysLeft === null ? '—' : daysLeft < 0 ? `⚠ ${Math.abs(daysLeft)}d overdue` : daysLeft === 0 ? 'Due today' : `Due ${formatDate(earliestDue)}`)
-      : '—';
-    const dueColor = daysLeft !== null && daysLeft < 0 ? 'var(--red)' : daysLeft !== null && daysLeft <= 3 ? 'var(--amber)' : 'var(--text-muted)';
-
-    // FAB must start by = endDate - fabLeadTimeDays
-    const leadDays = parseInt(fp.fabLeadTimeDays) || 14;
-    let fabStartBy = '';
-    let fabStartColor = 'var(--green)';
-    let fabStartLabel = '';
-    if (fp.endDate) {
-      const endMs = new Date(fp.endDate + 'T00:00:00').getTime();
-      const fabStartMs = endMs - leadDays * 86400000;
-      const fabStartDate = new Date(fabStartMs).toISOString().split('T')[0];
-      const daysToStart = Math.floor((fabStartMs - new Date(today + 'T00:00:00').getTime()) / 86400000);
-      fabStartBy = formatDate(fabStartDate);
-      if (daysToStart < 0) { fabStartColor = 'var(--red)'; fabStartLabel = ' ⚠ OVERDUE'; }
-      else if (daysToStart <= 7) { fabStartColor = 'var(--amber)'; }
-      else { fabStartColor = 'var(--green)'; }
-    }
+    const earliest = projItems.reduce((m, x) =>
+      (x.d.daysLeft != null && (m == null || x.d.daysLeft < m.daysLeft)) ? x.d : m,
+      null);
+    const dueLabel = earliest ? formatDueLabel(earliest) : '—';
+    const srBadge  = (srNewByProject[proj.projectId] || 0) > 0
+      ? ` · 🚨 ${srNewByProject[proj.projectId]} site req`
+      : '';
 
     const card = document.createElement('div');
-    card.className = 'pq-card' + (isUrgent ? ' has-urgent' : '');
+    card.className = 'pq-card pri-' + cardColor;
     card.id = 'pq-card-' + escHtml(fp.id);
     card.innerHTML =
       `<div class="pq-card-header" onclick="togglePQCard('${escHtml(fp.id)}')">` +
         `<div class="pq-header-info">` +
-          `<div class="pq-project-name">${escHtml(fp.jobCode || '')} · ${escHtml(fp.projectName || '')} <span class="pq-pct-inline" style="color:var(--text-muted);font-weight:600;font-size:12px;margin-left:6px;">${pct}% complete</span></div>` +
+          `<div class="pq-project-name">${escHtml(fp.jobCode || '')} · ${escHtml(fp.projectName || '')}</div>` +
           `<div class="pq-project-meta">` +
-            `<span>${incomplete.length} item${incomplete.length !== 1 ? 's' : ''} left · ${pct}% done</span>` +
-            (requesters.length ? `<span>👷 ${escHtml(requesters.join(', '))}</span>` : '') +
-            `<span style="color:${dueColor};font-weight:600;">${escHtml(dueFmt)}</span>` +
-            (fabStartBy ? `<span style="color:${fabStartColor};font-weight:600;">FAB start by: ${escHtml(fabStartBy)}${fabStartLabel}</span>` : '') +
-            ((srByProject[proj.projectId] || 0) > 0 ? `<span class="urgent-badge">🚨 ${srByProject[proj.projectId]} site request${srByProject[proj.projectId] > 1 ? 's' : ''}</span>` : '') +
+            `<span>${itemsLeft} item${itemsLeft !== 1 ? 's' : ''} · ${pct}% done</span>` +
+            `<span>${COLOR_DOT[cardColor]} ${escHtml(dueLabel)}${srBadge}</span>` +
           `</div>` +
           `<div class="pq-progress-bar"><div class="pq-progress-fill${pct >= 100 ? ' complete' : ''}" style="width:${pct}%"></div></div>` +
         `</div>` +
@@ -767,6 +1053,19 @@ async function renderPriorityQueue(queue, srAll) {
     container.appendChild(card);
     renderFabItems(fp);
   });
+}
+
+function jumpToItem(pid, idx) {
+  const card = document.getElementById('pq-card-' + pid);
+  if (!card) return;
+  card.classList.add('expanded');
+  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => {
+    const row = card.querySelector(`.factory-item[data-item-idx="${idx}"]`);
+    if (!row) return;
+    row.classList.add('flash-highlight');
+    setTimeout(() => row.classList.remove('flash-highlight'), 1500);
+  }, 350);
 }
 
 function togglePQCard(pid) {
@@ -801,7 +1100,7 @@ function updateCardPercent(pid) {
         : (parseFloat(r.qtyDone) || 0);
       return cur < tot;
     }).length;
-    metaSpan.textContent = `${incLeft} item${incLeft !== 1 ? 's' : ''} left · ${pct}% done`;
+    metaSpan.textContent = `${incLeft} item${incLeft !== 1 ? 's' : ''} · ${pct}% done`;
   }
   const fill = card.querySelector('.pq-progress-fill');
   if (fill) {
@@ -830,18 +1129,37 @@ function renderFabItems(fp) {
       : (parseFloat(row.qtyDone) || 0);
 
     const item = document.createElement('div');
-    item.className = 'factory-item';
+    const isDone = qtyTotal > 0 && currentDone >= qtyTotal;
+    item.className = 'factory-item' + (isDone ? ' done-item' : '');
+    item.dataset.itemIdx = idx;
+    const itemName = row.item || row.product || 'Item ' + (idx + 1);
+    const thumbsHtml = collectItemPhotos(fp, itemName).map(renderItemThumbHtml).join('');
+    const curStage   = FAB_STAGES.includes(row.status) ? row.status : 'Not Started';
+    const stageClass = 's-' + curStage.toLowerCase().replace(/\s+/g, '-');
+    const atStart    = curStage === FAB_STAGES[0];
     item.innerHTML =
-      `<div style="flex:1;">` +
-        `<div class="factory-item-name">${escHtml(row.item || row.product || 'Item ' + (idx + 1))}</div>` +
-        `<div class="factory-item-sub">${escHtml(row.process || '')}${row.process && qtyTotal ? ' · ' : ''}${qtyTotal ? 'Total: ' + qtyTotal + ' units' : ''}</div>` +
+      `<div class="factory-item-row">` +
+        `<div class="factory-item-name" title="${escHtml(itemName)}">${escHtml(itemName)}</div>` +
+        `<div class="counter">` +
+          `<button class="counter-btn minus" data-pid="${escHtml(fp.id)}" data-idx="${idx}">−</button>` +
+          `<input type="number" inputmode="numeric" min="0" max="${qtyTotal}" class="counter-val" id="val-${escHtml(fp.id)}-${idx}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" value="${currentDone}" style="${currentDone >= qtyTotal && qtyTotal > 0 ? 'color:var(--green);' : ''}">` +
+          `<button class="counter-btn plus"  data-pid="${escHtml(fp.id)}" data-idx="${idx}">+</button>` +
+        `</div>` +
+        `<span class="counter-of">of</span>` +
+        `<span class="counter-total">${qtyTotal}</span>` +
+        `<div class="item-actions">` +
+          `<button class="item-btn item-save-btn" id="save-${escHtml(fp.id)}-${idx}" title="Save this item">💾</button>` +
+          `<label class="item-btn item-photo-btn" title="Upload photo for this item">` +
+            `<span class="item-photo-ico">📷</span>` +
+            `<input type="file" accept="image/*" capture="environment" class="item-photo-input" data-pid="${escHtml(fp.id)}" data-idx="${idx}">` +
+          `</label>` +
+        `</div>` +
       `</div>` +
-      `<div class="counter">` +
-        `<button class="counter-btn minus" data-pid="${escHtml(fp.id)}" data-idx="${idx}">−</button>` +
-        `<input type="number" inputmode="numeric" min="0" max="${qtyTotal}" class="counter-val" id="val-${escHtml(fp.id)}-${idx}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" value="${currentDone}" style="${currentDone >= qtyTotal && qtyTotal > 0 ? 'color:var(--green);' : ''}">` +
-        `<button class="counter-btn plus"  data-pid="${escHtml(fp.id)}" data-idx="${idx}">+</button>` +
-      `</div>` +
-      `<div class="counter-total"><div style="font-size:10px;">of</div><div style="font-weight:700;">${qtyTotal}</div></div>`;
+      `<div class="stage-row">` +
+        `<button class="stage-back" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Step back one stage"${atStart ? ' disabled' : ''}>↶</button>` +
+        `<span class="stage-chip ${stageClass}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Tap to advance stage">${escHtml(curStage)}</span>` +
+        `<div class="item-thumbs" id="thumbs-${escHtml(fp.id)}-${idx}" style="margin-top:0;">${thumbsHtml}</div>` +
+      `</div>`;
 
     const applyValue = (pid2, i2, newVal) => {
       const row2 = fabData[pid2].fabrication[i2];
@@ -852,6 +1170,8 @@ function renderFabItems(fp) {
       if (valEl) {
         if (parseFloat(valEl.value) !== cur) valEl.value = cur;
         valEl.style.color = (tot > 0 && cur >= tot) ? 'var(--green)' : 'var(--text)';
+        const itemEl = valEl.closest('.factory-item');
+        if (itemEl) itemEl.classList.toggle('done-item', tot > 0 && cur >= tot);
       }
       updateCardPercent(pid2);
     };
@@ -885,186 +1205,344 @@ function renderFabItems(fp) {
       inputEl.addEventListener('focus', () => inputEl.select());
     }
 
+    const saveBtn = item.querySelector('.item-save-btn');
+    if (saveBtn) saveBtn.addEventListener('click', () => saveSingleItem(fp.id, idx));
+
+    const photoInput = item.querySelector('.item-photo-input');
+    if (photoInput) photoInput.addEventListener('change', () => uploadItemPhoto(fp.id, idx, photoInput));
+
+    const chipEl = item.querySelector('.stage-chip');
+    if (chipEl) chipEl.addEventListener('click', () => updateFabItemStage(fp.id, idx, +1));
+    const backEl = item.querySelector('.stage-back');
+    if (backEl) backEl.addEventListener('click', () => updateFabItemStage(fp.id, idx, -1));
+
     container.appendChild(item);
   });
 
-  // Add Save button at bottom of items
-  const saveBtn = document.createElement('div');
-  saveBtn.style.cssText = 'padding:10px 12px;';
-  saveBtn.innerHTML = `<button class="pq-save-btn" onclick="saveSingleProject('${escHtml(fp.id)}')">💾 Save FAB Progress</button>`;
-  container.appendChild(saveBtn);
+  const log = document.createElement('div');
+  log.className = 'upload-log';
+  log.innerHTML =
+    `<div class="upload-log-title">📋 Upload log</div>` +
+    `<div class="upload-log-list" id="upload-log-${escHtml(fp.id)}">${renderUploadLogHtml(fp)}</div>`;
+  container.appendChild(log);
 
-  // Photo upload section (optional but encouraged)
-  const photoSection = document.createElement('div');
-  photoSection.className = 'pq-photo-section';
-  photoSection.id = 'pq-photos-' + fp.id;
-  photoSection.innerHTML = buildFabPhotoSectionHtml(fp);
-  container.appendChild(photoSection);
-  wireFabPhotoUpload(fp.id);
+  container.addEventListener('click', e => {
+    const del = e.target.closest('.upload-log-del, .item-thumb-del');
+    if (!del) return;
+    e.preventDefault();
+    e.stopPropagation();
+    deleteUpload(fp.id, del.dataset.filename);
+  });
 }
 
-// ── FAB photo upload ───────────────────────────────────────────────────────
+async function deleteUpload(pid, filename) {
+  if (!filename) return;
+  if (!confirm('Delete this upload? This cannot be undone.')) return;
+  try {
+    const res = await fetch('/api/projects/' + pid + '/upload/' + encodeURIComponent(filename), { method: 'DELETE' });
+    if (!res.ok) {
+      let msg = 'Delete failed (' + res.status + ')';
+      try { const j = await res.json(); if (j && j.error) msg = j.error; } catch {}
+      throw new Error(msg);
+    }
+
+    if (fabData[pid] && Array.isArray(fabData[pid].documents)) {
+      fabData[pid].documents = fabData[pid].documents.filter(d => !(d && d.filename === filename));
+    }
+
+    document.querySelectorAll(`.upload-log-row[data-filename="${filename}"]`).forEach(el => el.remove());
+    document.querySelectorAll(`.item-thumb[data-filename="${filename}"]`).forEach(el => el.remove());
+
+    const logEl = document.getElementById('upload-log-' + pid);
+    if (logEl && !logEl.querySelector('.upload-log-row')) {
+      logEl.innerHTML = `<div class="upload-log-empty">No uploads yet</div>`;
+    }
+  } catch (e) {
+    console.error('deleteUpload error:', e);
+    alert(e.message || 'Delete failed');
+  }
+}
+
+function collectAllFabPhotos(fp) {
+  const out = [];
+  const docs = (fp && fp.documents) || [];
+  docs.forEach(d => {
+    if (!isFabPhotoDoc(d) || !d.filename) return;
+    out.push({
+      filename: d.filename,
+      originalName: d.originalName || d.filename,
+      itemName: d.itemName || '',
+      uploadedBy: d.uploadedBy || '',
+      uploadedAt: d.uploadedAt || ''
+    });
+  });
+  out.sort((a, b) => String(b.uploadedAt).localeCompare(String(a.uploadedAt)));
+  return out;
+}
+
+function formatUploadTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  return d.toLocaleString('en-SG', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
+function renderUploadLogRowHtml(p) {
+  const src = '/uploads/' + encodeURIComponent(p.filename);
+  const isImg = /\.(jpe?g|png|gif|webp|bmp|heic)$/i.test(p.filename);
+  const thumb = isImg
+    ? `<div class="upload-log-thumb"><img src="${src}" alt=""></div>`
+    : `<div class="upload-log-thumb">📄</div>`;
+  const itemLabel = p.itemName || p.originalName;
+  const sub = [p.uploadedBy, formatUploadTime(p.uploadedAt)].filter(Boolean).join(' · ');
+  const fn = escHtml(p.filename);
+  return (
+    `<div class="upload-log-row" data-filename="${fn}">` +
+      `<a class="upload-log-meta" href="${src}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">` +
+        thumb +
+        `<div style="flex:1;min-width:0;">` +
+          `<div class="upload-log-item">${escHtml(itemLabel)}</div>` +
+          `<div class="upload-log-sub">${escHtml(sub)}</div>` +
+        `</div>` +
+      `</a>` +
+      `<button class="upload-log-del" data-filename="${fn}" title="Delete upload">✕</button>` +
+    `</div>`
+  );
+}
+
+function renderUploadLogHtml(fp) {
+  const photos = collectAllFabPhotos(fp);
+  if (!photos.length) return `<div class="upload-log-empty">No uploads yet</div>`;
+  return photos.map(renderUploadLogRowHtml).join('');
+}
+
+// ── Per-item FAB photo helpers ─────────────────────────────────────────────
 function isFabPhotoDoc(doc) {
   if (!doc) return false;
   const t = String(doc.type || doc.name || '').toLowerCase();
   return t.indexOf('fab') !== -1 || t.indexOf('fabrication') !== -1;
 }
 
-function collectFabPhotos(fp) {
+function collectItemPhotos(fp, itemName) {
   const out = [];
+  const target = String(itemName || '').toLowerCase().trim();
   const docs = (fp && fp.documents) || [];
   docs.forEach(d => {
     if (!isFabPhotoDoc(d)) return;
-    // Flat-entry shape: { type, filename, originalName, uploadedAt }
+    const tag = String(d.itemName || '').toLowerCase().trim();
+    if (tag !== target) return;
     if (d.filename) {
-      out.push({ filename: d.filename, originalName: d.originalName || d.filename, uploadedAt: d.uploadedAt || '' });
+      out.push({ filename: d.filename, originalName: d.originalName || d.filename });
     }
-    // Legacy shape: { name, files: [{filename,...}] }
-    (d.files || []).forEach(f => {
-      if (f && f.filename) out.push({ filename: f.filename, originalName: f.originalName || f.filename, uploadedAt: f.uploadedAt || '' });
-    });
   });
   return out;
 }
 
-function buildFabPhotoSectionHtml(fp) {
-  const photos = collectFabPhotos(fp);
+function renderItemThumbHtml(p) {
+  const src = '/uploads/' + encodeURIComponent(p.filename);
+  const title = escHtml(p.originalName || p.filename);
+  const fn = escHtml(p.filename);
   return (
-    `<div class="pq-photo-label">` +
-      `📷 Upload FAB Photo` +
-      `<span class="pq-photo-hint">Optional — encouraged</span>` +
-    `</div>` +
-    `<div class="pq-photo-row">` +
-      `<label class="pq-photo-pick" data-pid="${escHtml(fp.id)}">` +
-        `📁 Choose File` +
-        `<input type="file" accept="image/*" class="pq-photo-input" data-pid="${escHtml(fp.id)}">` +
-      `</label>` +
-      `<span class="pq-photo-status" id="pq-photo-status-${escHtml(fp.id)}"></span>` +
-    `</div>` +
-    `<div class="pq-photo-thumbs" id="pq-photo-thumbs-${escHtml(fp.id)}">` +
-      photos.map(p => renderFabPhotoThumbHtml(p)).join('') +
+    `<div class="item-thumb" data-filename="${fn}">` +
+      `<a href="${src}" target="_blank" rel="noopener" title="${title}" style="display:block;width:100%;height:100%;"><img src="${src}" alt="${title}"></a>` +
+      `<button class="item-thumb-del" data-filename="${fn}" title="Delete photo">✕</button>` +
     `</div>`
   );
 }
 
-function renderFabPhotoThumbHtml(p) {
-  const src = '/uploads/' + encodeURIComponent(p.filename);
-  const title = escHtml(p.originalName || p.filename);
-  return (
-    `<a class="pq-photo-thumb" href="${src}" target="_blank" rel="noopener" title="${title}">` +
-      `<img src="${src}" alt="${title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','<div class=\\'pq-photo-fallback\\'>📄</div>');">` +
-    `</a>`
-  );
-}
-
-function wireFabPhotoUpload(pid) {
-  const section = document.getElementById('pq-photos-' + pid);
-  if (!section) return;
-  const input = section.querySelector('.pq-photo-input');
-  if (!input) return;
-  input.addEventListener('change', async () => {
-    const file = input.files && input.files[0];
-    if (!file) return;
-    const statusEl = document.getElementById('pq-photo-status-' + pid);
-    if (statusEl) { statusEl.className = 'pq-photo-status'; statusEl.textContent = '⏳ Uploading…'; }
-
-    try {
-      // 1. Upload the file via multipart form
-      const fd = new FormData();
-      fd.append('file', file);
-      const upRes = await fetch('/api/projects/' + pid + '/upload', { method: 'POST', body: fd });
-      if (!upRes.ok) {
-        let msg = 'Upload failed (' + upRes.status + ')';
-        try { const j = await upRes.json(); if (j && j.error) msg = j.error; } catch {}
-        throw new Error(msg);
-      }
-      const upData = await upRes.json();
-      const filename     = upData.filename;
-      const originalName = upData.originalName || file.name;
-      if (!filename) throw new Error('No filename returned');
-
-      // 2. Persist reference in project.documents (type contains 'FAB')
-      const getRes = await fetch('/api/projects/' + pid);
-      if (!getRes.ok) throw new Error('Failed to reload project');
-      const proj = await getRes.json();
-      proj.documents = Array.isArray(proj.documents) ? proj.documents : [];
-      proj.documents.push({
-        type: 'FAB Photo',
-        name: 'FAB Photo',
-        filename,
-        originalName,
-        uploadedAt: new Date().toISOString(),
-        uploadedBy: 'Chris'
-      });
-      const putRes = await fetch('/api/projects/' + pid, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(proj)
-      });
-      if (!putRes.ok) throw new Error('Failed to save photo reference');
-      try { fabData[pid] = await putRes.json(); } catch {}
-
-      // 3. Append thumbnail + success message
-      const thumbsEl = document.getElementById('pq-photo-thumbs-' + pid);
-      if (thumbsEl) {
-        thumbsEl.insertAdjacentHTML('beforeend', renderFabPhotoThumbHtml({ filename, originalName }));
-      }
-      if (statusEl) {
-        statusEl.className = 'pq-photo-status ok';
-        statusEl.textContent = '✅ Photo uploaded';
-      }
-    } catch (e) {
-      console.error('FAB photo upload error:', e);
-      if (statusEl) {
-        statusEl.className = 'pq-photo-status err';
-        statusEl.textContent = '❌ ' + (e.message || 'Upload failed');
-      }
-    } finally {
-      input.value = '';
-    }
-  });
-}
-
-async function saveSingleProject(pid) {
-  const btn = document.querySelector(`#pq-items-${pid} .pq-save-btn`);
-  if (btn) { btn.textContent = '⏳ Saving…'; btn.disabled = true; }
+async function uploadItemPhoto(pid, idx, input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const btn = input.closest('.item-photo-btn');
+  const ico = btn && btn.querySelector('.item-photo-ico');
+  if (btn) btn.classList.remove('saved','error');
+  if (ico) ico.textContent = '⏳';
   try {
-    const idxMap = updates[pid] || {};
-    if (!Object.keys(idxMap).length) {
-      if (btn) { btn.textContent = '✅ Nothing changed'; setTimeout(() => { btn.textContent = '💾 Save FAB Progress'; btn.disabled = false; }, 1500); }
-      return;
+    const row = fabData[pid] && fabData[pid].fabrication && fabData[pid].fabrication[idx];
+    const itemName = row ? (row.item || row.product || '') : '';
+
+    const fd = new FormData();
+    fd.append('file', file);
+    const upRes = await fetch('/api/projects/' + pid + '/upload', { method: 'POST', body: fd });
+    if (!upRes.ok) {
+      let msg = 'Upload failed (' + upRes.status + ')';
+      try { const j = await upRes.json(); if (j && j.error) msg = j.error; } catch {}
+      throw new Error(msg);
     }
+    const upData = await upRes.json();
+    const filename     = upData.filename;
+    const originalName = upData.originalName || file.name;
+    if (!filename) throw new Error('No filename returned');
+
+    const getRes = await fetch('/api/projects/' + pid);
+    if (!getRes.ok) throw new Error('Failed to reload project');
+    const proj = await getRes.json();
+    proj.documents = Array.isArray(proj.documents) ? proj.documents : [];
+    proj.documents.push({
+      type: 'FAB Photo',
+      name: 'FAB Photo',
+      itemName,
+      filename,
+      originalName,
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: 'Chris'
+    });
+    const putRes = await fetch('/api/projects/' + pid, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proj)
+    });
+    if (!putRes.ok) throw new Error('Failed to save photo reference');
+    try { fabData[pid] = await putRes.json(); } catch {}
+
+    const thumbsEl = document.getElementById('thumbs-' + pid + '-' + idx);
+    if (thumbsEl) thumbsEl.insertAdjacentHTML('beforeend', renderItemThumbHtml({ filename, originalName }));
+
+    const logEl = document.getElementById('upload-log-' + pid);
+    if (logEl) {
+      const empty = logEl.querySelector('.upload-log-empty');
+      if (empty) empty.remove();
+      logEl.insertAdjacentHTML('afterbegin', renderUploadLogRowHtml({
+        filename, originalName, itemName,
+        uploadedBy: 'Chris',
+        uploadedAt: new Date().toISOString()
+      }));
+    }
+
+    if (btn) btn.classList.add('saved');
+    if (ico) ico.textContent = '✅';
+    setTimeout(() => {
+      if (btn) btn.classList.remove('saved');
+      if (ico) ico.textContent = '📷';
+    }, 1500);
+  } catch (e) {
+    console.error('uploadItemPhoto error:', e);
+    if (btn) btn.classList.add('error');
+    if (ico) ico.textContent = '❌';
+    setTimeout(() => {
+      if (btn) btn.classList.remove('error');
+      if (ico) ico.textContent = '📷';
+    }, 2000);
+  } finally {
+    input.value = '';
+  }
+}
+
+async function updateFabItemStage(pid, idx, direction) {
+  const localRow = fabData[pid] && fabData[pid].fabrication && fabData[pid].fabrication[idx];
+  if (!localRow) return;
+  const curStage = FAB_STAGES.includes(localRow.status) ? localRow.status : 'Not Started';
+  const curPos   = FAB_STAGES.indexOf(curStage);
+  const nextPos  = Math.max(0, Math.min(FAB_STAGES.length - 1, curPos + direction));
+  if (nextPos === curPos) return;
+  const nextStage = FAB_STAGES[nextPos];
+
+  const item   = document.querySelector(`#pq-card-${pid} .factory-item[data-item-idx="${idx}"]`);
+  const chipEl = item && item.querySelector('.stage-chip');
+  const backEl = item && item.querySelector('.stage-back');
+  if (chipEl) chipEl.classList.add('saving');
+
+  try {
+    // Round-trip through the full project PUT so deriveFields + stage backfill run server-side.
     const getRes = await fetch('/api/projects/' + pid);
     if (!getRes.ok) throw new Error('Failed to load project');
     const proj = await getRes.json();
     proj.fabrication = Array.isArray(proj.fabrication) ? proj.fabrication : [];
-    const fp_local = fabData[pid];
-    const fabRows = fp_local ? (fp_local.fabrication || []) : [];
-    for (const [idxStr, val] of Object.entries(idxMap)) {
-      const i = parseInt(idxStr, 10);
-      const num = parseFloat(val);
-      const row = fabRows[i];
-      if (!row) continue;
-      if (row._fromScope) {
-        const existing = proj.fabrication.find(f => (f.item||'').toLowerCase().trim() === (row.item||'').toLowerCase().trim());
-        if (existing) {
-          existing.qtyDone = isNaN(num) ? 0 : num;
-        } else {
-          proj.fabrication.push({ item: row.item, totalQty: row.totalQty || 0, unit: row.unit || 'units', qtyDone: isNaN(num) ? 0 : num, status: num > 0 ? 'In Progress' : 'Not Started' });
-        }
-      } else if (proj.fabrication[i]) {
-        proj.fabrication[i].qtyDone = isNaN(num) ? 0 : num;
+
+    if (localRow._fromScope) {
+      const existing = proj.fabrication.find(f => (f.item || '').toLowerCase().trim() === (localRow.item || '').toLowerCase().trim());
+      if (existing) {
+        existing.status = nextStage;
+      } else {
+        proj.fabrication.push({
+          item: localRow.item, totalQty: localRow.totalQty || 0, unit: localRow.unit || 'units',
+          qtyDone: parseFloat(localRow.qtyDone) || 0, status: nextStage
+        });
       }
+    } else if (proj.fabrication[idx]) {
+      proj.fabrication[idx].status = nextStage;
+    } else {
+      throw new Error('Row index not found');
     }
-    const putRes = await fetch('/api/projects/' + pid, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(proj) });
+
+    const putRes = await fetch('/api/projects/' + pid, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proj)
+    });
+    if (!putRes.ok) throw new Error('Save failed (' + putRes.status + ')');
+    try { fabData[pid] = await putRes.json(); } catch {}
+
+    if (chipEl) {
+      chipEl.textContent = nextStage;
+      chipEl.className = 'stage-chip s-' + nextStage.toLowerCase().replace(/\s+/g, '-');
+    }
+    if (backEl) backEl.disabled = nextPos === 0;
+  } catch (e) {
+    console.error('updateFabItemStage error:', e);
+    if (chipEl) {
+      const orig = chipEl.textContent;
+      chipEl.textContent = '❌';
+      setTimeout(() => { chipEl.textContent = orig; }, 1800);
+    }
+  } finally {
+    if (chipEl) chipEl.classList.remove('saving');
+  }
+}
+
+async function saveSingleItem(pid, idx) {
+  const btn = document.getElementById('save-' + pid + '-' + idx);
+  if (btn) { btn.classList.remove('saved','error'); btn.innerHTML = '⏳'; btn.disabled = true; }
+  try {
+    const pending = updates[pid] && updates[pid][idx];
+    const newVal  = pending !== undefined
+      ? parseFloat(pending)
+      : parseFloat((document.getElementById('val-' + pid + '-' + idx) || {}).value || 0);
+    const num = isNaN(newVal) ? 0 : newVal;
+
+    const getRes = await fetch('/api/projects/' + pid);
+    if (!getRes.ok) throw new Error('Failed to load project');
+    const proj = await getRes.json();
+    proj.fabrication = Array.isArray(proj.fabrication) ? proj.fabrication : [];
+
+    const fp_local = fabData[pid];
+    const row = fp_local && fp_local.fabrication && fp_local.fabrication[idx];
+    if (!row) throw new Error('Row not found');
+
+    if (row._fromScope) {
+      const existing = proj.fabrication.find(f => (f.item||'').toLowerCase().trim() === (row.item||'').toLowerCase().trim());
+      if (existing) {
+        existing.qtyDone = num;
+      } else {
+        proj.fabrication.push({ item: row.item, totalQty: row.totalQty || 0, unit: row.unit || 'units', qtyDone: num, status: num > 0 ? 'In Progress' : 'Not Started' });
+      }
+    } else if (proj.fabrication[idx]) {
+      proj.fabrication[idx].qtyDone = num;
+    }
+
+    const putRes = await fetch('/api/projects/' + pid, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proj)
+    });
     if (!putRes.ok) throw new Error('Save failed');
     try { fabData[pid] = await putRes.json(); } catch {}
-    await fetch('/api/admin/recalc', { method: 'POST' }).catch(() => {});
+    if (updates[pid]) delete updates[pid][idx];
     updateCardPercent(pid);
-    if (btn) { btn.textContent = '✅ Saved!'; setTimeout(() => { btn.textContent = '💾 Save FAB Progress'; btn.disabled = false; }, 2000); }
-  } catch(e) {
-    console.error('saveSingleProject error:', e);
-    if (btn) { btn.textContent = '❌ Error — retry'; btn.disabled = false; }
+
+    if (btn) {
+      btn.classList.add('saved');
+      btn.innerHTML = '✅';
+      setTimeout(() => { btn.classList.remove('saved'); btn.innerHTML = '💾'; btn.disabled = false; }, 1500);
+    }
+  } catch (e) {
+    console.error('saveSingleItem error:', e);
+    if (btn) {
+      btn.classList.add('error');
+      btn.innerHTML = '❌';
+      btn.disabled = false;
+      setTimeout(() => { btn.classList.remove('error'); btn.innerHTML = '💾'; }, 2000);
+    }
   }
 }
 
@@ -1200,11 +1678,60 @@ async function renderSiteRequests() {
         (req.chrisNotes ? `<div class="sr-chris-notes">Chris: ${escHtml(req.chrisNotes)}</div>` : '') +
         (req.issueReason ? `<div style="font-size:11px;color:var(--red);margin-top:4px;">Issue: ${escHtml(req.issueReason)}</div>` : '') +
       `</div>` +
-      `<div class="sr-actions" id="sr-actions-${escHtml(req.id)}"></div>`;
+      `<div class="sr-actions" id="sr-actions-${escHtml(req.id)}"></div>` +
+      `<div class="sr-admin-row">` +
+        `<button class="sr-admin-btn" onclick="toggleSREdit('${escHtml(req.id)}')">✏️ Edit</button>` +
+        `<button class="sr-admin-btn danger" onclick="deleteSR('${escHtml(req.id)}')">🗑 Delete</button>` +
+      `</div>` +
+      `<div class="sr-edit-panel" id="sr-edit-${escHtml(req.id)}">` +
+        `<label>Item</label>` +
+        `<input class="sr-inline-input" id="sred-item-${escHtml(req.id)}" value="${escHtml(req.item || '')}">` +
+        `<label>Quantity</label>` +
+        `<input class="sr-inline-input" type="number" id="sred-qty-${escHtml(req.id)}" value="${escHtml(String(req.quantity || 0))}" min="0">` +
+        `<label>Needed by</label>` +
+        `<input class="sr-inline-input" type="date" id="sred-date-${escHtml(req.id)}" value="${escHtml(req.neededByDate || '')}">` +
+        `<label>Notes</label>` +
+        `<textarea class="sr-inline-input" id="sred-notes-${escHtml(req.id)}" rows="2" style="resize:none;">${escHtml(req.notes || '')}</textarea>` +
+        `<button class="sr-btn sr-btn-primary" onclick="saveSREdit('${escHtml(req.id)}')">Save changes</button>` +
+        `<button class="sr-btn sr-btn-grey" style="margin-left:6px;" onclick="toggleSREdit('${escHtml(req.id)}')">Cancel</button>` +
+      `</div>`;
 
     container.appendChild(card);
     renderSRActions(req);
   });
+}
+
+function toggleSREdit(id) {
+  const panel = document.getElementById('sr-edit-' + id);
+  if (panel) panel.classList.toggle('open');
+}
+
+async function saveSREdit(id) {
+  const item   = (document.getElementById('sred-item-'  + id) || {}).value || '';
+  const qty    = parseFloat((document.getElementById('sred-qty-'  + id) || {}).value || 0);
+  const needBy = (document.getElementById('sred-date-' + id) || {}).value || '';
+  const notes  = (document.getElementById('sred-notes-'+ id) || {}).value || '';
+  if (!item.trim() || qty <= 0) { alert('Item and quantity are required.'); return; }
+  await srUpdate(id, { item: item.trim(), quantity: qty, neededByDate: needBy, notes: notes.trim() });
+  const panel = document.getElementById('sr-edit-' + id);
+  if (panel) panel.classList.remove('open');
+  renderSiteRequests();
+}
+
+async function deleteSR(id) {
+  if (!confirm('Delete this site request? This cannot be undone.')) return;
+  try {
+    const r = await fetch('/api/site-requests/' + id + '?actor=Chris', { method: 'DELETE' });
+    if (!r.ok) {
+      const j = await r.json().catch(() => ({}));
+      throw new Error(j.error || 'Delete failed');
+    }
+    siteRequests = siteRequests.filter(x => x.id !== id);
+    updateSRBadge();
+    renderSiteRequests();
+  } catch (e) {
+    alert(e.message || 'Delete failed');
+  }
 }
 
 function renderSRActions(req) {
@@ -1279,7 +1806,7 @@ async function srUpdate(id, body) {
     const r = await fetch('/api/site-requests/' + id, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ ...body, _actor: 'Chris' })
     });
     if (!r.ok) throw new Error('Update failed');
     const updated = await r.json();
@@ -1407,108 +1934,6 @@ function factoryToast(msg, ok = true) {
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 2800);
 }
-
-// ── EOD Submit ────────────────────────────────────────────────────────────────
-document.getElementById('factory-eod-btn').addEventListener('click', async () => {
-  const btn   = document.getElementById('factory-eod-btn');
-  const notes = document.getElementById('factory-notes').value.trim();
-  btn.textContent = '⏳ Saving…';
-  btn.disabled = true;
-
-  try {
-    // Save all fab counter updates.
-    // For each project with pending updates:
-    //   1. GET /api/projects/:id to read the CURRENT server state (not the
-    //      cached copy from init — avoids clobbering concurrent edits).
-    //   2. Write qtyDone into project.fabrication[idx] — this is the same
-    //      array that renderFabItems() reads from, so the indices line up
-    //      and reloads will show the saved values.
-    //   3. PUT the full updated project back.
-    const savePromises = [];
-    for (const [pid, idxMap] of Object.entries(updates)) {
-      if (!Object.keys(idxMap).length) continue;
-
-      savePromises.push((async () => {
-        // 1. GET fresh project
-        const getRes = await fetch('/api/projects/' + pid);
-        if (!getRes.ok) throw new Error('Failed to load project ' + pid);
-        const proj = await getRes.json();
-
-        // 2. Update qtyDone — items may be from fabrication[] or productScope (_fromScope)
-        proj.fabrication = Array.isArray(proj.fabrication) ? proj.fabrication : [];
-        const fabData_local = fabData[pid];
-        const queueItems = fabData_local ? (fabData_local.fabrication || []) : [];
-        for (const [idxStr, val] of Object.entries(idxMap)) {
-          const i = parseInt(idxStr, 10);
-          const num = parseFloat(val);
-          const queueItem = queueItems[i];
-          if (!queueItem) continue;
-          if (queueItem.fromScope) {
-            // Item came from productScope — promote it into fabrication[]
-            const existing = proj.fabrication.find(f => (f.item||'').toLowerCase().trim() === (queueItem.description||'').toLowerCase().trim());
-            if (existing) {
-              existing.qtyDone = Number.isNaN(num) ? 0 : num;
-            } else {
-              proj.fabrication.push({
-                item: queueItem.description,
-                totalQty: queueItem.totalQty || 0,
-                unit: queueItem.unit || 'units',
-                qtyDone: Number.isNaN(num) ? 0 : num,
-                status: num >= (queueItem.totalQty || 0) && num > 0 ? 'Completed' : num > 0 ? 'In Progress' : 'Not Started'
-              });
-            }
-          } else {
-            // Item is in fabrication[] directly
-            if (!Number.isNaN(i) && proj.fabrication[i]) {
-              proj.fabrication[i].qtyDone = Number.isNaN(num) ? 0 : num;
-            }
-          }
-        }
-
-        // 3. PUT full updated project
-        const putRes = await fetch('/api/projects/' + pid, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(proj)
-        });
-        if (!putRes.ok) throw new Error('Failed to save ' + pid);
-
-        // Refresh local cache with the server's authoritative response so the
-        // UI reflects derived fields (fabPercent) without another round-trip.
-        try { fabData[pid] = await putRes.json(); } catch {}
-      })());
-    }
-    await Promise.all(savePromises);
-
-    // 5. Recalculate derived fields (fabPercent, etc.) across all projects
-    try {
-      await fetch('/api/admin/recalc', { method: 'POST' });
-    } catch (e) { console.warn('recalc failed', e); }
-
-    // Submit EOD log for Chris
-    const eodRes = await fetch('/api/eod-log', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        staffName: 'Chris',
-        date: today,
-        summary: notes || 'Factory update submitted',
-        notes:   notes || 'Factory update submitted',
-        hours: 9
-      })
-    });
-    if (!eodRes.ok) throw new Error('Failed to submit EOD log');
-
-    btn.textContent = '✅ Submitted! Good work today.';
-    updates = {};
-  } catch (err) {
-    btn.textContent = '❌ Error — Tap to Retry';
-    btn.disabled = false;
-    const errEl = document.getElementById('eod-error-msg');
-    if (errEl) { errEl.textContent = err.message; errEl.style.display = 'block'; }
-    console.error('EOD submit error:', err);
-  }
-});
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 init();
