@@ -4,8 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Team Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776178384">
+  <link rel="stylesheet" href="/css/style.css?v=1776183266">
   <style>
+    /* ── Type-grouped sections (Mandatory / Requests / Personal) ── */
+    .mc-type-group {
+      margin-bottom: 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .mc-type-group-hdr {
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+    .mc-type-group-hdr:hover { background: var(--bg3); }
+    .mc-type-group-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .mc-type-group-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .mc-type-group-counts {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .mc-type-group-counts .n-open { color: var(--amber); font-weight: 700; }
+    .mc-type-group-counts .n-done { color: var(--green); font-weight: 700; }
+    .mc-type-group-chev {
+      margin-left: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .mc-type-group-chev.collapsed { transform: rotate(-90deg); }
+    .mc-type-group-body.collapsed { display: none; }
+    .mc-empty-group {
+      padding: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
     /* ── Shared task card styles (personal view) ── */
     .task-card {
       background: var(--bg2);
@@ -418,21 +469,10 @@
             style="flex:1;padding:8px 4px;border-radius:8px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all 0.15s;">
             📋 Requested
           </button>
-          <button class="nt-type-btn" data-type="Ticket Task"
-            style="flex:1;padding:8px 4px;border-radius:8px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-muted);transition:all 0.15s;">
-            🎫 Ticket
-          </button>
         </div>
       </div>
 
-      <!-- Ticket picker (Ticket Task only) -->
-      <div id="nt-ticket-row" class="field" style="margin:0;display:none;">
-        <label>Ticket <span style="color:var(--red);">*</span></label>
-        <select id="nt-ticket" class="tbl-select"><option value="">Loading…</option></select>
-        <div id="nt-ticket-preview" style="margin-top:6px;font-size:12px;color:var(--text-muted);line-height:1.5;display:none;background:var(--bg3);border-radius:6px;padding:8px 10px;"></div>
-      </div>
-
-      <!-- Title (hidden for Ticket Task) -->
+      <!-- Title -->
       <div id="nt-title-row" class="field" style="margin:0;">
         <label>Title <span style="color:var(--red);">*</span></label>
         <input type="text" id="nt-title" class="tbl-input" placeholder="What needs to be done…" autocomplete="off">
@@ -458,13 +498,13 @@
         </div>
       </div>
 
-      <!-- Project (hidden for Ticket Task) -->
+      <!-- Project -->
       <div id="nt-project-row" class="field" style="margin:0;">
         <label>Project</label>
         <select id="nt-project" class="tbl-select"><option value="">No project</option></select>
       </div>
 
-      <!-- Description (hidden for Ticket Task — auto-filled) -->
+      <!-- Description -->
       <div id="nt-desc-row" class="field" style="margin:0;">
         <label>Description</label>
         <textarea id="nt-desc" class="tbl-input" rows="3" placeholder="Optional details…" style="resize:vertical;"></textarea>
@@ -592,8 +632,8 @@ async function renderTeamGrid() {
     groups[name].push(t);
   });
 
-  const total = allTasks.filter(t => t.status !== 'Done').length;
-  const totalAll = allTasks.length;
+  const openCount    = allTasks.filter(t => t.status !== 'Done').length;
+  const totalAll     = allTasks.length;
 
   // Header
   const hdr = document.createElement('div');
@@ -603,7 +643,7 @@ async function renderTeamGrid() {
       '<h2 style="margin:0;">Team Overview</h2>' +
       '<button id="new-task-btn" class="btn" style="background:var(--accent);color:#fff;font-size:12px;font-weight:600;padding:6px 16px;border:none;border-radius:var(--radius);cursor:pointer;flex-shrink:0;">+ New Task</button>' +
     '</div>' +
-    '<p>' + staffList.length + ' team members · ' + totalAll + ' task' + (totalAll !== 1 ? 's' : '') + ' · ' + total + ' active</p>';
+    '<p>' + staffList.length + ' team members · ' + totalAll + ' task' + (totalAll !== 1 ? 's' : '') + ' · ' + openCount + ' open</p>';
   root.appendChild(hdr);
   hdr.querySelector('#new-task-btn').onclick = () => openNewTaskModal('');
 
@@ -628,8 +668,7 @@ async function renderTeamGrid() {
     const tasks = groups[name] || [];
     const overdue = tasks.filter(t => t.status !== 'Done' && t.dueDate && t.dueDate < todayStr).length;
     const unacked = tasks.filter(t => t.status !== 'Done' && !t.acknowledgedAt && t.assignedTo && t.assignedTo !== 'Unassigned').length;
-    const inProg  = tasks.filter(t => t.status === 'In Progress').length;
-    const data = { name, tasks, overdue, unacked, inProg };
+    const data = { name, tasks, overdue, unacked };
     if (tasks.length > 0) withTasks.push(data);
     else noTasks.push(data);
   });
@@ -659,7 +698,7 @@ async function renderTeamGrid() {
     if (data.overdue > 0)
       badgesEl.innerHTML += '<span class="pill pill-red" style="font-size:10px;">' + data.overdue + ' overdue</span>';
     if (data.unacked > 0)
-      badgesEl.innerHTML += '<span class="pill pill-amber" style="font-size:10px;">' + data.unacked + ' Pending Review</span>';
+      badgesEl.innerHTML += '<span class="pill pill-amber" style="font-size:10px;">' + data.unacked + ' unseen</span>';
 
     // EOD badge
     const eodBadge = document.createElement('div');
@@ -673,11 +712,12 @@ async function renderTeamGrid() {
     card.appendChild(badgesEl);
 
     if (data.tasks.length > 0) {
+      const openCount = data.tasks.filter(t => t.status !== 'Done').length;
       const statsEl = document.createElement('div');
       statsEl.className = 'staff-card-stats';
       statsEl.innerHTML =
         '<div class="staff-card-stat"><span class="val">' + data.tasks.length + '</span><span class="lbl">Total</span></div>' +
-        '<div class="staff-card-stat"><span class="val" style="color:var(--accent);">' + data.inProg + '</span><span class="lbl">Active</span></div>';
+        '<div class="staff-card-stat"><span class="val" style="color:var(--accent);">' + openCount + '</span><span class="lbl">Open</span></div>';
       card.appendChild(statsEl);
     } else {
       const noEl = document.createElement('div');
@@ -765,16 +805,30 @@ async function renderPersonalView(name) {
     empty.textContent = 'No tasks assigned to ' + name + '.';
     wrap.appendChild(empty);
   } else {
-    const pendingTasks    = myTasks.filter(t => t.status === 'Pending');
-    const inProgressTasks = myTasks.filter(t => t.status === 'In Progress');
-    const doneTasks       = myTasks.filter(t => t.status === 'Done');
+    // Group tasks by type into three sections so the boss can see at a glance
+    // what's mandatory vs what's been asked by teammates vs personal work.
+    const typeGroups = [
+      {
+        label: 'Mandatory Daily Tasks',
+        hint:  'Auto-created each morning',
+        match: t => t.taskType === 'Recurring',
+      },
+      {
+        label: 'Requests From Team',
+        hint:  'Tasks assigned to you by someone else',
+        match: t => t.taskType === 'Requested Task',
+      },
+      {
+        label: 'Personal Tasks',
+        hint:  'Your own to-do list',
+        match: t => t.taskType !== 'Recurring' && t.taskType !== 'Requested Task',
+      },
+    ];
 
-    if (pendingTasks.length > 0)
-      wrap.appendChild(buildTaskSection('⚠️ Pending', pendingTasks, true));
-    if (inProgressTasks.length > 0)
-      wrap.appendChild(buildTaskSection('🔄 In Progress', inProgressTasks, true));
-    if (doneTasks.length > 0)
-      wrap.appendChild(buildTaskSection('✅ Done', doneTasks, false));
+    typeGroups.forEach(g => {
+      const groupTasks = myTasks.filter(g.match);
+      wrap.appendChild(buildTypeGroup(g, groupTasks));
+    });
   }
 
   // EOD section at the bottom
@@ -787,6 +841,75 @@ async function renderPersonalView(name) {
 }
 
 // ── Compact task section + row helpers ───────────────────────────────────
+
+// Collapsible panel per task TYPE (Mandatory · Requests · Personal).
+// Each panel holds the open tasks followed by completed ones.
+function buildTypeGroup(group, tasks) {
+  const open = tasks.filter(t => t.status !== 'Done');
+  const done = tasks.filter(t => t.status === 'Done');
+  const isEmpty = tasks.length === 0;
+
+  const wrap = document.createElement('div');
+  wrap.className = 'mc-type-group';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'mc-type-group-hdr';
+
+  const label = document.createElement('span');
+  label.className = 'mc-type-group-label';
+  label.textContent = group.label;
+
+  const hint = document.createElement('span');
+  hint.className = 'mc-type-group-hint';
+  hint.textContent = group.hint;
+
+  const counts = document.createElement('span');
+  counts.className = 'mc-type-group-counts';
+  counts.innerHTML = '<span class="n-open">' + open.length + '</span> open · <span class="n-done">' + done.length + '</span> done';
+
+  const chev = document.createElement('span');
+  // Start collapsed only when the group has no tasks at all.
+  const startCollapsed = isEmpty;
+  chev.className = 'mc-type-group-chev' + (startCollapsed ? ' collapsed' : '');
+  chev.textContent = '▾';
+
+  hdr.appendChild(label);
+  hdr.appendChild(hint);
+  hdr.appendChild(counts);
+  hdr.appendChild(chev);
+
+  const body = document.createElement('div');
+  body.className = 'mc-type-group-body' + (startCollapsed ? ' collapsed' : '');
+
+  if (isEmpty) {
+    const em = document.createElement('div');
+    em.className = 'mc-empty-group';
+    em.textContent = 'None';
+    body.appendChild(em);
+  } else {
+    // Render open tasks first (expanded)
+    open.forEach(t => {
+      const { row, panel } = buildCompactRow(t);
+      body.appendChild(row);
+      body.appendChild(panel);
+    });
+    // Then completed ones
+    done.forEach(t => {
+      const { row, panel } = buildCompactRow(t);
+      body.appendChild(row);
+      body.appendChild(panel);
+    });
+  }
+
+  hdr.addEventListener('click', () => {
+    const nowCollapsed = body.classList.toggle('collapsed');
+    chev.classList.toggle('collapsed', nowCollapsed);
+  });
+
+  wrap.appendChild(hdr);
+  wrap.appendChild(body);
+  return wrap;
+}
 
 function buildTaskSection(label, tasks, expanded) {
   const section = document.createElement('div');
@@ -823,8 +946,12 @@ function buildTaskSection(label, tasks, expanded) {
 
 function buildCompactRow(task) {
   const isDone   = task.status === 'Done';
-  const isInProg = task.status === 'In Progress';
-  const icon     = isDone ? '✅' : (isInProg ? '🔄' : '⚠️');
+  const isSeen   = !!task.acknowledgedAt;
+  const icon     = isDone ? '✅' : (isSeen ? '👁' : '⚠️');
+  // Hours logging is only meaningful for a person's OWN work — mandatory
+  // recurring tasks and self tasks. Requested tasks (someone asking
+  // someone else) don't get hours tracked on them.
+  const logsHours = task.taskType !== 'Requested Task';
 
   // Row
   const row = document.createElement('div');
@@ -843,32 +970,35 @@ function buildCompactRow(task) {
   rightEl.className = 'task-row-right';
 
   // Category badge (abbreviated task type)
-  const typeShort = { 'Self Task': 'Self', 'Requested Task': 'Req', 'Ticket Task': 'Ticket', 'Project Task': 'Proj' };
+  const typeShort = { 'Self Task': 'Self', 'Requested Task': 'Req', 'Project Task': 'Proj', 'Recurring': 'Daily' };
   const catBadge = document.createElement('div');
   catBadge.className = 'task-cat-badge';
   catBadge.textContent = typeShort[task.taskType] || (task.taskType || 'Task');
   catBadge.title = task.taskType || '';
-
-  // Hours input — persists across re-renders via rowHoursMap
-  const hrsInput = document.createElement('input');
-  hrsInput.type = 'number';
-  hrsInput.min = '0'; hrsInput.max = '24'; hrsInput.step = '0.5';
-  hrsInput.className = 'task-row-hrs';
-  hrsInput.value = rowHoursMap[task.id] !== undefined ? rowHoursMap[task.id] : '';
-  hrsInput.placeholder = '0';
-  hrsInput.addEventListener('click', e => e.stopPropagation());
-  hrsInput.addEventListener('input', () => {
-    rowHoursMap[task.id] = hrsInput.value;
-    if (typeof window._eodTotalUpdater === 'function') window._eodTotalUpdater();
-  });
-
-  const hrsLbl = document.createElement('span');
-  hrsLbl.className = 'task-row-hrs-lbl';
-  hrsLbl.textContent = 'hrs';
-
   rightEl.appendChild(catBadge);
-  rightEl.appendChild(hrsInput);
-  rightEl.appendChild(hrsLbl);
+
+  if (logsHours) {
+    // Hours input — persists across re-renders via rowHoursMap
+    const hrsInput = document.createElement('input');
+    hrsInput.type = 'number';
+    hrsInput.min = '0'; hrsInput.max = '24'; hrsInput.step = '0.5';
+    hrsInput.className = 'task-row-hrs';
+    hrsInput.value = rowHoursMap[task.id] !== undefined ? rowHoursMap[task.id] : '';
+    hrsInput.placeholder = '0';
+    hrsInput.addEventListener('click', e => e.stopPropagation());
+    hrsInput.addEventListener('input', () => {
+      rowHoursMap[task.id] = hrsInput.value;
+      if (typeof window._eodTotalUpdater === 'function') window._eodTotalUpdater();
+    });
+
+    const hrsLbl = document.createElement('span');
+    hrsLbl.className = 'task-row-hrs-lbl';
+    hrsLbl.textContent = 'hrs';
+
+    rightEl.appendChild(hrsInput);
+    rightEl.appendChild(hrsLbl);
+  }
+
   row.appendChild(iconEl);
   row.appendChild(titleEl);
   row.appendChild(rightEl);
@@ -900,14 +1030,7 @@ function buildCompactRow(task) {
       doneBtn.addEventListener('click', e => { e.stopPropagation(); updateTaskStatus(task.id, 'Done'); });
       actionsDiv.appendChild(doneBtn);
     }
-    if (!isInProg && !isDone) {
-      const progBtn = document.createElement('button');
-      progBtn.className = 'task-expand-btn xbtn-inprog';
-      progBtn.textContent = '🔄 In Progress';
-      progBtn.addEventListener('click', e => { e.stopPropagation(); updateTaskStatus(task.id, 'In Progress'); });
-      actionsDiv.appendChild(progBtn);
-    }
-    if (isDone || isInProg) {
+    if (isDone) {
       const pendBtn = document.createElement('button');
       pendBtn.className = 'task-expand-btn xbtn-pending';
       pendBtn.textContent = '⚠️ Reset to Pending';
@@ -1017,7 +1140,6 @@ async function updateTaskStatus(taskId, status) {
 
 // ── New Task modal ────────────────────────────────────────────────────────
 let _ntTaskType = 'Self Task';
-let _ntTickets  = [];
 
 function ntSetType(type) {
   _ntTaskType = type;
@@ -1035,7 +1157,6 @@ function ntSetType(type) {
   const hide = function(id) { document.getElementById(id).style.display = 'none'; };
 
   if (type === 'Self Task') {
-    hide('nt-ticket-row');
     show('nt-title-row');
     hide('nt-req-row');
     show('nt-project-row');
@@ -1043,48 +1164,12 @@ function ntSetType(type) {
     document.getElementById('nt-desc').removeAttribute('readonly');
     document.getElementById('nt-desc').placeholder = 'Optional details…';
   } else if (type === 'Requested Task') {
-    hide('nt-ticket-row');
     show('nt-title-row');
     show('nt-req-row');
     show('nt-project-row');
     show('nt-desc-row');
     document.getElementById('nt-desc').removeAttribute('readonly');
     document.getElementById('nt-desc').placeholder = 'Optional details…';
-  } else if (type === 'Ticket Task') {
-    show('nt-ticket-row');
-    hide('nt-title-row');
-    hide('nt-req-row');
-    hide('nt-project-row');
-    show('nt-desc-row');
-    document.getElementById('nt-desc').setAttribute('readonly', true);
-    document.getElementById('nt-desc').placeholder = 'Auto-filled from ticket…';
-  }
-}
-
-function ntOnTicketChange() {
-  const sel     = document.getElementById('nt-ticket');
-  const preview = document.getElementById('nt-ticket-preview');
-  const ticketId = sel.value;
-  const ticket = _ntTickets.find(function(t) { return t.id === ticketId; });
-  if (ticket) {
-    // Auto-fill description: title then body
-    const parts = [];
-    const heading = ticket.subject || ticket.title || '';
-    if (heading) parts.push(heading);
-    const body = ticket.description || ticket.body || ticket.message || '';
-    if (body) parts.push(body);
-    document.getElementById('nt-desc').value = parts.join('\n\n');
-    // Preview label: Title — Type — by SubmittedBy
-    const previewParts = [
-      (ticket.subject || ticket.title || 'Ticket ' + ticketId).slice(0, 60),
-      ticket.type || ticket.category || '',
-      (ticket.submittedBy || ticket.submittedby || ticket.createdBy) ? 'by ' + (ticket.submittedBy || ticket.submittedby || ticket.createdBy) : ''
-    ].filter(Boolean);
-    preview.textContent = previewParts.join(' · ');
-    preview.style.display = '';
-  } else {
-    document.getElementById('nt-desc').value = '';
-    preview.style.display = 'none';
   }
 }
 
@@ -1132,9 +1217,6 @@ async function openNewTaskModal(prefilledAssignee) {
   document.getElementById('nt-desc').value     = '';
   document.getElementById('nt-due').value      = '';
   document.getElementById('nt-priority').value = 'Medium';
-  document.getElementById('nt-ticket').value   = '';
-  document.getElementById('nt-ticket-preview').style.display = 'none';
-  document.getElementById('nt-ticket').innerHTML = '<option value="">Loading tickets…</option>';
   ntSetType('Self Task');
   modal.style.display = 'flex';
 
@@ -1170,35 +1252,6 @@ async function openNewTaskModal(prefilledAssignee) {
     if (currentProj) psel.value = currentProj;
   }).catch(function(e) { console.warn('[LYS] Projects refresh error:', e); });
 
-  // Fetch tickets (New or In Review only) — non-blocking
-  const tsel = document.getElementById('nt-ticket');
-  fetch('/api/tickets').then(function(r) { return r.json(); }).then(function(data) {
-    const all = Array.isArray(data) ? data : (data.tickets || []);
-    _ntTickets = all.filter(function(t) {
-      return t.status === 'New' || t.status === 'In Review';
-    });
-    if (_ntTickets.length === 0) {
-      tsel.innerHTML = '<option value="">No open tickets</option>';
-      return;
-    }
-    tsel.innerHTML = '<option value="">— Select ticket —</option>';
-    _ntTickets.forEach(function(t) {
-      const o = document.createElement('option');
-      o.value = t.id;
-      // Format: "Title — Type — by SubmittedBy"
-      const label = [
-        (t.subject || t.title || t.description || 'Ticket').slice(0, 50),
-        t.type || t.category || '',
-        (t.submittedBy || t.submittedby || t.createdBy) ? 'by ' + (t.submittedBy || t.submittedby || t.createdBy) : ''
-      ].filter(Boolean).join(' — ');
-      o.textContent = label;
-      tsel.appendChild(o);
-    });
-  }).catch(function() {
-    _ntTickets = [];
-    tsel.innerHTML = '<option value="">Could not load tickets</option>';
-  });
-
   setTimeout(function() {
     const titleEl = document.getElementById('nt-title');
     if (titleEl && titleEl.closest('[style*="display:none"]') === null) titleEl.focus();
@@ -1214,9 +1267,6 @@ function setupModalHandlers() {
     btn.addEventListener('click', function() { ntSetType(btn.dataset.type); });
   });
 
-  // Ticket change → auto-fill description
-  document.getElementById('nt-ticket').addEventListener('change', ntOnTicketChange);
-
   document.getElementById('nt-close').onclick  = closeModal;
   document.getElementById('nt-cancel').onclick = closeModal;
   modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
@@ -1225,36 +1275,21 @@ function setupModalHandlers() {
     const type = _ntTaskType;
 
     // Validation
-    if (type === 'Ticket Task') {
-      if (!document.getElementById('nt-ticket').value) {
-        document.getElementById('nt-ticket').focus(); return;
-      }
-    } else {
-      const title = document.getElementById('nt-title').value.trim();
-      if (!title) { document.getElementById('nt-title').focus(); return; }
-    }
+    const title = document.getElementById('nt-title').value.trim();
+    if (!title) { document.getElementById('nt-title').focus(); return; }
     if (type === 'Requested Task' && !document.getElementById('nt-requested-by').value) {
       document.getElementById('nt-requested-by').focus(); return;
     }
 
-    const titleVal = type === 'Ticket Task'
-      ? (function() {
-          const t = _ntTickets.find(function(t) { return t.id === document.getElementById('nt-ticket').value; });
-          return t ? (t.subject || t.title || t.ref || 'Ticket ' + t.id) : 'Ticket Task';
-        })()
-      : document.getElementById('nt-title').value.trim();
-
-    const pid  = (type !== 'Ticket Task') ? document.getElementById('nt-project').value : '';
+    const titleVal = document.getElementById('nt-title').value.trim();
+    const pid  = document.getElementById('nt-project').value;
     const proj = projectsList.find(function(p) { return p.id === pid; });
-
-    const ticketId = type === 'Ticket Task' ? document.getElementById('nt-ticket').value : '';
 
     await fetch('/api/tasks', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title:          titleVal,
         taskType:       type,
-        ticketId:       ticketId,
         projectId:      pid,
         projectJobCode: proj ? (proj.jobCode || '') : '',
         projectName:    proj ? (proj.name   || '') : '',
@@ -1460,31 +1495,39 @@ async function openEodModal(staffName, taskId) {
     summaryDiv.appendChild(summaryLabel);
     _eodTodayTasks.forEach(t => {
       const isDone = t.status === 'Done' || !!t.completedAt;
-      const isInProgress = t.status === 'In Progress';
+      const isSeen = !!t.acknowledgedAt;
+      const logsHours = t.taskType !== 'Requested Task';
       const row = document.createElement('div');
       row.style.cssText = 'font-size:12px;padding:4px 0;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);';
       const statusSpan = document.createElement('span');
       statusSpan.style.flexShrink = '0';
-      statusSpan.textContent = isDone ? '✅' : (isInProgress ? '🔄' : '⚠️');
+      statusSpan.textContent = isDone ? '✅' : (isSeen ? '👁' : '⚠️');
       const titleSpan = document.createElement('span');
       titleSpan.style.cssText = 'flex:1;color:' + (isDone ? 'var(--green)' : 'var(--text)') + ';' + (isDone ? 'text-decoration:line-through;opacity:0.6;' : '');
       titleSpan.textContent = t.title;
-      const hrsInput = document.createElement('input');
-      hrsInput.type = 'number';
-      hrsInput.min = '0';
-      hrsInput.max = '24';
-      hrsInput.step = '0.5';
-      hrsInput.value = rowHoursMap[t.id] || '0';
-      hrsInput.placeholder = '0';
-      hrsInput.style.cssText = 'width:55px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px;flex-shrink:0;';
-      const hrsLabel = document.createElement('span');
-      hrsLabel.textContent = 'hrs';
-      hrsLabel.style.cssText = 'font-size:11px;color:var(--text-muted);flex-shrink:0;';
-      modalTaskInputs.push({ taskId: t.id, input: hrsInput });
       row.appendChild(statusSpan);
       row.appendChild(titleSpan);
-      row.appendChild(hrsInput);
-      row.appendChild(hrsLabel);
+      if (logsHours) {
+        const hrsInput = document.createElement('input');
+        hrsInput.type = 'number';
+        hrsInput.min = '0';
+        hrsInput.max = '24';
+        hrsInput.step = '0.5';
+        hrsInput.value = rowHoursMap[t.id] || '0';
+        hrsInput.placeholder = '0';
+        hrsInput.style.cssText = 'width:55px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:3px 6px;color:var(--text);font-size:12px;flex-shrink:0;';
+        const hrsLabel = document.createElement('span');
+        hrsLabel.textContent = 'hrs';
+        hrsLabel.style.cssText = 'font-size:11px;color:var(--text-muted);flex-shrink:0;';
+        modalTaskInputs.push({ taskId: t.id, input: hrsInput });
+        row.appendChild(hrsInput);
+        row.appendChild(hrsLabel);
+      } else {
+        const reqNote = document.createElement('span');
+        reqNote.textContent = 'requested';
+        reqNote.style.cssText = 'font-size:10px;color:var(--text-muted);font-style:italic;flex-shrink:0;';
+        row.appendChild(reqNote);
+      }
       summaryDiv.appendChild(row);
     });
     body.appendChild(summaryDiv);

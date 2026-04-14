@@ -1702,11 +1702,9 @@ app.post('/api/tasks/:id/acknowledge', (req, res) => {
     const now = new Date().toISOString();
     tasks[idx].acknowledgedAt = now;
     tasks[idx].acknowledgedBy = req.body.name || tasks[idx].assignedTo || '';
-    // Fix 1: auto-advance Pending → In Progress on acknowledgement
-    if (tasks[idx].status === 'Pending') {
-      tasks[idx].status = 'In Progress';
-      tasks[idx].statusChangedAt = now;
-    }
+    // Mark-as-seen does NOT change status — the task stays Pending until
+    // the assignee explicitly marks it Done. The "In Progress" middle
+    // state was removed so staff are forced through this seen step.
     writeTasks(tasks);
     res.json(tasks[idx]);
     // Trigger 2: email requestedBy that task was acknowledged
@@ -1715,13 +1713,12 @@ app.post('/api/tasks/:id/acknowledge', (req, res) => {
       const rbEmail = getStaffEmail(task.requestedBy);
       if (rbEmail) {
         sendEmail(rbEmail, task.requestedBy,
-          `[Task Acknowledged] ${task.title}`,
+          `[Task Seen] ${task.title}`,
           `<p>Hi ${task.requestedBy},</p>
-          <p><strong>${task.acknowledgedBy}</strong> has acknowledged your task and is now working on it.</p>
+          <p><strong>${task.acknowledgedBy}</strong> has marked your request as seen.</p>
           <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
             <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Task</td><td>${task.title}</td></tr>
             <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Assigned To</td><td>${task.assignedTo || '—'}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Status</td><td>In Progress</td></tr>
           </table>
           <p><a href="${APP_URL}/my-tasks">View Tasks →</a></p>`
         ).catch(() => {});
@@ -2240,6 +2237,69 @@ cron.schedule('0 9 * * 1-5', async () => {
       }
     }
   } catch (e) { logError('cron.9am-eod-recheck', e); }
+
+  // ── Check 5: Installation just hit 100% — note for the project's QS ──────
+  // NOT a claim-submission trigger — claims are time/phase-bound, not %-bound.
+  // This is a heads-up task so the assigned QS is aware the install is done
+  // and can factor it into the next monthly claim planning.
+  console.log('[CRON] 9am install-complete QS notes...');
+  try {
+    const projectsForNotes = readProjects().map(p => deriveFields(p));
+    let projectsChanged = false;
+    const noteTasks = readTasks();
+    let createdNotes = 0;
+    for (const p of projectsForNotes) {
+      if (p.status === 'Completed') continue;
+      if ((p.installPercent || 0) < 100) continue;
+      if (p.installCompleteTaskCreated) continue; // already flagged
+      const qsName = p.qs;
+      if (!qsName) {
+        console.warn('[CRON install-note] No QS on project', p.jobCode || p.id);
+        continue;
+      }
+      noteTasks.push({
+        id: Date.now().toString(36) + createdNotes.toString(36),
+        projectId:      p.id,
+        projectJobCode: p.jobCode || '',
+        projectName:    p.projectName || '',
+        title:          `Installation complete on ${p.jobCode || p.projectName} — note for claim planning`,
+        description:    `Install just hit 100% for ${p.projectName}. This is a heads-up, not an immediate claim trigger — factor into your next monthly claim cycle.`,
+        taskType:       'Recurring', // shows under Mandatory section on the team page
+        category:       'Reporting',
+        assignedTo:     qsName,
+        requestedBy:    'System',
+        createdBy:      'System',
+        createdAt:      new Date().toISOString(),
+        dueDate:        today,
+        status:         'Pending',
+        priority:       'Normal',
+        hoursLogged:    [],
+        completedAt:    null,
+        tags:           ['install-complete-note'],
+        weekOf:         getWeekStart(),
+        archived:       false,
+        archivedAt:     null,
+      });
+      createdNotes++;
+      // Flag on the master project record so we never double-create
+      const masterList = readProjects();
+      const mi = masterList.findIndex(x => x.id === p.id);
+      if (mi !== -1) {
+        masterList[mi].installCompleteTaskCreated = true;
+        masterList[mi].installCompleteTaskAt = new Date().toISOString();
+        writeProjects(masterList);
+        projectsChanged = true;
+      }
+    }
+    if (createdNotes > 0) {
+      writeTasks(noteTasks);
+      console.log(`[CRON] Created ${createdNotes} install-complete note task(s) for QS`);
+      logActivity('install-complete-notes.created', { count: createdNotes });
+    } else {
+      console.log('[CRON] No new install-complete notes needed');
+    }
+  } catch (e) { logError('cron.9am-install-complete-notes', e); }
+
   } catch (e) { logError('cron.9am-checks', e); }
 }, { timezone: 'Asia/Singapore' });
 
@@ -3016,8 +3076,11 @@ const RECURRING_DEFS = {
   Rena_monday: [
     { title: 'Weekly supplier review — compare prices, flag unreliable suppliers', category: 'Operations' },
   ],
+  // Both QSs get the same generic checklist. Project-specific claim work
+  // (e.g. "installation is now complete, consider timing the next claim")
+  // is handled by a separate per-project automation that creates a one-off
+  // task only for the QS assigned to THAT project — see 9am cron Check 5.
   'Alex Mac': [
-    { title: 'Check completed installations — trigger claim submissions',          category: 'Operations' },
     { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
     { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
     { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
@@ -3027,7 +3090,6 @@ const RECURRING_DEFS = {
     { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
   ],
   'Salve': [
-    { title: 'Check completed installations — trigger claim submissions',          category: 'Operations' },
     { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
     { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
     { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
@@ -3035,6 +3097,16 @@ const RECURRING_DEFS = {
   ],
   'Salve_monday': [
     { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
+  ],
+  Janessa: [
+    { title: 'Follow up on outstanding quotations with clients',                   category: 'Operations'  },
+    { title: 'Check for new enquiries / tender invitations',                       category: 'Operations'  },
+    { title: 'Update sales pipeline — Tendering / Quotation stage projects',       category: 'Reporting'   },
+    { title: 'Chase newly Awarded projects — ensure clean handover to PM + drafter', category: 'Operations' },
+    { title: 'Submit EOD log',                                                     category: 'Reporting'   },
+  ],
+  Janessa_monday: [
+    { title: 'Weekly sales pipeline review — total quoted, pending decisions, lost jobs', category: 'Reporting' },
   ],
   'Teo Meei Haw': [
     { title: 'Set today\'s installation target — project, item, qty, location',    category: 'Operations' },
@@ -3103,7 +3175,7 @@ async function createDailyRecurringTasks() {
   const newTasks = [];
   let _idSeq = 0; // ensure unique IDs even within same ms
 
-  const people = ['Chris', 'Rena', 'Alex Mac', 'Salve', 'Teo Meei Haw', 'Jun Jie'];
+  const people = ['Chris', 'Rena', 'Alex Mac', 'Salve', 'Teo Meei Haw', 'Jun Jie', 'Janessa'];
   for (const person of people) {
     const daily   = RECURRING_DEFS[person]             || [];
     const monday  = isMonday ? (RECURRING_DEFS[`${person}_monday`] || []) : [];
@@ -3206,6 +3278,20 @@ async function createDailyRecurringTasks() {
 // Schedule: 8:45am SGT, Mon–Fri
 cron.schedule('45 8 * * 1-5', createDailyRecurringTasks, { timezone: 'Asia/Singapore' });
 console.log('[RECURRING] Daily task cron scheduled: 8:45am SGT, Mon–Fri');
+
+// Admin endpoint to run the recurring-task seeder on demand. Same function
+// the 8:45am cron calls. Idempotent — dedups by assignedTo+title+today.
+app.post('/api/admin/seed-recurring-tasks', async (req, res) => {
+  try {
+    const before = readTasks().length;
+    await createDailyRecurringTasks();
+    const after  = readTasks().length;
+    res.json({ ok: true, created: after - before, total: after });
+  } catch (e) {
+    logError('route.post.seed-recurring-tasks', e);
+    res.status(500).json({ error: e.message || 'Internal server error' });
+  }
+});
 
 // ── Procurement Route ─────────────────────────────────────────────────────────
 app.get('/procurement', (req, res) => res.sendFile(path.join(__dirname, 'public', 'procurement.html')));

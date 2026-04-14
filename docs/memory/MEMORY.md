@@ -1,0 +1,11 @@
+- [User role and expectations](user_role.md) — Lai Wei Xiang runs a fabrication/installation ops business; boss seat, not a dev; expects Claude to spot bugs faster than he can.
+- [System philosophy](project_philosophy.md) — one-role-one-page; 4 ops pages are source of truth, project page is read-only consolidation; fab-item vs project-stage are different layers.
+- [People and roles](people.md) — Chris/Teo/Jun Jie/Rena/Alex Chew/Salve/Alex Mac/Janessa/Murugan. Two QSs own different projects (not shared). Alex Chew = finance/invoices only, NOT on cert CC.
+- [Feedback: page-by-page workflow](feedback_workflow.md) — he prefers scoping work by page, not by feature.
+- [Page map (routes, labels, owners)](page_map.md) — verified page list; /my-tasks is labelled "Team", /planning is labelled "Manpower", no /claims page exists.
+- [Team page model and UX](team_page_model.md) — 3 task types (Mandatory/Requests/Personal), hours only on self/recurring, mark-as-seen (no In Progress), ack ladder capped at 3 days, calendar events. Plain professional styling.
+- [Visual style feedback](feedback_visual_style.md) — prefers plain/professional UI consistent across pages; themed aesthetics get reverted. Default to existing design tokens.
+- [Token discipline feedback](feedback_token_discipline.md) — cost-conscious about token spend; narrow before Read, batch parallel calls, short outputs, no ceremony. Applies to main + all sub-agents.
+- Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder. Spawn via Agent tool with `subagent_type=<name>`.
+- [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. Currently: at least one project has `qs="Lai Wei Xiang"` (wrong — should be Salve or Alex Mac).
+- [Pre-launch test gates](test_gates.md) — EMAIL_TEST_OVERRIDE + CALENDAR_TEST_OVERRIDE env vars route everything to boss during testing.
