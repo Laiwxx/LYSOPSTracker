@@ -472,333 +472,166 @@ function _renderSummaryFallback(err) {
 }
 
 async function _renderSummaryTabInner(container) {
-  // 1. Progress calculations
-  const fabRows   = project.fabrication   || [];
+  const fabRows     = project.fabrication   || [];
   const installRows = project.installation || [];
-  const fabTotal  = fabRows.reduce((s,r)   => s + (parseFloat(r.totalQty)||0), 0);
-  const fabDone   = fabRows.reduce((s,r)   => s + (parseFloat(r.qtyDone)||0),  0);
-  const instTotal = installRows.reduce((s,r) => s + (parseFloat(r.totalQty)||0), 0);
-  const instDone  = installRows.reduce((s,r) => s + (parseFloat(r.doneQty)||0),  0);
-  const fabPct    = fabTotal  > 0 ? Math.round(fabDone  / fabTotal  * 100) : 0;
-  const instPct   = instTotal > 0 ? Math.round(instDone / instTotal * 100) : 0;
   const cv   = parseFloat(project.contractValue) || 0;
   const vo   = parseFloat(project.voValue)       || 0;
   const paid = parseFloat(project.paidAmount)    || 0;
   const claimsPct = (cv + vo) > 0 ? Math.round(paid / (cv + vo) * 100) : 0;
-  const docs = project.documents || [];
-  const docsApproved = docs.filter(d => d.status === 'Approved').length;
-  const docsTotal    = docs.length;
 
-  // 2. Tasks for this project
-  let allTasks = [];
-  try {
-    allTasks = await fetch(`/api/tasks?projectId=${encodeURIComponent(projectId)}`).then(r => r.json());
-    if (!Array.isArray(allTasks)) allTasks = [];
-  } catch (e) { allTasks = []; }
+  const activeStageForSummary = (project.stages || []).find(s => s.status === 'In Progress')
+    || (project.stages || []).find(s => s.status === 'Not Started');
+  const nextActionOwner = activeStageForSummary ? (activeStageForSummary.owner || '—') : '—';
+  const currentStageName = activeStageForSummary ? activeStageForSummary.name : 'All stages complete';
 
-  // 2b. Materials on order for this project
-  let projectPOs = [];
-  try {
-    const posResp = await fetch(`/api/purchase-orders?projectId=${encodeURIComponent(projectId)}`);
-    projectPOs = posResp.ok ? await posResp.json() : [];
-    if (!Array.isArray(projectPOs)) projectPOs = [];
-  } catch (e) { projectPOs = []; }
-  const activePOs = projectPOs.filter(p => p.status !== 'Delivered');
-
-  const today  = new Date().toISOString().split('T')[0];
-  const overdue = allTasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'Done');
-  const active  = allTasks.filter(t => t.status === 'In Progress');
-  const pending = allTasks.filter(t => t.status === 'Pending' && !(t.dueDate && t.dueDate < today));
-  const done    = allTasks.filter(t => t.status === 'Done');
-
-  // 3. Timeline — handled in timelineSection block below
-
-  function healthRow(label, pct, detail, color) {
-    return `
-      <div style="margin-bottom:10px;">
-        <div class="proj-progress-row" style="gap:12px;">
-          <span class="proj-progress-label" style="width:52px;">${label}</span>
-          <div class="progress-bar" style="flex:1;height:8px;margin-top:0;">
-            <div class="progress-fill progress-fill-${color}" style="width:${pct}%;"></div>
-          </div>
-          <span style="font-size:12px;font-weight:700;color:var(--text);width:36px;text-align:right;">${pct}%</span>
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);padding-left:64px;margin-top:2px;line-height:1.6;">${detail}</div>
-      </div>`;
-  }
-
-  const teamRows = [
-    ['PM',       project.projectManager],
-    ['Factory',  project.factoryManager],
-    ['QS',       project.qs],
-    ['Site',     project.siteEngineer],
-    ['Purchaser',project.purchaser],
-    ['Drafter',  project.drafter],
-  ].filter(([,v]) => v);
-
-  // ── Stages Pipeline HTML ──────────────────────────────────────────────────
-  const stagesHtml = (() => {
-    const stages = project.stages || [];
-    if (!stages.length) return '';
-    const completedCount = stages.filter(s => s.status === 'Completed').length;
-    const inProgressCount = stages.filter(s => s.status === 'In Progress').length;
-    const pct = Math.round(completedCount / stages.length * 100);
-    const activeStage = stages.find(s => s.status === 'In Progress')
-      || stages.find(s => s.status === 'Not Started');
-    const statusCfg = {
-      'Completed':   { dot: '#10b981', color: 'var(--green)',       bg: 'rgba(16,185,129,0.12)',  label: 'Done' },
-      'In Progress': { dot: '#3366ff', color: 'var(--accent)',      bg: 'rgba(51,102,255,0.12)',  label: 'Active' },
-      'Not Started': { dot: 'rgba(255,255,255,0.15)', color: 'var(--text-muted)', bg: 'transparent', label: '—' },
+  // ── Fabrication Pipeline HTML ────────────────────────────────────────────
+  const fabPipelineHtml = (() => {
+    const STEPS = ['Not Started', 'In Progress', 'QC Check', 'Ready for Delivery', 'Delivered'];
+    const stepColors = {
+      'Not Started':       { bg: 'rgba(107,114,148,0.15)', color: 'var(--text-muted)', border: 'rgba(107,114,148,0.3)' },
+      'In Progress':       { bg: 'rgba(51,102,255,0.15)',  color: 'var(--accent)',     border: 'var(--accent)' },
+      'QC Check':          { bg: 'rgba(217,119,6,0.15)',   color: 'var(--amber)',      border: 'var(--amber)' },
+      'Ready for Delivery':{ bg: 'rgba(16,185,129,0.15)',  color: 'var(--green)',      border: 'var(--green)' },
+      'Delivered':         { bg: 'rgba(16,185,129,0.22)',  color: 'var(--green)',      border: 'var(--green)' },
     };
-    const rows = stages.map((s, idx) => {
-      const cfg = statusCfg[s.status] || statusCfg['Not Started'];
-      const isActive = activeStage && s.num === activeStage.num;
-      const dateStr = s.status === 'Completed' && s.done ? s.done
-                    : s.status === 'In Progress' && s.started ? 'Started: ' + s.started
-                    : '';
+    if (!fabRows.length) {
       return `
-        <div class="stage-row" data-stage-idx="${idx}" style="
-          display:flex; align-items:center; gap:10px; padding:6px 8px;
-          border-radius:6px; cursor:pointer; transition:background 0.15s;
-          ${isActive ? 'background:rgba(51,102,255,0.08); border:1px solid rgba(51,102,255,0.2);' : 'border:1px solid transparent;'}
-        " title="Click to update status">
-          <span style="width:9px; height:9px; border-radius:50%; background:${cfg.dot}; flex-shrink:0; box-shadow:0 0 ${isActive?'6px':'0'} ${cfg.dot};"></span>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:12px; font-weight:${isActive?'700':'400'}; color:${isActive?'var(--text)':s.status==='Completed'?'var(--text-muted)':'var(--text)'}; display:flex; align-items:center; gap:6px;">
-              <span style="text-decoration:${s.status==='Completed'?'line-through':'none'};">${escHtml(s.name)}</span>
-              ${isActive ? '<span style="font-size:10px;color:var(--accent);font-weight:700;">← CURRENT</span>' : ''}
-            </div>
-            <div style="font-size:10px; color:var(--text-muted); margin-top:1px;">${escHtml(s.owner||'')}${dateStr ? ' · ' + dateStr : ''}</div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="section-label">Fabrication Pipeline</div>
+          <div style="font-size:12px;color:var(--text-muted);padding:6px 0;">
+            No FAB items yet — add in <button class="btn btn-ghost btn-sm" onclick="switchTab('info')" style="font-size:11px;padding:2px 8px;">Product Scope tab →</button>
           </div>
-          <span style="font-size:10px; padding:2px 7px; border-radius:10px; background:${cfg.bg}; color:${cfg.color}; flex-shrink:0; white-space:nowrap;">${escHtml(s.status)}</span>
+        </div>`;
+    }
+    const rows = fabRows.map(r => {
+      const current = r.status || 'Not Started';
+      const curIdx = STEPS.indexOf(current) === -1
+        ? (current === 'Completed' ? 4 : 0)
+        : STEPS.indexOf(current);
+      const chips = STEPS.map((step, i) => {
+        const active = i === curIdx;
+        const passed = i < curIdx;
+        const c = active ? stepColors[step] : passed
+          ? { bg: 'rgba(16,185,129,0.08)', color: 'rgba(16,185,129,0.6)', border: 'rgba(16,185,129,0.25)' }
+          : { bg: 'transparent', color: 'var(--text-muted)', border: 'rgba(255,255,255,0.1)' };
+        return `<span style="display:inline-block;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:${active?'700':'400'};background:${c.bg};color:${c.color};border:1px solid ${c.border};white-space:nowrap;">${step}</span>`;
+      });
+      const arrows = chips.flatMap((s, i) =>
+        i < chips.length - 1 ? [s, `<span style="color:rgba(255,255,255,0.2);font-size:10px;">›</span>`] : [s]
+      );
+      return `
+        <div style="margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text);">
+            ${escHtml(r.item||'Item')}
+            <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:6px;">
+              Qty: ${r.totalQty||'—'}${r.unit ? ' ' + escHtml(r.unit) : ''}
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${arrows.join('')}</div>
         </div>`;
     }).join('');
     return `
       <div class="card" style="margin-bottom:14px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-          <div class="section-label" style="margin:0;">Project Stages</div>
-          <span style="font-size:12px; color:var(--text-muted);">${completedCount}/${stages.length} done · ${pct}%</span>
-        </div>
-        <div class="progress-bar" style="height:4px; margin-bottom:10px;">
-          <div class="progress-fill" style="width:${pct}%; background:var(--green);"></div>
-        </div>
-        ${activeStage ? `<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">
-          Current stage: <strong style="color:var(--accent);">${escHtml(activeStage.name)}</strong>
-          ${inProgressCount > 0 ? `<span style="color:var(--text-muted)"> · owner: ${escHtml(activeStage.owner||'—')}</span>` : ''}
-        </div>` : `<div style="font-size:11px; color:var(--green); margin-bottom:8px;">✓ All stages complete</div>`}
-        <div style="max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:2px;" id="stages-list">
-          ${rows}
-        </div>
-        <div style="font-size:10px; color:var(--text-muted); margin-top:8px; padding-top:6px; border-top:1px solid var(--border);">
-          Click a stage to cycle status: Not Started → In Progress → Completed
-        </div>
+        <div class="section-label">Fabrication Pipeline</div>
+        ${rows}
       </div>`;
   })();
 
-  // ── Timeline HTML (always show, empty state if no dates) ──────────────────
-  const timelineSection = (() => {
-    const start = project.startDate ? new Date(project.startDate) : null;
-    const end   = project.endDate   ? new Date(project.endDate)   : null;
-    const now   = new Date();
-    if (!start || !end || isNaN(start) || isNaN(end)) {
+  // ── Installation Pipeline HTML ───────────────────────────────────────────
+  const installPipelineHtml = (() => {
+    const STEPS = ['Not Started', 'In Progress', 'Installed', 'Verified'];
+    const stepColors = {
+      'Not Started': { bg: 'rgba(107,114,148,0.15)', color: 'var(--text-muted)', border: 'rgba(107,114,148,0.3)' },
+      'In Progress': { bg: 'rgba(51,102,255,0.15)',  color: 'var(--accent)',     border: 'var(--accent)' },
+      'Installed':   { bg: 'rgba(16,185,129,0.15)',  color: 'var(--green)',      border: 'var(--green)' },
+      'Verified':    { bg: 'rgba(16,185,129,0.22)',  color: 'var(--green)',      border: 'var(--green)' },
+    };
+    if (!installRows.length) {
       return `
         <div class="card" style="margin-bottom:14px;">
-          <div class="section-label">Timeline</div>
-          <div style="font-size:12px; color:var(--text-muted); padding:8px 0; display:flex; align-items:center; gap:8px;">
-            <span style="font-size:16px;">📅</span>
-            <span>No dates set — <button class="btn btn-ghost btn-sm" onclick="switchTab('info')" style="font-size:11px; padding:2px 8px;">Add start &amp; end dates →</button></span>
-          </div>
+          <div class="section-label">Installation Pipeline</div>
+          <div style="font-size:12px;color:var(--text-muted);padding:6px 0;">No installation items yet</div>
         </div>`;
     }
-    const totalDays   = Math.round((end  - start) / 86400000);
-    const elapsedDays = Math.round((now  - start) / 86400000);
-    const remainDays  = Math.round((end  - now)   / 86400000);
-    const pct = Math.min(100, Math.max(0, Math.round(elapsedDays / totalDays * 100)));
-    const fillClass = pct > 80 ? 'progress-fill-red' : 'progress-fill-blue';
+    const rows = installRows.map(r => {
+      const total = parseFloat(r.totalQty) || 0;
+      const done  = parseFloat(r.doneQty)  || 0;
+      let curIdx;
+      if (r.status && STEPS.indexOf(r.status) !== -1)      curIdx = STEPS.indexOf(r.status);
+      else if (total > 0 && done >= total)                 curIdx = 2;
+      else if (done > 0)                                   curIdx = 1;
+      else                                                 curIdx = 0;
+      const chips = STEPS.map((step, i) => {
+        const active = i === curIdx;
+        const passed = i < curIdx;
+        const c = active ? stepColors[step] : passed
+          ? { bg: 'rgba(16,185,129,0.08)', color: 'rgba(16,185,129,0.6)', border: 'rgba(16,185,129,0.25)' }
+          : { bg: 'transparent', color: 'var(--text-muted)', border: 'rgba(255,255,255,0.1)' };
+        return `<span style="display:inline-block;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:${active?'700':'400'};background:${c.bg};color:${c.color};border:1px solid ${c.border};white-space:nowrap;">${step}</span>`;
+      });
+      const arrows = chips.flatMap((s, i) =>
+        i < chips.length - 1 ? [s, `<span style="color:rgba(255,255,255,0.2);font-size:10px;">›</span>`] : [s]
+      );
+      return `
+        <div style="margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text);">
+            ${escHtml(r.item||'Item')}
+            <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:6px;">
+              ${done} / ${total}${r.unit ? ' ' + escHtml(r.unit) : ''}
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${arrows.join('')}</div>
+        </div>`;
+    }).join('');
     return `
       <div class="card" style="margin-bottom:14px;">
-        <div class="section-label">Timeline</div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:6px;">
-          <span>Start: ${project.startDate}</span>
-          <span>End: ${project.endDate}</span>
-        </div>
-        <div class="progress-bar" style="height:8px;">
-          <div class="progress-fill ${fillClass}" style="width:${pct}%;"></div>
-        </div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">
-          ${pct}% elapsed · ${remainDays > 0 ? remainDays + ' days remaining' : Math.abs(remainDays) + ' days overdue'}
-        </div>
+        <div class="section-label">Installation Pipeline</div>
+        ${rows}
       </div>`;
   })();
 
   container.innerHTML = `
-    <!-- Summary header: read-only notice + edit shortcut -->
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-      <span style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:5px;">
-        <span style="font-size:13px;">👁</span> Summary — click stages to update progress
-      </span>
+      <span style="font-size:11px; color:var(--text-muted);">Summary</span>
       <button class="btn btn-ghost btn-sm" onclick="switchTab('info')" style="font-size:12px;">Edit Project Info →</button>
     </div>
 
-    <!-- Claims & Docs Health -->
     <div class="card" style="margin-bottom:14px;">
-      <div class="section-label">Project Health</div>
-      ${healthRow('CLAIMS', claimsPct, `$${(paid/1000).toFixed(0)}k / $${((cv+vo)/1000).toFixed(0)}k`, claimsPct>=80?'green':claimsPct>=40?'amber':'red')}
-      ${healthRow('DOCS',   docsTotal>0?Math.round(docsApproved/docsTotal*100):0, `${docsApproved}/${docsTotal} approved`, 'blue')}
-    </div>
-
-    <!-- Project Stages Pipeline -->
-    ${stagesHtml}
-
-    <!-- Fabrication Pipeline -->
-    ${fabRows.length ? (() => {
-      const PIPELINE_STEPS = ['Not Started', 'In Progress', 'QC Check', 'Ready for Delivery', 'Delivered'];
-      const stepColors = {
-        'Not Started':      { bg: 'rgba(107,114,148,0.15)', color: 'var(--text-muted)', border: 'rgba(107,114,148,0.3)' },
-        'In Progress':      { bg: 'rgba(51,102,255,0.15)',  color: 'var(--accent)',      border: 'var(--accent)' },
-        'QC Check':         { bg: 'rgba(217,119,6,0.15)',   color: 'var(--amber)',       border: 'var(--amber)' },
-        'Ready for Delivery':{ bg: 'rgba(16,185,129,0.15)', color: 'var(--green)',       border: 'var(--green)' },
-        'Delivered':        { bg: 'rgba(16,185,129,0.22)',  color: 'var(--green)',       border: 'var(--green)' },
-      };
-      const rows = fabRows.map(r => {
-        const current = r.status || 'Not Started';
-        const curIdx  = PIPELINE_STEPS.indexOf(current) === -1
-          ? (current === 'Completed' ? 4 : 0)
-          : PIPELINE_STEPS.indexOf(current);
-        const steps = PIPELINE_STEPS.map((step, i) => {
-          const active  = i === curIdx;
-          const passed  = i < curIdx;
-          const c = active ? stepColors[step] : passed
-            ? { bg: 'rgba(16,185,129,0.08)', color: 'rgba(16,185,129,0.6)', border: 'rgba(16,185,129,0.25)' }
-            : { bg: 'transparent', color: 'var(--text-muted)', border: 'rgba(255,255,255,0.1)' };
-          const label = step === 'In Progress' ? 'In Progress' : step;
-          return `<span style="
-            display:inline-block;padding:3px 8px;border-radius:12px;font-size:11px;
-            font-weight:${active ? '700' : '400'};
-            background:${c.bg};color:${c.color};
-            border:1px solid ${c.border};
-            white-space:nowrap;
-          ">${label}</span>`;
-        });
-        const arrows = steps.flatMap((s, i) =>
-          i < steps.length - 1
-            ? [s, `<span style="color:rgba(255,255,255,0.2);font-size:10px;">›</span>`]
-            : [s]
-        );
-        return `
-          <div style="margin-bottom:10px;">
-            <div style="font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text);">
-              ${escHtml(r.item||'Item')}
-              <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:6px;">
-                Qty: ${r.totalQty||'—'}${r.unit ? ' ' + escHtml(r.unit) : ''}
-              </span>
-            </div>
-            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-              ${arrows.join('')}
-            </div>
-          </div>`;
-      }).join('');
-      return `
-        <div class="card" style="margin-bottom:14px;">
-          <div class="section-label">Fabrication Pipeline</div>
-          ${rows}
-        </div>`;
-    })() : ''}
-
-    <!-- Tasks -->
-    <div class="card" style="margin-bottom:14px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div class="section-label" style="margin:0;">Tasks</div>
-        <a href="/tasks" class="btn btn-ghost btn-sm">View All →</a>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-        ${overdue.length ? `<span class="pill pill-red">🔴 ${overdue.length} overdue</span>` : ''}
-        ${active.length  ? `<span class="pill pill-blue">🔵 ${active.length} active</span>`  : ''}
-        ${pending.length ? `<span class="pill pill-amber">🟡 ${pending.length} pending</span>` : ''}
-        ${done.length    ? `<span class="pill pill-green">✅ ${done.length} done</span>`       : ''}
-        ${!allTasks.length ? '<span style="font-size:12px;color:var(--text-muted);">No tasks for this project yet</span>' : ''}
-      </div>
-      ${[...overdue, ...active, ...pending].length > 0 ? `
-        <div class="data-table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Task</th><th>Assigned</th><th>Due</th><th>Status</th></tr></thead>
-          <tbody>
-            ${[...overdue, ...active, ...pending].slice(0,6).map(t => `
-              <tr>
-                <td style="font-weight:500;">${escHtml(t.title||'')}</td>
-                <td style="font-size:12px;">${escHtml(t.assignedTo||'—')}</td>
-                <td style="font-size:12px;color:${t.dueDate&&t.dueDate<today?'var(--red)':'inherit'}">${t.dueDate||'—'}</td>
-                <td><span class="pill ${t.status==='Done'?'pill-green':t.status==='In Progress'?'pill-blue':'pill-amber'} pill-sm">${escHtml(t.status||'')}</span></td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
+      <div class="section-label">Overview</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px 14px;font-size:12px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Contract</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);">$${cv.toLocaleString()}</div>
         </div>
-      ` : ''}
+        <div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">VO</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);">$${vo.toLocaleString()}</div>
+        </div>
+        <div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Claims</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);">${claimsPct}%</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:1px;">$${(paid/1000).toFixed(0)}k / $${((cv+vo)/1000).toFixed(0)}k</div>
+        </div>
+        <div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Current Stage</div>
+          <div style="font-size:13px;font-weight:600;color:var(--accent);">${escHtml(currentStageName)}</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:1px;">Next: ${escHtml(nextActionOwner)}</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Materials on Order -->
-    ${activePOs.length ? `
-    <div class="card" style="margin-bottom:14px;">
-      <div class="section-label" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>Materials on Order</span>
-        <a href="/procurement" style="font-size:11px;color:var(--accent);">View all →</a>
-      </div>
-      <table style="width:100%;border-collapse:collapse;font-size:12px;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border);">
-            <th style="text-align:left;padding:5px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Material</th>
-            <th style="text-align:left;padding:5px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Supplier</th>
-            <th style="text-align:left;padding:5px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">ETA</th>
-            <th style="text-align:left;padding:5px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${activePOs.map(p => {
-            const statusColor = p.status === 'Overdue' ? 'var(--red)' : p.status === 'In Transit' ? 'var(--amber)' : 'var(--accent)';
-            return `<tr style="border-bottom:1px solid var(--border);">
-              <td style="padding:6px 8px;">${escHtml(p.material)}</td>
-              <td style="padding:6px 8px;color:var(--text-muted);">${escHtml(p.supplierName||'—')}</td>
-              <td style="padding:6px 8px;color:${p.status==='Overdue'?'var(--red)':'inherit'};font-weight:${p.status==='Overdue'?'600':'400'};">${p.promisedDate||'—'}</td>
-              <td style="padding:6px 8px;"><span style="font-size:11px;font-weight:600;color:${statusColor};">${escHtml(p.status)}</span></td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>` : ''}
+    ${fabPipelineHtml}
 
-    <!-- Team -->
-    ${teamRows.length ? `
-    <div class="card" style="margin-bottom:14px;">
-      <div class="section-label">Team</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">
-        ${teamRows.map(([k,v]) => `
-          <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
-            <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);min-width:60px;">${k}</span>
-            <span>${escHtml(v)}</span>
-          </div>`).join('')}
-      </div>
-    </div>` : ''}
+    ${installPipelineHtml}
 
-    ${timelineSection}
+    ${project.latestNotes ? `
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-label">Latest Notes</div>
+      <div style="font-size:13px;white-space:pre-wrap;line-height:1.5;color:var(--text);">${escHtml(project.latestNotes)}</div>
+    </div>` : ''}
   `;
-
-  // ── Bind stage click events (cycle status) ──────────────────────────────
-  container.querySelectorAll('.stage-row').forEach(row => {
-    row.addEventListener('click', async () => {
-      const idx = parseInt(row.dataset.stageIdx, 10);
-      if (!project.stages || !project.stages[idx]) return;
-      const stage = project.stages[idx];
-      const cycle = { 'Not Started': 'In Progress', 'In Progress': 'Completed', 'Completed': 'Not Started' };
-      stage.status = cycle[stage.status] || 'In Progress';
-      stage.statusChangedAt = new Date().toISOString();
-      if (stage.status === 'In Progress' && !stage.started) stage.started = new Date().toISOString().split('T')[0];
-      if (stage.status === 'Completed') stage.done = new Date().toISOString().split('T')[0];
-      if (stage.status === 'Not Started') { stage.started = ''; stage.done = ''; }
-      await saveProject();
-      renderSummaryTab();
-    });
-  });
 }
+
 
 // ── Helper: days since a date string ────────────────────────────────────────
 function daysSince(dateStr) {
@@ -1213,9 +1046,14 @@ function renderProductScope() {
     const zoneLabelHtml = row.unit === 'zone'
       ? `<input class="tbl-input zone-label-input" type="text" value="${escHtml(row.zoneLabel || '')}" placeholder="e.g. Zone A" style="width:80px; margin-left:4px;">`
       : `<input class="tbl-input zone-label-input" type="text" value="${escHtml(row.zoneLabel || '')}" placeholder="e.g. Zone A" style="width:80px; margin-left:4px; display:none;">`;
+    // Default new rows to Local Fabrication / Fixed / Parts: No
+    if (row.type == null)       row.type       = 'Local Fabrication';
+    if (row.itemType == null)   row.itemType   = 'Fixed';
+    if (row.partsRequired == null) row.partsRequired = false;
+
     tr.innerHTML = `
-      <td><input class="tbl-input" value="${escHtml(row.item || '')}" placeholder="e.g. SP30 Fixed Bollard" style="min-width:180px; width:100%;"></td>
-      <td><input class="tbl-input" type="number" value="${row.qty || 1}" min="1" style="width:60px;"></td>
+      <td><input class="tbl-input ps-item" value="${escHtml(row.item || '')}" placeholder="e.g. SP30 Fixed Bollard" style="min-width:160px; width:100%;"></td>
+      <td><input class="tbl-input ps-qty" type="number" value="${row.qty || 1}" min="1" style="width:60px;"></td>
       <td style="white-space:nowrap;">
         <select class="tbl-input unit-select" style="width:100px;">
           <option value="units"     ${row.unit === 'units'     ? 'selected' : ''}>units</option>
@@ -1229,17 +1067,39 @@ function renderProductScope() {
           <option value="zone"      ${row.unit === 'zone'      ? 'selected' : ''}>Zone</option>
         </select>${zoneLabelHtml}
       </td>
+      <td>
+        <select class="tbl-input ps-type" style="width:140px;">
+          <option value="Local Fabrication" ${row.type === 'Local Fabrication' ? 'selected' : ''}>Local Fabrication</option>
+          <option value="Overseas Order"    ${row.type === 'Overseas Order'    ? 'selected' : ''}>Overseas Order</option>
+          <option value="Purchase Item"     ${row.type === 'Purchase Item'     ? 'selected' : ''}>Purchase Item</option>
+        </select>
+      </td>
+      <td>
+        <select class="tbl-input ps-itemtype" style="width:100px;">
+          <option value="Fixed"      ${row.itemType === 'Fixed'      ? 'selected' : ''}>Fixed</option>
+          <option value="Mechanical" ${row.itemType === 'Mechanical' ? 'selected' : ''}>Mechanical</option>
+        </select>
+      </td>
+      <td style="text-align:center;">
+        <input type="checkbox" class="ps-parts" ${row.partsRequired ? 'checked' : ''} style="width:16px;height:16px;">
+      </td>
       <td><button class="btn btn-ghost btn-sm del-row-btn" title="Remove">✕</button></td>
     `;
-    const iItem = tr.querySelector('input.tbl-input');
-    const iQty  = tr.querySelectorAll('input.tbl-input')[1];
+    const iItem = tr.querySelector('input.ps-item');
+    const iQty  = tr.querySelector('input.ps-qty');
     const iUnit = tr.querySelector('select.unit-select');
     const iZoneLabel = tr.querySelector('.zone-label-input');
+    const iType = tr.querySelector('select.ps-type');
+    const iItemType = tr.querySelector('select.ps-itemtype');
+    const iParts = tr.querySelector('input.ps-parts');
     const sync = () => {
       project.productScope[idx].item      = iItem.value;
       project.productScope[idx].qty       = Number(iQty.value) || 1;
       project.productScope[idx].unit      = iUnit.value;
       project.productScope[idx].zoneLabel = iUnit.value === 'zone' ? iZoneLabel.value : '';
+      project.productScope[idx].type      = iType.value;
+      project.productScope[idx].itemType  = iItemType.value;
+      project.productScope[idx].partsRequired = !!iParts.checked;
       // Keep legacy product string for dashboard display
       project.product = project.productScope
         .filter(r => r.item)
@@ -1249,6 +1109,9 @@ function renderProductScope() {
     };
     [iItem, iQty, iZoneLabel].forEach(el => el.addEventListener('input', sync));
     iQty.addEventListener('change', sync);
+    iType.addEventListener('change', sync);
+    iItemType.addEventListener('change', sync);
+    iParts.addEventListener('change', sync);
     iUnit.addEventListener('change', () => {
       iZoneLabel.style.display = iUnit.value === 'zone' ? 'inline-block' : 'none';
       sync();

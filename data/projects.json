@@ -20,8 +20,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Job Code Created",
+    "actionBy": "Accounts",
     "fabPercent": 0,
     "installPercent": 6,
     "paidAmount": 0,
@@ -31,11 +31,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-14",
+        "done": "2026-04-14",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-14T03:49:06.513Z",
         "refs": [],
         "fileName": ""
       },
@@ -43,11 +43,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-14",
+        "done": "2026-04-14",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-14T03:49:08.216Z",
         "refs": [],
         "fileName": ""
       },
@@ -55,11 +55,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-14",
+        "done": "2026-04-14",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-14T03:49:11.299Z",
         "refs": [],
         "fileName": ""
       },
@@ -67,11 +67,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-14",
+        "done": "2026-04-14",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-14T03:49:12.343Z",
         "refs": [],
         "fileName": ""
       },
@@ -489,7 +489,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "Completed",
+        "status": "Not Started",
         "started": "2026-04-01",
         "done": "2026-04-10",
         "readyForDelivery": true,
@@ -503,7 +503,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "process": "",
@@ -517,7 +517,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "process": "",
@@ -637,37 +637,55 @@
         "item": "Block S - City Scape Gate - 4.4 Meters",
         "qty": 1,
         "unit": "sets",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "Block S - Auto Bollard Cova",
         "qty": 2,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "Block S - Auto Bollard Cova",
         "qty": 3,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "Block S - Auto Bollard Cova",
         "qty": 7,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "Block S - Cova Road Blocker",
         "qty": 2,
         "unit": "set-of-1",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "Block S - Cova Road Blocker",
         "qty": 1,
         "unit": "set-of-2",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
     "scopeNotes": "",
@@ -707,11 +725,11 @@
         "num": 1,
         "name": "LOI Received",
         "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-13",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-13T15:13:45.722Z",
         "refs": [],
         "fileName": ""
       },
@@ -723,7 +741,7 @@
         "started": "",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-13T15:13:49.457Z",
         "refs": [],
         "fileName": ""
       },
@@ -2034,7 +2052,7 @@
         "totalQty": 730,
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "Ready for Delivery",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "readyForDelivery": false,
@@ -3650,7 +3668,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "processLog": [
@@ -3670,7 +3688,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "processLog": [
@@ -3690,7 +3708,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "processLog": [
@@ -3710,7 +3728,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "processLog": [
@@ -3730,7 +3748,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "processLog": [
@@ -3750,7 +3768,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "process": "",
@@ -3762,7 +3780,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "process": "",
@@ -4261,7 +4279,7 @@
     "currentStage": "Quotation",
     "actionBy": "Sales",
     "fabPercent": 0,
-    "installPercent": 0,
+    "installPercent": 5,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
     "stages": [
@@ -5948,7 +5966,7 @@
     "id": "bd-xxx26-hwa-seng-t5-ers",
     "jobCode": "BD xxx26- HWA SENG (T5-ERS)",
     "projectName": "Installation of Crash Rated Road Blockers @ Changi Aiport Terminal 5",
-    "product": "CSG10506 Road Blocker - 2 No's\r\nAirside Fence Gate - W9930mm x 3700m high - 2 No's\r\nWelded Mesh Securtiy Fence, type C2a- 2400mm high single fence - 20 Meters \r\n\r\n3000mm high Fencing and Gate at CAFHI, 3000mm high welded mesh fence using 50 x 150 BRC mesh - 20 Meters",
+    "product": "1x CSG10506 ",
     "contractValue": 204500,
     "voValue": 0,
     "client": "",
@@ -6349,8 +6367,27 @@
         "notes": ""
       }
     ],
-    "fabrication": [],
-    "installation": [],
+    "fabrication": [
+      {
+        "item": "CSG10506",
+        "totalQty": 1,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": ""
+      }
+    ],
+    "installation": [
+      {
+        "item": "CSG10506",
+        "totalQty": 1,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": ""
+      }
+    ],
     "prpo": [],
     "paymentMilestones": [],
     "variationOrders": [],
@@ -6365,23 +6402,51 @@
         "loggedAt": "2026-04-09T09:38:52.636Z"
       }
     ],
-    "deliveryRequests": [],
+    "deliveryRequests": [
+      {
+        "id": "mnxccpcd",
+        "item": "",
+        "phase": "",
+        "qtyRequested": 1,
+        "unit": "",
+        "neededByDate": "",
+        "requestedBy": "",
+        "requestedAt": "2026-04-13T15:22:15.757Z",
+        "status": "Pending",
+        "ticketStatus": "New",
+        "acknowledgedBy": "",
+        "acknowledgedAt": null,
+        "inProductionAt": null,
+        "readyAt": null,
+        "readyMarkedBy": "",
+        "deliveredAt": null,
+        "deliveredConfirmedBy": "",
+        "notifyOnAck": true,
+        "notifyOnReady": true
+      }
+    ],
     "drawings": [],
     "productScope": [
       {
-        "item": "CSG10506 Road Blocker - 2 No's\r\nAirside Fence Gate - W9930mm x 3700m high - 2 No's\r\nWelded Mesh Securtiy Fence, type C2a- 2400mm high single fence - 20 Meters \r\n\r\n3000mm high Fencing and Gate at CAFHI, 3000mm high welded mesh fence using 50 x 150 BRC mesh - 20 Meters",
+        "item": "CSG10506 ",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "drawingFolders": [
+      "General"
+    ]
   },
   {
     "id": "bd-xxx26-v3-taman-jurong",
     "jobCode": "BD xxx26 - V3 (Taman Jurong)",
     "projectName": "Installation of Crash Rated Item @ Taman Jurong Polyclnic",
-    "product": "SP30 Fixed Bollard at Basement 1 - 28 No's\r\nSS Sleeve SP30 - 28 No's\r\nATG's SP400 Shallow Mount Fixed Bollard at Level 1 - 24 No's\r\nSS Sleeve SP400 - 24 No's\r\nCrash-Rated Drop Arm Barrier M30 - 1 No's",
+    "product": "1x SP30 Fixed Bollard",
     "contractValue": 228700,
     "voValue": 0,
     "client": "",
@@ -6414,7 +6479,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 2,
@@ -6425,7 +6491,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 3,
@@ -6436,7 +6503,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 4,
@@ -6447,7 +6515,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 5,
@@ -6458,7 +6527,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 6,
@@ -6469,7 +6539,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 7,
@@ -6480,7 +6551,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 8,
@@ -6491,7 +6563,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 9,
@@ -6502,7 +6575,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 10,
@@ -6513,7 +6587,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 11,
@@ -6524,7 +6599,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 12,
@@ -6535,7 +6611,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 13,
@@ -6546,7 +6623,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 14,
@@ -6557,7 +6635,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 15,
@@ -6568,7 +6647,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 16,
@@ -6579,7 +6659,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 17,
@@ -6590,7 +6671,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 18,
@@ -6601,7 +6683,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 19,
@@ -6612,7 +6695,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 20,
@@ -6623,7 +6707,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 21,
@@ -6634,7 +6719,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       }
     ],
     "documents": [
@@ -6717,10 +6803,71 @@
         "files": [],
         "group": "Safety Documents",
         "allowMultiple": false
+      },
+      {
+        "name": "Safe Work Procedure",
+        "status": "Not Submitted",
+        "submitted": "",
+        "approved": "",
+        "notes": ""
+      },
+      {
+        "name": "Name List",
+        "status": "Not Submitted",
+        "submitted": "",
+        "approved": "",
+        "notes": ""
+      },
+      {
+        "name": "Permit to Work (PTW)",
+        "status": "Not Submitted",
+        "submitted": "",
+        "approved": "",
+        "notes": ""
+      },
+      {
+        "name": "Letter of Appointment",
+        "status": "Not Submitted",
+        "submitted": "",
+        "approved": "",
+        "notes": ""
+      },
+      {
+        "name": "Lifting Plan",
+        "status": "Not Submitted",
+        "submitted": "",
+        "approved": "",
+        "notes": ""
+      },
+      {
+        "name": "Fall Prevention Plan",
+        "status": "Not Submitted",
+        "submitted": "",
+        "approved": "",
+        "notes": ""
       }
     ],
-    "fabrication": [],
-    "installation": [],
+    "fabrication": [
+      {
+        "item": "SP30 Fixed Bollard",
+        "totalQty": 1,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": ""
+      }
+    ],
+    "installation": [
+      {
+        "item": "SP30 Fixed Bollard",
+        "totalQty": 1,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": ""
+      }
+    ],
     "prpo": [],
     "paymentMilestones": [],
     "variationOrders": [],
@@ -6730,13 +6877,19 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "SP30 Fixed Bollard at Basement 1 - 28 No's\r\nSS Sleeve SP30 - 28 No's\r\nATG's SP400 Shallow Mount Fixed Bollard at Level 1 - 24 No's\r\nSS Sleeve SP400 - 24 No's\r\nCrash-Rated Drop Arm Barrier M30 - 1 No's",
+        "item": "SP30 Fixed Bollard",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "drawingFolders": [
+      "General"
+    ]
   },
   {
     "id": "pj10025-ica-kallang",

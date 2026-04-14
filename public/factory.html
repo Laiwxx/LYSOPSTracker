@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=1776140199">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 600px; margin: 0 auto; padding: 16px; }
@@ -135,16 +135,25 @@
     .counter-btn.minus { color: var(--red); }
     .counter-btn.plus  { color: var(--green); }
     .counter-val {
-      min-width: 52px;
+      width: 56px;
       height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      text-align: center;
       font-size: 18px;
       font-weight: 800;
       background: var(--bg2);
+      border: none;
       border-left: 1px solid var(--border);
       border-right: 1px solid var(--border);
+      color: var(--text);
+      font-family: inherit;
+      padding: 0;
+      -moz-appearance: textfield;
+    }
+    .counter-val:focus { outline: none; background: var(--bg3); }
+    .counter-val::-webkit-outer-spin-button,
+    .counter-val::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
     .counter-total {
       font-size: 11px;
@@ -167,6 +176,89 @@
       text-align: center;
     }
     .pq-save-btn:active { filter: brightness(0.9); }
+
+    /* ── FAB photo upload ── */
+    .pq-photo-section {
+      padding: 0 12px 14px;
+      border-top: 1px dashed var(--border);
+      margin-top: 4px;
+      padding-top: 12px;
+    }
+    .pq-photo-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .pq-photo-hint {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+    .pq-photo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pq-photo-pick {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    .pq-photo-pick:active { filter: brightness(0.92); }
+    .pq-photo-pick input[type=file] { display: none; }
+    .pq-photo-status {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .pq-photo-status.ok    { color: var(--green); }
+    .pq-photo-status.err   { color: var(--red); }
+    .pq-photo-thumbs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .pq-photo-thumb {
+      width: 66px;
+      height: 66px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      position: relative;
+      display: block;
+    }
+    .pq-photo-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .pq-photo-thumb .pq-photo-fallback {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: var(--text-muted);
+    }
 
     /* ── Manpower section ── */
     .mp-card {
@@ -602,6 +694,17 @@ async function renderPriorityQueue(queue, srAll) {
   active.forEach((proj, i) => {
     const fp = fabData[proj.projectId];
     if (!fp) return;
+    // If fabrication[] is empty but queue has items, seed it from queue items
+    if ((!fp.fabrication || !fp.fabrication.length) && proj.items && proj.items.length) {
+      fp.fabrication = proj.items.map(it => ({
+        item: it.description || it.item || '',
+        totalQty: it.totalQty || 0,
+        unit: it.unit || 'units',
+        qtyDone: it.doneQty || 0,
+        status: it.status || 'Not Started',
+        _fromScope: it.fromScope || false
+      }));
+    }
 
     const fabRows = (fp.fabrication || []);
     const incomplete = fabRows.filter((r, idx) => {
@@ -647,7 +750,7 @@ async function renderPriorityQueue(queue, srAll) {
     card.innerHTML =
       `<div class="pq-card-header" onclick="togglePQCard('${escHtml(fp.id)}')">` +
         `<div class="pq-header-info">` +
-          `<div class="pq-project-name">${escHtml(fp.jobCode || '')} · ${escHtml(fp.projectName || '')}</div>` +
+          `<div class="pq-project-name">${escHtml(fp.jobCode || '')} · ${escHtml(fp.projectName || '')} <span class="pq-pct-inline" style="color:var(--text-muted);font-weight:600;font-size:12px;margin-left:6px;">${pct}% complete</span></div>` +
           `<div class="pq-project-meta">` +
             `<span>${incomplete.length} item${incomplete.length !== 1 ? 's' : ''} left · ${pct}% done</span>` +
             (requesters.length ? `<span>👷 ${escHtml(requesters.join(', '))}</span>` : '') +
@@ -671,6 +774,42 @@ function togglePQCard(pid) {
   const items = document.getElementById('pq-items-' + pid);
   if (!card || !items) return;
   card.classList.toggle('expanded');
+}
+
+function updateCardPercent(pid) {
+  const fp = fabData[pid];
+  if (!fp) return;
+  const rows = fp.fabrication || [];
+  let total = 0, done = 0;
+  rows.forEach((r, idx) => {
+    const tot = parseFloat(r.totalQty) || 0;
+    const cur = updates[pid] && updates[pid][idx] !== undefined
+      ? updates[pid][idx]
+      : (parseFloat(r.qtyDone) || 0);
+    total += tot;
+    done  += cur;
+  });
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const card = document.getElementById('pq-card-' + pid);
+  if (!card) return;
+  const metaSpan = card.querySelector('.pq-project-meta > span:first-child');
+  if (metaSpan) {
+    const incLeft = rows.filter((r, idx) => {
+      const tot = parseFloat(r.totalQty) || 0;
+      const cur = updates[pid] && updates[pid][idx] !== undefined
+        ? updates[pid][idx]
+        : (parseFloat(r.qtyDone) || 0);
+      return cur < tot;
+    }).length;
+    metaSpan.textContent = `${incLeft} item${incLeft !== 1 ? 's' : ''} left · ${pct}% done`;
+  }
+  const fill = card.querySelector('.pq-progress-fill');
+  if (fill) {
+    fill.style.width = pct + '%';
+    fill.classList.toggle('complete', pct >= 100);
+  }
+  const pctInline = card.querySelector('.pq-pct-inline');
+  if (pctInline) pctInline.textContent = pct + '% complete';
 }
 
 function renderFabItems(fp) {
@@ -699,10 +838,23 @@ function renderFabItems(fp) {
       `</div>` +
       `<div class="counter">` +
         `<button class="counter-btn minus" data-pid="${escHtml(fp.id)}" data-idx="${idx}">−</button>` +
-        `<div class="counter-val" id="val-${escHtml(fp.id)}-${idx}" style="${currentDone >= qtyTotal && qtyTotal > 0 ? 'color:var(--green);' : ''}">${currentDone}</div>` +
+        `<input type="number" inputmode="numeric" min="0" max="${qtyTotal}" class="counter-val" id="val-${escHtml(fp.id)}-${idx}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" value="${currentDone}" style="${currentDone >= qtyTotal && qtyTotal > 0 ? 'color:var(--green);' : ''}">` +
         `<button class="counter-btn plus"  data-pid="${escHtml(fp.id)}" data-idx="${idx}">+</button>` +
       `</div>` +
       `<div class="counter-total"><div style="font-size:10px;">of</div><div style="font-weight:700;">${qtyTotal}</div></div>`;
+
+    const applyValue = (pid2, i2, newVal) => {
+      const row2 = fabData[pid2].fabrication[i2];
+      const tot  = parseFloat(row2.totalQty) || 0;
+      const cur  = Math.max(0, Math.min(tot || newVal, isNaN(newVal) ? 0 : newVal));
+      updates[pid2][i2] = cur;
+      const valEl = document.getElementById('val-' + pid2 + '-' + i2);
+      if (valEl) {
+        if (parseFloat(valEl.value) !== cur) valEl.value = cur;
+        valEl.style.color = (tot > 0 && cur >= tot) ? 'var(--green)' : 'var(--text)';
+      }
+      updateCardPercent(pid2);
+    };
 
     item.querySelectorAll('.counter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -713,14 +865,207 @@ function renderFabItems(fp) {
         let cur = updates[pid2][i2] !== undefined ? updates[pid2][i2] : (parseFloat(row2.qtyDone) || 0);
         if (btn.classList.contains('plus'))  cur = Math.min(tot, cur + 1);
         if (btn.classList.contains('minus')) cur = Math.max(0, cur - 1);
-        updates[pid2][i2] = cur;
-        const valEl = document.getElementById('val-' + pid2 + '-' + i2);
-        if (valEl) { valEl.textContent = cur; valEl.style.color = (tot > 0 && cur >= tot) ? 'var(--green)' : 'var(--text)'; }
+        applyValue(pid2, i2, cur);
       });
     });
 
+    const inputEl = item.querySelector('.counter-val');
+    if (inputEl) {
+      inputEl.addEventListener('input', () => {
+        const pid2 = inputEl.dataset.pid;
+        const i2   = parseInt(inputEl.dataset.idx);
+        const v    = parseFloat(inputEl.value);
+        if (!isNaN(v)) { updates[pid2][i2] = v; updateCardPercent(pid2); }
+      });
+      inputEl.addEventListener('blur', () => {
+        const pid2 = inputEl.dataset.pid;
+        const i2   = parseInt(inputEl.dataset.idx);
+        applyValue(pid2, i2, parseFloat(inputEl.value) || 0);
+      });
+      inputEl.addEventListener('focus', () => inputEl.select());
+    }
+
     container.appendChild(item);
   });
+
+  // Add Save button at bottom of items
+  const saveBtn = document.createElement('div');
+  saveBtn.style.cssText = 'padding:10px 12px;';
+  saveBtn.innerHTML = `<button class="pq-save-btn" onclick="saveSingleProject('${escHtml(fp.id)}')">💾 Save FAB Progress</button>`;
+  container.appendChild(saveBtn);
+
+  // Photo upload section (optional but encouraged)
+  const photoSection = document.createElement('div');
+  photoSection.className = 'pq-photo-section';
+  photoSection.id = 'pq-photos-' + fp.id;
+  photoSection.innerHTML = buildFabPhotoSectionHtml(fp);
+  container.appendChild(photoSection);
+  wireFabPhotoUpload(fp.id);
+}
+
+// ── FAB photo upload ───────────────────────────────────────────────────────
+function isFabPhotoDoc(doc) {
+  if (!doc) return false;
+  const t = String(doc.type || doc.name || '').toLowerCase();
+  return t.indexOf('fab') !== -1 || t.indexOf('fabrication') !== -1;
+}
+
+function collectFabPhotos(fp) {
+  const out = [];
+  const docs = (fp && fp.documents) || [];
+  docs.forEach(d => {
+    if (!isFabPhotoDoc(d)) return;
+    // Flat-entry shape: { type, filename, originalName, uploadedAt }
+    if (d.filename) {
+      out.push({ filename: d.filename, originalName: d.originalName || d.filename, uploadedAt: d.uploadedAt || '' });
+    }
+    // Legacy shape: { name, files: [{filename,...}] }
+    (d.files || []).forEach(f => {
+      if (f && f.filename) out.push({ filename: f.filename, originalName: f.originalName || f.filename, uploadedAt: f.uploadedAt || '' });
+    });
+  });
+  return out;
+}
+
+function buildFabPhotoSectionHtml(fp) {
+  const photos = collectFabPhotos(fp);
+  return (
+    `<div class="pq-photo-label">` +
+      `📷 Upload FAB Photo` +
+      `<span class="pq-photo-hint">Optional — encouraged</span>` +
+    `</div>` +
+    `<div class="pq-photo-row">` +
+      `<label class="pq-photo-pick" data-pid="${escHtml(fp.id)}">` +
+        `📁 Choose File` +
+        `<input type="file" accept="image/*" class="pq-photo-input" data-pid="${escHtml(fp.id)}">` +
+      `</label>` +
+      `<span class="pq-photo-status" id="pq-photo-status-${escHtml(fp.id)}"></span>` +
+    `</div>` +
+    `<div class="pq-photo-thumbs" id="pq-photo-thumbs-${escHtml(fp.id)}">` +
+      photos.map(p => renderFabPhotoThumbHtml(p)).join('') +
+    `</div>`
+  );
+}
+
+function renderFabPhotoThumbHtml(p) {
+  const src = '/uploads/' + encodeURIComponent(p.filename);
+  const title = escHtml(p.originalName || p.filename);
+  return (
+    `<a class="pq-photo-thumb" href="${src}" target="_blank" rel="noopener" title="${title}">` +
+      `<img src="${src}" alt="${title}" onerror="this.style.display='none';this.parentNode.insertAdjacentHTML('beforeend','<div class=\\'pq-photo-fallback\\'>📄</div>');">` +
+    `</a>`
+  );
+}
+
+function wireFabPhotoUpload(pid) {
+  const section = document.getElementById('pq-photos-' + pid);
+  if (!section) return;
+  const input = section.querySelector('.pq-photo-input');
+  if (!input) return;
+  input.addEventListener('change', async () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const statusEl = document.getElementById('pq-photo-status-' + pid);
+    if (statusEl) { statusEl.className = 'pq-photo-status'; statusEl.textContent = '⏳ Uploading…'; }
+
+    try {
+      // 1. Upload the file via multipart form
+      const fd = new FormData();
+      fd.append('file', file);
+      const upRes = await fetch('/api/projects/' + pid + '/upload', { method: 'POST', body: fd });
+      if (!upRes.ok) {
+        let msg = 'Upload failed (' + upRes.status + ')';
+        try { const j = await upRes.json(); if (j && j.error) msg = j.error; } catch {}
+        throw new Error(msg);
+      }
+      const upData = await upRes.json();
+      const filename     = upData.filename;
+      const originalName = upData.originalName || file.name;
+      if (!filename) throw new Error('No filename returned');
+
+      // 2. Persist reference in project.documents (type contains 'FAB')
+      const getRes = await fetch('/api/projects/' + pid);
+      if (!getRes.ok) throw new Error('Failed to reload project');
+      const proj = await getRes.json();
+      proj.documents = Array.isArray(proj.documents) ? proj.documents : [];
+      proj.documents.push({
+        type: 'FAB Photo',
+        name: 'FAB Photo',
+        filename,
+        originalName,
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: 'Chris'
+      });
+      const putRes = await fetch('/api/projects/' + pid, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(proj)
+      });
+      if (!putRes.ok) throw new Error('Failed to save photo reference');
+      try { fabData[pid] = await putRes.json(); } catch {}
+
+      // 3. Append thumbnail + success message
+      const thumbsEl = document.getElementById('pq-photo-thumbs-' + pid);
+      if (thumbsEl) {
+        thumbsEl.insertAdjacentHTML('beforeend', renderFabPhotoThumbHtml({ filename, originalName }));
+      }
+      if (statusEl) {
+        statusEl.className = 'pq-photo-status ok';
+        statusEl.textContent = '✅ Photo uploaded';
+      }
+    } catch (e) {
+      console.error('FAB photo upload error:', e);
+      if (statusEl) {
+        statusEl.className = 'pq-photo-status err';
+        statusEl.textContent = '❌ ' + (e.message || 'Upload failed');
+      }
+    } finally {
+      input.value = '';
+    }
+  });
+}
+
+async function saveSingleProject(pid) {
+  const btn = document.querySelector(`#pq-items-${pid} .pq-save-btn`);
+  if (btn) { btn.textContent = '⏳ Saving…'; btn.disabled = true; }
+  try {
+    const idxMap = updates[pid] || {};
+    if (!Object.keys(idxMap).length) {
+      if (btn) { btn.textContent = '✅ Nothing changed'; setTimeout(() => { btn.textContent = '💾 Save FAB Progress'; btn.disabled = false; }, 1500); }
+      return;
+    }
+    const getRes = await fetch('/api/projects/' + pid);
+    if (!getRes.ok) throw new Error('Failed to load project');
+    const proj = await getRes.json();
+    proj.fabrication = Array.isArray(proj.fabrication) ? proj.fabrication : [];
+    const fp_local = fabData[pid];
+    const fabRows = fp_local ? (fp_local.fabrication || []) : [];
+    for (const [idxStr, val] of Object.entries(idxMap)) {
+      const i = parseInt(idxStr, 10);
+      const num = parseFloat(val);
+      const row = fabRows[i];
+      if (!row) continue;
+      if (row._fromScope) {
+        const existing = proj.fabrication.find(f => (f.item||'').toLowerCase().trim() === (row.item||'').toLowerCase().trim());
+        if (existing) {
+          existing.qtyDone = isNaN(num) ? 0 : num;
+        } else {
+          proj.fabrication.push({ item: row.item, totalQty: row.totalQty || 0, unit: row.unit || 'units', qtyDone: isNaN(num) ? 0 : num, status: num > 0 ? 'In Progress' : 'Not Started' });
+        }
+      } else if (proj.fabrication[i]) {
+        proj.fabrication[i].qtyDone = isNaN(num) ? 0 : num;
+      }
+    }
+    const putRes = await fetch('/api/projects/' + pid, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(proj) });
+    if (!putRes.ok) throw new Error('Save failed');
+    try { fabData[pid] = await putRes.json(); } catch {}
+    await fetch('/api/admin/recalc', { method: 'POST' }).catch(() => {});
+    updateCardPercent(pid);
+    if (btn) { btn.textContent = '✅ Saved!'; setTimeout(() => { btn.textContent = '💾 Save FAB Progress'; btn.disabled = false; }, 2000); }
+  } catch(e) {
+    console.error('saveSingleProject error:', e);
+    if (btn) { btn.textContent = '❌ Error — retry'; btn.disabled = false; }
+  }
 }
 
 // ── SECTION B: Today's Manpower ───────────────────────────────────────────────
@@ -1071,26 +1416,74 @@ document.getElementById('factory-eod-btn').addEventListener('click', async () =>
   btn.disabled = true;
 
   try {
-    // Save all fab counter updates
-    const promises = [];
+    // Save all fab counter updates.
+    // For each project with pending updates:
+    //   1. GET /api/projects/:id to read the CURRENT server state (not the
+    //      cached copy from init — avoids clobbering concurrent edits).
+    //   2. Write qtyDone into project.fabrication[idx] — this is the same
+    //      array that renderFabItems() reads from, so the indices line up
+    //      and reloads will show the saved values.
+    //   3. PUT the full updated project back.
+    const savePromises = [];
     for (const [pid, idxMap] of Object.entries(updates)) {
       if (!Object.keys(idxMap).length) continue;
-      const proj = fabData[pid];
-      if (!proj) continue;
-      const fab = proj.fabrication || [];
-      for (const [idx, val] of Object.entries(idxMap)) {
-        if (fab[idx]) fab[idx].qtyDone = val;
-      }
-      proj.fabrication = fab;
-      promises.push(
-        fetch('/api/projects/' + pid, {
+
+      savePromises.push((async () => {
+        // 1. GET fresh project
+        const getRes = await fetch('/api/projects/' + pid);
+        if (!getRes.ok) throw new Error('Failed to load project ' + pid);
+        const proj = await getRes.json();
+
+        // 2. Update qtyDone — items may be from fabrication[] or productScope (_fromScope)
+        proj.fabrication = Array.isArray(proj.fabrication) ? proj.fabrication : [];
+        const fabData_local = fabData[pid];
+        const queueItems = fabData_local ? (fabData_local.fabrication || []) : [];
+        for (const [idxStr, val] of Object.entries(idxMap)) {
+          const i = parseInt(idxStr, 10);
+          const num = parseFloat(val);
+          const queueItem = queueItems[i];
+          if (!queueItem) continue;
+          if (queueItem.fromScope) {
+            // Item came from productScope — promote it into fabrication[]
+            const existing = proj.fabrication.find(f => (f.item||'').toLowerCase().trim() === (queueItem.description||'').toLowerCase().trim());
+            if (existing) {
+              existing.qtyDone = Number.isNaN(num) ? 0 : num;
+            } else {
+              proj.fabrication.push({
+                item: queueItem.description,
+                totalQty: queueItem.totalQty || 0,
+                unit: queueItem.unit || 'units',
+                qtyDone: Number.isNaN(num) ? 0 : num,
+                status: num >= (queueItem.totalQty || 0) && num > 0 ? 'Completed' : num > 0 ? 'In Progress' : 'Not Started'
+              });
+            }
+          } else {
+            // Item is in fabrication[] directly
+            if (!Number.isNaN(i) && proj.fabrication[i]) {
+              proj.fabrication[i].qtyDone = Number.isNaN(num) ? 0 : num;
+            }
+          }
+        }
+
+        // 3. PUT full updated project
+        const putRes = await fetch('/api/projects/' + pid, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(proj)
-        }).then(r => { if (!r.ok) throw new Error('Failed to save ' + pid); })
-      );
+        });
+        if (!putRes.ok) throw new Error('Failed to save ' + pid);
+
+        // Refresh local cache with the server's authoritative response so the
+        // UI reflects derived fields (fabPercent) without another round-trip.
+        try { fabData[pid] = await putRes.json(); } catch {}
+      })());
     }
-    await Promise.all(promises);
+    await Promise.all(savePromises);
+
+    // 5. Recalculate derived fields (fabPercent, etc.) across all projects
+    try {
+      await fetch('/api/admin/recalc', { method: 'POST' });
+    } catch (e) { console.warn('recalc failed', e); }
 
     // Submit EOD log for Chris
     const eodRes = await fetch('/api/eod-log', {

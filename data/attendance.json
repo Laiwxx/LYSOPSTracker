@@ -169,43 +169,29 @@
   },
   {
     "date": "2026-04-13",
-    "records": [
-      {
-        "workerId": "ss-chang-mui-yam",
-        "workerName": "Chang Mui Yam",
-        "status": "MC",
-        "notes": ""
-      },
-      {
-        "workerId": "wi-palanisamy-manikandan",
-        "workerName": "Palanisamy Manikandan",
-        "status": "MC",
-        "notes": ""
-      }
-    ],
-    "savedAt": "2026-04-13T14:33:39.839Z"
+    "records": [],
+    "savedAt": "2026-04-14T02:54:38.216Z"
   },
   {
     "date": "2026-04-14",
     "records": [],
-    "savedAt": "2026-04-13T14:15:29.000Z"
+    "savedAt": "2026-04-14T02:55:21.464Z"
   },
   {
     "date": "2026-04-16",
+    "records": [],
+    "savedAt": "2026-04-14T02:37:51.509Z"
+  },
+  {
+    "date": "2026-04-12",
     "records": [
       {
-        "workerId": "wm-tan-yock-wan",
-        "workerName": "Tan Yock Wan",
-        "status": "MC",
-        "notes": ""
-      },
-      {
-        "workerId": "wm-lin-chee-cheong",
-        "workerName": "Lin Chee Cheong",
+        "workerId": "wm-chin-poh-fatt",
+        "workerName": "Chin Poh Fatt",
         "status": "MC",
         "notes": ""
       }
     ],
-    "savedAt": "2026-04-13T14:42:00.654Z"
+    "savedAt": "2026-04-14T01:45:20.382Z"
   }
 ]

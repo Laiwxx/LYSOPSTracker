@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=1776140199">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -612,6 +612,7 @@ let projects     = [];   // active projects
 let plan         = {};   // { workerId: { mon: {type,…}, tue: {…}, … } }
 let supplyWorkers= [];   // [{ id, name, company, role, code }]
 let attendance   = {};   // { 'YYYY-MM-DD': { workerId: status } }
+let planCarriedOver = false; // true when assignments were copied from last week
 
 let weekStart    = getMonday(new Date());  // always a Monday
 let mobileDay    = DAYS[0];
@@ -630,7 +631,9 @@ function getMonday(d) {
   // Return as UTC date with same calendar date
   return new Date(sgt.getFullYear(), sgt.getMonth(), sgt.getDate());
 }
-function toStr(d) { return d.toISOString().split('T')[0]; }
+function toStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 function weekDates() {
   return DAYS.map((_,i) => {
     const d = new Date(weekStart);
@@ -707,14 +710,20 @@ async function loadWeek() {
   }));
 
   // Fetch weekly plan
+  planCarriedOver = false;
   try {
     const r = await fetch('/api/manpower-plan?weekStart=' + ws);
     if (r.ok) {
       const data = await r.json();
       plan          = data.assignments    || {};
       supplyWorkers = data.supplyWorkers  || [];
-      // If no supply workers this week, carry over from previous week
-      if (supplyWorkers.length === 0) {
+      // Carry over from previous week when this week is empty
+      const planEmpty = !Object.keys(plan).some(wid => {
+        const row = plan[wid] || {};
+        return Object.values(row).some(a => a && a.type);
+      });
+      const needsSupplyCarry = supplyWorkers.length === 0;
+      if (planEmpty || needsSupplyCarry) {
         const prevDate = new Date(weekStart);
         prevDate.setDate(prevDate.getDate() - 7);
         const prevWs = prevDate.getFullYear() + '-' + String(prevDate.getMonth()+1).padStart(2,'0') + '-' + String(prevDate.getDate()).padStart(2,'0');
@@ -722,7 +731,31 @@ async function loadWeek() {
           const prevR = await fetch('/api/manpower-plan?weekStart=' + prevWs);
           if (prevR.ok) {
             const prevData = await prevR.json();
-            supplyWorkers = (prevData.supplyWorkers || []).map(w => ({ ...w }));
+            if (needsSupplyCarry) {
+              // Carry over supply workers, dedup by name
+              const existingNames = new Set(supplyWorkers.map(w => w.name));
+              const carried = (prevData.supplyWorkers || []).filter(w => !existingNames.has(w.name));
+              supplyWorkers = [...supplyWorkers, ...carried];
+            }
+            if (planEmpty) {
+              const prevPlan = prevData.assignments || {};
+              const carried = {};
+              Object.keys(prevPlan).forEach(wid => {
+                const row = prevPlan[wid] || {};
+                const newRow = {};
+                Object.keys(row).forEach(day => {
+                  const a = row[day];
+                  if (a && a.type) {
+                    newRow[day] = Object.assign({}, a, { _carryover: true });
+                  }
+                });
+                if (Object.keys(newRow).length) carried[wid] = newRow;
+              });
+              if (Object.keys(carried).length) {
+                plan = carried;
+                planCarriedOver = true;
+              }
+            }
           }
         } catch {}
       }
@@ -763,10 +796,31 @@ function updateWeekLabel() {
 
 // ── Render ─────────────────────────────────────────────
 function render() {
+  renderCarryoverBanner();
   renderHead();
   renderBody();
   renderTabs();
   updateSummary();
+}
+
+function renderCarryoverBanner() {
+  let banner = document.getElementById('carryover-banner');
+  if (planCarriedOver) {
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'carryover-banner';
+      banner.style.cssText = 'background:rgba(217,119,6,0.10);border:1px solid rgba(217,119,6,0.35);color:var(--amber);padding:8px 14px;border-radius:8px;font-size:12px;margin:0 0 12px;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML = '<span style="font-size:14px;">↺</span><span>Assignments carried over from last week — adjust as needed.</span>';
+      const head = document.getElementById('grid-head');
+      if (head && head.parentElement && head.parentElement.parentElement) {
+        head.parentElement.parentElement.insertAdjacentElement('beforebegin', banner);
+      } else {
+        document.body.insertBefore(banner, document.body.firstChild);
+      }
+    }
+  } else if (banner) {
+    banner.remove();
+  }
 }
 
 function isMobileHidden(day) {
@@ -1115,14 +1169,19 @@ document.getElementById('save-btn').addEventListener('click', async () => {
   btn.textContent = '⏳ Saving…';
 
   // Strip _auto flags before saving (MC/Off come from attendance, not stored in plan)
+  // Strip _carryover flag so the carried assignment becomes a real one in storage.
   const cleanPlan = {};
   Object.entries(plan).forEach(([wid, days]) => {
     const clean = {};
     Object.entries(days).forEach(([day, data]) => {
-      if (!data._auto) clean[day] = data;
+      if (!data || data._auto) return;
+      const { _carryover, ...rest } = data;
+      clean[day] = rest;
     });
     if (Object.keys(clean).length) cleanPlan[wid] = clean;
   });
+  // Once user saves, the week has real assignments — clear the banner.
+  if (planCarriedOver) { planCarriedOver = false; renderCarryoverBanner(); }
 
   try {
     const r = await fetch('/api/manpower-plan', {

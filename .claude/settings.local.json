@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /home/ubuntu/ops-tracker/public/*.html /home/ubuntu/ops-tracker/public/js/*.js)"
+    ]
+  }
+}

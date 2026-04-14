@@ -15,6 +15,9 @@
     loadFactoryQueue();
     loadProjects();
     loadWeeklyBrief();
+    loadTodayMCFromAttendance();
+    // Auto-refresh weekly movement every 5 minutes
+    setInterval(function() { loadWeeklyBrief(); loadTodayMCFromAttendance(); }, 60 * 1000);
     loadEodStatus();
     bindFactoryToggle();
     bindMondayToggle();
@@ -450,10 +453,26 @@
     }
   }
 
-  function renderTodayMC(assignments, workerMap, todayKey) {
+  function renderMCList(entries) {
     var listEl = document.getElementById('mc-list');
     var countEl = document.getElementById('mc-count-label');
     if (!listEl) return;
+    if (countEl) countEl.textContent = entries.length ? entries.length + ' worker' + (entries.length > 1 ? 's' : '') : '';
+    if (!entries.length) {
+      listEl.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:6px 2px;">All present today ✅</div>';
+      return;
+    }
+    var chipStyle = 'display:inline-flex;align-items:center;gap:6px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.4);border-radius:8px;padding:5px 10px;margin:3px 4px 3px 0;font-size:12px;color:#fca5a5;font-weight:600;';
+    listEl.innerHTML = '<div style="display:flex;flex-wrap:wrap;">' +
+      entries.map(function(e) {
+        var icon = e.type === 'MC' ? '🤒' : '🌴';
+        var note = e.notes ? ' <span style="opacity:0.65;font-weight:400;">· ' + esc(e.notes) + '</span>' : '';
+        return '<span style="' + chipStyle + '">' + icon + ' ' + esc(e.name) + ' <span style="opacity:0.7;font-weight:500;">(' + esc(e.type) + ')</span>' + note + '</span>';
+      }).join('') + '</div>';
+  }
+
+  function renderTodayMC(assignments, workerMap, todayKey) {
+    // Collect from manpower plan
     var entries = [];
     var seen = {};
     Object.keys(assignments || {}).forEach(function(wId) {
@@ -466,26 +485,24 @@
       var name = (workerMap[wId] && workerMap[wId].name) || wId;
       entries.push({ name: name, type: a.type, notes: a.notes || '' });
     });
-    if (countEl) countEl.textContent = entries.length ? entries.length + ' worker' + (entries.length > 1 ? 's' : '') : '';
-    if (!entries.length) {
-      listEl.innerHTML =
-        '<div style="color:var(--text-muted);font-size:13px;padding:6px 2px;">All present today ✅</div>';
-      return;
-    }
-    var chipStyle =
-      'display:inline-flex;align-items:center;gap:6px;' +
-      'background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.4);' +
-      'border-radius:8px;padding:5px 10px;margin:3px 4px 3px 0;' +
-      'font-size:12px;color:#fca5a5;font-weight:600;';
-    listEl.innerHTML =
-      '<div style="display:flex;flex-wrap:wrap;">' +
-        entries.map(function(e) {
-          var icon = e.type === 'MC' ? '🤒' : '🌴';
-          var note = e.notes ? ' <span style="opacity:0.65;font-weight:400;">· ' + esc(e.notes) + '</span>' : '';
-          return '<span style="' + chipStyle + '">' + icon + ' ' + esc(e.name) +
-                 ' <span style="opacity:0.7;font-weight:500;">(' + esc(e.type) + ')</span>' + note + '</span>';
-        }).join('') +
-      '</div>';
+    renderMCList(entries);
+  }
+
+  async function loadTodayMCFromAttendance() {
+    // Also load directly from attendance.json for live accuracy
+    try {
+      var att = await api('GET', '/api/attendance/today');
+      var records = (att && att.records) ? att.records : [];
+      var entries = [];
+      var seen = {};
+      records.forEach(function(r) {
+        if (r.status !== 'MC' && r.status !== 'Absent' && r.status !== 'Off') return;
+        if (seen[r.workerId]) return;
+        seen[r.workerId] = true;
+        entries.push({ name: r.workerName || r.workerId, type: r.status, notes: r.notes || '' });
+      });
+      renderMCList(entries);
+    } catch(e) { console.warn('loadTodayMCFromAttendance error:', e); }
   }
 
   async function loadWeeklyBrief() {
@@ -507,7 +524,9 @@
     var TYPE_CFG = {
       Fabrication:  { icon:'\uD83C\uDFED', color:'#93c5fd', bg:'rgba(59,130,246,0.15)',  border:'rgba(59,130,246,0.4)'  },
       Installation: { icon:'\uD83D\uDD27', color:'#86efac', bg:'rgba(34,197,94,0.15)',   border:'rgba(34,197,94,0.4)'   },
-      Driver:       { icon:'\uD83D\uDE9A', color:'#fcd34d', bg:'rgba(245,158,11,0.15)',  border:'rgba(245,158,11,0.4)'  },
+      Driver:       { icon:'\uD83D\uDE9A', color:'#fdba74', bg:'rgba(249,115,22,0.15)',  border:'rgba(249,115,22,0.4)'  },
+      MC:           { icon:'\uD83E\uDD12', color:'#fca5a5', bg:'rgba(239,68,68,0.12)',   border:'rgba(239,68,68,0.35)'  },
+      Off:          { icon:'\uD83C\uDFE0', color:'#d1d5db', bg:'rgba(156,163,175,0.12)', border:'rgba(156,163,175,0.35)' },
     };
 
     try {
@@ -537,20 +556,29 @@
       // Fetch data — try current week, fall back to previous week if empty
       var plan        = await api('GET', '/api/manpower-plan?weekStart=' + weekStart);
       var assignments = (plan && plan.assignments) ? plan.assignments : {};
-      if (!hasAssignments(assignments)) {
-        var prevMonday = new Date(monday);
-        prevMonday.setDate(prevMonday.getDate() - 7);
-        var prevWeekStart = fmtYMD(prevMonday);
-        var prevPlan = await api('GET', '/api/manpower-plan?weekStart=' + prevWeekStart);
-        var prevAssignments = (prevPlan && prevPlan.assignments) ? prevPlan.assignments : {};
-        if (hasAssignments(prevAssignments)) {
-          weekStart = prevWeekStart;
-          monday = prevMonday;
-          plan = prevPlan;
-          assignments = prevAssignments;
-        }
-      }
+      // No fallback to previous week — show current week only (empty is fine)
       var workers     = await api('GET', '/api/workers?active=true');
+
+      // Fetch attendance for each day of the week — used to reconcile MC/Off
+      // entries in the plan (stale MC can persist in the plan file after the
+      // attendance record is cleared; planning.html hides those, so match it).
+      var weekAttendance = {}; // { dayKey: { workerId: status } }
+      var attDates = DAY_KEYS.map(function(d, i) {
+        var dt = new Date(monday);
+        dt.setDate(dt.getDate() + i);
+        return { day: d, date: fmtYMD(dt) };
+      });
+      await Promise.all(attDates.map(function(entry) {
+        return api('GET', '/api/attendance?date=' + entry.date)
+          .then(function(rec) {
+            var map = {};
+            if (rec && Array.isArray(rec.records)) {
+              rec.records.forEach(function(r) { map[r.workerId] = r.status; });
+            }
+            weekAttendance[entry.day] = map;
+          })
+          .catch(function() { weekAttendance[entry.day] = {}; });
+      }));
 
       // Lookup maps — include supply workers from plan
       var workerMap = {};
@@ -569,7 +597,7 @@
 
       // Build per-day summaries
       var summary = {};
-      DAY_KEYS.forEach(function(d) { summary[d] = { Fabrication:[], Installation:[], Driver:[] }; });
+      DAY_KEYS.forEach(function(d) { summary[d] = { Fabrication:[], Installation:[], Driver:[], MC:[], Off:[] }; });
 
       // Build project name map for clarity
       var projectNameMap = {};
@@ -588,6 +616,15 @@
           var a = assignments[wId][d];
           var dedupeKey = wId + '|' + d;
           if (a && a.type && summary[d][a.type] !== undefined && !seenWorkerDay[dedupeKey]) {
+            // MC/Off in the stored plan can be stale — only show them when
+            // today's attendance actually records the worker as MC/Off.
+            if (a.type === 'MC' || a.type === 'Off') {
+              var attStatus = (weekAttendance[d] || {})[wId];
+              var isMC  = attStatus === 'MC';
+              var isOff = attStatus === 'Absent' || attStatus === 'Off' || attStatus === 'On Leave';
+              if (a.type === 'MC' && !isMC) return;
+              if (a.type === 'Off' && !isOff) return;
+            }
             seenWorkerDay[dedupeKey] = true;
             summary[d][a.type].push({
               name:        name,
@@ -607,7 +644,7 @@
       renderTodayMC(assignments, workerMap, todayKey);
 
       var hasAny = DAY_KEYS.some(function(d) {
-        return summary[d].Fabrication.length + summary[d].Installation.length + summary[d].Driver.length > 0;
+        return summary[d].Fabrication.length + summary[d].Installation.length + summary[d].Driver.length + summary[d].MC.length + summary[d].Off.length > 0;
       });
 
       if (!hasAny) {
@@ -678,7 +715,9 @@
         var fab   = summary[d].Fabrication;
         var inst  = summary[d].Installation;
         var drv   = summary[d].Driver;
-        var total = fab.length + inst.length + drv.length;
+        var mc    = summary[d].MC;
+        var off   = summary[d].Off;
+        var total = fab.length + inst.length + drv.length + mc.length + off.length;
         var today = (d === todayKey);
 
         // Empty day → compact single-line row (no big coloured block)
@@ -727,7 +766,9 @@
 
         var body = typeGroup(fab, 'Fabrication') +
                    typeGroup(inst, 'Installation') +
-                   typeGroup(drv, 'Driver');
+                   typeGroup(drv, 'Driver') +
+                   typeGroup(mc, 'MC') +
+                   typeGroup(off, 'Off');
 
         return '<div style="' +
             'flex:0 0 210px;min-width:210px;' +

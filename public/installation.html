@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Installation — LYS</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=1776140199">
   <style>
     body { background: var(--bg); }
     .install-page { max-width: 640px; margin: 0 auto; padding: 16px; }
@@ -532,22 +532,27 @@ async function init() {
 function renderProjects(list) {
   const container = document.getElementById('section-projects');
 
-  // Filter by selected engineer if a project has siteEngineer set
+  // Filter by selected engineer. If no projects have any siteEngineer assigned,
+  // show all with a note prompting users to assign one.
   let filtered = list;
+  let noteHtml = '';
+  const hasAnyAssigned = list.some(p => p.siteEngineer && p.siteEngineer.trim());
   if (currentEngineer) {
-    filtered = list.filter(p =>
-      !p.siteEngineer || p.siteEngineer === currentEngineer
-    );
+    if (!hasAnyAssigned) {
+      noteHtml = '<div class="empty-state" style="margin-bottom:10px;padding:10px 14px;font-size:12px;color:var(--amber);background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.3);border-radius:8px;">⚠️ No projects have a site engineer assigned yet. Assign site engineer in project Info tab. Showing all projects.</div>';
+    } else {
+      filtered = list.filter(p => p.siteEngineer === currentEngineer);
+    }
   }
 
   document.getElementById('proj-count').textContent = filtered.length + ' project' + (filtered.length !== 1 ? 's' : '');
 
   if (!filtered.length) {
-    container.innerHTML = '<div class="empty-state">🏗️ No active installation projects found</div>';
+    container.innerHTML = noteHtml + '<div class="empty-state">🏗️ No active installation projects found</div>';
     return;
   }
 
-  container.innerHTML = '';
+  container.innerHTML = noteHtml;
   filtered.forEach(proj => {
     const endDate  = proj.endDate || proj.contractEndDate || proj.targetEndDate || '';
     const overdue  = isOverdue(proj);

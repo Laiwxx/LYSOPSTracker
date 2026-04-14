@@ -745,7 +745,28 @@ app.get('/api/factory-queue', (req, res) => {
 
   for (const p of projects) {
     if (p.status === 'Completed') continue;
-    const fabItems = (p.fabrication || []);
+    const fabItemsRaw = (p.fabrication || []);
+    // Merge productScope items so the factory queue auto-populates even when
+    // Chris hasn't hit "Sync to FAB" yet. Only Local Fabrication items flow here;
+    // Overseas Order / Purchase Item scope rows are skipped.
+    const scopeItems = (p.productScope || []).filter(s => {
+      if (!s || !s.item || !String(s.item).trim()) return false;
+      const t = s.type || 'Local Fabrication';
+      return t === 'Local Fabrication';
+    });
+    const fabKeys = new Set(fabItemsRaw.map(f => String(f.item || '').trim().toLowerCase()));
+    const scopeOnly = scopeItems
+      .filter(s => !fabKeys.has(String(s.item).trim().toLowerCase()))
+      .map(s => ({
+        item: String(s.item).trim(),
+        totalQty: Number(s.qty) || 0,
+        unit: s.unit || 'units',
+        qtyDone: 0,
+        qtySent: 0,
+        status: 'Not Started',
+        _fromScope: true,
+      }));
+    const fabItems = fabItemsRaw.concat(scopeOnly);
     if (!fabItems.length) continue;
 
     // Build delivery request map keyed by item name (lowercase)
@@ -775,6 +796,7 @@ app.get('/api/factory-queue', (req, res) => {
         doneQty: f.qtyDone || 0,
         fabPct: f.totalQty > 0 ? Math.round((f.qtyDone || 0) / f.totalQty * 100) : 0,
         status: f.status || 'Not Started',
+        fromScope: !!f._fromScope,
         readyForDelivery: f.readyForDelivery || false,
         targetDeliveryDate: f.targetDeliveryDate || '',
         readyAt: f.readyAt || null,
