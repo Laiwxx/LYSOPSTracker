@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Installation — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776263068">
+  <link rel="stylesheet" href="/css/style.css?v=1776274833">
   <style>
     body { background: var(--bg); }
     .install-page { max-width: 640px; margin: 0 auto; padding: 16px; }
@@ -992,25 +992,29 @@ function populateReqItemDropdown(projectId) {
     return;
   }
 
-  // Merge fabrication + productScope, dedup by normalized name, prefer fab labels
+  // Merge fabrication + productScope, dedup by normalized name, prefer fab labels.
+  // Track fabIdx alongside name — items sourced from proj.fabrication get a
+  // stable index we can pass to POST /api/site-requests so derivations can
+  // sum shipped qty per fab row by index (authoritative) instead of by name
+  // string (fragile — "SP400" vs "Bollard SP400" breaks the count).
   const seen = new Map();
-  (proj.fabrication || []).forEach(r => {
+  (proj.fabrication || []).forEach((r, idx) => {
     const name = (r.item || '').trim();
     if (!name) return;
     const k = name.toLowerCase();
-    if (!seen.has(k)) seen.set(k, name);
+    if (!seen.has(k)) seen.set(k, { name, fabIdx: idx });
   });
   (proj.productScope || []).forEach(s => {
     const name = (s.item || '').trim();
     if (!name) return;
     const k = name.toLowerCase();
-    if (!seen.has(k)) seen.set(k, name);
+    if (!seen.has(k)) seen.set(k, { name, fabIdx: null });
   });
 
-  const items = [...seen.values()].sort();
+  const items = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
   sel.innerHTML =
     '<option value="">— Select item —</option>' +
-    items.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('') +
+    items.map(i => `<option value="${esc(i.name)}" data-fab-idx="${i.fabIdx !== null ? i.fabIdx : ''}">${esc(i.name)}</option>`).join('') +
     '<option value="__other__">✏️ Other (type a custom name)…</option>';
 
   customWrap.style.display = 'none';
@@ -1026,9 +1030,14 @@ document.getElementById('req-submit-btn').addEventListener('click', async () => 
   const projSel = document.getElementById('req-project');
   const itemSel = document.getElementById('req-item');
   const customEl = document.getElementById('req-item-custom');
-  const item = itemSel.value === '__other__'
+  const isOther = itemSel.value === '__other__';
+  const item = isOther
     ? (customEl ? customEl.value.trim() : '')
     : itemSel.value.trim();
+  // Capture fabIdx from the selected dropdown option. Empty when the item
+  // came from productScope (no fab row yet) or when the user typed "Other".
+  const selOpt = (!isOther && itemSel.selectedIndex > 0) ? itemSel.options[itemSel.selectedIndex] : null;
+  const fabIdxAttr = selOpt ? selOpt.dataset.fabIdx : '';
   const qty     = parseFloat(document.getElementById('req-qty').value) || 1;
   const urgency = document.getElementById('req-urgency').value;
   const notes   = document.getElementById('req-notes').value.trim();
@@ -1048,7 +1057,8 @@ document.getElementById('req-submit-btn').addEventListener('click', async () => 
     notes: (urgency === 'Urgent' ? '[URGENT] ' : '') + notes,
     projectId:      projOpt ? projOpt.value : '',
     projectJobCode: projOpt ? projOpt.dataset.jc : '',
-    projectName:    projOpt ? projOpt.dataset.name : ''
+    projectName:    projOpt ? projOpt.dataset.name : '',
+    fabIdx:         fabIdxAttr !== '' ? parseInt(fabIdxAttr, 10) : null
   };
 
   btn.disabled = true;

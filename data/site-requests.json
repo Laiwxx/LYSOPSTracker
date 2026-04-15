@@ -5,7 +5,7 @@
     "projectJobCode": "BD 25225- Nakano (ST Eng DC)",
     "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
     "item": "SP400",
-    "quantity": 60,
+    "quantity": 22,
     "unit": "pcs",
     "neededByDate": "2026-04-20",
     "requestedBy": "Site Engineer",
@@ -16,6 +16,7 @@
     "estimatedReadyDate": null,
     "chrisNotes": null,
     "deliveredAt": "2026-04-14T04:42:37.980Z",
-    "issueReason": ""
+    "issueReason": "",
+    "fabIdx": 3
   }
 ]

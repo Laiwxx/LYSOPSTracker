@@ -97,6 +97,23 @@ const uploadImageOrPdf = multer({
   limits: { fileSize: 20 * 1024 * 1024 }
 });
 
+// Log-photo upload: used by the fab-row daily log accountability model.
+// Every log entry must carry a photo. Files land in
+// `public/uploads/fab-logs/<projectId>/<logId>.jpg`, dynamically resolved
+// per request. Memory-storage multer is used so we can run the image
+// through sharp (EXIF strip, HEIC→JPEG normalize, resize cap) before
+// writing the final file to disk. Max 15MB inbound — phone photos are
+// 4–8MB, HEIC bursts can be larger, 15MB gives headroom without letting
+// a single upload hog the server.
+const sharp = require('sharp');
+const FAB_LOGS_DIR = path.join(__dirname, 'public', 'uploads', 'fab-logs');
+if (!fs.existsSync(FAB_LOGS_DIR)) fs.mkdirSync(FAB_LOGS_DIR, { recursive: true });
+const uploadLogPhoto = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => cb(null, /^image\//.test(file.mimetype)),
+  limits: { fileSize: 15 * 1024 * 1024 }
+});
+
 // ── Basic Auth gate (pre-launch testing) ──────────────────────────────────────
 // Single shared username/password stored in env. Remove these env vars to disable.
 if (process.env.BASIC_AUTH_USER && process.env.BASIC_AUTH_PASSWORD) {
@@ -338,6 +355,15 @@ function getStaffEmail(name) {
   } catch { return null; }
 }
 
+// Role-based email lookup. Resolves a role alias (e.g. "Factory Manager")
+// via staff.json and falls back to the boss so notifications never silently
+// break if the role holder leaves and hasn't been reassigned yet.
+function getRoleEmail(role) {
+  const direct = getStaffEmail(role);
+  if (direct) return direct;
+  return getStaffEmail('Lai Wei Xiang') || getStaffEmail('Lai Weixiang') || process.env.ADMIN_EMAIL || null;
+}
+
 // Staff loaded dynamically from STAFF_FILE — no hardcoded list
 function getStaffNames() {
   const raw = readStaff();
@@ -390,7 +416,20 @@ function getWeekStart(date = new Date()) {
 
 function readProjects() {
   if (!fs.existsSync(DATA_FILE)) return [];
-  return safeReadJSON(DATA_FILE);
+  const projects = safeReadJSON(DATA_FILE);
+  // Normalize every fab row's qtyDone from its logs[] on the read path.
+  // Any row with a `logs` array (including empty) gets its qtyDone
+  // reconciled to sum(deltas) — empty array → 0, so deleting the last
+  // log makes the row zero out as the user expects. Rows with no `logs`
+  // field at all are left untouched (legacy transition only).
+  if (Array.isArray(projects)) {
+    for (const p of projects) {
+      if (Array.isArray(p.fabrication)) {
+        for (const r of p.fabrication) recomputeQtyDone(r);
+      }
+    }
+  }
+  return projects;
 }
 function writeProjects(projects) {
   const tmp = DATA_FILE + '.tmp';
@@ -923,6 +962,36 @@ app.put('/api/projects/:id', async (req, res) => {
     }
   }
 
+  // Preserve fab row logs[] + editHistory across the full-project PUT.
+  // /project.html's buildFabRow only writes visible fields (item, qty, unit,
+  // etc) and never round-trips logs[]. A naive `{...old, ...incoming}`
+  // spread would wipe server-side logs on every save. Walk the incoming
+  // fabrication array and copy logs (+ fab_started_at / fab_completed_at /
+  // cycle_days, which are also server-managed) from the matching old row.
+  // Match by item-name first (stable across reordering), fallback to index.
+  if (Array.isArray(incoming.fabrication) && Array.isArray(oldProject.fabrication)) {
+    const oldByName = new Map();
+    oldProject.fabrication.forEach((r, i) => {
+      const key = (r.item || '').toLowerCase().trim();
+      if (key) oldByName.set(key, r);
+    });
+    incoming.fabrication.forEach((r, i) => {
+      const key = (r.item || '').toLowerCase().trim();
+      const matchByName = key ? oldByName.get(key) : null;
+      const matchByIdx = oldProject.fabrication[i];
+      const oldRow = matchByName || matchByIdx;
+      if (oldRow) {
+        // Only copy if the incoming row doesn't already have these fields.
+        // The narrow fab endpoints DO include logs[]; only the full PUT
+        // from /project.html's buildFabRow is the lossy caller.
+        if (r.logs === undefined) r.logs = oldRow.logs || [];
+        if (r.fab_started_at === undefined) r.fab_started_at = oldRow.fab_started_at || null;
+        if (r.fab_completed_at === undefined) r.fab_completed_at = oldRow.fab_completed_at || null;
+        if (r.cycle_days === undefined) r.cycle_days = oldRow.cycle_days;
+      }
+    });
+  }
+
   projects[idx] = deriveFields({ ...oldProject, ...incoming });
   writeProjects(projects);
   res.json(projects[idx]);
@@ -950,6 +1019,7 @@ app.delete('/api/projects/:id', (req, res) => {
 app.get('/api/factory-queue', (req, res) => {
   try {
   const projects = readProjects();
+  const allSRs = readSiteRequests();
   const today = Date.now();
   const queue = [];
 
@@ -979,17 +1049,49 @@ app.get('/api/factory-queue', (req, res) => {
     const fabItems = fabItemsRaw.concat(scopeOnly);
     if (!fabItems.length) continue;
 
-    // Build delivery request map keyed by item name (lowercase)
-    // Source: project.deliveryRequests[] — dedicated delivery tab
+    // Build site-request maps for this project.
+    // Source: site-requests.json filtered by projectId. Retired
+    // project.deliveryRequests[] 2026-04-15 — site-requests are the canonical
+    // pull-from-site signal; project.deliveryRequests was a backwards
+    // push-from-project model that violated one-role-one-page.
+    //
+    // Three maps computed here:
+    //   deliveryMap  — OPEN (non-Delivered) SRs keyed by item name for
+    //                  the existing needed-by / ticket-status metadata.
+    //   shippedByIdx — total qty Delivered per fabIdx (authoritative).
+    //   shippedByKey — total qty Delivered per item-name key (fallback for
+    //                  legacy SRs with null fabIdx).
     const deliveryMap = {};
-    for (const req of (p.deliveryRequests || [])) {
-      const key = (req.item || '').toLowerCase().trim();
-      const isDelivered = (req.ticketStatus || req.status) === 'Delivered';
-      if (key && !isDelivered) {
-        // Multiple requests for same item: keep earliest neededByDate
-        if (!deliveryMap[key] || (req.neededByDate && req.neededByDate < deliveryMap[key].neededByDate)) {
-          deliveryMap[key] = req;
+    const shippedByIdx = {};
+    const shippedByKey = {};
+    for (const sr of allSRs) {
+      if (sr.projectId !== p.id) continue;
+      const key = (sr.item || '').toLowerCase().trim();
+      if (sr.status === 'Delivered') {
+        const q = parseFloat(sr.quantity) || 0;
+        if (sr.fabIdx !== null && sr.fabIdx !== undefined && !Number.isNaN(parseInt(sr.fabIdx, 10))) {
+          const fIdx = parseInt(sr.fabIdx, 10);
+          shippedByIdx[fIdx] = (shippedByIdx[fIdx] || 0) + q;
+        } else if (key) {
+          shippedByKey[key] = (shippedByKey[key] || 0) + q;
         }
+        continue;
+      }
+      if (!key) continue;
+      if (!deliveryMap[key] || (sr.neededByDate && sr.neededByDate < (deliveryMap[key].neededByDate || '9999'))) {
+        // Normalize SR shape into what the downstream items.map() reads:
+        // neededByDate, phase, requestedBy, acknowledgedAt, inProductionAt, id, ticketStatus.
+        deliveryMap[key] = {
+          id:              sr.id,
+          item:            sr.item,
+          neededByDate:    sr.neededByDate || '',
+          phase:           '',
+          requestedBy:     sr.requestedBy || '',
+          acknowledgedAt:  sr.acknowledgedAt || null,
+          acknowledgedBy:  sr.acknowledgedBy || '',
+          inProductionAt:  null,
+          ticketStatus:    sr.status || 'New',
+        };
       }
     }
 
@@ -999,17 +1101,45 @@ app.get('/api/factory-queue', (req, res) => {
       const daysUntilNeeded = req && req.neededByDate
         ? Math.floor((new Date(req.neededByDate).getTime() - today) / 86400000)
         : null;
+      // qtyShipped: sum of Delivered SRs linked to this fab row.
+      // Prefer fabIdx match (authoritative); fall back to item name for
+      // legacy SRs (pre-fabIdx) and free-text entries. Only real fabrication
+      // rows (not scope-seeded) have a stable index — scope-only rows always
+      // fall through to name match.
+      const shippedByIdxVal = f._fromScope ? 0 : (shippedByIdx[idx] || 0);
+      const shippedByKeyVal = shippedByKey[key] || 0;
+      const qtyShipped = shippedByIdxVal + shippedByKeyVal;
+      const qtyDone    = parseFloat(f.qtyDone) || 0;
+      // On-floor = built but not yet shipped. Clamp at 0 for edge cases
+      // where data drift (e.g. deletion of a fab row) would otherwise
+      // produce negatives.
+      const qtyOnFloor = Math.max(0, qtyDone - qtyShipped);
+      // Integrity check: you can't ship more than you built. When this
+      // happens it's usually bad SR quantity or a fab row qty that lags
+      // behind reality. Don't block the UI, just surface a soft-warn so
+      // Chris can fix the source data. Mirror of the planned
+      // qtyInstalled > qtyShipped banner on the install side.
+      const qtyOverShipped = qtyShipped > qtyDone;
+      // Include logs[] in the queue response so the client can render
+      // the today's-logs inline panel + timeline without a separate
+      // full-project fetch. Scope-only rows never have logs (they're
+      // synthetic, not yet persisted).
+      const logs = Array.isArray(f.logs) ? f.logs : [];
       return {
         idx,
         description: f.item || f.description || '',
         totalQty: f.totalQty || 0,
-        doneQty: f.qtyDone || 0,
-        fabPct: f.totalQty > 0 ? Math.round((f.qtyDone || 0) / f.totalQty * 100) : 0,
+        doneQty: qtyDone,
+        qtyShipped,
+        qtyOnFloor,
+        qtyOverShipped,
+        fabPct: f.totalQty > 0 ? Math.round(qtyDone / f.totalQty * 100) : 0,
         status: f.status || 'Not Started',
         fromScope: !!f._fromScope,
         readyForDelivery: f.readyForDelivery || false,
         targetDeliveryDate: f.targetDeliveryDate || '',
         readyAt: f.readyAt || null,
+        logs,
         deliveryRequested: !!req,
         neededByDate: req ? (req.neededByDate || '') : '',
         phase: req ? (req.phase || '') : '',
@@ -1039,8 +1169,33 @@ app.get('/api/factory-queue', (req, res) => {
 });
 
 // Whitelist of client-writable fields on fabrication rows. Anything outside
-// this set (fab_started_at, cycle_days, _fromScope, etc.) is server-managed.
+// this set (fab_started_at, cycle_days, _fromScope, logs, etc.) is server-managed.
+// NOTE: qtyDone remains writable via the narrow PUT for backward compat with
+// /project.html's buildFabRow inputs (still shipping as of Phase A). Direct
+// writes from /project will NOT create a log entry — that's a temporary dual
+// path. When /project's fab edit UI is retired in Phase 4, qtyDone comes off
+// this list and logs[] becomes the only write path.
 const FAB_WRITABLE_FIELDS = ['item','unit','totalQty','qtyDone','status','readyForDelivery','targetDeliveryDate','readyAt'];
+
+// recomputeQtyDone — source of truth for qtyDone is sum(logs[].delta).
+// We keep qtyDone on the fab row as a CACHE so readers don't have to sum on
+// every request (factory-queue, deriveFields, autoDeriveFabStatus all read
+// the field directly). Any code path that mutates logs[] must call this
+// immediately after.
+//
+// Empty-logs semantics: if `logs` is explicitly an array (possibly empty),
+// qtyDone is normalized to the sum — which is 0 for an empty array. This
+// is what the user expects when they delete the last log: the row zeros
+// out. If `logs` is absent entirely (row never touched by the daily-log
+// model), we leave qtyDone alone so the legacy /project.html direct-edit
+// path still works during the transition. Post-migration every fab row
+// has a `logs` array, so in practice the "leave alone" branch only
+// matters for brand-new rows created after migration.
+function recomputeQtyDone(fabItem) {
+  if (!Array.isArray(fabItem.logs)) return;
+  const sum = fabItem.logs.reduce((acc, l) => acc + (parseFloat(l.delta) || 0), 0);
+  fabItem.qtyDone = Math.round(sum * 100) / 100;
+}
 
 // Auto-derive status from qtyDone for batch items (totalQty > 1). Chris
 // picks "In Progress" on day 1 and forgets — the chip goes stale while
@@ -1065,8 +1220,10 @@ function autoDeriveFabStatus(fabItem) {
 }
 
 // Cycle-time stamping + derived status, shared by POST-append and PUT-update
-// so both paths stay consistent.
+// so both paths stay consistent. Also recomputes qtyDone from logs[] first so
+// downstream derivations (status chip, cycle time) run against the true value.
 function applyFabDerivations(oldItem, fabItem) {
+  recomputeQtyDone(fabItem);
   const oldQtyDone = parseFloat((oldItem || {}).qtyDone) || 0;
   const newQtyDone = parseFloat(fabItem.qtyDone) || 0;
   const qtyTotal   = parseFloat(fabItem.totalQty) || 0;
@@ -1140,6 +1297,383 @@ app.put('/api/projects/:id/fabrication/:idx', (req, res) => {
     logActivity('fab.updated', { projectId: req.params.id, jobCode: project.jobCode, itemIndex: idx, item: project.fabrication[idx].item || project.fabrication[idx].description || '', changes });
     res.json(project.fabrication[idx]);
   } catch (e) { logError('route.put.fabrication', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// ── Fabrication log entries ─────────────────────────────────────────────────
+// Phase A of the daily-log accountability model. Each build event is a log
+// entry with a mandatory photo (photoPath) paired to a delta. qtyDone is
+// derived (cached) from sum(logs[].delta). Edits preserve history. See
+// memory/project_factory_daily_log_model.md for the full contract.
+//
+// NOTE: photoPath is enforced here as a non-empty string reference. Phase A
+// ships the data model only — no UI, no multer route for log photos yet.
+// Callers in this phase can pass any placeholder string; Phase B wires the
+// real upload pipeline that produces a deterministic photoPath.
+
+// Shared: find the project + fab row, returning standardized 404s. Returns
+// { project, projects, row, idx } or sends the response and returns null.
+function _loadFabRowOr404(req, res) {
+  const projects = readProjects();
+  const project = projects.find(p => p.id === req.params.id);
+  if (!project) { res.status(404).json({ error: 'Project not found' }); return null; }
+  const idx = parseInt(req.params.idx, 10);
+  if (isNaN(idx) || idx < 0) { res.status(400).json({ error: 'Invalid fab index' }); return null; }
+  if (!Array.isArray(project.fabrication) || !project.fabrication[idx]) {
+    res.status(404).json({ error: 'Fab row not found' }); return null;
+  }
+  return { projects, project, row: project.fabrication[idx], idx };
+}
+
+// Shared: compute shipped qty for a given (project, fabIdx) by summing
+// Delivered site-requests. Matches the same shippedByIdx + shippedByKey
+// logic the factory-queue endpoint uses so log-write validation is
+// consistent with what the UI shows.
+function _shippedForFabRow(projectId, fabIdx, fabItemName) {
+  const srs = readSiteRequests();
+  const nameKey = (fabItemName || '').toLowerCase().trim();
+  let shipped = 0;
+  for (const sr of srs) {
+    if (sr.projectId !== projectId) continue;
+    if (sr.status !== 'Delivered') continue;
+    const q = parseFloat(sr.quantity) || 0;
+    if (sr.fabIdx !== null && sr.fabIdx !== undefined && !Number.isNaN(parseInt(sr.fabIdx, 10))) {
+      if (parseInt(sr.fabIdx, 10) === fabIdx) shipped += q;
+    } else if (nameKey && (sr.item || '').toLowerCase().trim() === nameKey) {
+      shipped += q;
+    }
+  }
+  return shipped;
+}
+
+// Shared: validate a proposed new total qtyDone against the BOM ceiling and
+// the shipped floor. Returns null if OK, or a { status, error } object to
+// send back. Hard blocks — matches the over-sent guardrail strategy.
+function _validateLogTotals(row, proposedQtyDone, projectId, fabIdx) {
+  const totalQty = parseFloat(row.totalQty) || 0;
+  if (totalQty > 0 && proposedQtyDone > totalQty) {
+    return {
+      status: 400,
+      error: `Cannot log more than total quantity. Proposed ${proposedQtyDone} exceeds totalQty ${totalQty}. Edit the BOM or adjust the delta.`,
+    };
+  }
+  const shipped = _shippedForFabRow(projectId, fabIdx, row.item);
+  if (shipped > proposedQtyDone) {
+    return {
+      status: 400,
+      error: `Cannot reduce built qty below already-shipped total. Proposed ${proposedQtyDone} is less than ${shipped} already shipped via delivered site-requests. Reconcile by editing shipment quantities first.`,
+    };
+  }
+  return null;
+}
+
+// POST /api/projects/:id/fabrication/:idx/log-photo — upload a log photo.
+// Accepts a single image file (multipart field name: `file`). Runs it
+// through sharp to strip EXIF, normalize HEIC/WEBP/PNG/etc to JPEG, and
+// cap long-edge at 1600px as a safety net (client compression also does
+// this, but we don't trust the client on its own). Writes to
+//   public/uploads/fab-logs/<projectId>/<logId>.jpg
+// Returns { photoPath, logId } so the client can then POST a log entry
+// with the same logId, producing a durable photo↔entry pairing.
+//
+// The photoPath returned is the public URL (e.g. `/uploads/fab-logs/xxx/log_abc.jpg`)
+// so the client can display it immediately without rewriting the path.
+// Internally `photoPath` on the log entry stores the same value.
+app.post('/api/projects/:id/fabrication/:idx/log-photo',
+  postRateLimit,
+  uploadLogPhoto.single('file'),
+  async (req, res) => {
+    try {
+      if (!req.file) return res.status(400).json({ error: 'No image file uploaded' });
+      const projects = readProjects();
+      const project = projects.find(p => p.id === req.params.id);
+      if (!project) return res.status(404).json({ error: 'Project not found' });
+      const fabIdx = parseInt(req.params.idx, 10);
+      if (isNaN(fabIdx) || fabIdx < 0) return res.status(400).json({ error: 'Invalid fab index' });
+      if (!Array.isArray(project.fabrication) || !project.fabrication[fabIdx]) {
+        return res.status(404).json({ error: 'Fab row not found' });
+      }
+
+      // Caller may supply a logId (so the subsequent log-create call can
+      // use the same id). Otherwise we mint one here and return it.
+      const suppliedId = typeof req.body.logId === 'string' ? req.body.logId.trim() : '';
+      const logId = suppliedId && /^log_[a-z0-9_]+$/i.test(suppliedId)
+        ? suppliedId
+        : ('log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+
+      // Project subdir — sanitize the project id for filesystem safety even
+      // though it's already normalized upstream.
+      const projectDirName = String(project.id).replace(/[^a-zA-Z0-9._-]/g, '_');
+      const projectDir = path.join(FAB_LOGS_DIR, projectDirName);
+      if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+      const destPath = path.join(projectDir, `${logId}.jpg`);
+
+      // Sharp pipeline: auto-rotate based on EXIF orientation (THEN strip
+      // metadata so the rotation is baked in), resize cap at 1600px long
+      // edge (inside — no upscale), re-encode as progressive JPEG at
+      // quality 85. `.jpeg()` implicitly strips EXIF unless we explicitly
+      // keep it. Sharp writes atomically; partial files aren't left on
+      // disk if the encode errors.
+      await sharp(req.file.buffer)
+        .rotate()
+        .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 85, progressive: true, mozjpeg: true })
+        .toFile(destPath);
+
+      const photoPath = `/uploads/fab-logs/${projectDirName}/${logId}.jpg`;
+      logActivity('fab.log.photo.uploaded', {
+        projectId: project.id, jobCode: project.jobCode, fabIdx, logId,
+        originalSize: req.file.size, originalMime: req.file.mimetype,
+      });
+      res.json({ photoPath, logId });
+    } catch (e) {
+      logError('route.post.fab-log-photo', e, { projectId: req.params.id, fabIdx: req.params.idx });
+      if (!res.headersSent) res.status(500).json({ error: 'Photo upload failed: ' + (e.message || 'unknown') });
+    }
+  }
+);
+
+// POST /api/projects/:id/fabrication/:idx/logs — create a log entry.
+// Body: { delta, photoPath, note?, loggedBy?, id? }
+// - delta must be a finite non-zero number (positive = built, negative = correction)
+// - photoPath is required (non-empty string)
+// - id is OPTIONAL — if the caller pre-uploaded a photo via the log-photo
+//   route and got back a logId, they pass it here so the entry and the
+//   photo file share the same identifier. Must match /^log_[a-z0-9_]+$/i.
+// - loggedBy defaults to 'Chris' (TODO: pull from session when auth lands)
+app.post('/api/projects/:id/fabrication/:idx/logs', postRateLimit, (req, res) => {
+  try {
+    const loaded = _loadFabRowOr404(req, res);
+    if (!loaded) return;
+    const { projects, project, row, idx } = loaded;
+
+    const delta = parseFloat(req.body.delta);
+    if (!Number.isFinite(delta) || delta === 0) {
+      return res.status(400).json({ error: 'delta must be a non-zero number' });
+    }
+    const photoPath = typeof req.body.photoPath === 'string' ? req.body.photoPath.trim() : '';
+    if (!photoPath) return res.status(400).json({ error: 'photoPath is required — every log entry must carry photo evidence' });
+    const note = typeof req.body.note === 'string' ? req.body.note.slice(0, 500) : '';
+    const loggedBy = (typeof req.body.loggedBy === 'string' && req.body.loggedBy.trim()) || 'Chris';
+
+    if (!Array.isArray(row.logs)) row.logs = [];
+    const currentSum = row.logs.reduce((a, l) => a + (parseFloat(l.delta) || 0), 0);
+    const proposedSum = Math.round((currentSum + delta) * 100) / 100;
+
+    const err = _validateLogTotals(row, proposedSum, project.id, idx);
+    if (err) return res.status(err.status).json({ error: err.error });
+
+    // Caller-supplied id: set when a photo was pre-uploaded via the
+    // log-photo route and returned a logId the client now passes back
+    // here. Must match the log_<...> pattern to prevent path injection
+    // and must not collide with an existing entry on this row.
+    const suppliedId = typeof req.body.id === 'string' ? req.body.id.trim() : '';
+    let entryId;
+    if (suppliedId) {
+      if (!/^log_[a-z0-9_]+$/i.test(suppliedId)) {
+        return res.status(400).json({ error: 'Invalid id format — must match /^log_[a-z0-9_]+$/i' });
+      }
+      if (row.logs.some(l => l.id === suppliedId)) {
+        return res.status(409).json({ error: 'A log entry with this id already exists' });
+      }
+      entryId = suppliedId;
+    } else {
+      entryId = 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    const entry = {
+      id: entryId,
+      loggedAt: new Date().toISOString(),
+      loggedBy,
+      delta: Math.round(delta * 100) / 100,
+      photoPath,
+      note,
+      editedAt: null,
+      editedBy: null,
+      editHistory: [],
+    };
+    row.logs.push(entry);
+
+    applyFabDerivations(null, row); // recomputes qtyDone + status + cycle time
+    deriveFields(project);
+    writeProjects(projects);
+    logActivity('fab.log.created', {
+      projectId: project.id, jobCode: project.jobCode,
+      fabIdx: idx, item: row.item,
+      logId: entry.id, delta: entry.delta, newTotal: row.qtyDone,
+    });
+    res.json({ log: entry, qtyDone: row.qtyDone, status: row.status });
+  } catch (e) {
+    logError('route.post.fab-log', e);
+    if (!res.headersSent) res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/projects/:id/fabrication/:idx/logs/:logId — edit a log entry.
+// Body: { delta?, photoPath?, note?, editedBy? }
+// Prior version pushed to editHistory[]. Never rewrites silently.
+app.put('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req, res) => {
+  try {
+    const loaded = _loadFabRowOr404(req, res);
+    if (!loaded) return;
+    const { projects, project, row, idx } = loaded;
+    if (!Array.isArray(row.logs)) return res.status(404).json({ error: 'No logs on this row' });
+    const logIdx = row.logs.findIndex(l => l.id === req.params.logId);
+    if (logIdx < 0) return res.status(404).json({ error: 'Log entry not found' });
+    const entry = row.logs[logIdx];
+
+    // Snapshot the prior version before mutating.
+    const priorSnapshot = {
+      at: entry.editedAt || entry.loggedAt,
+      by: entry.editedBy || entry.loggedBy,
+      delta: entry.delta,
+      note: entry.note || '',
+      photoPath: entry.photoPath,
+    };
+
+    // Build the proposed delta before validation so we can check the total.
+    const nextDelta = (req.body.delta !== undefined && req.body.delta !== null)
+      ? parseFloat(req.body.delta)
+      : entry.delta;
+    if (!Number.isFinite(nextDelta) || nextDelta === 0) {
+      return res.status(400).json({ error: 'delta must be a non-zero number' });
+    }
+    const otherSum = row.logs.reduce((a, l, i) => i === logIdx ? a : a + (parseFloat(l.delta) || 0), 0);
+    const proposedSum = Math.round((otherSum + nextDelta) * 100) / 100;
+    const err = _validateLogTotals(row, proposedSum, project.id, idx);
+    if (err) return res.status(err.status).json({ error: err.error });
+
+    // Apply the edit.
+    if (!Array.isArray(entry.editHistory)) entry.editHistory = [];
+    entry.editHistory.push(priorSnapshot);
+    entry.delta = Math.round(nextDelta * 100) / 100;
+    if (typeof req.body.photoPath === 'string' && req.body.photoPath.trim()) {
+      entry.photoPath = req.body.photoPath.trim();
+    }
+    if (typeof req.body.note === 'string') entry.note = req.body.note.slice(0, 500);
+    entry.editedAt = new Date().toISOString();
+    entry.editedBy = (typeof req.body.editedBy === 'string' && req.body.editedBy.trim()) || 'Chris';
+
+    applyFabDerivations(null, row);
+    deriveFields(project);
+    writeProjects(projects);
+    logActivity('fab.log.edited', {
+      projectId: project.id, jobCode: project.jobCode,
+      fabIdx: idx, item: row.item,
+      logId: entry.id, newDelta: entry.delta, newTotal: row.qtyDone,
+      editCount: entry.editHistory.length,
+    });
+    res.json({ log: entry, qtyDone: row.qtyDone, status: row.status });
+  } catch (e) {
+    logError('route.put.fab-log', e);
+    if (!res.headersSent) res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/projects/:id/fabrication/:idx/logs/:logId — remove a log entry.
+// Re-validates the row after removal (a delete can't push us under the
+// shipped floor). Phase B will also unlink the photo file server-side.
+app.delete('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req, res) => {
+  try {
+    const loaded = _loadFabRowOr404(req, res);
+    if (!loaded) return;
+    const { projects, project, row, idx } = loaded;
+    if (!Array.isArray(row.logs)) return res.status(404).json({ error: 'No logs on this row' });
+    const logIdx = row.logs.findIndex(l => l.id === req.params.logId);
+    if (logIdx < 0) return res.status(404).json({ error: 'Log entry not found' });
+    const removed = row.logs[logIdx];
+
+    const otherSum = row.logs.reduce((a, l, i) => i === logIdx ? a : a + (parseFloat(l.delta) || 0), 0);
+    const proposedSum = Math.round(otherSum * 100) / 100;
+    const err = _validateLogTotals(row, proposedSum, project.id, idx);
+    if (err) return res.status(err.status).json({ error: err.error });
+
+    row.logs.splice(logIdx, 1);
+    applyFabDerivations(null, row);
+    deriveFields(project);
+    writeProjects(projects);
+
+    // Unlink the photo file. Log photos are named <logId>.jpg — editing
+    // overwrites the same file in place, so there's never more than one
+    // physical file per logId. One unlink cleans up the whole entry
+    // (including any prior versions referenced in editHistory[]).
+    // Path-traversal guard: require the /uploads/ prefix and verify the
+    // resolved path lives inside UPLOADS_DIR before unlinking.
+    let photoUnlinked = false;
+    if (removed.photoPath && typeof removed.photoPath === 'string' && removed.photoPath.startsWith('/uploads/fab-logs/')) {
+      try {
+        const rel = removed.photoPath.replace(/^\/uploads\//, '');
+        const abs = path.resolve(path.join(UPLOADS_DIR, rel));
+        if (abs.startsWith(UPLOADS_DIR + path.sep) && fs.existsSync(abs)) {
+          fs.unlinkSync(abs);
+          photoUnlinked = true;
+        }
+      } catch (unlinkErr) {
+        logError('fab.log.delete.unlink', unlinkErr, { photoPath: removed.photoPath, logId: removed.id });
+      }
+    }
+
+    logActivity('fab.log.deleted', {
+      projectId: project.id, jobCode: project.jobCode,
+      fabIdx: idx, item: row.item,
+      logId: removed.id, deletedDelta: removed.delta, newTotal: row.qtyDone,
+      photoUnlinked,
+    });
+    res.json({ ok: true, qtyDone: row.qtyDone, status: row.status });
+  } catch (e) {
+    logError('route.delete.fab-log', e);
+    if (!res.headersSent) res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// --- API: Delete a fabrication row AND reindex any linked site-requests.
+// This is the ONE place fab rows should be deleted. Doing it via the full
+// project PUT (client-side splice → write-back) orphans site-requests that
+// hold a fabIdx pointing at rows below the deleted one, silently
+// mis-attributing shipments once Phase 2A landed. This narrow route keeps
+// fabIdx integrity:
+//   - SR with fabIdx === deletedIdx   → fabIdx set to null (falls back to
+//     item-name match in derivations; caller decides whether to also
+//     delete the SR)
+//   - SR with fabIdx >  deletedIdx    → fabIdx decremented by 1
+//   - SR with fabIdx <  deletedIdx    → untouched
+app.delete('/api/projects/:id/fabrication/:idx', (req, res) => {
+  try {
+    const projects = readProjects();
+    const project = projects.find(p => p.id === req.params.id);
+    if (!project) return res.status(404).json({ error: 'Not found' });
+    const idx = parseInt(req.params.idx, 10);
+    if (isNaN(idx) || idx < 0) return res.status(400).json({ error: 'Invalid index' });
+    if (!Array.isArray(project.fabrication) || !project.fabrication[idx]) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+    const removed = project.fabrication[idx];
+    project.fabrication.splice(idx, 1);
+    deriveFields(project);
+    writeProjects(projects);
+
+    // Walk site-requests and reindex fabIdx for this project only.
+    const srs = readSiteRequests();
+    let reindexed = 0, nulled = 0;
+    for (const sr of srs) {
+      if (sr.projectId !== project.id) continue;
+      if (sr.fabIdx === undefined || sr.fabIdx === null) continue;
+      const cur = parseInt(sr.fabIdx, 10);
+      if (Number.isNaN(cur)) continue;
+      if (cur === idx) { sr.fabIdx = null; nulled++; }
+      else if (cur > idx) { sr.fabIdx = cur - 1; reindexed++; }
+    }
+    if (reindexed || nulled) writeSiteRequests(srs);
+
+    logActivity('fab.deleted', {
+      projectId: req.params.id,
+      jobCode: project.jobCode,
+      itemIndex: idx,
+      item: removed.item || removed.description || '',
+      srReindexed: reindexed,
+      srNulled: nulled,
+    });
+    res.json({ ok: true, srReindexed: reindexed, srNulled: nulled });
+  } catch (e) { logError('route.delete.fabrication', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // --- API: Update installation item fields ---
@@ -2322,30 +2856,35 @@ cron.schedule('0 9 * * 1-5', async () => {
   } catch (e) { logError('cron.9am-checks', e); }
 }, { timezone: 'Asia/Singapore' });
 
-// Trigger 2: Noon weekdays — remind Chris about unacknowledged DRs > 24hrs
+// Trigger 2: Noon weekdays — remind Factory Manager about unacknowledged site requests > 24hrs
 cron.schedule('0 12 * * 1-5', async () => {
   try {
-  console.log('[CRON] Noon delivery request reminder check...');
-  const projects = readProjects();
-  const yesterday = new Date(Date.now() - 86400000).toISOString();
-  for (const p of projects) {
-    const stale = (p.deliveryRequests || []).filter(r =>
-      r.ticketStatus === 'New' && r.requestedAt && r.requestedAt < yesterday
-    );
-    if (stale.length > 0) {
-      const chrisEmail = getStaffEmail('Chris');
-      if (chrisEmail) {
-        await sendEmail(chrisEmail, 'Chris',
-          `[Reminder] Unacknowledged Delivery Request — ${p.jobCode}`,
-          `<p>Hi Chris,</p>
-          <p>A delivery request for <strong>${p.jobCode}</strong> has been waiting for your acknowledgement for over 24 hours.</p>
-          <p>Items: ${stale.map(r => r.item).join(', ')}</p>
-          <p><a href="${APP_URL}/project.html?id=${p.id}">Open OPS Tracker →</a></p>`
-        );
-      }
+    console.log('[CRON] Noon site-request reminder check...');
+    const srs = readSiteRequests();
+    const yesterday = new Date(Date.now() - 86400000).toISOString();
+    const stale = srs.filter(r => r.status === 'New' && r.createdAt && r.createdAt < yesterday);
+    if (!stale.length) return;
+    const byProject = {};
+    stale.forEach(r => {
+      const key = r.projectId || '__unlinked__';
+      if (!byProject[key]) byProject[key] = { jobCode: r.projectJobCode, projectName: r.projectName, items: [] };
+      byProject[key].items.push(r);
+    });
+    const factoryEmail = getRoleEmail('Factory Manager');
+    const factoryName = (readStaff()['Factory Manager'] || {}).name || 'Factory Manager';
+    if (!factoryEmail) return;
+    for (const key of Object.keys(byProject)) {
+      const group = byProject[key];
+      const label = group.jobCode || group.projectName || '(no project)';
+      await sendEmail(factoryEmail, factoryName,
+        `[Reminder] Unacknowledged Site Request — ${label}`,
+        `<p>Hi ${factoryName.split(' ')[0]},</p>
+        <p>A site request for <strong>${label}</strong> has been waiting for your acknowledgement for over 24 hours.</p>
+        <p>Items: ${group.items.map(r => `${r.item} (${r.quantity || r.qtyRequested || ''} ${r.unit || ''})`).join(', ')}</p>
+        <p><a href="${APP_URL}/factory">Open Factory dashboard →</a></p>`
+      );
     }
-  }
-  } catch (e) { logError('cron.noon-dr', e); }
+  } catch (e) { logError('cron.noon-sr', e); }
 }, { timezone: 'Asia/Singapore' });
 
 // 6pm weekdays — EOD reminder to staff who haven't submitted yet (with task status)
@@ -2751,15 +3290,40 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
   const neededByDate = sanitizeStr(req.body.neededByDate, 20);
   const requestedBy  = sanitizeStr(req.body.requestedBy, 100);
   const notes        = sanitizeStr(req.body.notes || '', 1000);
+  // fabIdx links the SR to a specific project.fabrication[] row.
+  // Captured when Teo picks from the fab dropdown on /installation; null for
+  // free-text / "Other" items. Derivations match by fabIdx first (authoritative),
+  // fall back to item-name match for legacy SRs or free-text entries.
+  const fabIdxRaw    = req.body.fabIdx;
+  const fabIdx       = (fabIdxRaw === undefined || fabIdxRaw === null || fabIdxRaw === '') ? null : parseInt(fabIdxRaw, 10);
 
   if (!item || !requestedBy || !neededByDate) {
     return res.status(400).json({ error: 'item, requestedBy, and neededByDate are required' });
+  }
+
+  // Validate project exists. Orphan requests (typo'd projectId, deleted project)
+  // would silently disappear from /factory and /project so block at creation.
+  let linkedProject = null;
+  if (projectId) {
+    const allProjects = readProjects();
+    linkedProject = allProjects.find(p => p.id === projectId);
+    if (!linkedProject) {
+      return res.status(400).json({ error: 'Unknown projectId — project no longer exists' });
+    }
+    // If fabIdx was supplied, validate it points to an actual fab row
+    if (fabIdx !== null && !Number.isNaN(fabIdx)) {
+      const fab = Array.isArray(linkedProject.fabrication) ? linkedProject.fabrication : [];
+      if (fabIdx < 0 || fabIdx >= fab.length) {
+        return res.status(400).json({ error: 'Invalid fabIdx — no matching fabrication row' });
+      }
+    }
   }
 
   const record = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     projectId, projectJobCode, projectName,
     item, quantity, unit, neededByDate,
+    fabIdx: (fabIdx !== null && !Number.isNaN(fabIdx)) ? fabIdx : null,
     requestedBy, notes,
     status: 'New',
     createdAt: new Date().toISOString(),
@@ -2773,14 +3337,15 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
   const all = readSiteRequests();
   all.push(record);
   writeSiteRequests(all);
-  logActivity('site-request.created', { id: record.id, item, requestedBy });
+  logActivity('site-request.created', { id: record.id, item, requestedBy, fabIdx: record.fabIdx });
 
-  // Notify Chris of new request
-  const chrisEmail = getStaffEmail('Chris');
-  if (chrisEmail) {
-    sendEmail(chrisEmail, 'Chris',
+  // Notify the Factory Manager role (resolves via staff.json; falls back to boss).
+  const factoryEmail = getRoleEmail('Factory Manager');
+  const factoryName  = (readStaff()['Factory Manager'] || {}).name || 'Factory Manager';
+  if (factoryEmail) {
+    sendEmail(factoryEmail, factoryName,
       `[New Site Request] ${item} — ${projectJobCode || projectName}`,
-      `<p>Hi Chris,</p>
+      `<p>Hi ${factoryName.split(' ')[0]},</p>
       <p>A new factory request has been submitted.</p>
       <table style="border-collapse:collapse;font-family:Arial,sans-serif;margin:10px 0;">
         <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${item}</td></tr>
@@ -2801,7 +3366,7 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
 // PUT /api/site-requests/:id — update status, Chris response, OR core fields.
 // Permissive model: any field can be edited at any status. Every change is logged
 // with actor + diff + previousStatus so the audit trail is the accountability layer.
-app.put('/api/site-requests/:id', (req, res) => {
+app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
   try {
   const all = readSiteRequests();
   const idx = all.findIndex(r => r.id === req.params.id);
@@ -2918,7 +3483,82 @@ app.put('/api/site-requests/:id', (req, res) => {
 
 // DELETE /api/site-requests/:id — permissive, audit-logged.
 // Actor is read from query string (?actor=Teo) since DELETE has no body in most clients.
-app.delete('/api/site-requests/:id', (req, res) => {
+// POST /api/site-requests/:id/split — partial shipment support.
+// Business need: Teo raises an SR for 100 units. Chris has built 40 and the
+// install team needs them now. Previously "Delivered" was all-or-nothing so
+// Chris had to close the SR early (wrong) or wait until all 100 were built
+// (bad). This route splits the SR into:
+//   - parent:  quantity=readyQty, stays on its current status trajectory
+//              so Chris can Mark Ready → Delivered on just the ready batch
+//   - sibling: quantity=(parent.quantity - readyQty), status='Acknowledged',
+//              parentId=parent.id, fresh createdAt, inherits fabIdx/project/
+//              item/unit/neededByDate/requestedBy/notes
+// The sibling goes straight to Acknowledged (not New) because (a) Chris
+// already knows about it — he just split it — and (b) it avoids the noon
+// cron re-nagging about a "new" request within 24h of the original.
+// No email triggered — splits are a Chris-internal workflow, not a new
+// request signal.
+app.post('/api/site-requests/:id/split', postRateLimit, (req, res) => {
+  try {
+    const all = readSiteRequests();
+    const idx = all.findIndex(r => r.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Site request not found' });
+    const parent = all[idx];
+    if (parent.status === 'Delivered') {
+      return res.status(400).json({ error: 'Cannot split a Delivered request' });
+    }
+    const readyQty = parseFloat(req.body.readyQty);
+    const parentQty = parseFloat(parent.quantity) || 0;
+    if (!Number.isFinite(readyQty) || readyQty <= 0) {
+      return res.status(400).json({ error: 'readyQty must be a positive number' });
+    }
+    if (readyQty >= parentQty) {
+      return res.status(400).json({ error: `readyQty (${readyQty}) must be less than parent quantity (${parentQty}) — use the normal Ready/Delivered flow for full shipments` });
+    }
+
+    const balance = Math.round((parentQty - readyQty) * 100) / 100;
+    const sibling = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      projectId:       parent.projectId,
+      projectJobCode:  parent.projectJobCode,
+      projectName:     parent.projectName,
+      item:            parent.item,
+      quantity:        balance,
+      unit:            parent.unit,
+      neededByDate:    parent.neededByDate,
+      fabIdx:          (parent.fabIdx !== undefined ? parent.fabIdx : null),
+      requestedBy:     parent.requestedBy,
+      notes:           parent.notes,
+      status:          'Acknowledged',
+      createdAt:       new Date().toISOString(),
+      acknowledgedAt:  new Date().toISOString(),
+      estimatedReadyDate: null,
+      chrisNotes:      null,
+      deliveredAt:     null,
+      issueReason:     null,
+      parentId:        parent.id,
+    };
+
+    parent.quantity = readyQty;
+    all.push(sibling);
+    writeSiteRequests(all);
+    logActivity('site-request.split', {
+      parentId: parent.id,
+      siblingId: sibling.id,
+      item: parent.item,
+      readyQty,
+      balance,
+      projectId: parent.projectId,
+    });
+
+    res.json({ parent, sibling });
+  } catch (e) {
+    logError('route.post.site-requests.split', e);
+    if (!res.headersSent) res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/site-requests/:id', postRateLimit, (req, res) => {
   try {
     const all = readSiteRequests();
     const idx = all.findIndex(r => r.id === req.params.id);

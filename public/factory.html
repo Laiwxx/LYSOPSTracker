@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776263068">
+  <link rel="stylesheet" href="/css/style.css?v=1776274833">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 600px; margin: 0 auto; padding: 16px; }
@@ -609,6 +609,359 @@
       font-size: 10px;
       font-weight: 700;
     }
+
+    /* ── Daily log modal ─────────────────────────────────────────────────
+       Full-sheet on phone, centered card on desktop. Photo capture is the
+       primary action (mandatory). Delta + optional note follow. Save
+       disabled until photo AND delta are present. ─────────────────────── */
+    .log-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+    }
+    .log-modal.open { display: block; }
+    .log-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+    }
+    .log-modal-sheet {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      background: var(--bg2);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    @media (min-width: 640px) {
+      .log-modal-sheet {
+        top: 50%;
+        bottom: auto;
+        transform: translate(-50%, -50%);
+        border-radius: 16px;
+        max-height: 85vh;
+      }
+    }
+    .log-modal-header {
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .log-modal-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .log-modal-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .log-modal-body {
+      padding: 16px 18px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .log-modal-photo-zone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      background: var(--bg3);
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .log-modal-photo-zone.filled {
+      border-style: solid;
+      padding: 0;
+      background: var(--bg);
+    }
+    .log-modal-photo-empty {
+      text-align: center;
+      padding: 20px;
+    }
+    .log-modal-photo-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .log-modal-photo-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .log-modal-photo-btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .log-modal-photo-preview {
+      width: 100%;
+      position: relative;
+    }
+    .log-modal-photo-preview img {
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      display: block;
+    }
+    .log-modal-photo-retake {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .log-modal-photo-status {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 8px 12px 0;
+      text-align: center;
+    }
+    .log-modal-photo-status.err { color: var(--red); }
+    .log-modal-field {
+      margin-bottom: 14px;
+    }
+    .log-modal-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .log-modal-field input[type="number"],
+    .log-modal-field input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+    }
+    .log-modal-field input:focus {
+      border-color: var(--accent);
+    }
+    .log-modal-footer {
+      display: flex;
+      gap: 10px;
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    .log-modal-btn {
+      flex: 1;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .log-modal-btn-cancel {
+      background: var(--bg3);
+      color: var(--text);
+    }
+    .log-modal-btn-save {
+      background: var(--green);
+      color: #fff;
+    }
+    .log-modal-btn-save:disabled {
+      background: var(--bg3);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    /* ── Fab row — new daily-log-model layout ─────────────────────────── */
+    .fab-row-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px 6px;
+    }
+    .fab-row-name {
+      flex: 1;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .fab-row-state {
+      padding: 0 12px 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .fab-row-qty {
+      color: var(--text);
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .fab-row-action {
+      padding: 6px 12px 10px;
+    }
+    .fab-log-btn {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .fab-log-btn.logged-today {
+      background: var(--bg3);
+      color: var(--text);
+    }
+    .fab-log-btn-icon {
+      font-size: 16px;
+    }
+    /* Split button for logged-today state: tappable chip + log again */
+    .fab-log-split {
+      display: flex;
+      gap: 8px;
+    }
+    .fab-log-split .fab-logged-chip {
+      flex: 1;
+      padding: 10px 12px;
+      background: var(--bg3);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .fab-log-split .fab-logged-chip:active { background: var(--bg); }
+    .fab-log-split .fab-logged-chip .caret { color: var(--text-muted); font-size: 10px; }
+    .fab-log-split .fab-log-again-btn {
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    /* Inline log history panel — expanded when user taps the logged chip.
+       Shows ALL log entries for the row (not just today's), newest first,
+       grouped by date header. Capped height with scroll for long histories. */
+    .fab-today-logs-panel {
+      background: var(--bg3);
+      border-top: 1px solid var(--border);
+      padding: 8px 12px;
+      font-size: 11px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .fab-today-logs-panel[hidden] { display: none; }
+    .fab-log-day-header {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      padding: 10px 0 4px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2px;
+    }
+    .fab-log-day-header:first-child { padding-top: 2px; }
+    .fab-log-day-header.today { color: var(--accent); }
+    .fab-today-log-entry {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .fab-today-log-entry:last-child { border-bottom: none; }
+    .fab-today-log-time {
+      color: var(--text-muted);
+      font-size: 11px;
+      width: 52px;
+      flex-shrink: 0;
+    }
+    .fab-today-log-delta {
+      font-weight: 800;
+      color: var(--text);
+      width: 50px;
+      flex-shrink: 0;
+    }
+    .fab-today-log-delta.neg { color: var(--red); }
+    .fab-today-log-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+    .fab-today-log-note {
+      flex: 1;
+      color: var(--text-muted);
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .fab-today-log-edited {
+      color: var(--amber);
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .fab-today-log-actions {
+      display: flex;
+      gap: 4px;
+    }
+    .fab-today-log-btn {
+      padding: 4px 8px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .fab-today-log-btn.danger { color: var(--red); }
   </style>
 </head>
 <body>
@@ -766,7 +1119,6 @@
 
 // ── Global state ───────────────────────────────────────────────────────────────
 let fabData    = {};  // { projectId: fullProjectData }
-let updates    = {};  // { projectId: { fabIdx: newQtyDone } }
 const FAB_STAGES = ['Not Started', 'In Progress', 'QC Check', 'Ready for Delivery', 'Delivered'];
 let siteRequests = [];
 const today    = new Date().toISOString().split('T')[0];
@@ -907,10 +1259,13 @@ async function renderPriorityQueue(queue, srAll) {
     active.map(p => fetch('/api/projects/' + p.projectId).then(r => r.json()).catch(() => null))
   );
   fullProjects.forEach(fp => {
-    if (fp) { fabData[fp.id] = fp; updates[fp.id] = updates[fp.id] || {}; }
+    if (fp) { fabData[fp.id] = fp; }
   });
 
-  // Seed fabrication rows from queue items if project has none
+  // Seed fabrication rows from queue items if project has none, and stamp
+  // server-derived shipment counts (qtyShipped / qtyOnFloor) onto fabrication
+  // rows by index so renderFabItems can display them without a second round-trip.
+  // These are display-only — never POSTed back (the server whitelist drops them).
   active.forEach(proj => {
     const fp = fabData[proj.projectId];
     if (!fp) return;
@@ -921,8 +1276,37 @@ async function renderPriorityQueue(queue, srAll) {
         unit: it.unit || 'units',
         qtyDone: it.doneQty || 0,
         status: it.status || 'Not Started',
-        _fromScope: it.fromScope || false
+        _fromScope: it.fromScope || false,
+        _qtyShipped: it.qtyShipped || 0,
+        _qtyOnFloor: it.qtyOnFloor || 0,
+        _qtyOverShipped: !!it.qtyOverShipped,
       }));
+    } else {
+      // The factory-queue endpoint emits items in order:
+      //   fabItemsRaw (from project.fabrication[]) then scopeOnly (synthetic).
+      // For scope-only items, `it.idx` points past fp.fabrication.length, so
+      // a naive lookup misses them. Synthesize a display-only row at that
+      // index so the shipment line + over-shipped warning still render.
+      // Scope-only rows are marked _fromScope=true so saveFabField will POST
+      // (append) on first save, populating _serverIdx.
+      (proj.items || []).forEach(it => {
+        let row = fp.fabrication && fp.fabrication[it.idx];
+        if (!row) {
+          if (!Array.isArray(fp.fabrication)) fp.fabrication = [];
+          fp.fabrication[it.idx] = {
+            item: it.description || '',
+            totalQty: it.totalQty || 0,
+            unit: 'units',
+            qtyDone: it.doneQty || 0,
+            status: it.status || 'Not Started',
+            _fromScope: !!it.fromScope,
+          };
+          row = fp.fabrication[it.idx];
+        }
+        row._qtyShipped = it.qtyShipped || 0;
+        row._qtyOnFloor = it.qtyOnFloor || 0;
+        row._qtyOverShipped = !!it.qtyOverShipped;
+      });
     }
   });
 
@@ -951,13 +1335,13 @@ async function renderPriorityQueue(queue, srAll) {
   // ── Quick stats bar ────────────────────────────────────────────────────
   const redCount   = flat.filter(x => x.d.color === 'red').length;
   const amberCount = flat.filter(x => x.d.color === 'amber').length;
-  let doneToday = 0, readyToShip = 0;
+  let doneToday = 0, onFloorTotal = 0;
   active.forEach(proj => {
     const fp = fabData[proj.projectId];
     if (!fp) return;
     (fp.fabrication || []).forEach(r => {
       if (r.fab_completed_at && String(r.fab_completed_at).slice(0,10) === today) doneToday++;
-      if (r.readyForDelivery) readyToShip++;
+      onFloorTotal += parseFloat(r._qtyOnFloor) || 0;
     });
   });
   if (statsEl) {
@@ -965,7 +1349,7 @@ async function renderPriorityQueue(queue, srAll) {
       `<div class="stat-chip red"><b>${redCount}</b>🔴 urgent</div>` +
       `<div class="stat-chip amber"><b>${amberCount}</b>🟡 soon</div>` +
       `<div class="stat-chip green"><b>${doneToday}</b>✅ done today</div>` +
-      `<div class="stat-chip blue"><b>${readyToShip}</b>📦 ready</div>`;
+      `<div class="stat-chip blue"><b>${onFloorTotal}</b>📦 in factory</div>`;
   }
 
   // ── Priority banner (red + amber, max 5) ───────────────────────────────
@@ -1080,11 +1464,9 @@ function updateCardPercent(pid) {
   if (!fp) return;
   const rows = fp.fabrication || [];
   let total = 0, done = 0;
-  rows.forEach((r, idx) => {
+  rows.forEach(r => {
     const tot = parseFloat(r.totalQty) || 0;
-    const cur = updates[pid] && updates[pid][idx] !== undefined
-      ? updates[pid][idx]
-      : (parseFloat(r.qtyDone) || 0);
+    const cur = parseFloat(r.qtyDone)  || 0;
     total += tot;
     done  += cur;
   });
@@ -1093,11 +1475,9 @@ function updateCardPercent(pid) {
   if (!card) return;
   const metaSpan = card.querySelector('.pq-project-meta > span:first-child');
   if (metaSpan) {
-    const incLeft = rows.filter((r, idx) => {
+    const incLeft = rows.filter(r => {
       const tot = parseFloat(r.totalQty) || 0;
-      const cur = updates[pid] && updates[pid][idx] !== undefined
-        ? updates[pid][idx]
-        : (parseFloat(r.qtyDone) || 0);
+      const cur = parseFloat(r.qtyDone)  || 0;
       return cur < tot;
     }).length;
     metaSpan.textContent = `${incLeft} item${incLeft !== 1 ? 's' : ''} · ${pct}% done`;
@@ -1111,6 +1491,77 @@ function updateCardPercent(pid) {
   if (pctInline) pctInline.textContent = pct + '% complete';
 }
 
+// Build the inline log history panel HTML for one fab row. Shows ALL log
+// entries (not just today's), newest first, grouped by date header. Each
+// entry gets time · delta · photo thumb · note · edit/delete actions.
+// Kept as a string-builder so it can be inlined via innerHTML alongside
+// the rest of the row template.
+function renderLogHistoryHtml(projectId, fabIdx, allLogs) {
+  if (!allLogs.length) return '<div style="padding:8px 0;color:var(--text-muted);">No log entries yet.</div>';
+
+  const SGT = 'Asia/Singapore';
+  const todaySgt = new Date(new Date().toLocaleString('en-US', { timeZone: SGT })).toISOString().slice(0, 10);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Enrich with SGT date for grouping, sort newest first
+  const sorted = allLogs.slice().sort((a, b) => (b.loggedAt || '').localeCompare(a.loggedAt || ''));
+
+  // Group by SGT calendar day. Use a stable order that matches the sort.
+  const groups = [];
+  const groupIndex = new Map();
+  for (const e of sorted) {
+    if (!e.loggedAt) {
+      if (!groupIndex.has('_nodate')) {
+        groupIndex.set('_nodate', groups.length);
+        groups.push({ key: '_nodate', label: 'No date', isToday: false, entries: [] });
+      }
+      groups[groupIndex.get('_nodate')].entries.push(e);
+      continue;
+    }
+    const sgtDate = new Date(new Date(e.loggedAt).toLocaleString('en-US', { timeZone: SGT }));
+    const key = sgtDate.toISOString().slice(0, 10);
+    if (!groupIndex.has(key)) {
+      groupIndex.set(key, groups.length);
+      const isToday = (key === todaySgt);
+      const label = isToday
+        ? 'Today · ' + sgtDate.getDate() + ' ' + months[sgtDate.getMonth()]
+        : sgtDate.getDate() + ' ' + months[sgtDate.getMonth()] + ' ' + sgtDate.getFullYear();
+      groups.push({ key, label, isToday, entries: [] });
+    }
+    groups[groupIndex.get(key)].entries.push(e);
+  }
+
+  return groups.map(g => {
+    const header = `<div class="fab-log-day-header${g.isToday ? ' today' : ''}">${escHtml(g.label)}</div>`;
+    const rows = g.entries.map(entry => {
+      const t = entry.loggedAt ? new Date(entry.loggedAt) : null;
+      const hhmm = t
+        ? t.toLocaleTimeString('en-SG', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: SGT })
+        : '—';
+      const delta = parseFloat(entry.delta) || 0;
+      const deltaStr = (delta > 0 ? '+' : '') + delta;
+      const deltaClass = delta < 0 ? ' neg' : '';
+      const thumb = entry.photoPath
+        ? `<img class="fab-today-log-thumb" src="${escHtml(entry.photoPath)}" alt="">`
+        : `<div class="fab-today-log-thumb" title="No photo (baseline migration)"></div>`;
+      const editedBadge = entry.editedAt
+        ? ` <span class="fab-today-log-edited" title="Edited by ${escHtml(entry.editedBy || '')}">edited</span>`
+        : '';
+      return `<div class="fab-today-log-entry">` +
+        `<span class="fab-today-log-time">${escHtml(hhmm)}</span>` +
+        `<span class="fab-today-log-delta${deltaClass}">${escHtml(deltaStr)}</span>` +
+        thumb +
+        `<span class="fab-today-log-note">${escHtml(entry.note || '')}${editedBadge}</span>` +
+        `<div class="fab-today-log-actions">` +
+          `<button type="button" class="fab-today-log-btn" onclick="openLogEditModal('${escHtml(projectId)}',${fabIdx},'${escHtml(entry.id)}')">Edit</button>` +
+          `<button type="button" class="fab-today-log-btn danger" onclick="deleteLogEntry('${escHtml(projectId)}',${fabIdx},'${escHtml(entry.id)}')">Delete</button>` +
+        `</div>` +
+      `</div>`;
+    }).join('');
+    return header + rows;
+  }).join('');
+}
+
 function renderFabItems(fp) {
   const container = document.getElementById('pq-items-' + fp.id);
   if (!container) return;
@@ -1122,95 +1573,118 @@ function renderFabItems(fp) {
     return;
   }
 
+  // Today's date in SGT so we can detect whether this row already has a log
+  // entry from today. Chris gets a "logged today" indicator instead of the
+  // raw "Log today's build" button.
+  const todaySgt = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }))
+    .toISOString().slice(0, 10);
+
   fabRows.forEach((row, idx) => {
-    const qtyTotal   = parseFloat(row.totalQty) || 0;
-    const currentDone = updates[fp.id][idx] !== undefined
-      ? updates[fp.id][idx]
-      : (parseFloat(row.qtyDone) || 0);
+    const qtyTotal  = parseFloat(row.totalQty) || 0;
+    const qtyDone   = parseFloat(row.qtyDone)  || 0;
+    const isDone    = qtyTotal > 0 && qtyDone >= qtyTotal;
 
     const item = document.createElement('div');
-    const isDone = qtyTotal > 0 && currentDone >= qtyTotal;
     item.className = 'factory-item' + (isDone ? ' done-item' : '');
     item.dataset.itemIdx = idx;
-    const itemName = row.item || row.product || 'Item ' + (idx + 1);
+
+    const itemName   = row.item || row.product || 'Item ' + (idx + 1);
     const thumbsHtml = collectItemPhotos(fp, itemName).map(renderItemThumbHtml).join('');
     const curStage   = FAB_STAGES.includes(row.status) ? row.status : 'Not Started';
     const stageClass = 's-' + curStage.toLowerCase().replace(/\s+/g, '-');
     const atStart    = curStage === FAB_STAGES[0];
+
+    // Shipment state (Phase 2B derivation: qtyShipped = sum of Delivered
+    // site-request quantities linked to this row; qtyOnFloor = max(0, built
+    // - shipped); over-sent warning shown when shipped > built).
+    const shipped  = parseFloat(row._qtyShipped)  || 0;
+    const onFloor  = parseFloat(row._qtyOnFloor)  || 0;
+    const overShip = !!row._qtyOverShipped;
+    const shipLineHtml = (shipped > 0 || onFloor > 0 || overShip)
+      ? ` · <b class="fab-row-qty">${shipped}</b> sent · <b class="fab-row-qty">${onFloor}</b> in factory`
+      : '';
+    const warnPillHtml = overShip
+      ? ` <span style="background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;" title="Sent (${shipped}) exceeds built (${qtyDone}). Check site-request quantity or add a correction log.">⚠ over-sent</span>`
+      : '';
+
+    // Log state for this row — separate "today's logs" (for the chip
+    // label summing today's deltas) from "all logs" (rendered in the
+    // inline panel). Phase D: panel now shows full history (not just
+    // today), grouped by date, capped height with scroll.
+    const logs = Array.isArray(row.logs) ? row.logs : [];
+    const hasAnyLogs = logs.length > 0;
+    const todaysLogs = logs.filter(l => {
+      if (!l.loggedAt) return false;
+      const dSgt = new Date(new Date(l.loggedAt).toLocaleString('en-US', { timeZone: 'Asia/Singapore' }))
+        .toISOString().slice(0, 10);
+      return dSgt === todaySgt;
+    });
+    const todaysDelta = todaysLogs.reduce((a, l) => a + (parseFloat(l.delta) || 0), 0);
+    const loggedToday = todaysLogs.length > 0;
+    const deltaStr = (todaysDelta > 0 ? '+' : '') + todaysDelta;
+
+    // Chip label adapts to state:
+    //   loggedToday  → "✓ Logged today (+3)"    primary feedback
+    //   has logs, none today → "📋 History (N)"  still tappable for edit
+    //   no logs at all       → no chip, single big Log button
+    let actionHtml;
+    if (hasAnyLogs) {
+      const chipLabel = loggedToday
+        ? `✓ Logged today (${deltaStr})`
+        : `📋 History (${logs.length})`;
+      actionHtml =
+        `<div class="fab-row-action">` +
+          `<div class="fab-log-split">` +
+            `<button class="fab-logged-chip" data-pid="${escHtml(fp.id)}" data-idx="${idx}" type="button">` +
+              `<span>${chipLabel}</span>` +
+              `<span class="caret">▾</span>` +
+            `</button>` +
+            `<button class="fab-log-again-btn" data-pid="${escHtml(fp.id)}" data-idx="${idx}" type="button">${loggedToday ? '+ Log again' : "📷 Log today"}</button>` +
+          `</div>` +
+        `</div>` +
+        `<div class="fab-today-logs-panel" id="fab-today-logs-${escHtml(fp.id)}-${idx}" hidden>` +
+          renderLogHistoryHtml(fp.id, idx, logs) +
+        `</div>`;
+    } else {
+      actionHtml =
+        `<div class="fab-row-action">` +
+          `<button class="fab-log-btn" data-pid="${escHtml(fp.id)}" data-idx="${idx}" type="button">📷 Log today's build</button>` +
+        `</div>`;
+    }
+
     item.innerHTML =
-      `<div class="factory-item-row">` +
-        `<div class="factory-item-name" title="${escHtml(itemName)}">${escHtml(itemName)}</div>` +
-        `<div class="counter">` +
-          `<button class="counter-btn minus" data-pid="${escHtml(fp.id)}" data-idx="${idx}">−</button>` +
-          `<input type="number" inputmode="numeric" min="0" max="${qtyTotal}" class="counter-val" id="val-${escHtml(fp.id)}-${idx}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" value="${currentDone}" style="${currentDone >= qtyTotal && qtyTotal > 0 ? 'color:var(--green);' : ''}">` +
-          `<button class="counter-btn plus"  data-pid="${escHtml(fp.id)}" data-idx="${idx}">+</button>` +
-        `</div>` +
-        `<span class="counter-of">of</span>` +
-        `<span class="counter-total">${qtyTotal}</span>` +
-        `<div class="item-actions">` +
-          `<button class="item-btn item-save-btn" id="save-${escHtml(fp.id)}-${idx}" title="Save this item">💾</button>` +
-          `<label class="item-btn item-photo-btn" title="Upload photo for this item">` +
-            `<span class="item-photo-ico">📷</span>` +
-            `<input type="file" accept="image/*" capture="environment" class="item-photo-input" data-pid="${escHtml(fp.id)}" data-idx="${idx}">` +
-          `</label>` +
-        `</div>` +
+      `<div class="fab-row-head">` +
+        `<div class="fab-row-name" title="${escHtml(itemName)}">${escHtml(itemName)}</div>` +
+        `<span class="stage-chip ${stageClass}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Tap to advance stage">${escHtml(curStage)}</span>` +
       `</div>` +
+      `<div class="fab-row-state">` +
+        `<span><b class="fab-row-qty">${qtyDone}</b> / ${qtyTotal} built${shipLineHtml}${warnPillHtml}</span>` +
+      `</div>` +
+      actionHtml +
       `<div class="stage-row">` +
         `<button class="stage-back" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Step back one stage"${atStart ? ' disabled' : ''}>↶</button>` +
-        `<span class="stage-chip ${stageClass}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Tap to advance stage">${escHtml(curStage)}</span>` +
         `<div class="item-thumbs" id="thumbs-${escHtml(fp.id)}-${idx}" style="margin-top:0;">${thumbsHtml}</div>` +
       `</div>`;
 
-    const applyValue = (pid2, i2, newVal) => {
-      const row2 = fabData[pid2].fabrication[i2];
-      const tot  = parseFloat(row2.totalQty) || 0;
-      const cur  = Math.max(0, Math.min(tot || newVal, isNaN(newVal) ? 0 : newVal));
-      updates[pid2][i2] = cur;
-      const valEl = document.getElementById('val-' + pid2 + '-' + i2);
-      if (valEl) {
-        if (parseFloat(valEl.value) !== cur) valEl.value = cur;
-        valEl.style.color = (tot > 0 && cur >= tot) ? 'var(--green)' : 'var(--text)';
-        const itemEl = valEl.closest('.factory-item');
-        if (itemEl) itemEl.classList.toggle('done-item', tot > 0 && cur >= tot);
-      }
-      updateCardPercent(pid2);
-    };
-
-    item.querySelectorAll('.counter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const pid2 = btn.dataset.pid;
-        const i2   = parseInt(btn.dataset.idx);
-        const row2 = fabData[pid2].fabrication[i2];
-        const tot  = parseFloat(row2.totalQty) || 0;
-        let cur = updates[pid2][i2] !== undefined ? updates[pid2][i2] : (parseFloat(row2.qtyDone) || 0);
-        if (btn.classList.contains('plus'))  cur = Math.min(tot, cur + 1);
-        if (btn.classList.contains('minus')) cur = Math.max(0, cur - 1);
-        applyValue(pid2, i2, cur);
+    // Button wiring — different handlers depending on logged-today state.
+    const logBtn = item.querySelector('.fab-log-btn');
+    if (logBtn) {
+      logBtn.addEventListener('click', () => {
+        openLogModal(fp.id, idx, itemName, fp.jobCode || fp.projectName || '');
       });
-    });
-
-    const inputEl = item.querySelector('.counter-val');
-    if (inputEl) {
-      inputEl.addEventListener('input', () => {
-        const pid2 = inputEl.dataset.pid;
-        const i2   = parseInt(inputEl.dataset.idx);
-        const v    = parseFloat(inputEl.value);
-        if (!isNaN(v)) { updates[pid2][i2] = v; updateCardPercent(pid2); }
+    }
+    const loggedChip = item.querySelector('.fab-logged-chip');
+    if (loggedChip) {
+      loggedChip.addEventListener('click', () => toggleTodaysLogsPanel(fp.id, idx));
+    }
+    const logAgainBtn = item.querySelector('.fab-log-again-btn');
+    if (logAgainBtn) {
+      logAgainBtn.addEventListener('click', () => {
+        openLogModal(fp.id, idx, itemName, fp.jobCode || fp.projectName || '');
       });
-      inputEl.addEventListener('blur', () => {
-        const pid2 = inputEl.dataset.pid;
-        const i2   = parseInt(inputEl.dataset.idx);
-        applyValue(pid2, i2, parseFloat(inputEl.value) || 0);
-      });
-      inputEl.addEventListener('focus', () => inputEl.select());
     }
 
-    const saveBtn = item.querySelector('.item-save-btn');
-    if (saveBtn) saveBtn.addEventListener('click', () => saveSingleItem(fp.id, idx));
-
-    const photoInput = item.querySelector('.item-photo-input');
-    if (photoInput) photoInput.addEventListener('change', () => uploadItemPhoto(fp.id, idx, photoInput));
-
+    // Stage chip: tap to advance
     const chipEl = item.querySelector('.stage-chip');
     if (chipEl) chipEl.addEventListener('click', () => updateFabItemStage(fp.id, idx, +1));
     const backEl = item.querySelector('.stage-back');
@@ -1350,84 +1824,6 @@ function renderItemThumbHtml(p) {
   );
 }
 
-async function uploadItemPhoto(pid, idx, input) {
-  const file = input.files && input.files[0];
-  if (!file) return;
-  const btn = input.closest('.item-photo-btn');
-  const ico = btn && btn.querySelector('.item-photo-ico');
-  if (btn) btn.classList.remove('saved','error');
-  if (ico) ico.textContent = '⏳';
-  try {
-    const row = fabData[pid] && fabData[pid].fabrication && fabData[pid].fabrication[idx];
-    const itemName = row ? (row.item || row.product || '') : '';
-
-    const fd = new FormData();
-    fd.append('file', file);
-    const upRes = await fetch('/api/projects/' + pid + '/upload', { method: 'POST', body: fd });
-    if (!upRes.ok) {
-      let msg = 'Upload failed (' + upRes.status + ')';
-      try { const j = await upRes.json(); if (j && j.error) msg = j.error; } catch {}
-      throw new Error(msg);
-    }
-    const upData = await upRes.json();
-    const filename     = upData.filename;
-    const originalName = upData.originalName || file.name;
-    if (!filename) throw new Error('No filename returned');
-
-    const getRes = await fetch('/api/projects/' + pid);
-    if (!getRes.ok) throw new Error('Failed to reload project');
-    const proj = await getRes.json();
-    proj.documents = Array.isArray(proj.documents) ? proj.documents : [];
-    proj.documents.push({
-      type: 'FAB Photo',
-      name: 'FAB Photo',
-      itemName,
-      filename,
-      originalName,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: 'Chris'
-    });
-    const putRes = await fetch('/api/projects/' + pid, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(proj)
-    });
-    if (!putRes.ok) throw new Error('Failed to save photo reference');
-    try { fabData[pid] = await putRes.json(); } catch {}
-
-    const thumbsEl = document.getElementById('thumbs-' + pid + '-' + idx);
-    if (thumbsEl) thumbsEl.insertAdjacentHTML('beforeend', renderItemThumbHtml({ filename, originalName }));
-
-    const logEl = document.getElementById('upload-log-' + pid);
-    if (logEl) {
-      const empty = logEl.querySelector('.upload-log-empty');
-      if (empty) empty.remove();
-      logEl.insertAdjacentHTML('afterbegin', renderUploadLogRowHtml({
-        filename, originalName, itemName,
-        uploadedBy: 'Chris',
-        uploadedAt: new Date().toISOString()
-      }));
-    }
-
-    if (btn) btn.classList.add('saved');
-    if (ico) ico.textContent = '✅';
-    setTimeout(() => {
-      if (btn) btn.classList.remove('saved');
-      if (ico) ico.textContent = '📷';
-    }, 1500);
-  } catch (e) {
-    console.error('uploadItemPhoto error:', e);
-    if (btn) btn.classList.add('error');
-    if (ico) ico.textContent = '❌';
-    setTimeout(() => {
-      if (btn) btn.classList.remove('error');
-      if (ico) ico.textContent = '📷';
-    }, 2000);
-  } finally {
-    input.value = '';
-  }
-}
-
 // Narrow fab-field save. Routes through POST (append+dedupe) on first save
 // of a scope-seeded row, or PUT (narrow) on subsequent saves. Eliminates the
 // full-project round-trip that was causing lost-updates on concurrent /project
@@ -1502,49 +1898,9 @@ async function updateFabItemStage(pid, idx, direction) {
       chipEl.textContent = '❌';
       setTimeout(() => { chipEl.textContent = orig; }, 1800);
     }
+    factoryToast('Stage save failed: ' + (e.message || 'server error'), false);
   } finally {
     if (chipEl) chipEl.classList.remove('saving');
-  }
-}
-
-async function saveSingleItem(pid, idx) {
-  const btn = document.getElementById('save-' + pid + '-' + idx);
-  if (btn) { btn.classList.remove('saved','error'); btn.innerHTML = '⏳'; btn.disabled = true; }
-  try {
-    const pending = updates[pid] && updates[pid][idx];
-    const newVal  = pending !== undefined
-      ? parseFloat(pending)
-      : parseFloat((document.getElementById('val-' + pid + '-' + idx) || {}).value || 0);
-    const num = isNaN(newVal) ? 0 : newVal;
-
-    const fp_local = fabData[pid];
-    const row = fp_local && fp_local.fabrication && fp_local.fabrication[idx];
-    if (!row) throw new Error('Row not found');
-
-    await saveFabField(pid, row, idx, { qtyDone: num });
-    if (updates[pid]) delete updates[pid][idx];
-    updateCardPercent(pid);
-
-    // Server may have auto-derived status (e.g. 0→In Progress). Reflect it on the chip.
-    const chipEl = document.querySelector(`#pq-card-${pid} .factory-item[data-item-idx="${idx}"] .stage-chip`);
-    if (chipEl && row.status) {
-      chipEl.textContent = row.status;
-      chipEl.className = 'stage-chip s-' + row.status.toLowerCase().replace(/\s+/g, '-');
-    }
-
-    if (btn) {
-      btn.classList.add('saved');
-      btn.innerHTML = '✅';
-      setTimeout(() => { btn.classList.remove('saved'); btn.innerHTML = '💾'; btn.disabled = false; }, 1500);
-    }
-  } catch (e) {
-    console.error('saveSingleItem error:', e);
-    if (btn) {
-      btn.classList.add('error');
-      btn.innerHTML = '❌';
-      btn.disabled = false;
-      setTimeout(() => { btn.classList.remove('error'); btn.innerHTML = '💾'; }, 2000);
-    }
   }
 }
 
@@ -1937,8 +2293,470 @@ function factoryToast(msg, ok = true) {
   setTimeout(() => el.remove(), 2800);
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// Daily log modal — Phase C of the factory sweep.
+//
+// Model: every build event on a fab row = one log entry with a mandatory
+// photo. qtyDone on the row is derived from sum(logs[].delta) server-side.
+// Chris opens the modal from the row's "Log today" button; modal captures
+// a photo (required), a delta (how many built), optional note; on save
+// we compress the image client-side, upload it (server runs it through
+// sharp for EXIF strip + HEIC normalize + resize cap), then create the
+// log entry with the caller-supplied logId so photo↔entry are paired.
+// ══════════════════════════════════════════════════════════════════════════
+
+// Modal state — mutated by the open/capture/save/close handlers.
+// `editingLogId` switches between create mode (null) and edit mode (a logId).
+// In edit mode the delta + note + existing photo are pre-filled; replacing
+// the photo is optional. Save calls PUT instead of POST.
+const logModalState = {
+  projectId:   null,
+  fabIdx:      null,
+  itemName:    '',
+  projectJob:  '',
+  photoBlob:   null,  // compressed Blob ready to upload (null if keeping existing)
+  photoPreviewUrl: null, // object URL for <img>, or existing photoPath URL in edit mode
+  busy:        false, // true while upload/save is in flight
+  editingLogId: null, // null = create, log id = editing
+  existingPhotoPath: null, // the current log's photoPath (for edit mode, when user doesn't replace)
+};
+
+// Compress an image file to a JPEG Blob sized ≤ maxEdge on the long side.
+// Runs entirely in-browser via canvas.toBlob — no library needed. Keeps
+// phone WiFi happy: 4–8MB phone photo → ~200–400KB out. Rotation from
+// EXIF orientation is handled server-side by sharp.rotate() so we don't
+// need to parse EXIF in the browser.
+async function compressImage(file, maxEdge = 1600, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read file'));
+    reader.onload = e => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Could not decode image'));
+      img.onload = () => {
+        const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => {
+          if (!blob) return reject(new Error('Compression failed'));
+          resolve(blob);
+        }, 'image/jpeg', quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Generate a client-side logId matching the server's regex. Prefixes let
+// the server pre-reserve the filename before the log entry is created.
+function makeLogId() {
+  return 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// Upload a compressed photo blob to the log-photo route. Returns the
+// server response { photoPath, logId }.
+async function uploadLogPhotoBlob(projectId, fabIdx, blob, logId) {
+  const fd = new FormData();
+  fd.append('file', blob, logId + '.jpg');
+  fd.append('logId', logId);
+  const res = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/log-photo', {
+    method: 'POST',
+    body: fd,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || ('Photo upload failed (' + res.status + ')'));
+  }
+  return await res.json();
+}
+
+// Create the log entry, pairing it to an already-uploaded photo via id.
+async function createLogEntry(projectId, fabIdx, logId, delta, photoPath, note) {
+  const res = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/logs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: logId, delta, photoPath, note }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || ('Log create failed (' + res.status + ')'));
+  }
+  return await res.json();
+}
+
+// Open the modal for a specific fab row. Caller passes the row's local
+// metadata so the subtitle shows what Chris is logging against. Resets
+// state from any prior use (including edit mode).
+function openLogModal(projectId, fabIdx, itemName, projectJob) {
+  _resetLogModalState();
+  logModalState.projectId = projectId;
+  logModalState.fabIdx    = fabIdx;
+  logModalState.itemName  = itemName || '';
+  logModalState.projectJob = projectJob || '';
+
+  document.getElementById('log-modal-title').textContent = "Log today's build";
+  document.getElementById('log-modal-save-btn').textContent = 'Log build';
+  document.getElementById('log-modal-subtitle').textContent =
+    (itemName || '') + (projectJob ? ' · ' + projectJob : '');
+
+  _bindLogModalInputs();
+  document.getElementById('log-modal').classList.add('open');
+}
+
+// Open the modal in edit mode for an existing log entry. Pulls the current
+// values from local state (fabData[pid].fabrication[idx].logs), pre-fills
+// delta + note, shows the existing photo as preview. User can optionally
+// replace the photo or keep it; save calls PUT.
+function openLogEditModal(projectId, fabIdx, logId) {
+  const row = fabData[projectId] && fabData[projectId].fabrication && fabData[projectId].fabrication[fabIdx];
+  if (!row || !Array.isArray(row.logs)) return;
+  const entry = row.logs.find(l => l.id === logId);
+  if (!entry) return;
+
+  _resetLogModalState();
+  logModalState.projectId = projectId;
+  logModalState.fabIdx    = fabIdx;
+  logModalState.itemName  = row.item || '';
+  logModalState.projectJob = fabData[projectId].jobCode || '';
+  logModalState.editingLogId = logId;
+  logModalState.existingPhotoPath = entry.photoPath || null;
+
+  document.getElementById('log-modal-title').textContent = 'Edit log entry';
+  document.getElementById('log-modal-save-btn').textContent = 'Save edit';
+  document.getElementById('log-modal-subtitle').textContent =
+    logModalState.itemName + (logModalState.projectJob ? ' · ' + logModalState.projectJob : '');
+
+  // Pre-fill delta + note
+  document.getElementById('log-modal-delta').value = entry.delta;
+  document.getElementById('log-modal-note').value  = entry.note || '';
+
+  // Show existing photo as preview (if any). photoBlob stays null unless
+  // user captures a replacement.
+  if (entry.photoPath) {
+    document.getElementById('log-modal-photo-img').src = entry.photoPath;
+    document.getElementById('log-modal-photo-empty').style.display = 'none';
+    document.getElementById('log-modal-photo-preview').style.display = '';
+    document.getElementById('log-modal-photo-zone').classList.add('filled');
+    document.getElementById('log-modal-photo-status').textContent = 'Existing photo. Tap Retake to replace.';
+  }
+
+  _bindLogModalInputs();
+  updateLogSaveButton();
+  document.getElementById('log-modal').classList.add('open');
+}
+
+function _resetLogModalState() {
+  logModalState.projectId = null;
+  logModalState.fabIdx    = null;
+  logModalState.itemName  = '';
+  logModalState.projectJob = '';
+  logModalState.photoBlob = null;
+  if (logModalState.photoPreviewUrl) URL.revokeObjectURL(logModalState.photoPreviewUrl);
+  logModalState.photoPreviewUrl = null;
+  logModalState.busy = false;
+  logModalState.editingLogId = null;
+  logModalState.existingPhotoPath = null;
+
+  document.getElementById('log-modal-photo-empty').style.display = '';
+  document.getElementById('log-modal-photo-preview').style.display = 'none';
+  document.getElementById('log-modal-photo-zone').classList.remove('filled');
+  document.getElementById('log-modal-delta').value = '';
+  document.getElementById('log-modal-note').value = '';
+  const status = document.getElementById('log-modal-photo-status');
+  status.textContent = '';
+  status.classList.remove('err');
+  document.getElementById('log-modal-save-btn').disabled = true;
+}
+
+function _bindLogModalInputs() {
+  const photoInput = document.getElementById('log-modal-photo-input');
+  photoInput.value = '';
+  if (!photoInput._logBound) {
+    photoInput.addEventListener('change', handleLogPhotoCapture);
+    photoInput._logBound = true;
+  }
+  const deltaInput = document.getElementById('log-modal-delta');
+  if (!deltaInput._logBound) {
+    deltaInput.addEventListener('input', updateLogSaveButton);
+    deltaInput._logBound = true;
+  }
+}
+
+function closeLogModal() {
+  if (logModalState.busy) return; // don't let user close mid-save
+  if (logModalState.photoPreviewUrl) {
+    URL.revokeObjectURL(logModalState.photoPreviewUrl);
+    logModalState.photoPreviewUrl = null;
+  }
+  logModalState.photoBlob = null;
+  document.getElementById('log-modal').classList.remove('open');
+}
+
+// Photo file input changed — compress + preview.
+async function handleLogPhotoCapture(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const status = document.getElementById('log-modal-photo-status');
+  status.classList.remove('err');
+  status.textContent = 'Compressing photo…';
+  try {
+    const blob = await compressImage(file);
+    logModalState.photoBlob = blob;
+    if (logModalState.photoPreviewUrl) URL.revokeObjectURL(logModalState.photoPreviewUrl);
+    logModalState.photoPreviewUrl = URL.createObjectURL(blob);
+    const img = document.getElementById('log-modal-photo-img');
+    img.src = logModalState.photoPreviewUrl;
+    document.getElementById('log-modal-photo-empty').style.display = 'none';
+    document.getElementById('log-modal-photo-preview').style.display = '';
+    document.getElementById('log-modal-photo-zone').classList.add('filled');
+    const kb = Math.round(blob.size / 1024);
+    status.textContent = 'Photo ready (' + kb + ' KB).';
+    updateLogSaveButton();
+  } catch (err) {
+    console.error('log photo compression failed:', err);
+    status.classList.add('err');
+    status.textContent = 'Photo failed: ' + (err.message || 'unknown error');
+    logModalState.photoBlob = null;
+  }
+}
+
+function retakeLogPhoto() {
+  if (logModalState.busy) return;
+  logModalState.photoBlob = null;
+  if (logModalState.photoPreviewUrl) {
+    URL.revokeObjectURL(logModalState.photoPreviewUrl);
+    logModalState.photoPreviewUrl = null;
+  }
+  document.getElementById('log-modal-photo-empty').style.display = '';
+  document.getElementById('log-modal-photo-preview').style.display = 'none';
+  document.getElementById('log-modal-photo-zone').classList.remove('filled');
+  document.getElementById('log-modal-photo-status').textContent = '';
+  document.getElementById('log-modal-photo-input').value = '';
+  updateLogSaveButton();
+}
+
+// Enable save only when we have a photo AND a valid non-zero delta.
+// In edit mode, the existing photo counts as "hasPhoto" — user doesn't
+// have to retake unless they want to replace it.
+function updateLogSaveButton() {
+  const deltaRaw = document.getElementById('log-modal-delta').value;
+  const delta = parseFloat(deltaRaw);
+  const hasFreshPhoto = !!logModalState.photoBlob;
+  const hasExistingPhoto = !!logModalState.existingPhotoPath;
+  const hasPhoto = hasFreshPhoto || hasExistingPhoto;
+  const hasDelta = Number.isFinite(delta) && delta !== 0;
+  document.getElementById('log-modal-save-btn').disabled = !(hasPhoto && hasDelta) || logModalState.busy;
+}
+
+// Dispatches between create and edit modes. In create mode, always uploads
+// a fresh photo then POSTs a new log entry. In edit mode, uploads a fresh
+// photo only if one was captured (otherwise reuses the existing path),
+// then PUTs the existing log entry. On any failure, surfaces inline and
+// keeps the modal open so the user can retry without losing input.
+async function saveLogEntry() {
+  if (logModalState.busy) return;
+  const delta = parseFloat(document.getElementById('log-modal-delta').value);
+  if (!Number.isFinite(delta) || delta === 0) return;
+  // In edit mode, photoBlob can be null if user is keeping the existing
+  // photo. In create mode, photoBlob is required.
+  const isEdit = !!logModalState.editingLogId;
+  if (!isEdit && !logModalState.photoBlob) return;
+
+  // Fat-finger guard: warn on suspiciously large deltas. Catches the
+  // "+30 instead of +3" typo class before it hits the server. Threshold
+  // is ≥20% of totalQty AND absolute magnitude ≥10 (so small BOMs don't
+  // nag for routine values). User can still confirm and proceed.
+  const _fgRow = fabData[logModalState.projectId] &&
+                 fabData[logModalState.projectId].fabrication &&
+                 fabData[logModalState.projectId].fabrication[logModalState.fabIdx];
+  const _fgTotal = _fgRow ? (parseFloat(_fgRow.totalQty) || 0) : 0;
+  if (_fgTotal > 0 && Math.abs(delta) >= 10 && Math.abs(delta) >= _fgTotal * 0.2) {
+    const pctStr = Math.round(Math.abs(delta) / _fgTotal * 100);
+    const signedStr = (delta > 0 ? '+' : '') + delta;
+    const confirmMsg = "You're logging " + signedStr + " units. That's " + pctStr +
+                       '% of the total (' + _fgTotal + '). Is this correct?';
+    if (!confirm(confirmMsg)) {
+      const deltaEl = document.getElementById('log-modal-delta');
+      if (deltaEl) { deltaEl.focus(); deltaEl.select(); }
+      return;
+    }
+  }
+
+  logModalState.busy = true;
+  const saveBtn = document.getElementById('log-modal-save-btn');
+  const cancelBtn = document.querySelector('.log-modal-btn-cancel');
+  const origSaveLabel = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+  if (cancelBtn) cancelBtn.disabled = true;
+  const status = document.getElementById('log-modal-photo-status');
+  status.classList.remove('err');
+
+  try {
+    const pid = logModalState.projectId;
+    const idx = logModalState.fabIdx;
+    const note = document.getElementById('log-modal-note').value.trim();
+    let result;
+
+    if (isEdit) {
+      // Edit path. Upload a fresh photo only if user captured one.
+      let photoPath = logModalState.existingPhotoPath;
+      if (logModalState.photoBlob) {
+        status.textContent = 'Uploading new photo…';
+        // Use the existing logId as the photo filename — overwrites in place.
+        const up = await uploadLogPhotoBlob(pid, idx, logModalState.photoBlob, logModalState.editingLogId);
+        photoPath = up.photoPath;
+      }
+      status.textContent = 'Saving edit…';
+      const body = { delta, note };
+      if (photoPath && photoPath !== logModalState.existingPhotoPath) body.photoPath = photoPath;
+      const res = await fetch('/api/projects/' + encodeURIComponent(pid) + '/fabrication/' + idx + '/logs/' + logModalState.editingLogId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || ('Edit failed (' + res.status + ')'));
+      }
+      result = await res.json();
+    } else {
+      // Create path (original flow).
+      const logId = makeLogId();
+      status.textContent = 'Uploading photo…';
+      const { photoPath } = await uploadLogPhotoBlob(pid, idx, logModalState.photoBlob, logId);
+      status.textContent = 'Saving log entry…';
+      result = await createLogEntry(pid, idx, logId, delta, photoPath, note);
+    }
+
+    // Update local state so the row re-renders with the new total.
+    const row = fabData[pid] && fabData[pid].fabrication && fabData[pid].fabrication[idx];
+    if (row) {
+      if (!Array.isArray(row.logs)) row.logs = [];
+      if (isEdit) {
+        const i = row.logs.findIndex(l => l.id === logModalState.editingLogId);
+        if (i >= 0) row.logs[i] = result.log;
+      } else {
+        row.logs.push(result.log);
+      }
+      row.qtyDone = result.qtyDone;
+      if (result.status) row.status = result.status;
+    }
+
+    logModalState.busy = false;
+    closeLogModal();
+    saveBtn.textContent = origSaveLabel;
+    if (cancelBtn) cancelBtn.disabled = false;
+
+    const fp = fabData[pid];
+    if (fp) {
+      renderFabItems(fp);
+      updateCardPercent(pid);
+    }
+    factoryToast(isEdit ? 'Log entry updated ✓' : ('Logged ' + (delta > 0 ? '+' : '') + delta + ' with photo ✓'));
+  } catch (e) {
+    console.error('log save failed:', e);
+    status.classList.add('err');
+    status.textContent = 'Save failed: ' + (e.message || 'unknown');
+    logModalState.busy = false;
+    saveBtn.textContent = origSaveLabel;
+    saveBtn.disabled = false;
+    if (cancelBtn) cancelBtn.disabled = false;
+    updateLogSaveButton();
+  }
+}
+
+// Delete a log entry with confirmation. Called from the inline today's
+// logs panel. Re-renders the row on success.
+async function deleteLogEntry(projectId, fabIdx, logId) {
+  if (!confirm('Delete this log entry? The qty will be reduced accordingly.')) return;
+  try {
+    const res = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/logs/' + logId, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || ('Delete failed (' + res.status + ')'));
+    }
+    const result = await res.json();
+
+    // Update local state
+    const row = fabData[projectId] && fabData[projectId].fabrication && fabData[projectId].fabrication[fabIdx];
+    if (row && Array.isArray(row.logs)) {
+      row.logs = row.logs.filter(l => l.id !== logId);
+      row.qtyDone = result.qtyDone;
+      if (result.status) row.status = result.status;
+    }
+    const fp = fabData[projectId];
+    if (fp) {
+      renderFabItems(fp);
+      updateCardPercent(projectId);
+    }
+    factoryToast('Log entry deleted ✓');
+  } catch (e) {
+    console.error('delete log failed:', e);
+    factoryToast('Delete failed: ' + (e.message || 'unknown'), false);
+  }
+}
+
+// Toggle the inline "today's logs" panel for a row. The panel is rendered
+// inside renderFabItems and starts hidden; this just flips its [hidden]
+// attribute.
+function toggleTodaysLogsPanel(projectId, fabIdx) {
+  const panel = document.getElementById('fab-today-logs-' + projectId + '-' + fabIdx);
+  if (!panel) return;
+  panel.hidden = !panel.hidden;
+}
+
 // ── Start ─────────────────────────────────────────────────────────────────────
 init();
 </script>
+
+<!-- Daily log modal — hidden by default, shown by openLogModal() -->
+<div class="log-modal" id="log-modal" role="dialog" aria-modal="true" aria-labelledby="log-modal-title">
+  <div class="log-modal-backdrop" onclick="closeLogModal()"></div>
+  <div class="log-modal-sheet">
+    <div class="log-modal-header">
+      <div class="log-modal-title" id="log-modal-title">Log today's build</div>
+      <div class="log-modal-subtitle" id="log-modal-subtitle">—</div>
+    </div>
+    <div class="log-modal-body">
+      <div class="log-modal-photo-zone" id="log-modal-photo-zone">
+        <div class="log-modal-photo-empty" id="log-modal-photo-empty">
+          <div class="log-modal-photo-icon">📷</div>
+          <div class="log-modal-photo-hint">Take a photo of the built item.<br>Photo is required — it's your evidence log.</div>
+          <label class="log-modal-photo-btn">
+            Capture photo
+            <input type="file" accept="image/*" capture="environment" id="log-modal-photo-input" style="display:none;">
+          </label>
+        </div>
+        <div class="log-modal-photo-preview" id="log-modal-photo-preview" style="display:none;">
+          <img id="log-modal-photo-img" alt="">
+          <button type="button" class="log-modal-photo-retake" onclick="retakeLogPhoto()">↻ Retake</button>
+        </div>
+      </div>
+      <div class="log-modal-photo-status" id="log-modal-photo-status"></div>
+      <div class="log-modal-field">
+        <label for="log-modal-delta">How many did you build?</label>
+        <input type="number" id="log-modal-delta" min="1" step="1" inputmode="numeric" placeholder="e.g. 3">
+      </div>
+      <div class="log-modal-field">
+        <label for="log-modal-note">Note (optional)</label>
+        <input type="text" id="log-modal-note" placeholder="e.g. finished QC check" maxlength="500">
+      </div>
+    </div>
+    <div class="log-modal-footer">
+      <button type="button" class="log-modal-btn log-modal-btn-cancel" onclick="closeLogModal()">Cancel</button>
+      <button type="button" class="log-modal-btn log-modal-btn-save" id="log-modal-save-btn" disabled onclick="saveLogEntry()">Log build</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

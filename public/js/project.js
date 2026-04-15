@@ -1404,10 +1404,28 @@ function buildFabRow(row, idx) {
     });
   }
 
-  tr.querySelector('.del-row-btn').addEventListener('click', () => {
-    project.fabrication.splice(idx, 1);
-    renderFabrication();
-    saveProject();
+  tr.querySelector('.del-row-btn').addEventListener('click', async () => {
+    if (!confirm('Delete this fabrication row? Linked site-requests will have their row-pointer cleared.')) return;
+    try {
+      const res = await fetch('/api/projects/' + encodeURIComponent(project.id) + '/fabrication/' + idx, { method: 'DELETE' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || ('Delete failed (' + res.status + ')'));
+      }
+      const data = await res.json();
+      // Mirror the server-side splice on the local project object so
+      // subsequent edits work against correct indices without a reload.
+      project.fabrication.splice(idx, 1);
+      renderFabrication();
+      if (data && (data.srReindexed || data.srNulled)) {
+        showToast(`Deleted. Reindexed ${data.srReindexed} site-request${data.srReindexed !== 1 ? 's' : ''}, cleared ${data.srNulled}.`, 'success');
+      } else {
+        showToast('Fabrication row deleted', 'success');
+      }
+    } catch (e) {
+      console.error('delete fab row failed:', e);
+      alert('Delete failed: ' + e.message);
+    }
   });
 
   return tr;
@@ -1773,251 +1791,76 @@ function updateInstallLiveSummary() {
   }
 }
 
-// ── Tab: Delivery Requests (standalone tab) ──────────────────────────────────
-function renderDeliveryRequestsTab() {
+// ── Tab: Site Requests (read-only consolidation) ─────────────────────────────
+// Site requests are pulls from the install team, raised on /installation.
+// This tab is read-only on /project — creating/editing happens on the ops pages.
+async function renderDeliveryRequestsTab() {
   const list = document.getElementById('delivery-requests-list');
   if (!list) return;
-  if (!Array.isArray(project.deliveryRequests)) project.deliveryRequests = [];
 
-  list.innerHTML = '';
-
-  if (project.deliveryRequests.length === 0) {
-    list.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No delivery requests yet. Click + New Delivery Request to add one.</p>';
-  } else {
-    project.deliveryRequests.forEach((req, idx) => {
-      list.appendChild(buildDeliveryRequestCard(req, idx));
-    });
-  }
+  const hdrLabel = document.querySelector('[data-tab-label="delivery-requests"]');
+  if (hdrLabel) hdrLabel.textContent = 'Site Requests';
 
   const addBtn = document.getElementById('delivery-add-btn');
-  if (addBtn) {
-    addBtn.onclick = () => {
-      project.deliveryRequests.push({
-        id: Date.now().toString(36),
-        item: '',
-        phase: '',
-        qtyRequested: 1,
-        unit: '',
-        neededByDate: '',
-        requestedBy: '',
-        requestedAt: new Date().toISOString(),
-        status: 'Pending',
-        ticketStatus: 'New',
-        acknowledgedBy: '',
-        acknowledgedAt: null,
-        inProductionAt: null,
-        readyAt: null,
-        readyMarkedBy: '',
-        deliveredAt: null,
-        deliveredConfirmedBy: '',
-        notifyOnAck: true,
-        notifyOnReady: true,
-      });
-      debouncedSave();
-      renderDeliveryRequestsTab();
-    };
-  }
-}
+  if (addBtn) addBtn.style.display = 'none';
 
-// Helper: ticket badge HTML
-function ticketBadgeHtml(status) {
-  const map = {
-    'New':           ['ticket-new',          'New'],
-    'Acknowledged':  ['ticket-acknowledged', 'Seen by Chris'],
-    'In Production': ['ticket-inproduction', 'In Production'],
-    'Ready':         ['ticket-ready',        'Ready'],
-    'Delivered':     ['ticket-delivered',    'Delivered'],
-  };
-  const [cls, label] = map[status] || ['ticket-new', 'New'];
-  return `<span class="ticket-badge ${cls}">${label}</span>`;
-}
+  list.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">Loading…</p>';
 
-// Helper: build audit trail HTML from ticket timestamps
-function buildAuditHtml(req) {
-  const fmtTs = ts => {
-    if (!ts) return '';
-    const d = new Date(ts);
-    return d.getDate() + ' ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()] + ' ' + d.getFullYear() + ', ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-  };
-  const steps = [
-    { done: !!req.requestedAt,   icon: '📋', text: `Requested${req.requestedBy ? ' by ' + escHtml(req.requestedBy) : ''}`, ts: req.requestedAt },
-    { done: !!req.acknowledgedAt,icon: '👁',  text: `Acknowledged${req.acknowledgedBy ? ' by ' + escHtml(req.acknowledgedBy) : ''}`, ts: req.acknowledgedAt },
-    { done: !!req.inProductionAt,icon: '🔨', text: 'In Production', ts: req.inProductionAt },
-    { done: !!req.readyAt,       icon: '✅', text: `Ready${req.readyMarkedBy ? ' — marked by ' + escHtml(req.readyMarkedBy) : ''}`, ts: req.readyAt },
-    { done: !!req.deliveredAt,   icon: '📦', text: `Delivered${req.deliveredConfirmedBy ? ', confirmed by ' + escHtml(req.deliveredConfirmedBy) : ''}`, ts: req.deliveredAt },
-  ];
-  return steps.map(s => {
-    const color = s.done ? 'var(--text)' : 'var(--text-muted)';
-    const tsStr = s.done && s.ts ? ` <span style="color:var(--text-muted);">— ${fmtTs(s.ts)}</span>` : '';
-    return `<div style="color:${color};">${s.icon} ${s.text}${tsStr}</div>`;
-  }).join('');
-}
+  let srs = [];
+  try {
+    const res = await fetch('/api/site-requests');
+    if (res.ok) srs = await res.json();
+  } catch (e) { console.error('[project] site-requests fetch failed:', e); }
 
-// Helper: silently call notify endpoint, ignore 503
-async function notifyDelivery(endpoint, payload) {
-  try { await api('POST', endpoint, payload); } catch { /* stub — ignore */ }
-}
+  const mine = (srs || []).filter(r => r.projectId === project.id);
+  list.innerHTML = '';
 
-function buildDeliveryRequestCard(req, idx) {
-  const scopeItems = (project.productScope || []).filter(r => r.item.trim());
-  const itemOptions = '<option value="">— Select Item —</option>' +
-    scopeItems.map(r => `<option value="${escHtml(r.item)}" data-unit="${escHtml(r.unit || '')}"${r.item === req.item ? ' selected' : ''}>${escHtml(r.item)}</option>`).join('');
-
-  const ticketStatus = req.ticketStatus || 'New';
-
-  // Action button based on ticket status
-  let actionBtn = '';
-  if (ticketStatus === 'New') {
-    actionBtn = `<button class="btn btn-sm dr-ticket-btn" data-action="acknowledge">Acknowledge</button>`;
-  } else if (ticketStatus === 'Acknowledged') {
-    actionBtn = `<button class="btn btn-sm dr-ticket-btn" data-action="inproduction">Mark In Production</button>`;
-  } else if (ticketStatus === 'In Production') {
-    actionBtn = `<button class="btn btn-sm dr-ticket-btn" data-action="ready">Mark Ready</button>`;
-  } else if (ticketStatus === 'Ready') {
-    actionBtn = `<button class="btn btn-sm dr-ticket-btn" style="background:var(--green);color:#000;" data-action="delivered">Confirm Delivery</button>`;
+  if (!mine.length) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No site requests for this project yet. The install team raises these from the Installation page.</p>';
+    return;
   }
 
-  // Needed-by date display
+  mine.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  mine.forEach(sr => list.appendChild(buildSiteRequestCardReadonly(sr)));
+}
+
+function buildSiteRequestCardReadonly(sr) {
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let neededByDisplay = '—';
-  if (req.neededByDate) {
-    const nd = new Date(req.neededByDate);
-    neededByDisplay = nd.getDate() + ' ' + months[nd.getMonth()];
-  }
+  const fmtDate = d => {
+    if (!d) return '—';
+    const dt = new Date(d);
+    if (isNaN(dt)) return d;
+    return dt.getDate() + ' ' + months[dt.getMonth()] + ' ' + dt.getFullYear();
+  };
+  const status = sr.status || 'New';
+  const statusColors = {
+    'New':          ['#fef3c7', '#92400e'],
+    'Acknowledged': ['#dbeafe', '#1e40af'],
+    'Ready':        ['#dcfce7', '#166534'],
+    'Delivered':    ['#e5e7eb', '#374151'],
+    'Issue':        ['#fee2e2', '#991b1b'],
+  };
+  const [bg, fg] = statusColors[status] || ['#e5e7eb', '#374151'];
 
   const card = document.createElement('div');
   card.className = 'card';
-  card.style.cssText = 'margin-bottom:12px; padding:14px;';
+  card.style.cssText = 'margin-bottom:10px; padding:12px;';
   card.innerHTML = `
-    <!-- Ticket header row -->
-    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-      <span style="font-size:13px; font-weight:600; flex:1;">${escHtml(req.item || '(no item)')}</span>
-      ${req.phase ? `<span style="font-size:11px; color:var(--text-muted);">${escHtml(req.phase)}</span>` : ''}
-      <span style="font-size:11px; color:var(--text-muted);">${req.qtyRequested || 1} ${escHtml(req.unit || 'units')}</span>
-      ${req.neededByDate ? `<span style="font-size:11px; color:var(--text-muted);">Needed by ${neededByDisplay}</span>` : ''}
-      ${ticketBadgeHtml(ticketStatus)}
-      ${actionBtn}
-      <span class="audit-trail-toggle">▾ History</span>
-      <button class="btn btn-ghost btn-sm dr-del-btn" title="Remove">✕</button>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <span style="font-size:13px; font-weight:600; flex:1;">${escHtml(sr.item || '(no item)')}</span>
+      <span style="font-size:11px; color:var(--text-muted);">${sr.quantity || sr.qtyRequested || '—'} ${escHtml(sr.unit || '')}</span>
+      ${sr.neededByDate ? `<span style="font-size:11px; color:var(--text-muted);">Needed by ${fmtDate(sr.neededByDate)}</span>` : ''}
+      <span style="background:${bg}; color:${fg}; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px;">${status}</span>
     </div>
-    <!-- Audit trail -->
-    <div class="audit-trail dr-audit" style="display:none;">${buildAuditHtml(req)}</div>
-    <!-- Edit form -->
-    <div class="dr-edit-form" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; border-top:1px solid var(--border); padding-top:10px; margin-top:4px;">
-      <div class="field" style="flex:2; min-width:160px;">
-        <label>Item</label>
-        <select class="dr-item tbl-input">${itemOptions}</select>
-      </div>
-      <div class="field" style="flex:1; min-width:100px;">
-        <label>Phase</label>
-        <input class="dr-phase tbl-input" type="text" value="${escHtml(req.phase || '')}" placeholder="Phase 1">
-      </div>
-      <div class="field" style="width:80px;">
-        <label>Qty</label>
-        <input class="dr-qty tbl-input" type="number" value="${req.qtyRequested || 1}" min="1">
-      </div>
-      <div class="field" style="width:70px;">
-        <label>Unit</label>
-        <div class="dr-unit-display" style="font-size:13px; color:var(--text-muted); padding-top:6px;">${escHtml(req.unit || '—')}</div>
-      </div>
-      <div class="field" style="flex:1; min-width:130px;">
-        <label>Needed By</label>
-        <input class="dr-neededby tbl-input" type="date" value="${escHtml(req.neededByDate || '')}">
-      </div>
-      <div class="field" style="flex:1; min-width:130px;">
-        <label>Requested By</label>
-        <input class="dr-reqby tbl-input" type="text" value="${escHtml(req.requestedBy || '')}" placeholder="Name">
-      </div>
+    <div style="margin-top:6px; font-size:11px; color:var(--text-muted);">
+      Requested${sr.requestedBy ? ' by ' + escHtml(sr.requestedBy) : ''}${sr.createdAt ? ' on ' + fmtDate(sr.createdAt) : ''}
+      ${sr.acknowledgedAt ? ' · Seen ' + fmtDate(sr.acknowledgedAt) : ''}
+      ${sr.deliveredAt ? ' · Delivered ' + fmtDate(sr.deliveredAt) : ''}
     </div>
   `;
-
-  const iItem     = card.querySelector('.dr-item');
-  const iPhase    = card.querySelector('.dr-phase');
-  const iQty      = card.querySelector('.dr-qty');
-  const unitDisp  = card.querySelector('.dr-unit-display');
-  const iNeededBy = card.querySelector('.dr-neededby');
-  const iReqBy    = card.querySelector('.dr-reqby');
-
-  const sync = () => {
-    project.deliveryRequests[idx].item         = iItem.value;
-    project.deliveryRequests[idx].phase        = iPhase.value;
-    project.deliveryRequests[idx].qtyRequested = Number(iQty.value) || 1;
-    project.deliveryRequests[idx].neededByDate = iNeededBy.value;
-    project.deliveryRequests[idx].requestedBy  = iReqBy.value;
-    debouncedSave();
-  };
-
-  // Auto-fill unit when item selected
-  iItem.addEventListener('change', () => {
-    const opt = iItem.options[iItem.selectedIndex];
-    const unit = opt ? (opt.dataset.unit || '') : '';
-    project.deliveryRequests[idx].unit = unit;
-    unitDisp.textContent = unit || '—';
-    sync();
-  });
-
-  [iPhase, iReqBy].forEach(el => el.addEventListener('input', sync));
-  [iQty, iNeededBy].forEach(el => el.addEventListener('change', sync));
-
-  // Audit trail toggle
-  const auditToggle = card.querySelector('.audit-trail-toggle');
-  const auditPanel  = card.querySelector('.dr-audit');
-  auditToggle.addEventListener('click', () => {
-    const open = auditPanel.style.display !== 'none';
-    auditPanel.style.display = open ? 'none' : 'block';
-    auditToggle.textContent  = open ? '▾ History' : '▴ History';
-  });
-
-  // Ticket action buttons
-  const ticketBtn = card.querySelector('.dr-ticket-btn');
-  if (ticketBtn) {
-    ticketBtn.addEventListener('click', async () => {
-      const action = ticketBtn.dataset.action;
-      const now = new Date().toISOString();
-      const updates = {};
-      if (action === 'acknowledge') {
-        updates.ticketStatus = 'Acknowledged';
-        updates.acknowledgedBy = 'Chris';
-        updates.acknowledgedAt = now;
-        notifyDelivery('/api/notify/delivery-acknowledged', {
-          requestedBy: req.requestedBy,
-          item: req.item,
-          timeline: '',
-          projectJobCode: project.jobCode || ''
-        });
-      } else if (action === 'inproduction') {
-        updates.ticketStatus = 'In Production';
-        updates.inProductionAt = now;
-      } else if (action === 'ready') {
-        updates.ticketStatus = 'Ready';
-        updates.readyAt = now;
-        updates.readyMarkedBy = 'Chris';
-        notifyDelivery('/api/notify/delivery-ready', {
-          projectId,
-          requestedBy: req.requestedBy,
-          item: req.item,
-          projectJobCode: project.jobCode || ''
-        });
-      } else if (action === 'delivered') {
-        updates.ticketStatus = 'Delivered';
-        updates.deliveredAt = now;
-        updates.deliveredConfirmedBy = req.requestedBy || 'Site Engineer';
-        updates.status = 'Delivered';
-      }
-      Object.assign(project.deliveryRequests[idx], updates);
-      debouncedSave();
-      renderDeliveryRequestsTab();
-    });
-  }
-
-  card.querySelector('.dr-del-btn').addEventListener('click', () => {
-    project.deliveryRequests.splice(idx, 1);
-    debouncedSave();
-    renderDeliveryRequestsTab();
-  });
-
   return card;
 }
+
 
 // ── TAB 6: Payment Milestones ─────────────────────────────────────────────────
 function renderPayment() {

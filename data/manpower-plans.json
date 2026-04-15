@@ -44,7 +44,17 @@
   },
   {
     "weekStart": "2026-04-13",
-    "assignments": {},
+    "assignments": {
+      "wm-tan-yock-wan": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      }
+    },
     "supplyWorkers": [
       {
         "id": "supply-1776156120782",
@@ -54,7 +64,7 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-15T02:54:00.036Z"
+    "savedAt": "2026-04-15T17:45:40.101Z"
   },
   {
     "weekStart": "2026-04-12",

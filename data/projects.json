@@ -495,7 +495,8 @@
         "readyForDelivery": true,
         "readyAt": "2026-04-10T13:07:04.852Z",
         "process": "Packing",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -509,7 +510,8 @@
         "process": "",
         "targetDeliveryDate": "",
         "readyForDelivery": false,
-        "readyAt": null
+        "readyAt": null,
+        "logs": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -521,7 +523,8 @@
         "started": "",
         "done": "",
         "process": "",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -533,7 +536,8 @@
         "started": "",
         "done": "",
         "process": "",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -545,7 +549,8 @@
         "started": "",
         "done": "",
         "process": "",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -557,7 +562,8 @@
         "started": "",
         "done": "",
         "process": "",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -636,7 +642,6 @@
         "loggedBy": "Alex Chew"
       }
     ],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -1025,7 +1030,8 @@
         "qtySent": 0,
         "status": "Not Started",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": []
       },
       {
         "item": "SP30 Fixed Bollard",
@@ -1036,7 +1042,8 @@
         "started": "",
         "done": "",
         "process": "",
-        "targetDeliveryDate": "2026-08-30"
+        "targetDeliveryDate": "2026-08-30",
+        "logs": []
       },
       {
         "item": "SPTT Bollard",
@@ -1045,7 +1052,8 @@
         "qtySent": 0,
         "status": "Not Started",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -1538,7 +1546,8 @@
         "qtySent": 0,
         "status": "Not Started",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -1609,7 +1618,6 @@
         "folder": "General"
       }
     ],
-    "deliveryRequests": [],
     "scopeNotes": "",
     "drawingFolders": [
       "General"
@@ -2050,7 +2058,8 @@
         "readyForDelivery": false,
         "targetDeliveryDate": "",
         "readyAt": null,
-        "process": ""
+        "process": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -2085,7 +2094,6 @@
       }
     ],
     "drawings": [],
-    "deliveryRequests": [],
     "scopeNotes": "",
     "drawingFolders": [
       "General"
@@ -2512,7 +2520,6 @@
         "loggedAt": "2026-04-09T04:27:10.275Z"
       }
     ],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -2877,7 +2884,8 @@
         "totalQty": 1,
         "unit": "units",
         "qtyDone": 0,
-        "status": "Not Started"
+        "status": "Not Started",
+        "logs": []
       }
     ],
     "installation": [],
@@ -2886,7 +2894,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -3247,7 +3254,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -3683,7 +3689,8 @@
           }
         ],
         "process": "Assembly",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Engineered Bollard - Ang Mo Kio",
@@ -3703,7 +3710,8 @@
           }
         ],
         "process": "Assembly",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Engineered Bollard - Seng Kang",
@@ -3723,7 +3731,8 @@
           }
         ],
         "process": "Assembly",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Engineered Bollard - Bedok",
@@ -3743,7 +3752,8 @@
           }
         ],
         "process": "Assembly",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Engineered Bollard - Toh Payoh Interchange",
@@ -3763,7 +3773,8 @@
           }
         ],
         "process": "Assembly",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Engineered Bollard - Clementi",
@@ -3775,7 +3786,8 @@
         "started": "",
         "done": "",
         "process": "",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       },
       {
         "item": "Engineered Bollard - Serangoon",
@@ -3787,7 +3799,8 @@
         "started": "",
         "done": "",
         "process": "",
-        "targetDeliveryDate": ""
+        "targetDeliveryDate": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -3853,7 +3866,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -4253,7 +4265,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -4288,7 +4299,7 @@
     "status": "On Track",
     "currentStage": "Quotation",
     "actionBy": "Sales",
-    "fabPercent": 81,
+    "fabPercent": 16,
     "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
@@ -4675,11 +4686,15 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 127,
         "unit": "units",
-        "qtyDone": 100,
+        "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "QC Check",
         "started": "",
-        "done": ""
+        "done": "",
+        "fab_completed_at": "2026-04-15T15:49:02.385Z",
+        "fab_started_at": "2026-04-15T16:41:24.955Z",
+        "cycle_days": 0,
+        "logs": []
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
@@ -4689,7 +4704,11 @@
         "qtySent": 0,
         "status": "In Progress",
         "started": "",
-        "done": ""
+        "done": "",
+        "fab_started_at": "2026-04-15T16:50:45.295Z",
+        "fab_completed_at": "2026-04-15T16:50:45.295Z",
+        "cycle_days": 0,
+        "logs": []
       },
       {
         "item": "Cova Road Blocker 3 Meters",
@@ -4699,7 +4718,22 @@
         "qtySent": 0,
         "status": "Delivered",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": [
+          {
+            "id": "log_baseline_restore_mo0c7feh",
+            "loggedAt": "2026-04-15T17:41:28.121Z",
+            "loggedBy": "system",
+            "delta": 2,
+            "photoPath": null,
+            "note": "Pre-launch baseline — restored after smoke test",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ],
+        "fab_started_at": "2026-04-15T17:41:28.013Z",
+        "fab_completed_at": null
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
@@ -4709,7 +4743,22 @@
         "qtySent": 0,
         "status": "Delivered",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": [
+          {
+            "id": "log_baseline_bd-25225_3",
+            "loggedAt": "2026-04-15T16:39:00.282Z",
+            "loggedBy": "system",
+            "delta": 22,
+            "photoPath": null,
+            "note": "Pre-launch baseline — no photo available",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ],
+        "fab_started_at": null,
+        "fab_completed_at": null
       }
     ],
     "installation": [
@@ -4751,7 +4800,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -5146,7 +5194,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -5507,7 +5554,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -5933,7 +5979,8 @@
         "qtySent": 0,
         "status": "Not Started",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": []
       },
       {
         "item": "PE Bollard with sleeve - 5 No's",
@@ -5943,7 +5990,8 @@
         "qtySent": 0,
         "status": "Not Started",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -5969,7 +6017,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -6404,7 +6451,8 @@
         "qtySent": 0,
         "status": "Not Started",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -6862,7 +6910,8 @@
         "qtySent": 0,
         "status": "Not Started",
         "started": "",
-        "done": ""
+        "done": "",
+        "logs": []
       }
     ],
     "installation": [
@@ -6880,7 +6929,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -7310,7 +7358,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
@@ -7675,7 +7722,6 @@
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [],
-    "deliveryRequests": [],
     "drawings": [],
     "productScope": [
       {
