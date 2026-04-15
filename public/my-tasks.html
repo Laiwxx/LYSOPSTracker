@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Team Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776183266">
+  <link rel="stylesheet" href="/css/style.css?v=1776263068">
   <style>
     /* ── Type-grouped sections (Mandatory / Requests / Personal) ── */
     .mc-type-group {
@@ -479,7 +479,7 @@
       </div>
 
       <div class="field" style="margin:0;">
-        <label>Assigned To</label>
+        <label id="nt-assignee-label">Assigned To</label>
         <select id="nt-assignee" class="tbl-select"><option value="">Unassigned</option></select>
       </div>
 
@@ -829,6 +829,21 @@ async function renderPersonalView(name) {
       const groupTasks = myTasks.filter(g.match);
       wrap.appendChild(buildTypeGroup(g, groupTasks));
     });
+
+    // 4th group: requests YOU sent to other people. Lets the requester see
+    // at a glance whether the assignee has seen / done it without hunting
+    // through their teammate's view.
+    const sentRequests = allTasks.filter(t =>
+      t.requestedBy === name &&
+      t.assignedTo &&
+      t.assignedTo !== name &&
+      t.title !== 'Submit EOD log'
+    );
+    wrap.appendChild(buildTypeGroup({
+      label: 'Requests You Sent',
+      hint:  'Tasks you asked teammates to do',
+      mode:  'requester',
+    }, sentRequests));
   }
 
   // EOD section at the bottom
@@ -887,15 +902,14 @@ function buildTypeGroup(group, tasks) {
     em.textContent = 'None';
     body.appendChild(em);
   } else {
-    // Render open tasks first (expanded)
+    const rowOpts = group.mode === 'requester' ? { mode: 'requester' } : undefined;
     open.forEach(t => {
-      const { row, panel } = buildCompactRow(t);
+      const { row, panel } = buildCompactRow(t, rowOpts);
       body.appendChild(row);
       body.appendChild(panel);
     });
-    // Then completed ones
     done.forEach(t => {
-      const { row, panel } = buildCompactRow(t);
+      const { row, panel } = buildCompactRow(t, rowOpts);
       body.appendChild(row);
       body.appendChild(panel);
     });
@@ -944,14 +958,15 @@ function buildTaskSection(label, tasks, expanded) {
   return section;
 }
 
-function buildCompactRow(task) {
+function buildCompactRow(task, opts) {
+  const isRequesterView = opts && opts.mode === 'requester';
   const isDone   = task.status === 'Done';
   const isSeen   = !!task.acknowledgedAt;
-  const icon     = isDone ? '✅' : (isSeen ? '👁' : '⚠️');
+  const icon     = isDone ? '✅' : (isSeen ? '👁' : '⏳');
   // Hours logging is only meaningful for a person's OWN work — mandatory
   // recurring tasks and self tasks. Requested tasks (someone asking
   // someone else) don't get hours tracked on them.
-  const logsHours = task.taskType !== 'Requested Task';
+  const logsHours = task.taskType !== 'Requested Task' && !isRequesterView;
 
   // Row
   const row = document.createElement('div');
@@ -976,6 +991,26 @@ function buildCompactRow(task) {
   catBadge.textContent = typeShort[task.taskType] || (task.taskType || 'Task');
   catBadge.title = task.taskType || '';
   rightEl.appendChild(catBadge);
+
+  // In requester view, surface the assignee + a status pill so the requester
+  // can tell at a glance whether the person they asked has seen / done it.
+  if (isRequesterView) {
+    const whoPill = document.createElement('div');
+    whoPill.className = 'pill';
+    whoPill.style.cssText = 'background:var(--bg3);color:var(--text-muted);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;';
+    whoPill.textContent = '→ ' + (task.assignedTo || '—').split(' ')[0];
+    rightEl.appendChild(whoPill);
+
+    const statusPill = document.createElement('div');
+    statusPill.className = 'pill';
+    let pillBg, pillFg, pillText;
+    if (isDone)      { pillBg = '#dcfce7'; pillFg = '#166534'; pillText = '✓ Done'; }
+    else if (isSeen) { pillBg = '#dbeafe'; pillFg = '#1e40af'; pillText = '👁 Seen'; }
+    else             { pillBg = '#fef3c7'; pillFg = '#92400e'; pillText = '⏳ Awaiting'; }
+    statusPill.style.cssText = 'background:' + pillBg + ';color:' + pillFg + ';font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;';
+    statusPill.textContent = pillText;
+    rightEl.appendChild(statusPill);
+  }
 
   if (logsHours) {
     // Hours input — persists across re-renders via rowHoursMap
@@ -1022,7 +1057,7 @@ function buildCompactRow(task) {
       openEodModal(task.assignedTo || '', task.id);
     });
     actionsDiv.appendChild(eodBtn);
-  } else {
+  } else if (!isRequesterView) {
     if (!isDone) {
       const doneBtn = document.createElement('button');
       doneBtn.className = 'task-expand-btn xbtn-done';
@@ -1039,8 +1074,8 @@ function buildCompactRow(task) {
     }
   }
 
-  // Acknowledge / unacknowledge
-  if (!task.acknowledgedAt) {
+  // Acknowledge / unacknowledge — only the assignee can mark as seen
+  if (!task.acknowledgedAt && !isRequesterView) {
     const ackBtn = document.createElement('button');
     ackBtn.className = 'task-expand-btn';
     ackBtn.style.fontSize = '11px';
@@ -1156,6 +1191,8 @@ function ntSetType(type) {
   const show = function(id) { document.getElementById(id).style.display = ''; };
   const hide = function(id) { document.getElementById(id).style.display = 'none'; };
 
+  const assigneeLabel = document.getElementById('nt-assignee-label');
+
   if (type === 'Self Task') {
     show('nt-title-row');
     hide('nt-req-row');
@@ -1163,6 +1200,7 @@ function ntSetType(type) {
     show('nt-desc-row');
     document.getElementById('nt-desc').removeAttribute('readonly');
     document.getElementById('nt-desc').placeholder = 'Optional details…';
+    if (assigneeLabel) assigneeLabel.textContent = 'Who are you?';
   } else if (type === 'Requested Task') {
     show('nt-title-row');
     show('nt-req-row');
@@ -1170,6 +1208,7 @@ function ntSetType(type) {
     show('nt-desc-row');
     document.getElementById('nt-desc').removeAttribute('readonly');
     document.getElementById('nt-desc').placeholder = 'Optional details…';
+    if (assigneeLabel) assigneeLabel.textContent = 'Assigned To';
   }
 }
 
@@ -1273,36 +1312,56 @@ function setupModalHandlers() {
 
   document.getElementById('nt-save').onclick = async function() {
     const type = _ntTaskType;
+    const saveBtn = document.getElementById('nt-save');
 
     // Validation
     const title = document.getElementById('nt-title').value.trim();
     if (!title) { document.getElementById('nt-title').focus(); return; }
+    if (!document.getElementById('nt-assignee').value) {
+      document.getElementById('nt-assignee').focus(); return;
+    }
     if (type === 'Requested Task' && !document.getElementById('nt-requested-by').value) {
       document.getElementById('nt-requested-by').focus(); return;
     }
 
-    const titleVal = document.getElementById('nt-title').value.trim();
     const pid  = document.getElementById('nt-project').value;
     const proj = projectsList.find(function(p) { return p.id === pid; });
 
-    await fetch('/api/tasks', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title:          titleVal,
-        taskType:       type,
-        projectId:      pid,
-        projectJobCode: proj ? (proj.jobCode || '') : '',
-        projectName:    proj ? (proj.name   || '') : '',
-        assignedTo:     document.getElementById('nt-assignee').value,
-        requestedBy:    type === 'Requested Task' ? document.getElementById('nt-requested-by').value : '',
-        dueDate:        document.getElementById('nt-due').value,
-        priority:       document.getElementById('nt-priority').value,
-        description:    document.getElementById('nt-desc').value,
-        createdBy:      type === 'Requested Task' ? document.getElementById('nt-requested-by').value : document.getElementById('nt-assignee').value
-      })
-    });
-    closeModal();
-    reloadAndRender();
+    saveBtn.disabled = true;
+    const originalLabel = saveBtn.textContent;
+    saveBtn.textContent = 'Saving…';
+    try {
+      const res = await fetch('/api/tasks', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title:          title,
+          taskType:       type,
+          projectId:      pid,
+          projectJobCode: proj ? (proj.jobCode || '') : '',
+          projectName:    proj ? (proj.name   || '') : '',
+          assignedTo:     document.getElementById('nt-assignee').value,
+          requestedBy:    type === 'Requested Task' ? document.getElementById('nt-requested-by').value : '',
+          dueDate:        document.getElementById('nt-due').value,
+          priority:       document.getElementById('nt-priority').value,
+          description:    document.getElementById('nt-desc').value,
+          createdBy:      type === 'Requested Task' ? document.getElementById('nt-requested-by').value : document.getElementById('nt-assignee').value
+        })
+      });
+      if (!res.ok) {
+        let msg = 'Failed to create task (HTTP ' + res.status + ')';
+        try { const j = await res.json(); if (j && j.error) msg = j.error; } catch (_) {}
+        alert(msg);
+        return;
+      }
+      closeModal();
+      reloadAndRender();
+    } catch (e) {
+      console.error('[LYS] New task save error:', e);
+      alert('Could not reach server. Please try again.');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = originalLabel;
+    }
   };
 }
 

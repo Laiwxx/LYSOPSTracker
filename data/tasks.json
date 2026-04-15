@@ -1,27 +1,5 @@
 [
   {
-    "id": "mnytd0wb",
-    "projectId": "",
-    "projectJobCode": "",
-    "projectName": "",
-    "title": "gegwgw",
-    "description": "",
-    "taskType": "Self Task",
-    "assignedTo": "Lai Wei Xiang",
-    "createdBy": "Lai Wei Xiang",
-    "createdAt": "2026-04-14T16:06:10.379Z",
-    "dueDate": "",
-    "status": "Pending",
-    "priority": "Medium",
-    "hoursLogged": [],
-    "completedAt": null,
-    "linkedMeetingNoteIdx": null,
-    "tags": [],
-    "weekOf": "2026-04-13",
-    "archived": false,
-    "archivedAt": null
-  },
-  {
     "id": "mnytnzjp1z4",
     "projectId": "",
     "projectJobCode": "",

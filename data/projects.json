@@ -1166,29 +1166,6 @@
         "folder": "General"
       }
     ],
-    "deliveryRequests": [
-      {
-        "id": "mng5ozwe",
-        "item": "",
-        "phase": "",
-        "qtyRequested": 1,
-        "unit": "",
-        "neededByDate": "",
-        "requestedBy": "",
-        "requestedAt": "2026-04-01T14:43:47.006Z",
-        "status": "Pending",
-        "ticketStatus": "New",
-        "acknowledgedBy": "",
-        "acknowledgedAt": null,
-        "inProductionAt": null,
-        "readyAt": null,
-        "readyMarkedBy": "",
-        "deliveredAt": null,
-        "deliveredConfirmedBy": "",
-        "notifyOnAck": true,
-        "notifyOnReady": true
-      }
-    ],
     "scopeNotes": "rwr",
     "drawingFolders": [
       "General"
@@ -4720,7 +4697,7 @@
         "unit": "set-of-1",
         "qtyDone": 2,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "Delivered",
         "started": "",
         "done": ""
       },
@@ -6452,29 +6429,6 @@
         "issues": "",
         "loggedBy": "",
         "loggedAt": "2026-04-09T09:38:52.636Z"
-      }
-    ],
-    "deliveryRequests": [
-      {
-        "id": "mnxccpcd",
-        "item": "",
-        "phase": "",
-        "qtyRequested": 1,
-        "unit": "",
-        "neededByDate": "",
-        "requestedBy": "",
-        "requestedAt": "2026-04-13T15:22:15.757Z",
-        "status": "Pending",
-        "ticketStatus": "New",
-        "acknowledgedBy": "",
-        "acknowledgedAt": null,
-        "inProductionAt": null,
-        "readyAt": null,
-        "readyMarkedBy": "",
-        "deliveredAt": null,
-        "deliveredConfirmedBy": "",
-        "notifyOnAck": true,
-        "notifyOnReady": true
       }
     ],
     "drawings": [],

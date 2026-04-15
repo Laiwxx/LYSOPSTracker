@@ -6,6 +6,10 @@
 - [Team page model and UX](team_page_model.md) — 3 task types (Mandatory/Requests/Personal), hours only on self/recurring, mark-as-seen (no In Progress), ack ladder capped at 3 days, calendar events. Plain professional styling.
 - [Visual style feedback](feedback_visual_style.md) — prefers plain/professional UI consistent across pages; themed aesthetics get reverted. Default to existing design tokens.
 - [Token discipline feedback](feedback_token_discipline.md) — cost-conscious about token spend; narrow before Read, batch parallel calls, short outputs, no ceremony. Applies to main + all sub-agents.
+- [Use agents for validation](feedback_use_agents_for_validation.md) — default to specialist sub-agents (debugger, senior-engineer) for "check/validate/find bugs" asks; trivial edits stay direct.
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder. Spawn via Agent tool with `subagent_type=<name>`.
 - [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. Currently: at least one project has `qs="Lai Wei Xiang"` (wrong — should be Salve or Alex Mac).
 - [Pre-launch test gates](test_gates.md) — EMAIL_TEST_OVERRIDE + CALENDAR_TEST_OVERRIDE env vars route everything to boss during testing.
+- [Page-by-page sweep status](project_page_sweep_status.md) — Team page stable as of 2026-04-15; other pages pending; email HTML refactor deferred to final polish pass.
+- [Tri-layer workflow: fab → site-request → install](project_tri_layer_workflow.md) — critical domain model. Fab, delivery, and install run concurrently with their own progressions. Don't collapse into one % bar.
+- [WIP: Phase 1 SR unification](project_wip_phase1_sr_unification.md) — **IN PROGRESS 2026-04-15**. Mid-edit handoff. Partially shipped: 4 server.js deletions + projects.json cleanup. Still pending: cron rewrite, factory-queue source switch, project.js UI rebuild. Resume from this file. DELETE when committed.

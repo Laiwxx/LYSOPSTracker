@@ -179,5 +179,22 @@
     "summary": "",
     "issues": "",
     "taskEntries": []
+  },
+  {
+    "id": "mnyrb07w",
+    "staffName": "Lai Wei Xiang",
+    "date": "2026-04-14",
+    "submittedAt": "2026-04-14T15:08:36.956Z",
+    "totalHours": 0.5,
+    "hours": 0.5,
+    "notes": "Read Visblity Report",
+    "summary": "Read Visblity Report",
+    "issues": "",
+    "taskEntries": [
+      {
+        "taskId": "mnyr9mvf",
+        "hours": 0.5
+      }
+    ]
   }
 ]

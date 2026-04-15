@@ -378,3 +378,17 @@
 {"ts":"2026-04-14T12:45:01.214Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-14T13:17:46.391Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-14T13:17:48.111Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-14T15:07:33.006Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: Read Visblity Report"}
+{"ts":"2026-04-14T16:06:10.381Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: gegwgw"}
+{"ts":"2026-04-14T16:14:41.849Z","event":"recurring-tasks.created","date":"2026-04-15","count":36,"roles":["Chris","Rena","Alex Mac","Salve","Teo Meei Haw","Jun Jie","Janessa"]}
+{"ts":"2026-04-15T00:45:00.035Z","event":"recurring-tasks.created","date":"2026-04-15","count":36,"roles":["Chris","Rena","Alex Mac","Salve","Teo Meei Haw","Jun Jie","Janessa"]}
+{"ts":"2026-04-15T02:47:08.560Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-15T02:47:25.381Z","event":"site-request.deleted","id":"mnyhxsmb4knb","actor":"Chris","previousStatus":"New","projectId":"bd-22724-poc-t232-woodland","projectJobCode":"BD 22724 - POC (T232 Woodland)","item":"SP30 Fixed Bollard","quantity":703,"requestedBy":"Site Engineer"}
+{"ts":"2026-04-15T02:53:48.803Z","event":"attendance.saved","date":"2026-04-15","count":1}
+{"ts":"2026-04-15T02:53:48.849Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-15T02:53:59.808Z","event":"attendance.saved","date":"2026-04-15","count":0}
+{"ts":"2026-04-15T02:54:00.036Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-15T13:11:38.548Z","event":"email.sent","to":"Lai Wei Xiang","subject":"New Task: Testing"}
+{"ts":"2026-04-15T14:24:52.798Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-15T14:24:53.549Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-15T14:24:54.425Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[{"field":"status","from":"Ready for Delivery","to":"Delivered"}]}

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776178384">
+  <link rel="stylesheet" href="/css/style.css?v=1776263068">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 600px; margin: 0 auto; padding: 16px; }
@@ -1428,6 +1428,51 @@ async function uploadItemPhoto(pid, idx, input) {
   }
 }
 
+// Narrow fab-field save. Routes through POST (append+dedupe) on first save
+// of a scope-seeded row, or PUT (narrow) on subsequent saves. Eliminates the
+// full-project round-trip that was causing lost-updates on concurrent /project
+// edits AND spurious delivery-request emails on every chip click.
+async function saveFabField(pid, localRow, localIdx, fields) {
+  if (localRow._fromScope) {
+    const body = {
+      item: localRow.item,
+      totalQty: localRow.totalQty || 0,
+      unit: localRow.unit || 'units',
+      qtyDone: parseFloat(localRow.qtyDone) || 0,
+      status: localRow.status || 'Not Started',
+    };
+    Object.assign(body, fields);
+    const res = await fetch('/api/projects/' + pid + '/fabrication', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('Save failed (' + res.status + ')');
+    const data = await res.json();
+    localRow._serverIdx = data.idx;
+    localRow._fromScope = false;
+    // Server may have auto-derived status — reflect whatever it wrote back.
+    if (data.item) {
+      Object.assign(localRow, data.item);
+    } else {
+      Object.assign(localRow, fields);
+    }
+    return data.item;
+  }
+  const serverIdx = (localRow._serverIdx !== undefined) ? localRow._serverIdx : localIdx;
+  const res = await fetch('/api/projects/' + pid + '/fabrication/' + serverIdx, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fields)
+  });
+  if (!res.ok) throw new Error('Save failed (' + res.status + ')');
+  const updated = await res.json();
+  // Mirror server-derived status back onto the local row so the UI stays in sync.
+  if (updated) Object.assign(localRow, updated);
+  else Object.assign(localRow, fields);
+  return updated;
+}
+
 async function updateFabItemStage(pid, idx, direction) {
   const localRow = fabData[pid] && fabData[pid].fabrication && fabData[pid].fabrication[idx];
   if (!localRow) return;
@@ -1443,41 +1488,13 @@ async function updateFabItemStage(pid, idx, direction) {
   if (chipEl) chipEl.classList.add('saving');
 
   try {
-    // Round-trip through the full project PUT so deriveFields + stage backfill run server-side.
-    const getRes = await fetch('/api/projects/' + pid);
-    if (!getRes.ok) throw new Error('Failed to load project');
-    const proj = await getRes.json();
-    proj.fabrication = Array.isArray(proj.fabrication) ? proj.fabrication : [];
-
-    if (localRow._fromScope) {
-      const existing = proj.fabrication.find(f => (f.item || '').toLowerCase().trim() === (localRow.item || '').toLowerCase().trim());
-      if (existing) {
-        existing.status = nextStage;
-      } else {
-        proj.fabrication.push({
-          item: localRow.item, totalQty: localRow.totalQty || 0, unit: localRow.unit || 'units',
-          qtyDone: parseFloat(localRow.qtyDone) || 0, status: nextStage
-        });
-      }
-    } else if (proj.fabrication[idx]) {
-      proj.fabrication[idx].status = nextStage;
-    } else {
-      throw new Error('Row index not found');
-    }
-
-    const putRes = await fetch('/api/projects/' + pid, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(proj)
-    });
-    if (!putRes.ok) throw new Error('Save failed (' + putRes.status + ')');
-    try { fabData[pid] = await putRes.json(); } catch {}
-
+    await saveFabField(pid, localRow, idx, { status: nextStage });
+    const finalStage = localRow.status || nextStage;
     if (chipEl) {
-      chipEl.textContent = nextStage;
-      chipEl.className = 'stage-chip s-' + nextStage.toLowerCase().replace(/\s+/g, '-');
+      chipEl.textContent = finalStage;
+      chipEl.className = 'stage-chip s-' + finalStage.toLowerCase().replace(/\s+/g, '-');
     }
-    if (backEl) backEl.disabled = nextPos === 0;
+    if (backEl) backEl.disabled = FAB_STAGES.indexOf(finalStage) === 0;
   } catch (e) {
     console.error('updateFabItemStage error:', e);
     if (chipEl) {
@@ -1500,35 +1517,20 @@ async function saveSingleItem(pid, idx) {
       : parseFloat((document.getElementById('val-' + pid + '-' + idx) || {}).value || 0);
     const num = isNaN(newVal) ? 0 : newVal;
 
-    const getRes = await fetch('/api/projects/' + pid);
-    if (!getRes.ok) throw new Error('Failed to load project');
-    const proj = await getRes.json();
-    proj.fabrication = Array.isArray(proj.fabrication) ? proj.fabrication : [];
-
     const fp_local = fabData[pid];
     const row = fp_local && fp_local.fabrication && fp_local.fabrication[idx];
     if (!row) throw new Error('Row not found');
 
-    if (row._fromScope) {
-      const existing = proj.fabrication.find(f => (f.item||'').toLowerCase().trim() === (row.item||'').toLowerCase().trim());
-      if (existing) {
-        existing.qtyDone = num;
-      } else {
-        proj.fabrication.push({ item: row.item, totalQty: row.totalQty || 0, unit: row.unit || 'units', qtyDone: num, status: num > 0 ? 'In Progress' : 'Not Started' });
-      }
-    } else if (proj.fabrication[idx]) {
-      proj.fabrication[idx].qtyDone = num;
-    }
-
-    const putRes = await fetch('/api/projects/' + pid, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(proj)
-    });
-    if (!putRes.ok) throw new Error('Save failed');
-    try { fabData[pid] = await putRes.json(); } catch {}
+    await saveFabField(pid, row, idx, { qtyDone: num });
     if (updates[pid]) delete updates[pid][idx];
     updateCardPercent(pid);
+
+    // Server may have auto-derived status (e.g. 0→In Progress). Reflect it on the chip.
+    const chipEl = document.querySelector(`#pq-card-${pid} .factory-item[data-item-idx="${idx}"] .stage-chip`);
+    if (chipEl && row.status) {
+      chipEl.textContent = row.status;
+      chipEl.className = 'stage-chip s-' + row.status.toLowerCase().replace(/\s+/g, '-');
+    }
 
     if (btn) {
       btn.classList.add('saved');

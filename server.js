@@ -195,24 +195,36 @@ async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
       toRecipients: [{ emailAddress: { address: recipient, name: toName || recipient } }]
     };
     if (ccRecipients.length) message.ccRecipients = ccRecipients;
-    const res = await fetch(`https://graph.microsoft.com/v1.0/users/${senderEmail}/sendMail`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ message })
-    });
+    // Retry on 429 (MailboxConcurrency / ApplicationThrottled). Graph honors
+    // Retry-After header; fall back to exponential backoff (1s, 3s, 7s).
+    let res;
+    let attempt = 0;
+    const maxAttempts = 4;
+    while (true) {
+      res = await fetch(`https://graph.microsoft.com/v1.0/users/${senderEmail}/sendMail`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message })
+      });
+      if (res.status !== 429 || attempt >= maxAttempts - 1) break;
+      const retryAfterHeader = parseInt(res.headers.get('retry-after'), 10);
+      const waitMs = (Number.isFinite(retryAfterHeader) ? retryAfterHeader : Math.pow(2, attempt + 1) - 1) * 1000;
+      console.warn(`[EMAIL] 429 throttled on "${subject}" → ${recipient}, retrying in ${waitMs}ms (attempt ${attempt + 1}/${maxAttempts})`);
+      await new Promise(r => setTimeout(r, waitMs));
+      attempt++;
+    }
     if (!res.ok) {
-      // Log the full Graph API error response so we can diagnose failures
       let errBody = '';
       try { errBody = await res.text(); } catch {}
       const msg = `Graph API ${res.status} ${res.statusText} — ${errBody}`;
       console.error(`[EMAIL] Failed to send "${subject}" → ${recipient}: ${msg}`);
-      logError('email.send.graphapi', new Error(msg), { to: recipient, subject, status: res.status });
+      logError('email.send.graphapi', new Error(msg), { to: recipient, subject, status: res.status, attempts: attempt + 1 });
       return;
     }
-    console.log(`[EMAIL] Sent "${subject}" → ${recipient}`);
+    console.log(`[EMAIL] Sent "${subject}" → ${recipient}${attempt > 0 ? ` (after ${attempt} retries)` : ''}`);
   } catch (e) {
     console.error('[EMAIL] Exception sending to', recipient, ':', e.message);
     logError('email.send.exception', e, { to: recipient, subject });
@@ -894,29 +906,6 @@ app.put('/api/projects/:id', async (req, res) => {
     });
   }
 
-  // Trigger 1: New delivery request → notify Chris
-  const oldDRIds = new Set((oldProject.deliveryRequests || []).map(r => r.id));
-  const newDRs = (incoming.deliveryRequests || []).filter(r => r.id && !oldDRIds.has(r.id));
-  for (const dr of newDRs) {
-    const chrisEmail = getStaffEmail('Chris');
-    if (chrisEmail) {
-      sendEmail(chrisEmail, 'Chris',
-        `[Action Required] New Delivery Request — ${oldProject.jobCode}`,
-        `<p>Hi Chris,</p>
-        <p>A new delivery request has been submitted for <strong>${oldProject.jobCode} — ${oldProject.projectName || ''}</strong>.</p>
-        <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${dr.item || 'See tracker'}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Qty</td><td>${dr.qtyRequested || '—'}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Needed By</td><td>${dr.neededByDate || 'ASAP'}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Requested By</td><td>${dr.requestedBy || '—'}</td></tr>
-        </table>
-        <p><a href="${APP_URL}/project.html?id=${oldProject.id}">Open OPS Tracker →</a></p>`
-      ).catch(() => {});
-    } else {
-      console.warn('[EMAIL SKIP] No email for: Chris (new delivery request)');
-    }
-  }
-
   // Trigger: project status changed to Delayed → notify project manager
   if (incoming.status === 'Delayed' && oldProject.status !== 'Delayed') {
     const pmName = incoming.projectManager || oldProject.projectManager;
@@ -1049,6 +1038,84 @@ app.get('/api/factory-queue', (req, res) => {
   } catch (e) { logError('route.get.factory-queue', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
+// Whitelist of client-writable fields on fabrication rows. Anything outside
+// this set (fab_started_at, cycle_days, _fromScope, etc.) is server-managed.
+const FAB_WRITABLE_FIELDS = ['item','unit','totalQty','qtyDone','status','readyForDelivery','targetDeliveryDate','readyAt'];
+
+// Auto-derive status from qtyDone for batch items (totalQty > 1). Chris
+// picks "In Progress" on day 1 and forgets — the chip goes stale while
+// qtyDone keeps moving. For batch items, qtyDone is the only signal that
+// actually tracks reality, so derive status from it. Qty=1 items (gates,
+// one-off assemblies) keep manual stage control where the ladder is meaningful.
+// Rules:
+//   qtyDone == 0        → Not Started
+//   0 < done < total    → In Progress
+//   done >= total       → QC Check  (Chris manually advances past QC)
+// Only auto-derive for items currently in the pre-QC half of the ladder —
+// once Chris has advanced to QC/Ready/Delivered, we leave the status alone.
+function autoDeriveFabStatus(fabItem) {
+  const total = parseFloat(fabItem.totalQty) || 0;
+  const done  = parseFloat(fabItem.qtyDone)  || 0;
+  if (total <= 1) return; // singletons: manual ladder only
+  const current = fabItem.status || 'Not Started';
+  if (current === 'QC Check' || current === 'Ready for Delivery' || current === 'Delivered') return;
+  if (done <= 0) fabItem.status = 'Not Started';
+  else if (done < total) fabItem.status = 'In Progress';
+  else fabItem.status = 'QC Check';
+}
+
+// Cycle-time stamping + derived status, shared by POST-append and PUT-update
+// so both paths stay consistent.
+function applyFabDerivations(oldItem, fabItem) {
+  const oldQtyDone = parseFloat((oldItem || {}).qtyDone) || 0;
+  const newQtyDone = parseFloat(fabItem.qtyDone) || 0;
+  const qtyTotal   = parseFloat(fabItem.totalQty) || 0;
+  const nowISO     = new Date().toISOString();
+  if (oldQtyDone === 0 && newQtyDone > 0 && !fabItem.fab_started_at) {
+    fabItem.fab_started_at = nowISO;
+  }
+  if (qtyTotal > 0 && newQtyDone >= qtyTotal && !fabItem.fab_completed_at) {
+    fabItem.fab_completed_at = nowISO;
+  }
+  if (fabItem.fab_started_at && fabItem.fab_completed_at && !fabItem.cycle_days) {
+    const startMs = new Date(fabItem.fab_started_at).getTime();
+    const endMs   = new Date(fabItem.fab_completed_at).getTime();
+    fabItem.cycle_days = Math.round((endMs - startMs) / 86400000 * 10) / 10;
+  }
+  autoDeriveFabStatus(fabItem);
+}
+
+// --- API: Append a fabrication row (narrow, whitelisted). Dedupes by item
+// name (case-insensitive) so seeded scope rows upsert cleanly on first save.
+app.post('/api/projects/:id/fabrication', (req, res) => {
+  try {
+    const projects = readProjects();
+    const project = projects.find(p => p.id === req.params.id);
+    if (!project) return res.status(404).json({ error: 'Not found' });
+    if (!Array.isArray(project.fabrication)) project.fabrication = [];
+    const clean = {};
+    for (const k of FAB_WRITABLE_FIELDS) if (req.body[k] !== undefined) clean[k] = req.body[k];
+    if (!clean.item || !String(clean.item).trim()) return res.status(400).json({ error: 'item required' });
+    const nameKey = String(clean.item).toLowerCase().trim();
+    const existingIdx = project.fabrication.findIndex(f => (f.item || '').toLowerCase().trim() === nameKey);
+    let idx;
+    let oldForDerive = null;
+    if (existingIdx >= 0) {
+      oldForDerive = { ...project.fabrication[existingIdx] };
+      Object.assign(project.fabrication[existingIdx], clean);
+      idx = existingIdx;
+    } else {
+      project.fabrication.push(clean);
+      idx = project.fabrication.length - 1;
+    }
+    applyFabDerivations(oldForDerive, project.fabrication[idx]);
+    deriveFields(project);
+    writeProjects(projects);
+    logActivity('fab.upserted', { projectId: req.params.id, jobCode: project.jobCode, itemIndex: idx, item: clean.item });
+    res.json({ idx, item: project.fabrication[idx] });
+  } catch (e) { logError('route.post.fabrication', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
 // --- API: Update fabrication item fields ---
 app.put('/api/projects/:id/fabrication/:idx', (req, res) => {
   try {
@@ -1059,31 +1126,17 @@ app.put('/api/projects/:id/fabrication/:idx', (req, res) => {
     if (isNaN(idx) || idx < 0) return res.status(400).json({ error: 'Invalid index' });
     if (!project.fabrication || !project.fabrication[idx]) return res.status(404).json({ error: 'Item not found' });
     const oldItem = { ...project.fabrication[idx] };
-    Object.assign(project.fabrication[idx], req.body);
-
-    // ── Task 5: FAB cycle time tracking (silent) ──────────────────────────
-    const fabItem    = project.fabrication[idx];
-    const oldQtyDone = parseFloat(oldItem.qtyDone) || 0;
-    const newQtyDone = parseFloat(fabItem.qtyDone) || 0;
-    const qtyTotal   = parseFloat(fabItem.totalQty) || 0;
-    const nowISO     = new Date().toISOString();
-    if (oldQtyDone === 0 && newQtyDone > 0 && !fabItem.fab_started_at) {
-      fabItem.fab_started_at = nowISO;
-    }
-    if (qtyTotal > 0 && newQtyDone >= qtyTotal && !fabItem.fab_completed_at) {
-      fabItem.fab_completed_at = nowISO;
-    }
-    if (fabItem.fab_started_at && fabItem.fab_completed_at && !fabItem.cycle_days) {
-      const startMs = new Date(fabItem.fab_started_at).getTime();
-      const endMs   = new Date(fabItem.fab_completed_at).getTime();
-      fabItem.cycle_days = Math.round((endMs - startMs) / 86400000 * 10) / 10;
-    }
+    // Whitelist — silently drop server-managed fields (fab_started_at, cycle_days, _fromScope).
+    const clean = {};
+    for (const k of FAB_WRITABLE_FIELDS) if (req.body[k] !== undefined) clean[k] = req.body[k];
+    Object.assign(project.fabrication[idx], clean);
+    applyFabDerivations(oldItem, project.fabrication[idx]);
 
     deriveFields(project);
     writeProjects(projects);
-    const changes = Object.keys(req.body)
-      .filter(k => String(req.body[k]) !== String(oldItem[k]))
-      .map(k => ({ field: k, from: oldItem[k], to: req.body[k] }));
+    const changes = Object.keys(clean)
+      .filter(k => String(clean[k]) !== String(oldItem[k]))
+      .map(k => ({ field: k, from: oldItem[k], to: clean[k] }));
     logActivity('fab.updated', { projectId: req.params.id, jobCode: project.jobCode, itemIndex: idx, item: project.fabrication[idx].item || project.fabrication[idx].description || '', changes });
     res.json(project.fabrication[idx]);
   } catch (e) { logError('route.put.fabrication', e); res.status(500).json({ error: 'Internal server error' }); }
@@ -1108,40 +1161,6 @@ app.put('/api/projects/:id/installation/:idx', (req, res) => {
     logActivity('install.updated', { projectId: req.params.id, jobCode: project.jobCode, itemIndex: idx, item: project.installation[idx].item || project.installation[idx].description || '', changes });
     res.json(project.installation[idx]);
   } catch (e) { logError('route.put.installation', e); res.status(500).json({ error: 'Internal server error' }); }
-});
-
-// --- API: Update delivery request ticket status ---
-app.put('/api/projects/:id/delivery-requests/:reqId', async (req, res) => {
-  try {
-  const projects = readProjects();
-  const project = projects.find(p => p.id === req.params.id);
-  if (!project) return res.status(404).json({ error: 'Not found' });
-  const dr = project.deliveryRequests || [];
-  const rIdx = dr.findIndex(r => r.id === req.params.reqId);
-  if (rIdx === -1) return res.status(404).json({ error: 'Request not found' });
-  const existing = dr[rIdx];
-  Object.assign(dr[rIdx], req.body);
-  project.deliveryRequests = dr;
-  writeProjects(projects);
-
-  // Trigger 3: Status changed to Ready → notify site engineer
-  if (req.body.ticketStatus === 'Ready' && existing.ticketStatus !== 'Ready') {
-    const siteEngineerName = project.siteEngineer;
-    const siteEmail = getStaffEmail(siteEngineerName);
-    if (siteEmail) {
-      sendEmail(siteEmail, siteEngineerName,
-        `[Ready for Delivery] ${project.jobCode} — ${dr[rIdx].item}`,
-        `<p>Hi ${siteEngineerName},</p>
-        <p>Items are ready for delivery on project <strong>${project.jobCode}</strong>.</p>
-        <p><strong>${dr[rIdx].item}</strong> — Qty: ${dr[rIdx].qtyRequested || '—'}</p>
-        <p>Please coordinate delivery with Chris.</p>
-        <p><a href="${APP_URL}/project.html?id=${project.id}">Open Project →</a></p>`
-      ).catch(() => {});
-    }
-  }
-
-  res.json(dr[rIdx]);
-  } catch (e) { logError('route.put.delivery-requests', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // --- API: Notification stubs (future email integration) ---
@@ -1417,7 +1436,6 @@ function buildDefaultProject(data) {
     defects: data.defects || [],
     meetingNotes: data.meetingNotes || [],
     drawings: data.drawings || [],
-    deliveryRequests: data.deliveryRequests || []
   };
 }
 
@@ -1528,8 +1546,9 @@ app.post('/api/tasks', postRateLimit, (req, res) => {
   writeTasks(tasks);
   res.json(task);
 
-  // Trigger 1: Send assignment email if task is assigned to someone
-  if (task.assignedTo) {
+  // Trigger 1: Send assignment email if task is assigned to someone other than the creator
+  // (Self Tasks where creator === assignee don't need a "you've been assigned" notification)
+  if (task.assignedTo && task.createdBy !== task.assignedTo) {
     const assignEmail = getStaffEmail(task.assignedTo);
     if (assignEmail) {
       const assignedBy   = task.createdBy && task.createdBy !== task.assignedTo ? task.createdBy : null;
@@ -3231,7 +3250,8 @@ async function createDailyRecurringTasks() {
     const nowSGT = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
     const dayName = nowSGT.toLocaleDateString('en-SG', { weekday: 'long' });
     const dateFmt = nowSGT.toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' });
-    const emailPromises = [];
+    // Serialize sends — Graph throttles per-mailbox concurrency aggressively
+    // (especially under EMAIL_TEST_OVERRIDE where every email lands in one inbox).
     for (const person of people) {
       const personEmail = getStaffEmail(person);
       if (!personEmail) {
@@ -3262,12 +3282,14 @@ async function createDailyRecurringTasks() {
         `📋 Remember to submit your EOD report by 6pm</p>` +
         `<p style="margin:12px 0 0;font-size:11px;color:#aaa;">LYS Ops Tracker</p>` +
         `</div>`;
-      emailPromises.push(
-        sendEmail(personEmail, person, `Good morning ${firstName} — Your tasks for ${dayName}, ${dateFmt}`, htmlBody)
-          .catch(e => console.error(`[RECURRING] Email failed for ${person}:`, e.message))
-      );
+      try {
+        await sendEmail(personEmail, person, `Good morning ${firstName} — Your tasks for ${dayName}, ${dateFmt}`, htmlBody);
+      } catch (e) {
+        console.error(`[RECURRING] Email failed for ${person}:`, e.message);
+      }
+      // Small gap between sends to stay clear of MailboxConcurrency limits
+      await new Promise(r => setTimeout(r, 400));
     }
-    await Promise.all(emailPromises);
     console.log(`[RECURRING] Daily task emails sent for ${today}`);
   } else {
     console.log(`[RECURRING] ${today}: all recurring tasks already exist — skipped`);
