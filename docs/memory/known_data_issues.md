@@ -44,6 +44,34 @@ cp data/projects.json data/projects.json.bak.$(date +%Y%m%d)
 
 ---
 
+## Auto-backup cron creates root-owned files in `.git/objects`
+
+**Spotted:** 2026-04-15 17:47 SGT. Running `autopush.sh` interactively failed with `error: insufficient permission for adding an object to repository database .git/objects` on every write. Investigation found 56 files under `/home/ubuntu/ops-tracker/.git/objects/` owned by `root:root` with timestamps matching the 15:00 SGT auto-backup run — so whatever schedules the auto-backup (`cron`, `systemd`, or similar) is running it as root instead of as `ubuntu`.
+
+**Impact:** mixed ownership of `.git/objects` makes subsequent interactive git commits from the `ubuntu` user fail silently (well, noisily — but the error is misleading). Every time the user manually runs autopush between cron firings, they'll hit this until someone fixes the cron. It also creates a subtle risk that roll-backs, amends, or rebases could corrupt the tree since git expects all objects to be writable by the committing user.
+
+**How to find it:**
+```bash
+find /home/ubuntu/ops-tracker/.git -not -user ubuntu | head
+```
+
+**Workaround (temporary):** run once to reclaim ownership whenever the commit fails.
+```bash
+sudo chown -R ubuntu:ubuntu /home/ubuntu/ops-tracker/.git
+```
+
+**Real fix:** check what's firing the auto-backup and make it run as `ubuntu`.
+```bash
+sudo crontab -l                 # if root cron, move to user crontab
+crontab -l                      # check ubuntu's cron
+systemctl list-timers           # look for ops-tracker or autopush timers
+```
+Either (a) move the entry from `root`'s crontab into `ubuntu`'s crontab, or (b) if it must stay in root's crontab, change the line to `su ubuntu -c '/home/ubuntu/ops-tracker/autopush.sh'`.
+
+**Don't fix silently** — the boss scheduled the backup, he should decide which user should own it.
+
+---
+
 ## Template for future entries
 
 When a new data issue is found:
