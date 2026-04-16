@@ -4299,7 +4299,7 @@
     "status": "On Track",
     "currentStage": "Quotation",
     "actionBy": "Sales",
-    "fabPercent": 16,
+    "fabPercent": 14,
     "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
@@ -4714,24 +4714,12 @@
         "item": "Cova Road Blocker 3 Meters",
         "totalQty": 3,
         "unit": "set-of-1",
-        "qtyDone": 2,
+        "qtyDone": 0,
         "qtySent": 0,
-        "status": "Delivered",
+        "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": [
-          {
-            "id": "log_baseline_restore_mo0c7feh",
-            "loggedAt": "2026-04-15T17:41:28.121Z",
-            "loggedBy": "system",
-            "delta": 2,
-            "photoPath": null,
-            "note": "Pre-launch baseline — restored after smoke test",
-            "editedAt": null,
-            "editedBy": null,
-            "editHistory": []
-          }
-        ],
+        "logs": [],
         "fab_started_at": "2026-04-15T17:41:28.013Z",
         "fab_completed_at": null
       },
@@ -4741,7 +4729,7 @@
         "unit": "units",
         "qtyDone": 22,
         "qtySent": 0,
-        "status": "Delivered",
+        "status": "QC Check",
         "started": "",
         "done": "",
         "logs": [
@@ -4758,7 +4746,7 @@
           }
         ],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": "2026-04-15T17:48:58.206Z"
       }
     ],
     "installation": [

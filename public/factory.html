@@ -2185,7 +2185,8 @@ document.getElementById('do-file-input').addEventListener('change', async functi
     const formData = new FormData();
     formData.append('file', file);
     try {
-      await fetch('/api/upload-do', { method: 'POST', body: formData });
+      const res = await fetch('/api/upload-do', { method: 'POST', body: formData });
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
       const item = document.createElement('div');
       item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:4px;font-size:12px;';
       item.innerHTML = `📄 ${escHtml(file.name)} <span style="color:var(--green);margin-left:auto;">✅ Uploaded</span>`;
@@ -2254,15 +2255,22 @@ async function submitFactoryPR() {
   const notes       = document.getElementById('fpr-notes').value.trim();
   const btn         = document.getElementById('fpr-submit-btn');
 
+  if (!projectCode) { factoryToast('Select a project first', false); return; }
+
   const items = [];
-  document.querySelectorAll('#fpr-items-container > div').forEach(row => {
+  const errors = [];
+  document.querySelectorAll('#fpr-items-container > div').forEach((row, i) => {
     const desc = row.querySelector('.fpr-desc').value.trim();
     const qty  = parseFloat(row.querySelector('.fpr-qty').value) || 0;
     const unit = row.querySelector('.fpr-unit').value.trim();
     const date = row.querySelector('.fpr-date').value;
-    if (desc || qty) items.push({ description: desc, qty, unit, requiredDate: date || null });
+    if (!desc && !qty) return; // skip fully blank rows
+    if (!desc) { errors.push(`Row ${i + 1}: description is required`); return; }
+    if (qty <= 0) { errors.push(`Row ${i + 1}: qty must be greater than 0`); return; }
+    items.push({ description: desc, qty, unit, requiredDate: date || null });
   });
 
+  if (errors.length) { factoryToast(errors[0], false); return; }
   if (!items.length) { factoryToast('Add at least one item', false); return; }
 
   btn.textContent = 'Submitting…';

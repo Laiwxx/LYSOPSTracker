@@ -47,7 +47,7 @@
     "assignments": {
       "wm-tan-yock-wan": {
         "thu": {
-          "type": "Installation",
+          "type": "Fabrication",
           "projectId": "bd-25225-nakano-st-eng-dc",
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
@@ -64,7 +64,7 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-15T17:45:40.101Z"
+    "savedAt": "2026-04-16T02:29:10.135Z"
   },
   {
     "weekStart": "2026-04-12",
