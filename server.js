@@ -1222,7 +1222,7 @@ function autoDeriveFabStatus(fabItem) {
 // Cycle-time stamping + derived status, shared by POST-append and PUT-update
 // so both paths stay consistent. Also recomputes qtyDone from logs[] first so
 // downstream derivations (status chip, cycle time) run against the true value.
-function applyFabDerivations(oldItem, fabItem) {
+function applyFabDerivations(oldItem, fabItem, opts) {
   recomputeQtyDone(fabItem);
   const oldQtyDone = parseFloat((oldItem || {}).qtyDone) || 0;
   const newQtyDone = parseFloat(fabItem.qtyDone) || 0;
@@ -1239,7 +1239,9 @@ function applyFabDerivations(oldItem, fabItem) {
     const endMs   = new Date(fabItem.fab_completed_at).getTime();
     fabItem.cycle_days = Math.round((endMs - startMs) / 86400000 * 10) / 10;
   }
-  autoDeriveFabStatus(fabItem);
+  if (!(opts && opts.skipStatusDerive)) {
+    autoDeriveFabStatus(fabItem);
+  }
 }
 
 // --- API: Append a fabrication row (narrow, whitelisted). Dedupes by item
@@ -1287,7 +1289,10 @@ app.put('/api/projects/:id/fabrication/:idx', (req, res) => {
     const clean = {};
     for (const k of FAB_WRITABLE_FIELDS) if (req.body[k] !== undefined) clean[k] = req.body[k];
     Object.assign(project.fabrication[idx], clean);
-    applyFabDerivations(oldItem, project.fabrication[idx]);
+    // If the client sent an explicit status (stage chip tap), preserve it —
+    // only run auto-derive when the status wasn't manually set.
+    const manualStatus = clean.status !== undefined;
+    applyFabDerivations(oldItem, project.fabrication[idx], { skipStatusDerive: manualStatus });
 
     deriveFields(project);
     writeProjects(projects);
@@ -1571,8 +1576,10 @@ app.put('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req, r
 
 // DELETE /api/projects/:id/fabrication/:idx/logs/:logId — remove a log entry.
 // Re-validates the row after removal (a delete can't push us under the
-// shipped floor). Phase B will also unlink the photo file server-side.
-app.delete('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req, res) => {
+// shipped floor). If the guard blocks it, the client can retry with
+// { force: true, reason: '...' } in the JSON body — the delete proceeds
+// but a force-override is logged in the activity log for audit.
+app.delete('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, express.json(), (req, res) => {
   try {
     const loaded = _loadFabRowOr404(req, res);
     if (!loaded) return;
@@ -1585,7 +1592,16 @@ app.delete('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req
     const otherSum = row.logs.reduce((a, l, i) => i === logIdx ? a : a + (parseFloat(l.delta) || 0), 0);
     const proposedSum = Math.round(otherSum * 100) / 100;
     const err = _validateLogTotals(row, proposedSum, project.id, idx);
-    if (err) return res.status(err.status).json({ error: err.error });
+    let forceOverride = false;
+    if (err) {
+      const body = req.body || {};
+      const reason = (body.reason || '').trim();
+      if (body.force === true && reason.length > 0) {
+        forceOverride = true;
+      } else {
+        return res.status(err.status).json({ error: err.error, canForce: true });
+      }
+    }
 
     row.logs.splice(logIdx, 1);
     applyFabDerivations(null, row);
@@ -1612,13 +1628,21 @@ app.delete('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req
       }
     }
 
-    logActivity('fab.log.deleted', {
+    const activityData = {
       projectId: project.id, jobCode: project.jobCode,
       fabIdx: idx, item: row.item,
       logId: removed.id, deletedDelta: removed.delta, newTotal: row.qtyDone,
       photoUnlinked,
-    });
-    res.json({ ok: true, qtyDone: row.qtyDone, status: row.status });
+    };
+    if (forceOverride) {
+      activityData.forceOverride = true;
+      activityData.overrideReason = (req.body.reason || '').trim();
+      activityData.shippedFloor = _shippedForFabRow(project.id, idx, row.item);
+      logActivity('fab.log.force-deleted', activityData);
+    } else {
+      logActivity('fab.log.deleted', activityData);
+    }
+    res.json({ ok: true, qtyDone: row.qtyDone, status: row.status, forceOverride });
   } catch (e) {
     logError('route.delete.fab-log', e);
     if (!res.headersSent) res.status(500).json({ error: 'Internal server error' });

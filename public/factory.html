@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776274833">
+  <link rel="stylesheet" href="/css/style.css?v=1776423159">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 600px; margin: 0 auto; padding: 16px; }
@@ -2690,26 +2690,51 @@ async function deleteLogEntry(projectId, fabIdx, logId) {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
+      // Server says this delete is blocked but can be force-overridden
+      if (err.canForce) {
+        const reason = prompt(
+          'This log cannot be deleted because the built qty would drop below the shipped total.\n\n' +
+          'To override, provide a reason (this will be logged for audit):');
+        if (!reason || !reason.trim()) {
+          factoryToast('Delete cancelled — no reason provided', false);
+          return;
+        }
+        const forceRes = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/logs/' + logId, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ force: true, reason: reason.trim() }),
+        });
+        if (!forceRes.ok) {
+          const forceErr = await forceRes.json().catch(() => ({}));
+          throw new Error(forceErr.error || ('Force delete failed (' + forceRes.status + ')'));
+        }
+        const forceResult = await forceRes.json();
+        _applyLogDeletion(projectId, fabIdx, logId, forceResult);
+        factoryToast('Log entry force-deleted (override logged) ✓');
+        return;
+      }
       throw new Error(err.error || ('Delete failed (' + res.status + ')'));
     }
     const result = await res.json();
-
-    // Update local state
-    const row = fabData[projectId] && fabData[projectId].fabrication && fabData[projectId].fabrication[fabIdx];
-    if (row && Array.isArray(row.logs)) {
-      row.logs = row.logs.filter(l => l.id !== logId);
-      row.qtyDone = result.qtyDone;
-      if (result.status) row.status = result.status;
-    }
-    const fp = fabData[projectId];
-    if (fp) {
-      renderFabItems(fp);
-      updateCardPercent(projectId);
-    }
+    _applyLogDeletion(projectId, fabIdx, logId, result);
     factoryToast('Log entry deleted ✓');
   } catch (e) {
     console.error('delete log failed:', e);
     factoryToast('Delete failed: ' + (e.message || 'unknown'), false);
+  }
+}
+
+function _applyLogDeletion(projectId, fabIdx, logId, result) {
+  const row = fabData[projectId] && fabData[projectId].fabrication && fabData[projectId].fabrication[fabIdx];
+  if (row && Array.isArray(row.logs)) {
+    row.logs = row.logs.filter(l => l.id !== logId);
+    row.qtyDone = result.qtyDone;
+    if (result.status) row.status = result.status;
+  }
+  const fp = fabData[projectId];
+  if (fp) {
+    renderFabItems(fp);
+    updateCardPercent(projectId);
   }
 }
 
