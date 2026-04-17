@@ -557,3 +557,8 @@
 {"ts":"2026-04-17T10:54:51.422Z","event":"fab.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo2siaxzx4uh","deletedDelta":120,"newTotal":0,"photoUnlinked":true}
 {"ts":"2026-04-17T10:54:58.256Z","event":"fab.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":2,"logId":"log_mo2skd81k1la","originalSize":69832,"originalMime":"image/jpeg"}
 {"ts":"2026-04-17T10:55:11.877Z","event":"fab.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":2,"logId":"log_mo2sknqk1fye","originalSize":69832,"originalMime":"image/jpeg"}
+{"ts":"2026-04-17T10:55:31.934Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-17T10:55:37.587Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-17T10:55:58.547Z","event":"fab.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"logId":"log_mo2slnrisev1","originalSize":69832,"originalMime":"image/jpeg"}
+{"ts":"2026-04-17T10:55:58.568Z","event":"fab.log.created","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo2slnrisev1","delta":50,"newTotal":50}
+{"ts":"2026-04-17T10:56:09.736Z","event":"fab.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo2slnrisev1","deletedDelta":50,"newTotal":0,"photoUnlinked":true}

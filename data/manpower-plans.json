@@ -45,7 +45,7 @@
   {
     "weekStart": "2026-04-13",
     "assignments": {
-      "wm-tan-yock-wan": {
+      "wm-lin-chee-cheong": {
         "thu": {
           "type": "Fabrication",
           "projectId": "bd-25225-nakano-st-eng-dc",
@@ -64,7 +64,7 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-16T02:29:10.135Z"
+    "savedAt": "2026-04-17T10:55:37.587Z"
   },
   {
     "weekStart": "2026-04-12",
