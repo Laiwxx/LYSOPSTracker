@@ -45,50 +45,54 @@
   {
     "weekStart": "2026-04-13",
     "assignments": {
-      "wm-ee-kok-keong": {
-        "sat": {
-          "type": "Fabrication",
-          "projectId": "bd-24025-chiong-de189",
-          "projectName": "DE189",
+      "wi-mariyappan-malayandi": {
+        "mon": {
+          "type": "Driver",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
           "location": "",
-          "notes": ""
+          "notes": "",
+          "otHours": 2
+        },
+        "sat": {
+          "type": "Installation",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": "",
+          "otHours": 8
         }
       },
       "wt-hoomphaeng-kritsana": {
-        "thu": {
-          "type": "Fabrication",
+        "sat": {
+          "type": "Installation",
           "projectId": "bd-19121-rbss-dnr",
           "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
           "location": "",
-          "notes": ""
-        },
-        "sat": {
-          "type": "Fabrication",
-          "projectId": "bd-23525-china-harbour-8sw",
-          "projectName": "8 Shenton Way",
-          "location": "",
-          "notes": ""
+          "notes": "",
+          "otHours": 8
         }
       },
-      "wi-venkatakrishnapuram-palani": {
+      "wi-kannaiyan-jaishankar": {
         "sat": {
-          "type": "Fabrication",
-          "projectId": "bd-23625-the-reserve-residence",
-          "projectName": "The Reserve Residence",
+          "type": "Installation",
+          "projectId": "",
+          "projectName": "",
           "location": "",
-          "notes": "Cutting - Bollard"
+          "notes": "",
+          "otHours": 8
         }
       }
     },
     "supplyWorkers": [
       {
-        "id": "supply-1776156120782",
-        "name": "Muthu - GreenMark",
-        "company": "",
+        "id": "supply-1776523111944",
+        "name": "Batman",
+        "company": "Bin",
         "role": "Worker",
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-18T07:22:21.597Z"
+    "savedAt": "2026-04-18T14:59:45.843Z"
   }
 ]

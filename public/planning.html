@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776423159">
+  <link rel="stylesheet" href="/css/style.css?v=1776523455">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -176,6 +176,9 @@
       font-size: 9px; font-weight: 800;
       margin-right: 4px; vertical-align: middle;
     }
+    .wr-badge.supply-badge { background: var(--amber); color: #fff; }
+    .td-supply { background: rgba(255,171,0,0.04); }
+    .wr-company { font-size: 10px; color: var(--amber); font-weight: 600; margin-top: 1px; }
     .wr-meta { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
     .btn-del-row {
       background: none; border: none;
@@ -227,6 +230,27 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       max-width: 98px;
     }
+    .chip-ot {
+      font-size: 9px; font-weight: 700; color: var(--amber);
+      display: block; margin-top: 1px;
+    }
+    .wr-ot {
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .wr-ot.ot-amber { color: var(--amber); }
+    .wr-ot.ot-red   { color: var(--red); }
+    .chip-x {
+      position: absolute; top: 1px; right: 1px;
+      width: 16px; height: 16px;
+      background: rgba(0,0,0,0.3); color: #fff;
+      border: none; border-radius: 50%;
+      font-size: 12px; line-height: 14px;
+      cursor: pointer; display: none;
+      padding: 0; text-align: center;
+    }
+    .chip { position: relative; }
+    .chip:hover .chip-x { display: block; }
 
     /* ── Supply section header row ───────────────────── */
     .supply-hrow td {
@@ -423,6 +447,17 @@
       text-align: center; padding: 48px 20px;
       color: var(--text-muted); font-size: 13px;
     }
+    .tp-suggest-banner {
+      padding: 16px; background: rgba(51,102,255,0.06);
+      border: 1px solid rgba(51,102,255,0.2); border-radius: var(--radius);
+      margin: 12px;
+    }
+    .tp-suggest-row {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; padding: 6px 0; font-size: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tp-suggest-row:last-child { border-bottom: none; }
 
     /* ── Mobile overrides ────────────────────────────── */
     @media (max-width: 768px) {
@@ -526,7 +561,7 @@
         <span class="sum-stat" id="stat-total">— workers</span>
         <span class="sum-stat"><span class="sum-dot dot-fab"></span> <span id="stat-fab">0</span> Factory</span>
         <span class="sum-stat"><span class="sum-dot dot-inst"></span> <span id="stat-inst">0</span> Site</span>
-        <span class="sum-stat"><span class="sum-dot dot-maint"></span> <span id="stat-maint">0</span> Maint</span>
+        <span class="sum-stat"><span class="sum-dot dot-maint"></span> <span id="stat-maint">0</span> Driver</span>
         <span class="sum-stat"><span class="sum-dot dot-mc"></span> <span id="stat-mc">0</span> MC/Off</span>
       </div>
 
@@ -592,6 +627,10 @@
         <div class="pop-label" id="notes-label">Notes / Location</div>
         <input class="pop-input" type="text" id="field-notes" placeholder="e.g. Site B2, gate installation">
       </div>
+      <div id="ot-wrap" style="display:none;">
+        <div class="pop-label">OT Hours (if any)</div>
+        <input class="pop-input" type="number" id="field-ot" min="0" max="12" step="0.5" value="0" placeholder="0">
+      </div>
     </div>
     <div class="popup-actions">
       <button class="pop-cancel" id="popup-cancel">Cancel</button>
@@ -610,6 +649,8 @@ const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat'];
 let workers      = [];   // own workers from API
 let projects     = [];   // active projects
 let plan         = {};   // { workerId: { mon: {type,…}, tue: {…}, … } }
+let monthlyOT    = {};   // { workerId: totalOTHours } for current month (excluding current week)
+let monthlyOTCurrentWeek = {}; // OT from current week's saved plan (to avoid double-counting)
 let supplyWorkers= [];   // [{ id, name, company, role, code }]
 let attendance   = {};   // { 'YYYY-MM-DD': { workerId: status } }
 let planCarriedOver = false; // true when assignments were copied from last week
@@ -677,6 +718,18 @@ async function init() {
   if (idx >= 0) mobileDay = DAYS[idx];
 
   await loadWeek();
+
+  // X button delegation — clear assignment inline + auto-save
+  document.getElementById('grid-body').addEventListener('click', (e) => {
+    const xBtn = e.target.closest('.chip-x');
+    if (!xBtn) return;
+    e.stopPropagation();
+    const wid = xBtn.dataset.wid;
+    const day = xBtn.dataset.day;
+    if (plan[wid]) delete plan[wid][day];
+    render();
+    document.getElementById('save-btn').click();
+  });
 }
 
 // ── Week navigation ────────────────────────────────────
@@ -785,7 +838,46 @@ async function loadWeek() {
     });
   });
 
+  // Compute monthly OT from all weeks in the current month
+  await loadMonthlyOT();
+
   render();
+}
+
+async function loadMonthlyOT() {
+  monthlyOT = {};
+  monthlyOTCurrentWeek = {};
+  try {
+    // Get all Mondays in the current month
+    const yr = weekStart.getFullYear();
+    const mo = weekStart.getMonth();
+    const mondays = [];
+    const d = new Date(yr, mo, 1);
+    while (d.getMonth() === mo) {
+      if (d.getDay() === 1) mondays.push(toStr(d));
+      d.setDate(d.getDate() + 1);
+    }
+    // Also check if weekStart's month differs (e.g. weekStart is in prev month but days spill into this month)
+    const currentWs = toStr(weekStart);
+
+    const plans = await Promise.all(
+      mondays.map(ws => fetch('/api/manpower-plan?weekStart=' + ws).then(r => r.ok ? r.json() : null).catch(() => null))
+    );
+
+    plans.forEach((p, i) => {
+      if (!p || !p.assignments) return;
+      const isCurrentWeek = mondays[i] === currentWs;
+      Object.entries(p.assignments).forEach(([wid, days]) => {
+        Object.values(days).forEach(a => {
+          const ot = parseFloat(a.otHours) || 0;
+          if (ot > 0) {
+            monthlyOT[wid] = (monthlyOT[wid] || 0) + ot;
+            if (isCurrentWeek) monthlyOTCurrentWeek[wid] = (monthlyOTCurrentWeek[wid] || 0) + ot;
+          }
+        });
+      });
+    });
+  } catch {}
 }
 
 function updateWeekLabel() {
@@ -868,17 +960,32 @@ function buildRow(w, isSupply) {
   // Name cell
   const ntd = document.createElement('td');
   ntd.className = 'td-worker';
-  ntd.innerHTML = `
-    <div>
-      <span class="wr-badge">${esc(w.code || '?')}</span>
-      <span class="wr-name">${esc(w.name)}</span>
-      ${isSupply ? `<button class="btn-del-row" data-id="${esc(w.id)}" title="Remove">✕</button>` : ''}
-    </div>
-    <div class="wr-meta">${isSupply
-      ? esc((w.company || '') + (w.role ? ' · ' + w.role : ''))
-      : esc(w.role || '')
-    }</div>
-  `;
+  // Weekly OT for this worker
+  const weekOT = DAYS.reduce((s, day) => s + (parseFloat(((plan[w.id] || {})[day] || {}).otHours) || 0), 0);
+  // Monthly OT (from monthlyOT cache)
+  const monthOT = (monthlyOT[w.id] || 0) + weekOT - (monthlyOTCurrentWeek[w.id] || 0);
+  const otWarn = monthOT >= 68 ? 'ot-red' : monthOT >= 60 ? 'ot-amber' : '';
+
+  if (isSupply) {
+    ntd.classList.add('td-supply');
+    ntd.innerHTML = `
+      <div>
+        <span class="wr-badge supply-badge">${esc(w.code || 'EXT')}</span>
+        <span class="wr-name">${esc(w.name)}</span>
+        <button class="btn-del-row" data-id="${esc(w.id)}" title="Remove">✕</button>
+      </div>
+      ${w.company ? `<div class="wr-company">${esc(w.company)}</div>` : ''}
+    `;
+  } else {
+    ntd.innerHTML = `
+      <div>
+        <span class="wr-badge">${esc(w.code || '?')}</span>
+        <span class="wr-name">${esc(w.name)}</span>
+      </div>
+      <div class="wr-meta">${esc(w.role || '')}</div>
+      ${monthOT > 0 ? `<div class="wr-ot ${otWarn}" title="Monthly OT: ${monthOT}h / 72h limit">${monthOT}h OT</div>` : ''}
+    `;
+  }
   if (isSupply) {
     ntd.querySelector('.btn-del-row').addEventListener('click', () => removeSupplyWorker(w.id));
   }
@@ -895,15 +1002,15 @@ function buildRow(w, isSupply) {
       td.classList.add('readonly');
     }
     // All cells clickable — even MC/readonly so user can clear them
-    td.addEventListener('click', () => openPopup(w, day));
-    td.appendChild(buildChip(dayData));
+    td.addEventListener('click', (e) => { if (e.target.closest('.chip-x')) return; openPopup(w, day); });
+    td.appendChild(buildChip(dayData, w.id, day));
     tr.appendChild(td);
   });
 
   return tr;
 }
 
-function buildChip(data) {
+function buildChip(data, workerId, day) {
   const div = document.createElement('div');
   if (!data || !data.type) {
     div.className = 'chip-empty'; div.textContent = '+';
@@ -917,10 +1024,14 @@ function buildChip(data) {
   else if (t === 'MC')  cls += 'chip-mc';
   else if (t === 'Off') cls += 'chip-off';
   div.className = cls;
-  const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Maintenance:'🔩 Maint', MC:'🤒 MC', Off:'🏠 Off' }[t] || t;
-  div.innerHTML = `<span class="chip-title">${label}</span>`;
+  const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Driver:'🚚 Driver', MC:'🤒 MC', Off:'🏠 Off' }[t] || t;
   const sub = data.projectName || data.location || data.notes || '';
-  if (sub) div.innerHTML += `<span class="chip-sub">${esc(sub)}</span>`;
+  const otBadge = data.otHours ? `<span class="chip-ot">+${data.otHours}h OT</span>` : '';
+  div.innerHTML =
+    `<span class="chip-title">${label}</span>` +
+    (sub ? `<span class="chip-sub" title="${esc(sub)}">${esc(sub)}</span>` : '') +
+    otBadge +
+    `<button class="chip-x" data-wid="${esc(workerId)}" data-day="${esc(day)}" title="Clear">&times;</button>`;
   return div;
 }
 
@@ -956,6 +1067,8 @@ function openPopup(worker, day) {
 
   document.getElementById('field-project').value = existing.projectId || '';
   document.getElementById('field-notes').value   = existing.notes || existing.location || '';
+  // Saturday defaults to 8h OT; weekdays default to 0
+  document.getElementById('field-ot').value       = existing.otHours || (day === 'sat' && existing.type ? 8 : 0);
   showFields(existing.type || '');
   document.getElementById('popup-overlay').classList.add('open');
 }
@@ -976,9 +1089,18 @@ document.querySelectorAll('.type-btn').forEach(btn => {
 function showFields(type) {
   const fields = document.getElementById('popup-fields');
   const projW  = document.getElementById('proj-wrap');
+  const otW    = document.getElementById('ot-wrap');
   if (!type || type === 'MC') { fields.classList.remove('vis'); return; }
   fields.classList.add('vis');
   projW.style.display = (type === 'Installation' || type === 'Fabrication' || type === 'Driver') ? '' : 'none';
+  const isSupplyWorker = popupWorker && String(popupWorker.id).startsWith('supply-');
+  const showOT = !isSupplyWorker && (type === 'Fabrication' || type === 'Installation' || type === 'Driver');
+  otW.style.display = showOT ? '' : 'none';
+  if (showOT && popupDay === 'sat') {
+    otW.querySelector('.pop-label').textContent = 'Saturday OT Hours (full day is OT)';
+  } else if (showOT) {
+    otW.querySelector('.pop-label').textContent = 'OT Hours (after 5:30pm)';
+  }
   document.getElementById('notes-label').textContent =
     type === 'Installation' ? 'Location / Notes'
     : type === 'Driver' ? 'Destination / Purpose (e.g. Changi T5 — worker transport)'
@@ -1069,13 +1191,17 @@ document.getElementById('popup-save').addEventListener('click', () => {
   } else {
     // projectId/projectName persist for Installation AND Fabrication — both need to
     // know which project the worker is assigned to. Transport/Off/other types leave blank.
-    const keepsProject = (type === 'Installation' || type === 'Fabrication');
+    const keepsProject = (type === 'Installation' || type === 'Fabrication' || type === 'Driver');
+    let otHours = parseFloat(document.getElementById('field-ot').value) || 0;
+    // Saturday is fully OT — default to 8h if not set
+    if (popupDay === 'sat' && otHours === 0) otHours = 8;
     plan[popupWorker.id][popupDay] = {
       type,
       projectId:   keepsProject ? projId : '',
       projectName: keepsProject && proj ? (proj.projectName || proj.name || '') : '',
       location:    type === 'Installation' ? notes : '',
-      notes:       type === 'Installation' ? ''    : notes
+      notes:       type === 'Installation' ? ''    : notes,
+      otHours:     otHours > 0 ? otHours : undefined
     };
   }
 
@@ -1221,6 +1347,7 @@ function esc(s) {
 let tpDate    = new Date().toISOString().split('T')[0]; // default today
 let tpTrips   = [];   // array of trip objects for tpDate
 let tpPresent = [];   // workers Present/On Site for tpDate
+let tpSuggestedTrips = []; // auto-suggested from manpower plan
 
 function tpOffsetDate(dateStr, days) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -1234,6 +1361,28 @@ function tpNewId() {
 // Load attendance + existing trips for tpDate
 async function loadTransport() {
   document.getElementById('tp-date').value = tpDate;
+
+  // Auto-suggest trips from today's manpower plan (installation assignments)
+  const dayIndex = weekDates().findIndex(d => toStr(d) === tpDate);
+  if (dayIndex >= 0) {
+    const dayKey = DAYS[dayIndex];
+    const allIds = [...workers.map(w => w.id), ...supplyWorkers.map(w => w.id)];
+    const siteGroups = {}; // group by projectId
+    allIds.forEach(wid => {
+      const a = (plan[wid] || {})[dayKey];
+      if (a && a.type === 'Installation' && a.projectId) {
+        if (!siteGroups[a.projectId]) siteGroups[a.projectId] = { projectName: a.projectName || '', location: a.location || '', workers: [] };
+        const w = workers.find(x => x.id === wid) || supplyWorkers.find(x => x.id === wid);
+        siteGroups[a.projectId].workers.push({ workerId: wid, name: w ? w.name : wid });
+      }
+    });
+    tpSuggestedTrips = Object.entries(siteGroups).map(([pid, g]) => ({
+      projectId: pid, projectName: g.projectName, destination: g.location || g.projectName,
+      workers: g.workers
+    }));
+  } else {
+    tpSuggestedTrips = [];
+  }
 
   // Present workers for tpDate
   try {
@@ -1269,7 +1418,20 @@ function renderTransport() {
   container.innerHTML = '';
 
   if (tpTrips.length === 0) {
-    container.innerHTML = '<div class="tp-no-trips">No trips planned for this day.<br>Click <strong>+ Add Trip</strong> to create one.</div>';
+    if (tpSuggestedTrips.length) {
+      container.innerHTML =
+        `<div class="tp-suggest-banner">` +
+          `<div style="font-size:12px;font-weight:700;margin-bottom:6px;">Suggested trips from manpower plan</div>` +
+          tpSuggestedTrips.map((s, i) =>
+            `<div class="tp-suggest-row">` +
+              `<span>${esc(s.destination || s.projectName)} — ${s.workers.length} worker${s.workers.length !== 1 ? 's' : ''}: ${s.workers.map(w => esc(w.name)).join(', ')}</span>` +
+              `<button class="wp-btn primary" style="font-size:11px;padding:4px 10px;" onclick="createTripFromSuggestion(${i})">Create Trip</button>` +
+            `</div>`
+          ).join('') +
+        `</div>`;
+    } else {
+      container.innerHTML = '<div class="tp-no-trips">No trips planned for this day.<br>Click <strong>+ Add Trip</strong> to create one.</div>';
+    }
   } else {
     tpTrips.forEach((trip, idx) => renderTripCard(trip, idx, allAssigned, container));
   }
@@ -1281,6 +1443,22 @@ function renderTransport() {
     tpPresent.length
       ? `${dispatched} dispatched · ${remaining} in factory (${tpPresent.length} present)`
       : 'No attendance recorded for this day';
+}
+
+function createTripFromSuggestion(idx) {
+  const s = tpSuggestedTrips[idx];
+  if (!s) return;
+  tpTrips.push({
+    id: 'trip-' + Date.now(),
+    driver: '',
+    vehicle: '',
+    departureTime: '07:30',
+    destination: s.destination || s.projectName || '',
+    projectId: s.projectId || '',
+    workers: s.workers.map(w => ({ workerId: w.workerId, name: w.name })),
+    notes: ''
+  });
+  renderTransport();
 }
 
 function renderTripCard(trip, idx, allAssigned, container) {

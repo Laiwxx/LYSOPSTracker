@@ -146,12 +146,118 @@ app.get('/installation', (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('/planning',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'planning.html')));
 app.get('/attendance',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'attendance.html')));
 
-// DO (Delivery Order) photo upload
-app.post('/api/upload-do', upload.single('file'), (req, res) => {
+// ── Delivery Orders ─────────────────────────────────────────────────────────
+const DO_UPLOADS_DIR = path.join(UPLOADS_DIR, 'delivery-orders');
+if (!fs.existsSync(DO_UPLOADS_DIR)) fs.mkdirSync(DO_UPLOADS_DIR, { recursive: true });
+const uploadDO = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, DO_UPLOADS_DIR),
+    filename: (req, file, cb) => {
+      const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      cb(null, `${Date.now()}-${safe}`);
+    }
+  }),
+  fileFilter: (req, file, cb) => {
+    const ok = file.mimetype === 'application/pdf' || /^image\//.test(file.mimetype);
+    cb(null, ok);
+  },
+  limits: { fileSize: 20 * 1024 * 1024 }
+});
+
+// ── PO Document upload ──────────────────────────────────────────────────────
+const PO_DOCS_DIR = path.join(UPLOADS_DIR, 'po-docs');
+if (!fs.existsSync(PO_DOCS_DIR)) fs.mkdirSync(PO_DOCS_DIR, { recursive: true });
+const uploadPODoc = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, PO_DOCS_DIR),
+    filename: (req, file, cb) => {
+      const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      cb(null, `${Date.now()}-${safe}`);
+    }
+  }),
+  fileFilter: (req, file, cb) => cb(null, file.mimetype === 'application/pdf'),
+  limits: { fileSize: 20 * 1024 * 1024 }
+});
+
+app.post('/api/upload-po-doc', uploadPODoc.single('file'), (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'No file' });
-    res.json({ filename: req.file.filename, ok: true });
-  } catch (e) { logError('route.post.upload-do', e); res.status(500).json({ error: 'Internal server error' }); }
+    if (!req.file) return res.status(400).json({ error: 'No PDF uploaded' });
+    const filePath = `/uploads/po-docs/${req.file.filename}`;
+    logActivity('po.doc.uploaded', { prId: req.body.prId || null, filename: req.file.filename });
+    res.json({ filePath, filename: req.file.filename });
+  } catch (e) { logError('route.post.upload-po-doc', e); res.status(500).json({ error: 'Upload failed' }); }
+});
+
+app.get('/api/delivery-orders', (req, res) => {
+  try { res.json(readDOs()); }
+  catch (e) { logError('route.get.delivery-orders', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+app.post('/api/delivery-orders', uploadDO.single('file'), (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const dos = readDOs();
+    const entry = {
+      id: 'do_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      filename: 'delivery-orders/' + req.file.filename,
+      originalName: req.file.originalname,
+      fileSize: req.file.size,
+      prId: req.body.prId || null,
+      prNumber: req.body.prNumber || null,
+      projectCode: req.body.projectCode || null,
+      notes: typeof req.body.notes === 'string' ? req.body.notes.slice(0, 500) : '',
+      uploadedBy: typeof req.body.uploadedBy === 'string' ? req.body.uploadedBy.slice(0, 100) : '',
+      uploadedAt: new Date().toISOString()
+    };
+    dos.push(entry);
+    writeDOs(dos);
+    logActivity('do.uploaded', { id: entry.id, prId: entry.prId, prNumber: entry.prNumber, filename: entry.filename });
+    res.status(201).json(entry);
+
+    // Email Purchaser + Finance about the DO
+    const purchaserEmail = getRoleEmail('Purchaser');
+    const purchaserName = (readStaff()['Purchaser'] || {}).name || 'Purchaser';
+    const financeEmail = getRoleEmail('Finance');
+    const financeName = (readStaff()['Finance'] || {}).name || 'Finance';
+    const prLabel = entry.prNumber ? `linked to ${entry.prNumber}` : 'no PR linked';
+    const projLabel = entry.projectCode || 'General';
+    const doUrl = `${APP_URL}/uploads/${entry.filename}`;
+    const emailBody =
+      `<p>A Delivery Order has been uploaded.</p>
+      <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
+        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">File</td><td>${escHtml(entry.originalName)}</td></tr>
+        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PR</td><td>${escHtml(prLabel)}</td></tr>
+        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(projLabel)}</td></tr>
+        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Uploaded by</td><td>${escHtml(entry.uploadedBy || '—')}</td></tr>
+        ${entry.notes ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${escHtml(entry.notes)}</td></tr>` : ''}
+      </table>
+      <p><a href="${doUrl}">View DO</a> · <a href="${APP_URL}/procurement">Open Procurement</a></p>`;
+    if (purchaserEmail) {
+      sendEmail(purchaserEmail, purchaserName,
+        `[DO] Delivery Order received — ${escHtml(projLabel)}${entry.prNumber ? ' · ' + entry.prNumber : ''}`,
+        `<p>Hi ${escHtml(purchaserName)},</p>${emailBody}`,
+        financeEmail ? [financeEmail] : []
+      ).catch(err => console.error('[EMAIL] DO notify failed:', err.message));
+    }
+  } catch (e) { logError('route.post.delivery-orders', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+app.delete('/api/delivery-orders/:id', (req, res) => {
+  try {
+    const dos = readDOs();
+    const idx = dos.findIndex(d => d.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'DO not found' });
+    const entry = dos[idx];
+    dos.splice(idx, 1);
+    writeDOs(dos);
+    // Try to delete file from disk (filename includes subdirectory)
+    try {
+      const filePath = path.resolve(UPLOADS_DIR, entry.filename || '');
+      if (filePath.startsWith(path.resolve(UPLOADS_DIR)) && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    } catch {}
+    logActivity('do.deleted', { id: entry.id, filename: entry.filename });
+    res.json({ ok: true });
+  } catch (e) { logError('route.delete.delivery-orders', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // --- Data helpers ---
@@ -173,6 +279,7 @@ const SUPPLIERS_FILE     = path.join(__dirname, 'data', 'suppliers.json');
 const PRICES_FILE        = path.join(__dirname, 'data', 'prices.json');
 const PO_FILE            = path.join(__dirname, 'data', 'purchase-orders.json');
 const PR_FILE            = path.join(__dirname, 'data', 'purchase-requisitions.json');
+const DO_FILE            = path.join(__dirname, 'data', 'delivery-orders.json');
 
 // ── Email helper ──────────────────────────────────────────────────────────────
 // cc may be a string, an array of strings, or omitted.
@@ -361,7 +468,8 @@ function getStaffEmail(name) {
 function getRoleEmail(role) {
   const direct = getStaffEmail(role);
   if (direct) return direct;
-  return getStaffEmail('Lai Wei Xiang') || getStaffEmail('Lai Weixiang') || process.env.ADMIN_EMAIL || null;
+  // Fallback chain: Project Manager role → personal name → env var
+  return getStaffEmail('Project Manager') || getStaffEmail('Lai Wei Xiang') || process.env.ADMIN_EMAIL || null;
 }
 
 // Staff loaded dynamically from STAFF_FILE — no hardcoded list
@@ -427,6 +535,9 @@ function readProjects() {
       if (Array.isArray(p.fabrication)) {
         for (const r of p.fabrication) recomputeQtyDone(r);
       }
+      if (Array.isArray(p.installation)) {
+        for (const r of p.installation) recomputeQtyDone(r);
+      }
     }
   }
   return projects;
@@ -490,6 +601,22 @@ function writeTransport(plans) {
 function readEODHistory() {
   if (!fs.existsSync(EOD_HISTORY_FILE)) fs.writeFileSync(EOD_HISTORY_FILE, '[]');
   return safeReadJSON(EOD_HISTORY_FILE);
+}
+
+// ── HTML escape for email bodies ──────────────────────────────────────────────
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Boss / role helpers ──────────────────────────────────────────────────────
+function getBossEmail() {
+  return getRoleEmail('Project Manager');
+}
+function getBossName() {
+  return (readStaff()['Project Manager'] || {}).name || 'Boss';
+}
+function getFactoryManagerName() {
+  return (readStaff()['Factory Manager'] || {}).name || 'Factory Manager';
 }
 
 // ── Input sanitization helpers ────────────────────────────────────────────────
@@ -561,9 +688,9 @@ app.post('/api/tickets', postRateLimit, (req, res) => {
     writeTickets(tickets);
     res.json(ticket);
     // Trigger 6: email Lai Wei Xiang on every new feedback ticket
-    const laiEmail = getStaffEmail('Lai Wei Xiang') || getStaffEmail('Lai Weixiang') || process.env.ADMIN_EMAIL || '';
+    const laiEmail = getBossEmail() || process.env.ADMIN_EMAIL || '';
     if (laiEmail) {
-      sendEmail(laiEmail, 'Lai Wei Xiang',
+      sendEmail(laiEmail, getBossName(),
         `[New Feedback] ${ticket.title} — ${ticket.type}`,
         `<p>A new feedback ticket has been submitted:</p>
         <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
@@ -622,6 +749,11 @@ app.get('/api/staff', (req, res) => {
 // POST /api/staff — add or update a staff member { name, email }
 app.post('/api/staff', (req, res) => {
   try {
+    const pin = req.body?.pin || req.headers["x-admin-pin"];
+    const adminData = readAdmin();
+    if (adminData.pin && pin !== adminData.pin) {
+      return res.status(403).json({ error: "Invalid PIN" });
+    }
     const name  = sanitizeStr(req.body.name, 100);
     const email = sanitizeStr(req.body.email, 200);
     if (!name) return res.status(400).json({ error: 'name required' });
@@ -629,6 +761,7 @@ app.post('/api/staff', (req, res) => {
     const staff = readStaff();
     staff[name] = { name, email };
     writeStaff(staff);
+    logActivity('staff.updated', { name, email });
     res.json(staff[name]);
   } catch (e) { logError('route.post.staff', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -809,6 +942,8 @@ app.get('/api/actions', (req, res) => {
 app.get('/api/projects', (req, res) => {
   try {
     const projects = readProjects().map(p => deriveFields(p));
+    // ?full=true returns complete project objects (used by installation page)
+    if (req.query.full === 'true') return res.json(projects);
     const summary = projects.map(p => ({
       id: p.id,
       jobCode: p.jobCode,
@@ -850,6 +985,7 @@ app.post('/api/projects', (req, res) => {
     const newProject = buildDefaultProject(data);
     projects.push(newProject);
     writeProjects(projects);
+    logActivity('project.created', { id: newProject.id, jobCode: newProject.jobCode });
     res.status(201).json(newProject);
   } catch (e) { logError('route.post.projects', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -930,7 +1066,15 @@ app.put('/api/projects/:id', async (req, res) => {
   const projects = readProjects();
   const idx = projects.findIndex(p => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
-  const incoming = req.body;
+  const PROJECT_WRITABLE = [
+    'projectName','jobCode','product','client','status','startDate','endDate',
+    'contractValue','voValue','projectManager','qs','factoryManager','drafter',
+    'purchaser','sales','siteEngineer','latestNotes','stages','fabrication',
+    'installation','productScope','paymentMilestones','documents','drawings',
+    'meetingNotes','fabLeadTimeDays','notes'
+  ];
+  const incoming = {};
+  for (const k of PROJECT_WRITABLE) { if (req.body[k] !== undefined) incoming[k] = req.body[k]; }
   const oldProject = projects[idx];
 
   // Track statusChangedAt for stages
@@ -952,8 +1096,8 @@ app.put('/api/projects/:id', async (req, res) => {
     if (pmEmail) {
       sendEmail(pmEmail, pmName,
         `[Project Delayed] ${oldProject.jobCode} — ${oldProject.projectName}`,
-        `<p>Hi ${pmName},</p>
-        <p>Project <strong>${oldProject.jobCode} — ${oldProject.projectName}</strong> has been marked as <strong>Delayed</strong>.</p>
+        `<p>Hi ${escHtml(pmName)},</p>
+        <p>Project <strong>${escHtml(oldProject.jobCode)} — ${escHtml(oldProject.projectName)}</strong> has been marked as <strong>Delayed</strong>.</p>
         <p>Please update the latest notes and advise on the revised timeline.</p>
         <p><a href="${APP_URL}/project.html?id=${oldProject.id}">Open Project →</a></p>`
       ).catch(() => {});
@@ -994,6 +1138,7 @@ app.put('/api/projects/:id', async (req, res) => {
 
   projects[idx] = deriveFields({ ...oldProject, ...incoming });
   writeProjects(projects);
+  logActivity('project.updated', { projectId: req.params.id, jobCode: projects[idx].jobCode });
   res.json(projects[idx]);
   } catch (e) { logError('route.put.projects', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -1175,7 +1320,7 @@ app.get('/api/factory-queue', (req, res) => {
 // writes from /project will NOT create a log entry — that's a temporary dual
 // path. When /project's fab edit UI is retired in Phase 4, qtyDone comes off
 // this list and logs[] becomes the only write path.
-const FAB_WRITABLE_FIELDS = ['item','unit','totalQty','qtyDone','status','readyForDelivery','targetDeliveryDate','readyAt'];
+const FAB_WRITABLE_FIELDS = ['item','unit','totalQty','qtyDone','status','readyForDelivery','targetDeliveryDate','readyAt','fabDeadline'];
 
 // recomputeQtyDone — source of truth for qtyDone is sum(logs[].delta).
 // We keep qtyDone on the fab row as a CACHE so readers don't have to sum on
@@ -1288,6 +1433,12 @@ app.put('/api/projects/:id/fabrication/:idx', (req, res) => {
     // Whitelist — silently drop server-managed fields (fab_started_at, cycle_days, _fromScope).
     const clean = {};
     for (const k of FAB_WRITABLE_FIELDS) if (req.body[k] !== undefined) clean[k] = req.body[k];
+    // Validate fabDeadline format (YYYY-MM-DD or null/empty to clear)
+    if (clean.fabDeadline !== undefined) {
+      if (clean.fabDeadline === null || clean.fabDeadline === '') { clean.fabDeadline = null; }
+      else if (!isValidDate(String(clean.fabDeadline))) { return res.status(400).json({ error: 'fabDeadline must be YYYY-MM-DD' }); }
+      else { clean.fabDeadline = String(clean.fabDeadline).trim().slice(0, 10); }
+    }
     Object.assign(project.fabrication[idx], clean);
     // If the client sent an explicit status (stage chip tap), preserve it —
     // only run auto-derive when the status wasn't manually set.
@@ -1458,7 +1609,8 @@ app.post('/api/projects/:id/fabrication/:idx/logs', postRateLimit, (req, res) =>
     const photoPath = typeof req.body.photoPath === 'string' ? req.body.photoPath.trim() : '';
     if (!photoPath) return res.status(400).json({ error: 'photoPath is required — every log entry must carry photo evidence' });
     const note = typeof req.body.note === 'string' ? req.body.note.slice(0, 500) : '';
-    const loggedBy = (typeof req.body.loggedBy === 'string' && req.body.loggedBy.trim()) || 'Chris';
+    const fmName = (readStaff()['Factory Manager'] || {}).name || 'Factory Manager';
+    const loggedBy = (typeof req.body.loggedBy === 'string' && req.body.loggedBy.trim()) || fmName;
 
     if (!Array.isArray(row.logs)) row.logs = [];
     const currentSum = row.logs.reduce((a, l) => a + (parseFloat(l.delta) || 0), 0);
@@ -1556,7 +1708,8 @@ app.put('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req, r
     }
     if (typeof req.body.note === 'string') entry.note = req.body.note.slice(0, 500);
     entry.editedAt = new Date().toISOString();
-    entry.editedBy = (typeof req.body.editedBy === 'string' && req.body.editedBy.trim()) || 'Chris';
+    const fmNameEdit = (readStaff()['Factory Manager'] || {}).name || 'Factory Manager';
+    entry.editedBy = (typeof req.body.editedBy === 'string' && req.body.editedBy.trim()) || fmNameEdit;
 
     applyFabDerivations(null, row);
     deriveFields(project);
@@ -1710,15 +1863,225 @@ app.put('/api/projects/:id/installation/:idx', (req, res) => {
     if (isNaN(idx) || idx < 0) return res.status(400).json({ error: 'Invalid index' });
     if (!project.installation || !project.installation[idx]) return res.status(404).json({ error: 'Item not found' });
     const oldItem = { ...project.installation[idx] };
-    Object.assign(project.installation[idx], req.body);
+    // Whitelist: only allow fields the installation page legitimately writes
+    const INSTALL_WRITABLE = ['notes', 'status'];
+    const clean = {};
+    for (const k of INSTALL_WRITABLE) {
+      if (req.body[k] !== undefined) clean[k] = req.body[k];
+    }
+    if (clean.notes !== undefined) clean.notes = String(clean.notes).slice(0, 1000);
+    if (clean.status !== undefined) {
+      const VALID = ['Not Started', 'In Progress', 'Installed', 'Verified'];
+      if (!VALID.includes(clean.status)) return res.status(400).json({ error: 'Invalid status' });
+    }
+    Object.assign(project.installation[idx], clean);
     deriveFields(project);
     writeProjects(projects);
-    const changes = Object.keys(req.body)
-      .filter(k => String(req.body[k]) !== String(oldItem[k]))
-      .map(k => ({ field: k, from: oldItem[k], to: req.body[k] }));
+    const changes = Object.keys(clean)
+      .filter(k => String(clean[k]) !== String(oldItem[k]))
+      .map(k => ({ field: k, from: oldItem[k], to: clean[k] }));
     logActivity('install.updated', { projectId: req.params.id, jobCode: project.jobCode, itemIndex: idx, item: project.installation[idx].item || project.installation[idx].description || '', changes });
     res.json(project.installation[idx]);
   } catch (e) { logError('route.put.installation', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// ── Installation log routes (mirrors fab-log model) ─────────────────────────
+const INSTALL_LOGS_DIR = path.join(__dirname, 'public', 'uploads', 'install-logs');
+if (!fs.existsSync(INSTALL_LOGS_DIR)) fs.mkdirSync(INSTALL_LOGS_DIR, { recursive: true });
+
+function _loadInstallRowOr404(req, res) {
+  const projects = readProjects();
+  const project = projects.find(p => p.id === req.params.id);
+  if (!project) { res.status(404).json({ error: 'Project not found' }); return null; }
+  const idx = parseInt(req.params.idx, 10);
+  if (isNaN(idx) || idx < 0 || !project.installation || !project.installation[idx]) {
+    res.status(404).json({ error: 'Installation item not found' }); return null;
+  }
+  return { projects, project, row: project.installation[idx], idx };
+}
+
+// POST /api/projects/:id/installation/:idx/log-photo — upload install photo
+app.post('/api/projects/:id/installation/:idx/log-photo', uploadLogPhoto.single('photo'),
+  async (req, res) => {
+    try {
+      const projects = readProjects();
+      const project = projects.find(p => p.id === req.params.id);
+      if (!project) return res.status(404).json({ error: 'Project not found' });
+      if (!req.file) return res.status(400).json({ error: 'No photo' });
+      const idx = parseInt(req.params.idx, 10);
+      if (isNaN(idx) || idx < 0 || !project.installation || !project.installation[idx]) {
+        return res.status(404).json({ error: 'Installation item not found' });
+      }
+      const suppliedId = typeof req.body.logId === 'string' ? req.body.logId.trim() : '';
+      const logId = suppliedId && /^log_[a-z0-9_]+$/i.test(suppliedId)
+        ? suppliedId
+        : ('log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+      const projectDirName = String(project.id).replace(/[^a-zA-Z0-9._-]/g, '_');
+      const projectDir = path.join(INSTALL_LOGS_DIR, projectDirName);
+      if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+      const destPath = path.join(projectDir, `${logId}.jpg`);
+      await sharp(req.file.buffer)
+        .rotate()
+        .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 85, progressive: true, mozjpeg: true })
+        .toFile(destPath);
+      const photoPath = `/uploads/install-logs/${projectDirName}/${logId}.jpg`;
+      logActivity('install.log.photo.uploaded', { projectId: project.id, jobCode: project.jobCode, idx, logId });
+      res.json({ photoPath, logId });
+    } catch (e) {
+      logError('route.post.install-log-photo', e);
+      if (!res.headersSent) res.status(500).json({ error: 'Photo upload failed' });
+    }
+  }
+);
+
+// POST /api/projects/:id/installation/:idx/logs — create install log entry
+app.post('/api/projects/:id/installation/:idx/logs', postRateLimit, (req, res) => {
+  try {
+    const loaded = _loadInstallRowOr404(req, res);
+    if (!loaded) return;
+    const { projects, project, row, idx } = loaded;
+
+    const delta = parseFloat(req.body.delta);
+    if (!Number.isFinite(delta) || delta === 0) {
+      return res.status(400).json({ error: 'delta must be a non-zero number' });
+    }
+    const photoPath = typeof req.body.photoPath === 'string' ? req.body.photoPath.trim() : '';
+    if (!photoPath) return res.status(400).json({ error: 'photoPath is required' });
+    const note     = typeof req.body.note === 'string' ? req.body.note.slice(0, 500) : '';
+    const location = typeof req.body.location === 'string' ? req.body.location.slice(0, 200) : '';
+    const step     = typeof req.body.step === 'string' ? req.body.step.trim().slice(0, 100) : '';
+    const loggedBy = (typeof req.body.loggedBy === 'string' && req.body.loggedBy.trim()) || 'Site Engineer';
+
+    if (!Array.isArray(row.logs)) row.logs = [];
+    const currentSum = row.logs.reduce((a, l) => a + (parseFloat(l.delta) || 0), 0);
+    const proposedSum = Math.round((currentSum + delta) * 100) / 100;
+    const totalQty = parseFloat(row.totalQty) || 0;
+    if (proposedSum > totalQty && totalQty > 0) {
+      return res.status(400).json({ error: `Cannot exceed total qty (${totalQty}). Current: ${currentSum}, delta: ${delta}` });
+    }
+    if (proposedSum < 0) {
+      return res.status(400).json({ error: `Cannot go below 0. Current: ${currentSum}, delta: ${delta}` });
+    }
+
+    const suppliedId = typeof req.body.id === 'string' ? req.body.id.trim() : '';
+    const logId = suppliedId && /^log_[a-z0-9_]+$/i.test(suppliedId)
+      ? suppliedId
+      : ('log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
+    if (suppliedId && row.logs.some(l => l.id === suppliedId)) {
+      return res.status(409).json({ error: 'Duplicate log id' });
+    }
+
+    const entry = { id: logId, delta, photoPath, note, location, step: step || undefined, loggedBy, loggedAt: new Date().toISOString() };
+    row.logs.push(entry);
+    recomputeQtyDone(row);
+    // Auto-derive status
+    const done = parseFloat(row.qtyDone) || 0;
+    if (done > 0 && done < totalQty && row.status === 'Not Started') row.status = 'In Progress';
+    if (done >= totalQty && totalQty > 0 && (row.status === 'Not Started' || row.status === 'In Progress')) row.status = 'Installed';
+
+    deriveFields(project);
+    writeProjects(projects);
+    logActivity('install.log.created', {
+      projectId: project.id, jobCode: project.jobCode, idx,
+      item: row.item || row.description || '', logId, delta, newTotal: row.qtyDone, step: step || undefined
+    });
+    res.status(201).json({ entry, qtyDone: row.qtyDone, status: row.status, logs: row.logs });
+
+    // Notify the project's QS about installation progress
+    const qsName = project.qs;
+    if (qsName) {
+      const qsEmail = getStaffEmail(qsName);
+      if (qsEmail) {
+        const itemName = row.item || row.description || 'Item';
+        const totalQty = parseFloat(row.totalQty) || 0;
+        const pct = totalQty > 0 ? Math.round((row.qtyDone / totalQty) * 100) : 0;
+        const stepLabel = step ? ` (${step})` : '';
+        sendEmail(qsEmail, qsName,
+          `[Install] ${escHtml(project.jobCode || '')} — ${escHtml(itemName)}${stepLabel}: +${delta} (${pct}%)`,
+          `<p>Hi ${escHtml(qsName)},</p>
+          <p><strong>${escHtml(loggedBy)}</strong> logged installation progress:</p>
+          <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(project.jobCode || '')} — ${escHtml(project.projectName || '')}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Item</td><td>${escHtml(itemName)}</td></tr>
+            ${step ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Step</td><td>${escHtml(step)}</td></tr>` : ''}
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Qty installed</td><td>+${delta}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Progress</td><td>${row.qtyDone} / ${totalQty} (${pct}%)</td></tr>
+            ${location ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Location</td><td>${escHtml(location)}</td></tr>` : ''}
+            ${note ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${escHtml(note)}</td></tr>` : ''}
+          </table>
+          ${entry.photoPath ? `<p><a href="${APP_URL}${entry.photoPath}">View photo</a></p>` : ''}
+          <p><a href="${APP_URL}/installation">Open Installation →</a></p>`
+        ).catch(err => console.error('[EMAIL] Install log notify failed:', err.message));
+      }
+    }
+  } catch (e) { logError('route.post.install-log', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// PUT /api/projects/:id/installation/:idx/logs/:logId — edit install log entry
+app.put('/api/projects/:id/installation/:idx/logs/:logId', postRateLimit, (req, res) => {
+  try {
+    const loaded = _loadInstallRowOr404(req, res);
+    if (!loaded) return;
+    const { projects, project, row, idx } = loaded;
+    if (!Array.isArray(row.logs)) return res.status(404).json({ error: 'No logs' });
+    const entry = row.logs.find(l => l.id === req.params.logId);
+    if (!entry) return res.status(404).json({ error: 'Log entry not found' });
+
+    // Preserve edit history
+    if (!Array.isArray(entry.editHistory)) entry.editHistory = [];
+    entry.editHistory.push({ delta: entry.delta, note: entry.note, location: entry.location, editedAt: new Date().toISOString() });
+
+    const nextDelta = parseFloat(req.body.delta);
+    if (!Number.isFinite(nextDelta) || nextDelta === 0) return res.status(400).json({ error: 'delta must be non-zero' });
+    const currentSum = row.logs.reduce((a, l) => a + (parseFloat(l.delta) || 0), 0);
+    const proposedSum = Math.round((currentSum - entry.delta + nextDelta) * 100) / 100;
+    const totalQty = parseFloat(row.totalQty) || 0;
+    if (proposedSum > totalQty && totalQty > 0) return res.status(400).json({ error: 'Would exceed total qty' });
+    if (proposedSum < 0) return res.status(400).json({ error: 'Would go below 0' });
+
+    entry.delta = Math.round(nextDelta * 100) / 100;
+    if (typeof req.body.photoPath === 'string' && req.body.photoPath.trim()) entry.photoPath = req.body.photoPath.trim();
+    if (typeof req.body.note === 'string') entry.note = req.body.note.slice(0, 500);
+    if (typeof req.body.location === 'string') entry.location = req.body.location.slice(0, 200);
+    entry.editedAt = new Date().toISOString();
+    entry.editedBy = (typeof req.body.editedBy === 'string' && req.body.editedBy.trim()) || 'Site Engineer';
+
+    recomputeQtyDone(row);
+    deriveFields(project);
+    writeProjects(projects);
+    logActivity('install.log.edited', { projectId: project.id, jobCode: project.jobCode, idx, logId: entry.id, newDelta: entry.delta, newTotal: row.qtyDone });
+    res.json({ entry, qtyDone: row.qtyDone, status: row.status, logs: row.logs });
+  } catch (e) { logError('route.put.install-log', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// DELETE /api/projects/:id/installation/:idx/logs/:logId — delete install log
+app.delete('/api/projects/:id/installation/:idx/logs/:logId', postRateLimit, (req, res) => {
+  try {
+    const loaded = _loadInstallRowOr404(req, res);
+    if (!loaded) return;
+    const { projects, project, row, idx } = loaded;
+    if (!Array.isArray(row.logs)) return res.status(404).json({ error: 'No logs' });
+    const logIdx = row.logs.findIndex(l => l.id === req.params.logId);
+    if (logIdx === -1) return res.status(404).json({ error: 'Log entry not found' });
+    const entry = row.logs[logIdx];
+
+    row.logs.splice(logIdx, 1);
+    recomputeQtyDone(row);
+
+    // Delete photo file
+    try {
+      if (entry.photoPath) {
+        const filePath = path.resolve(__dirname, 'public', entry.photoPath.replace(/^\//, ''));
+        if (filePath.startsWith(path.resolve(INSTALL_LOGS_DIR)) && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+    } catch {}
+
+    deriveFields(project);
+    writeProjects(projects);
+    logActivity('install.log.deleted', { projectId: project.id, jobCode: project.jobCode, idx, logId: entry.id, deletedDelta: entry.delta, newTotal: row.qtyDone });
+    res.json({ ok: true, qtyDone: row.qtyDone, status: row.status });
+  } catch (e) { logError('route.delete.install-log', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // --- API: Notification stubs (future email integration) ---
@@ -1727,19 +2090,21 @@ app.post('/api/notify/delivery-acknowledged', async (req, res) => {
     const { requestedBy, item, timeline, projectJobCode } = req.body;
     const requestorEmail = getStaffEmail(requestedBy);
     if (requestorEmail) {
+      const fmName = getFactoryManagerName();
       sendEmail(requestorEmail, requestedBy,
         `[Delivery Acknowledged] ${item || 'Your delivery request'}${projectJobCode ? ' — ' + projectJobCode : ''}`,
-        `<p>Hi ${requestedBy},</p>
-        <p>Chris has acknowledged your delivery request.</p>
+        `<p>Hi ${escHtml(requestedBy)},</p>
+        <p>${escHtml(fmName)} has acknowledged your delivery request.</p>
         <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${item || '—'}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${projectJobCode || '—'}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Expected Timeline</td><td>${timeline || 'To be confirmed'}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${escHtml(item || '—')}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${escHtml(projectJobCode || '—')}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Expected Timeline</td><td>${escHtml(timeline || 'To be confirmed')}</td></tr>
         </table>
-        <p>Chris will keep you updated on the delivery progress.</p>
+        <p>${escHtml(fmName)} will keep you updated on the delivery progress.</p>
         <p><a href="${APP_URL}/factory">Open Factory View →</a></p>`
       ).catch(() => {});
     }
+    logActivity('notify.delivery-acknowledged', { requestedBy, item, projectJobCode });
     res.json({ ok: true });
   } catch (e) { logError('route.post.notify.delivery-acknowledged', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -1749,18 +2114,20 @@ app.post('/api/notify/delivery-ready', async (req, res) => {
     const { projectId, requestedBy, item, projectJobCode } = req.body;
     const requestorEmail = getStaffEmail(requestedBy);
     if (requestorEmail) {
+      const fmName = getFactoryManagerName();
       await sendEmail(requestorEmail, requestedBy,
         `[Ready for Delivery] ${item || 'Your item'}${projectJobCode ? ' — ' + projectJobCode : ''}`,
-        `<p>Hi ${requestedBy},</p>
+        `<p>Hi ${escHtml(requestedBy)},</p>
         <p>Your requested item is ready for delivery:</p>
         <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${item || '—'}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${projectJobCode || '—'}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${escHtml(item || '—')}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${escHtml(projectJobCode || '—')}</td></tr>
         </table>
-        <p>Please coordinate delivery timing with Chris.</p>
+        <p>Please coordinate delivery timing with ${escHtml(fmName)}.</p>
         <p><a href="${APP_URL}/factory">Open Factory View →</a></p>`
       ).catch(() => {});
     }
+    logActivity('notify.delivery-ready', { requestedBy, item, projectJobCode });
     res.json({ ok: true });
   } catch (e) { logError('route.post.notify.delivery-ready', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -1907,13 +2274,13 @@ app.post('/api/remind', async (req, res) => {
   try {
     const subject = `[Action Required] ${stageName} – ${projectName}`;
     const htmlBody = `
-<p>Hi ${ownerName || ownerEmail},</p>
+<p>Hi ${escHtml(ownerName || ownerEmail)},</p>
 <p>This is a reminder that the following project stage requires your attention:</p>
 <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${projectName}</td></tr>
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Job Code</td><td>${jobCode}</td></tr>
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Stage</td><td>${stageName}</td></tr>
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Days Pending</td><td>${daysInStatus} day(s)</td></tr>
+  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${escHtml(projectName)}</td></tr>
+  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Job Code</td><td>${escHtml(jobCode)}</td></tr>
+  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Stage</td><td>${escHtml(stageName)}</td></tr>
+  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Days Pending</td><td>${escHtml(String(daysInStatus))} day(s)</td></tr>
 </table>
 <p>Please update the status at: <a href="${APP_URL}/project.html?id=${projectId}">LYS OPS Tracker</a></p>
 <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>
@@ -2159,7 +2526,11 @@ app.put('/api/tasks/:id', (req, res) => {
   const tasks = readTasks();
   const idx = tasks.findIndex(t => t.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Task not found' });
-  const updates = req.body;
+  const TASK_WRITABLE = ['title','description','taskType','category','assignedTo','requestedBy',
+    'dueDate','status','priority','notes','tags','projectId','projectJobCode','projectName',
+    'hoursLogged','completedAt','linkedMeetingNoteIdx'];
+  const updates = {};
+  for (const k of TASK_WRITABLE) { if (req.body[k] !== undefined) updates[k] = req.body[k]; }
   const oldAssignee = tasks[idx].assignedTo;
   const oldStatus   = tasks[idx].status;
   const oldDueDate  = tasks[idx].dueDate;
@@ -2174,6 +2545,7 @@ app.put('/api/tasks/:id', (req, res) => {
   }
   tasks[idx] = { ...tasks[idx], ...updates };
   writeTasks(tasks);
+  logActivity('task.updated', { id: req.params.id, title: tasks[idx].title, status: tasks[idx].status });
   res.json(tasks[idx]);
 
   // ── Calendar event lifecycle on update ──────────────────────────────────
@@ -2228,15 +2600,15 @@ app.put('/api/tasks/:id', (req, res) => {
       const projectLabel = newTask.projectJobCode || newTask.projectName || null;
       const dueDateLabel = newTask.dueDate || null;
       const rows = [
-        `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Task</td><td style="padding:6px 0;">${newTask.title}</td></tr>`,
-        projectLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Project</td><td style="padding:6px 0;">${projectLabel}</td></tr>` : '',
-        dueDateLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Due Date</td><td style="padding:6px 0;">${dueDateLabel}</td></tr>` : '',
-        assignedBy   ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Assigned By</td><td style="padding:6px 0;">${assignedBy}</td></tr>` : '',
+        `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Task</td><td style="padding:6px 0;">${escHtml(newTask.title)}</td></tr>`,
+        projectLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Project</td><td style="padding:6px 0;">${escHtml(projectLabel)}</td></tr>` : '',
+        dueDateLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Due Date</td><td style="padding:6px 0;">${escHtml(dueDateLabel)}</td></tr>` : '',
+        assignedBy   ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Assigned By</td><td style="padding:6px 0;">${escHtml(assignedBy)}</td></tr>` : '',
       ].filter(Boolean).join('');
       sendEmail(assignEmail, updates.assignedTo,
         `[New Task] ${newTask.title}`,
         `<div style="font-family:Arial,sans-serif;max-width:520px;">
-        <p style="margin:0 0 16px;">Hi ${updates.assignedTo},</p>
+        <p style="margin:0 0 16px;">Hi ${escHtml(updates.assignedTo)},</p>
         <p style="margin:0 0 16px;">You have been assigned a task:</p>
         <table style="border-collapse:collapse;width:100%;margin-bottom:20px;">${rows}</table>
         <p style="margin:0;"><a href="${APP_URL}/my-tasks" style="background:#3366ff;color:#fff;padding:9px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">View My Tasks →</a></p>
@@ -2254,12 +2626,12 @@ app.put('/api/tasks/:id', (req, res) => {
     if (rbEmail) {
       sendEmail(rbEmail, changedTask.requestedBy,
         `[Task Update] ${changedTask.title} — ${updates.status}`,
-        `<p>Hi ${changedTask.requestedBy},</p>
+        `<p>Hi ${escHtml(changedTask.requestedBy)},</p>
         <p>A task you requested has been updated:</p>
         <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Task</td><td>${changedTask.title}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">New Status</td><td>${updates.status}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Assigned To</td><td>${changedTask.assignedTo || '—'}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Task</td><td>${escHtml(changedTask.title)}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">New Status</td><td>${escHtml(updates.status)}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Assigned To</td><td>${escHtml(changedTask.assignedTo || '—')}</td></tr>
         </table>
         <p><a href="${APP_URL}/my-tasks">View Tasks →</a></p>`
       ).catch(() => {});
@@ -2283,6 +2655,7 @@ app.post('/api/tasks/:id/acknowledge', (req, res) => {
     // the assignee explicitly marks it Done. The "In Progress" middle
     // state was removed so staff are forced through this seen step.
     writeTasks(tasks);
+    logActivity('task.acknowledged', { id: req.params.id, title: tasks[idx].title, by: tasks[idx].acknowledgedBy });
     res.json(tasks[idx]);
     // Trigger 2: email requestedBy that task was acknowledged
     const task = tasks[idx];
@@ -2338,6 +2711,7 @@ app.post('/api/tasks/:id/hours', (req, res) => {
     };
     tasks[idx].hoursLogged.push(entry);
     writeTasks(tasks);
+    logActivity('task.hours.logged', { id: req.params.id, hours: entry.hours });
     res.json(tasks[idx]);
   } catch (e) { logError('route.post.tasks.hours', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -2348,6 +2722,7 @@ app.delete('/api/tasks/:id', (req, res) => {
     const gone = tasks.find(t => t.id === req.params.id);
     tasks = tasks.filter(t => t.id !== req.params.id);
     writeTasks(tasks);
+    logActivity('task.deleted', { id: req.params.id, title: gone ? gone.title : '' });
     res.json({ ok: true });
     // Clean up the matching calendar event if one was created.
     if (gone && gone.calendarEventId && gone.calendarEventOwner) {
@@ -2480,6 +2855,67 @@ app.get('/api/claims', (req, res) => {
   } catch (e) { logError('route.get.claims', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
+// GET /api/projects/:id/install-progress — install logs grouped by item for QS claim evidence
+app.get('/api/projects/:id/install-progress', (req, res) => {
+  try {
+    const projects = readProjects();
+    const project = projects.find(p => p.id === req.params.id);
+    if (!project) return res.status(404).json({ error: 'Not found' });
+    const installation = project.installation || [];
+    const claims = readClaims().filter(c => c.projectId === project.id);
+
+    // Build per-item progress summary with all logs
+    const items = installation.map((row, idx) => {
+      const logs = Array.isArray(row.logs) ? row.logs : [];
+      const totalQty = parseFloat(row.totalQty) || 0;
+      const qtyDone  = parseFloat(row.qtyDone)  || 0;
+
+      // Group logs by step (if steps defined)
+      const stepProgress = {};
+      if (Array.isArray(row.installSteps) && row.installSteps.length) {
+        row.installSteps.forEach(s => { stepProgress[s] = 0; });
+        logs.forEach(l => {
+          const s = l.step || 'Install';
+          stepProgress[s] = (stepProgress[s] || 0) + (parseFloat(l.delta) || 0);
+        });
+      }
+
+      return {
+        idx,
+        item: row.item || row.description || '',
+        totalQty,
+        qtyDone,
+        pct: totalQty > 0 ? Math.round(qtyDone / totalQty * 100) : 0,
+        status: row.status || 'Not Started',
+        installSteps: row.installSteps || [],
+        stepProgress,
+        logs: logs.map(l => ({
+          id: l.id, delta: l.delta, step: l.step || '',
+          photoPath: l.photoPath || '', location: l.location || '',
+          note: l.note || '', loggedBy: l.loggedBy || '', loggedAt: l.loggedAt || ''
+        }))
+      };
+    });
+
+    // Summary: total claimed so far for this project
+    const totalClaimed = claims.reduce((s, c) => s + (parseFloat(c.claimAmount) || 0), 0);
+
+    res.json({
+      projectId: project.id,
+      jobCode: project.jobCode || '',
+      projectName: project.projectName || '',
+      contractValue: parseFloat(project.contractValue) || 0,
+      totalClaimed,
+      installPercent: project.installPercent || 0,
+      items,
+      claims: claims.map(c => ({
+        id: c.id, claimNumber: c.claimNumber, claimAmount: c.claimAmount,
+        status: c.status, submittedDate: c.submittedDate, installLogIds: c.installLogIds || []
+      }))
+    });
+  } catch (e) { logError('route.get.install-progress', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
 // POST create
 app.post('/api/claims', (req, res) => {
   try {
@@ -2507,10 +2943,17 @@ app.post('/api/claims', (req, res) => {
       paymentReceivedAmount:null,
       status:               'Awaiting Certification',
       notes:                b.notes || '',
+      installLogIds:        Array.isArray(b.installLogIds) ? b.installLogIds : [],
+      claimItems:           Array.isArray(b.claimItems) ? b.claimItems.map(ci => ({
+        item: String(ci.item || '').slice(0, 200),
+        qty: parseFloat(ci.qty) || 0,
+        step: String(ci.step || '').slice(0, 100),
+      })) : [],
       createdAt:            new Date().toISOString()
     };
     claims.push(claim);
     writeClaims(claims);
+    logActivity('claim.created', { id: claim.id, projectId: claim.projectId, claimNumber: claim.claimNumber, amount: claim.claimAmount });
     res.json(claim);
   } catch (e) { logError('route.post.claims', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -2521,7 +2964,11 @@ app.put('/api/claims/:id', (req, res) => {
     const claims = readClaims();
     const idx = claims.findIndex(c => c.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Not found' });
-    const b = req.body;
+    const CLAIM_WRITABLE = ['claimNumber','description','claimAmount','submittedDate','submittedBy',
+      'certifiedDate','certifiedAmount','invoiceNumber','invoiceRaisedDate','paymentDue',
+      'paymentReceivedDate','paymentReceivedAmount','status','notes','installLogIds','claimItems'];
+    const b = {};
+    for (const k of CLAIM_WRITABLE) { if (req.body[k] !== undefined) b[k] = req.body[k]; }
     if (b.certifiedDate && !claims[idx].certifiedDate) {
       const certDate = new Date(b.certifiedDate);
       const payDue = new Date(certDate); payDue.setDate(payDue.getDate() + 35);
@@ -2532,6 +2979,7 @@ app.put('/api/claims/:id', (req, res) => {
     if (b.paymentReceivedDate && !claims[idx].paymentReceivedDate) b.status = 'Paid';
     claims[idx] = { ...claims[idx], ...b };
     writeClaims(claims);
+    logActivity('claim.updated', { id: claims[idx].id, claimNumber: claims[idx].claimNumber, status: claims[idx].status });
     res.json(claims[idx]);
   } catch (e) { logError('route.put.claims', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -2560,7 +3008,7 @@ app.get('/api/eod-log', (req, res) => {
     const staffName = sanitizeStr(req.query.staffName, 100);
     return res.json(logs.filter(l => l.date === date && l.staffName === staffName));
   }
-  const allStaff = getStaffNames().filter(n => n !== 'Lai Wei Xiang');
+  const allStaff = getStaffNames().filter(n => n !== getBossName());
   const todayLogs = logs.filter(l => l.date === date);
   const submitted = todayLogs.map(l => l.staffName);
   const missing = allStaff.filter(s => !submitted.includes(s));
@@ -2634,6 +3082,7 @@ cron.schedule('0 9 * * 1-5', async () => {
         <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>`
       );
       task.overdueEmailSent = true;
+      await new Promise(r => setTimeout(r, 2000));
     } else {
       console.warn('[EMAIL SKIP] No email for:', task.assignedTo);
     }
@@ -2654,7 +3103,7 @@ cron.schedule('0 9 * * 1-5', async () => {
   projectsForClaims.forEach(p => { projById[p.id] = p; });
   const in7days = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
   const in3days = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
-  const bossEmail = getStaffEmail('Lai Wei Xiang') || getStaffEmail('Lai Weixiang') || process.env.SENDER_EMAIL;
+  const bossEmail = getBossEmail() || process.env.SENDER_EMAIL;
   let claimsChanged = false;
   for (const claim of claims) {
     if (claim.status !== 'Awaiting Certification' || !claim.certificationDue) continue;
@@ -2742,7 +3191,7 @@ cron.schedule('0 9 * * 1-5', async () => {
     // On the final (3rd) reminder, also escalate to the boss.
     const isFinal = reminderNum === MAX_ACK_REMINDERS;
     if (isFinal) {
-      const bossEmail = getStaffEmail('Lai Wei Xiang') || getStaffEmail('Lai Weixiang') || process.env.SENDER_EMAIL;
+      const bossEmail = getBossEmail() || process.env.SENDER_EMAIL;
       if (bossEmail) ccEmails.push(bossEmail);
     }
     try {
@@ -2794,7 +3243,7 @@ cron.schedule('0 9 * * 1-5', async () => {
         if (stillMissing.length) {
           const laiEmail = process.env.SENDER_EMAIL;
           if (laiEmail) {
-            await sendEmail(laiEmail, 'Lai Wei Xiang',
+            await sendEmail(laiEmail, getBossName(),
               `[EOD Alert] Still missing from yesterday (${yesterday}): ${stillMissing.length} staff`,
               `<p>The following staff have <strong>still not submitted</strong> their EOD log for yesterday (${yesterday}):</p>
               <ul>${stillMissing.map(n => `<li><strong>${n}</strong></li>`).join('')}</ul>
@@ -2918,8 +3367,7 @@ cron.schedule('0 18 * * 1-5', async () => {
   const today = new Date().toISOString().split('T')[0];
   const logs = readEOD();
   const submitted = logs.filter(l => l.date === today).map(l => l.staffName);
-  const staffToRemind = ['Chris', 'Rena', 'Alex Mac', 'Salve', 'Teo Meei Haw', 'Jun Jie']
-    .filter(n => !submitted.includes(n));
+  const staffToRemind = getStaffNames().filter(n => n !== getBossName() && !submitted.includes(n));
 
   if (!staffToRemind.length) {
     console.log('[CRON] 6pm EOD: all staff submitted — no reminders needed');
@@ -2962,6 +3410,7 @@ cron.schedule('0 18 * * 1-5', async () => {
 
     await sendEmail(email, name, 'EOD Reminder — Please submit your report for today', htmlBody);
     sent++;
+    await new Promise(r => setTimeout(r, 2000));
   }
   console.log(`[CRON] 6pm EOD reminders sent: ${sent}`);
   } catch (e) { logError('cron.6pm-eod-reminder', e); }
@@ -2974,7 +3423,7 @@ cron.schedule('30 18 * * 1-5', async () => {
   const today = new Date().toISOString().split('T')[0];
   const logs = readEOD();
   const submitted = logs.filter(l => l.date === today).map(l => l.staffName);
-  const staffNames = getStaffNames().filter(n => n !== 'Lai Wei Xiang');
+  const staffNames = getStaffNames().filter(n => n !== getBossName());
   const missing = staffNames.filter(n => !submitted.includes(n));
   // Write current flags file (for live /api/eod-log endpoint)
   fs.writeFileSync(FLAG_FILE, JSON.stringify({ date: today, missing }, null, 2));
@@ -2989,7 +3438,7 @@ cron.schedule('30 18 * * 1-5', async () => {
   if (missing.length > 0) {
     const laiEmail = process.env.SENDER_EMAIL;
     if (laiEmail) {
-      await sendEmail(laiEmail, 'Lai Wei Xiang',
+      await sendEmail(laiEmail, getBossName(),
         `[EOD Alert] ${missing.length} staff haven't submitted end-of-day log`,
         `<p>The following staff have not submitted their EOD log today (${today}):</p>
         <ul>${missing.map(n => `<li><strong>${n}</strong></li>`).join('')}</ul>
@@ -3044,6 +3493,54 @@ app.get('/api/manpower-plan', (req, res) => {
     if (!plan) return res.status(404).json({ error: 'No plan for this date' });
     res.json(plan);
   } catch (e) { logError('route.get.manpower-plan', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// GET /api/manpower-plan/ot-summary — monthly OT totals per worker
+app.get('/api/manpower-plan/ot-summary', (req, res) => {
+  try {
+    const now = new Date();
+    const yr = req.query.year  ? parseInt(req.query.year)  : now.getFullYear();
+    const mo = req.query.month ? parseInt(req.query.month) - 1 : now.getMonth();
+
+    // Find all weekly plans whose weekStart falls in this month
+    const plans = readManpowerPlans();
+    const monthPlans = plans.filter(p => {
+      if (!p.weekStart) return false;
+      const ws = new Date(p.weekStart + 'T00:00:00');
+      // Include if the week overlaps with the target month
+      const weekEnd = new Date(ws); weekEnd.setDate(weekEnd.getDate() + 5);
+      return (ws.getFullYear() === yr && ws.getMonth() === mo) ||
+             (weekEnd.getFullYear() === yr && weekEnd.getMonth() === mo);
+    });
+
+    // Sum OT per worker
+    const otByWorker = {};
+    let totalOT = 0;
+    monthPlans.forEach(p => {
+      Object.entries(p.assignments || {}).forEach(([wid, days]) => {
+        Object.values(days).forEach(a => {
+          const ot = parseFloat(a.otHours) || 0;
+          if (ot > 0) {
+            otByWorker[wid] = (otByWorker[wid] || 0) + ot;
+            totalOT += ot;
+          }
+        });
+      });
+    });
+
+    // Resolve worker names
+    const workers = readWorkers();
+    const workerMap = {};
+    workers.forEach(w => { workerMap[w.id] = w.name; });
+
+    const details = Object.entries(otByWorker)
+      .map(([wid, hours]) => ({ id: wid, name: workerMap[wid] || wid, hours, overCap: hours >= 72 }))
+      .sort((a, b) => b.hours - a.hours);
+
+    const atRisk = details.filter(d => d.hours >= 60).length;
+
+    res.json({ year: yr, month: mo + 1, totalOT, workerCount: details.length, atRisk, details });
+  } catch (e) { logError('route.get.ot-summary', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // POST /api/manpower-plan — upsert weekly or daily plan
@@ -3181,7 +3678,10 @@ app.put('/api/workers/:id', (req, res) => {
     const workers = readWorkers();
     const idx = workers.findIndex(w => w.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Worker not found' });
-    workers[idx] = { ...workers[idx], ...req.body, id: workers[idx].id };
+    const WORKER_WRITABLE = ['name','role','company','phone','wpNumber','wpExpiry','code','active','notes'];
+    const clean = {};
+    for (const k of WORKER_WRITABLE) { if (req.body[k] !== undefined) clean[k] = req.body[k]; }
+    workers[idx] = { ...workers[idx], ...clean };
     writeWorkers(workers);
     logActivity('worker.updated', { workerId: req.params.id, name: workers[idx].name });
     res.json(workers[idx]);
@@ -3291,7 +3791,7 @@ app.get('/api/system-map', (req, res) => {
   } catch (e) { logError('route.get.system-map', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-const VALID_SR_STATUSES = ['New', 'Acknowledged', 'In Fabrication', 'Ready', 'Delivered', 'Issue'];
+const VALID_SR_STATUSES = ['New', 'Acknowledged', 'In Fabrication', 'Ready', 'Delivered', 'Received', 'Issue'];
 
 // GET /api/site-requests — all requests, newest first
 app.get('/api/site-requests', (req, res) => {
@@ -3349,11 +3849,12 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
     item, quantity, unit, neededByDate,
     fabIdx: (fabIdx !== null && !Number.isNaN(fabIdx)) ? fabIdx : null,
     requestedBy, notes,
+    urgency: ['Normal','Urgent'].includes(req.body.urgency) ? req.body.urgency : 'Normal',
     status: 'New',
     createdAt: new Date().toISOString(),
     acknowledgedAt: null,
     estimatedReadyDate: null,
-    chrisNotes: null,
+    factoryNotes: null,
     deliveredAt: null,
     issueReason: null
   };
@@ -3412,7 +3913,7 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
     projectJobCode: record.projectJobCode,
     projectName: record.projectName,
     estimatedReadyDate: record.estimatedReadyDate,
-    chrisNotes: record.chrisNotes,
+    factoryNotes: record.factoryNotes,
     issueReason: record.issueReason
   };
 
@@ -3422,7 +3923,7 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
     record.status = s;
   }
   if (req.body.estimatedReadyDate !== undefined) record.estimatedReadyDate = sanitizeStr(req.body.estimatedReadyDate, 20);
-  if (req.body.chrisNotes !== undefined)         record.chrisNotes         = sanitizeStr(req.body.chrisNotes, 1000);
+  if (req.body.factoryNotes !== undefined)         record.factoryNotes         = sanitizeStr(req.body.factoryNotes, 1000);
   if (req.body.issueReason !== undefined)        record.issueReason        = sanitizeStr(req.body.issueReason, 1000);
 
   if (req.body.item         !== undefined) record.item         = sanitizeStr(req.body.item, 200);
@@ -3430,6 +3931,7 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
   if (req.body.unit         !== undefined) record.unit         = sanitizeStr(req.body.unit, 20);
   if (req.body.neededByDate !== undefined) record.neededByDate = sanitizeStr(req.body.neededByDate, 20);
   if (req.body.notes        !== undefined) record.notes        = sanitizeStr(req.body.notes, 1000);
+  if (req.body.urgency     !== undefined && ['Normal','Urgent'].includes(req.body.urgency)) record.urgency = req.body.urgency;
   if (req.body.projectId      !== undefined) record.projectId      = sanitizeStr(req.body.projectId, 80);
   if (req.body.projectJobCode !== undefined) record.projectJobCode = sanitizeStr(req.body.projectJobCode, 80);
   if (req.body.projectName    !== undefined) record.projectName    = sanitizeStr(req.body.projectName, 200);
@@ -3439,6 +3941,17 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
   }
   if (record.status === 'Delivered' && !record.deliveredAt) {
     record.deliveredAt = new Date().toISOString();
+  }
+  // Clear deliveredAt when reverting from Delivered (undo from factory)
+  if (record.status !== 'Delivered' && record.status !== 'Received' && record.deliveredAt) {
+    record.deliveredAt = null;
+  }
+  // Site confirmation: stamp received fields
+  if (record.status === 'Received' && !record.receivedAt) {
+    record.receivedAt = new Date().toISOString();
+    if (req.body.receivedBy)    record.receivedBy    = sanitizeStr(req.body.receivedBy, 100);
+    if (req.body.receivedQty !== undefined) record.receivedQty = parseFloat(req.body.receivedQty) || record.quantity;
+    if (req.body.receivedNotes) record.receivedNotes = sanitizeStr(req.body.receivedNotes, 500);
   }
 
   // Build change diff vs pre-edit snapshot
@@ -3465,10 +3978,10 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
     if (engEmail) {
       sendEmail(engEmail, record.requestedBy,
         `[Ready] ${record.item} is ready for delivery`,
-        `<p>Hi ${record.requestedBy},</p>
-        <p>Your factory request for <strong>${record.item}</strong> (${record.quantity} ${record.unit}) is ready.</p>
-        ${record.estimatedReadyDate ? `<p>Estimated delivery: ${record.estimatedReadyDate}</p>` : ''}
-        ${record.chrisNotes ? `<p>Notes from Chris: ${record.chrisNotes}</p>` : ''}
+        `<p>Hi ${escHtml(record.requestedBy)},</p>
+        <p>Your factory request for <strong>${escHtml(record.item)}</strong> (${escHtml(String(record.quantity))} ${escHtml(record.unit)}) is ready.</p>
+        ${record.estimatedReadyDate ? `<p>Estimated delivery: ${escHtml(record.estimatedReadyDate)}</p>` : ''}
+        ${record.factoryNotes ? `<p>Notes from factory: ${escHtml(record.factoryNotes)}</p>` : ''}
         <p>View status in <a href="${APP_URL}/installation">Installation tracker</a> → My Requests.</p>`
       );
     }
@@ -3480,9 +3993,9 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
     if (engEmail) {
       sendEmail(engEmail, record.requestedBy,
         `[Delivered] ${record.item} has been delivered`,
-        `<p>Hi ${record.requestedBy},</p>
-        <p><strong>${record.item}</strong> (${record.quantity} ${record.unit}) has been delivered to site.</p>
-        <p>Project: ${record.projectJobCode || ''} ${record.projectName || ''}</p>`
+        `<p>Hi ${escHtml(record.requestedBy)},</p>
+        <p><strong>${escHtml(record.item)}</strong> (${escHtml(String(record.quantity))} ${escHtml(record.unit)}) has been delivered to site.</p>
+        <p>Project: ${escHtml(record.projectJobCode || '')} ${escHtml(record.projectName || '')}</p>`
       );
     }
   }
@@ -3491,12 +4004,13 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
   if (record.status === 'Issue' && oldStatus !== 'Issue') {
     const engEmail = getStaffEmail(record.requestedBy);
     if (engEmail) {
+      const fmName = getFactoryManagerName();
       sendEmail(engEmail, record.requestedBy,
         `[Issue] Factory cannot fulfil request: ${record.item}`,
-        `<p>Hi ${record.requestedBy},</p>
-        <p>There is an issue with your request for <strong>${record.item}</strong>.</p>
-        ${record.issueReason ? `<p>Reason: ${record.issueReason}</p>` : ''}
-        <p>Please follow up with Chris directly.</p>`
+        `<p>Hi ${escHtml(record.requestedBy)},</p>
+        <p>There is an issue with your request for <strong>${escHtml(record.item)}</strong>.</p>
+        ${record.issueReason ? `<p>Reason: ${escHtml(record.issueReason)}</p>` : ''}
+        <p>Please follow up with ${escHtml(fmName)} directly.</p>`
       );
     }
   }
@@ -3557,7 +4071,7 @@ app.post('/api/site-requests/:id/split', postRateLimit, (req, res) => {
       createdAt:       new Date().toISOString(),
       acknowledgedAt:  new Date().toISOString(),
       estimatedReadyDate: null,
-      chrisNotes:      null,
+      factoryNotes:      null,
       deliveredAt:     null,
       issueReason:     null,
       parentId:        parent.id,
@@ -3733,84 +4247,98 @@ app.get('/api/logs', (req, res) => {
 });
 
 // ── Recurring Tasks ───────────────────────────────────────────────────────────
-// Daily definitions: { title, category }
-const RECURRING_DEFS = {
-  Chris: [
-    { title: 'Take attendance — mark MC/absent workers',                           category: 'People'     },
-    { title: 'Review today\'s fabrication priorities across all projects',          category: 'Operations' },
-    { title: 'Safety walkthrough — check machines, tools, fire exits',             category: 'Safety'     },
-    { title: 'Check site requests inbox — acknowledge within 2 hours',             category: 'Operations' },
-    { title: 'Assign workers to projects and plan transport',                      category: 'People'     },
-    { title: 'Update FAB progress on all active items',                            category: 'Reporting'  },
-    { title: 'Confirm next-day material and delivery readiness',                   category: 'Operations' },
-    { title: 'Submit EOD log',                                                     category: 'Reporting'  },
-  ],
-  Chris_monday: [
-    { title: 'Weekly fab planning — align with site engineer priorities',           category: 'Operations' },
-    { title: 'Check stock levels — flag low materials to Rena',                    category: 'Operations' },
-  ],
-  Rena: [
-    { title: 'Check all pending POs — confirm delivery dates with suppliers',      category: 'Operations'  },
-    { title: 'Follow up on overdue supplier deliveries',                           category: 'Operations'  },
-    { title: 'Source 1 new supplier contact today — log in Procurement',           category: 'Development' },
-    { title: 'Update material ETA for all active projects',                        category: 'Reporting'   },
-    { title: 'Submit EOD log',                                                     category: 'Reporting'   },
-  ],
-  Rena_monday: [
-    { title: 'Weekly supplier review — compare prices, flag unreliable suppliers', category: 'Operations' },
-  ],
-  // Both QSs get the same generic checklist. Project-specific claim work
-  // (e.g. "installation is now complete, consider timing the next claim")
-  // is handled by a separate per-project automation that creates a one-off
-  // task only for the QS assigned to THAT project — see 9am cron Check 5.
-  'Alex Mac': [
-    { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
-    { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
-    { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
-    { title: 'Submit EOD log',                                                     category: 'Reporting'  },
-  ],
-  'Alex Mac_monday': [
-    { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
-  ],
-  'Salve': [
-    { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
-    { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
-    { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
-    { title: 'Submit EOD log',                                                     category: 'Reporting'  },
-  ],
-  'Salve_monday': [
-    { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
-  ],
-  Janessa: [
-    { title: 'Follow up on outstanding quotations with clients',                   category: 'Operations'  },
-    { title: 'Check for new enquiries / tender invitations',                       category: 'Operations'  },
-    { title: 'Update sales pipeline — Tendering / Quotation stage projects',       category: 'Reporting'   },
-    { title: 'Chase newly Awarded projects — ensure clean handover to PM + drafter', category: 'Operations' },
-    { title: 'Submit EOD log',                                                     category: 'Reporting'   },
-  ],
-  Janessa_monday: [
-    { title: 'Weekly sales pipeline review — total quoted, pending decisions, lost jobs', category: 'Reporting' },
-  ],
-  'Teo Meei Haw': [
-    { title: 'Set today\'s installation target — project, item, qty, location',    category: 'Operations' },
-    { title: 'Check factory readiness for items needed this week',                 category: 'Operations' },
-    { title: 'Update installation progress on active projects',                    category: 'Reporting'  },
-    { title: 'Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other', category: 'Reporting' },
-    { title: 'Submit EOD log',                                                     category: 'Reporting'  },
-  ],
-  'Teo Meei Haw_monday': [
-    { title: 'Weekly site planning — align with factory on delivery schedule',     category: 'Operations' },
-  ],
-  'Jun Jie': [
-    { title: 'Set today\'s installation target — project, item, qty, location',    category: 'Operations' },
-    { title: 'Check factory readiness for items needed this week',                 category: 'Operations' },
-    { title: 'Update installation progress on active projects',                    category: 'Reporting'  },
-    { title: 'Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other', category: 'Reporting' },
-    { title: 'Submit EOD log',                                                     category: 'Reporting'  },
-  ],
-  'Jun Jie_monday': [
-    { title: 'Weekly site planning — align with factory on delivery schedule',     category: 'Operations' },
-  ],
+// Task templates keyed by staff.json role alias. At runtime, the role resolves
+// to the person's name via readStaff(). If a role isn't in staff.json, those
+// tasks are silently skipped — no code change needed when staff changes.
+const RECURRING_ROLE_DEFS = {
+  'Factory Manager': {
+    daily: [
+      { title: 'Take attendance — mark MC/absent workers',                           category: 'People'     },
+      { title: 'Review today\'s fabrication priorities across all projects',          category: 'Operations' },
+      { title: 'Safety walkthrough — check machines, tools, fire exits',             category: 'Safety'     },
+      { title: 'Check site requests inbox — acknowledge within 2 hours',             category: 'Operations' },
+      { title: 'Assign workers to projects and plan transport',                      category: 'People'     },
+      { title: 'Update FAB progress on all active items',                            category: 'Reporting'  },
+      { title: 'Confirm next-day material and delivery readiness',                   category: 'Operations' },
+      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+    ],
+    monday: [
+      { title: 'Weekly fab planning — align with site engineer priorities',           category: 'Operations' },
+      { title: 'Check stock levels — flag low materials to purchaser',               category: 'Operations' },
+    ],
+  },
+  'Purchaser': {
+    daily: [
+      { title: 'Check all pending POs — confirm delivery dates with suppliers',      category: 'Operations'  },
+      { title: 'Follow up on overdue supplier deliveries',                           category: 'Operations'  },
+      { title: 'Source 1 new supplier contact today — log in Procurement',           category: 'Development' },
+      { title: 'Update material ETA for all active projects',                        category: 'Reporting'   },
+      { title: 'Submit EOD log',                                                     category: 'Reporting'   },
+    ],
+    monday: [
+      { title: 'Weekly supplier review — compare prices, flag unreliable suppliers', category: 'Operations' },
+    ],
+  },
+  'QS': {
+    // Both QSs get the same generic checklist. The role 'QS' in staff.json
+    // maps to one person; the second QS should have a 'QS2' role alias.
+    daily: [
+      { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
+      { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
+      { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
+      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+    ],
+    monday: [
+      { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
+    ],
+  },
+  'QS2': {
+    daily: [
+      { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
+      { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
+      { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
+      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+    ],
+    monday: [
+      { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
+    ],
+  },
+  'Sales': {
+    daily: [
+      { title: 'Follow up on outstanding quotations with clients',                   category: 'Operations'  },
+      { title: 'Check for new enquiries / tender invitations',                       category: 'Operations'  },
+      { title: 'Update sales pipeline — Tendering / Quotation stage projects',       category: 'Reporting'   },
+      { title: 'Chase newly Awarded projects — ensure clean handover to PM + drafter', category: 'Operations' },
+      { title: 'Submit EOD log',                                                     category: 'Reporting'   },
+    ],
+    monday: [
+      { title: 'Weekly sales pipeline review — total quoted, pending decisions, lost jobs', category: 'Reporting' },
+    ],
+  },
+  'Site Engineer': {
+    daily: [
+      { title: 'Set today\'s installation target — project, item, qty, location',    category: 'Operations' },
+      { title: 'Check factory readiness for items needed this week',                 category: 'Operations' },
+      { title: 'Update installation progress on active projects',                    category: 'Reporting'  },
+      { title: 'Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other', category: 'Reporting' },
+      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+    ],
+    monday: [
+      { title: 'Weekly site planning — align with factory on delivery schedule',     category: 'Operations' },
+    ],
+  },
+  'Site Engineer 2': {
+    daily: [
+      { title: 'Set today\'s installation target — project, item, qty, location',    category: 'Operations' },
+      { title: 'Check factory readiness for items needed this week',                 category: 'Operations' },
+      { title: 'Update installation progress on active projects',                    category: 'Reporting'  },
+      { title: 'Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other', category: 'Reporting' },
+      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+    ],
+    monday: [
+      { title: 'Weekly site planning — align with factory on delivery schedule',     category: 'Operations' },
+    ],
+  },
 };
 
 // Get current date/day-of-week in Singapore time
@@ -3858,10 +4386,17 @@ async function createDailyRecurringTasks() {
   const newTasks = [];
   let _idSeq = 0; // ensure unique IDs even within same ms
 
-  const people = ['Chris', 'Rena', 'Alex Mac', 'Salve', 'Teo Meei Haw', 'Jun Jie', 'Janessa'];
-  for (const person of people) {
-    const daily   = RECURRING_DEFS[person]             || [];
-    const monday  = isMonday ? (RECURRING_DEFS[`${person}_monday`] || []) : [];
+  // Resolve roles to person names from staff.json
+  const staff = readStaff();
+  const rolePeople = [];
+  for (const role of Object.keys(RECURRING_ROLE_DEFS)) {
+    const entry = staff[role];
+    if (entry && entry.name) rolePeople.push({ person: entry.name, role });
+  }
+  for (const { person, role } of rolePeople) {
+    const defs = RECURRING_ROLE_DEFS[role] || {};
+    const daily  = defs.daily || [];
+    const monday = isMonday ? (defs.monday || []) : [];
     const allDefs = daily.concat(monday);
 
     for (const def of allDefs) {
@@ -3951,8 +4486,8 @@ async function createDailyRecurringTasks() {
       } catch (e) {
         console.error(`[RECURRING] Email failed for ${person}:`, e.message);
       }
-      // Small gap between sends to stay clear of MailboxConcurrency limits
-      await new Promise(r => setTimeout(r, 400));
+      // 2s gap between sends to stay within Graph API MailboxConcurrency limits (30/min)
+      await new Promise(r => setTimeout(r, 2000));
     }
     console.log(`[RECURRING] Daily task emails sent for ${today}`);
   } else {
@@ -3991,6 +4526,8 @@ function readPOs()          { try { if (!fs.existsSync(PO_FILE)) return []; retu
 function writePOs(d)        { const tmp = PO_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PO_FILE); }
 function readPRs()          { try { if (!fs.existsSync(PR_FILE)) return []; return safeReadJSON(PR_FILE); } catch { return []; } }
 function writePRs(d)        { const tmp = PR_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PR_FILE); }
+function readDOs()           { try { if (!fs.existsSync(DO_FILE)) return []; return safeReadJSON(DO_FILE); } catch { return []; } }
+function writeDOs(d)         { const tmp = DO_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, DO_FILE); }
 
 // Auto-flag Overdue: promisedDate < today and status !== Delivered
 function applyOverdueFlag(pos) {
@@ -4096,6 +4633,7 @@ app.put('/api/prices/:id', (req, res) => {
       supplierName: b.supplierName !== undefined ? String(b.supplierName).trim().slice(0, 200) : prices[idx].supplierName,
       date:         b.date         !== undefined ? String(b.date).trim().slice(0, 10)          : prices[idx].date,
       notes:        b.notes        !== undefined ? String(b.notes).trim().slice(0, 500)        : prices[idx].notes,
+      leadTimeDays: b.leadTimeDays !== undefined ? (parseInt(b.leadTimeDays) || null)          : prices[idx].leadTimeDays,
       updatedAt:    new Date().toISOString()
     });
     writePrices(prices);
@@ -4187,11 +4725,11 @@ app.put('/api/purchase-orders/:id', (req, res) => {
     const idx = pos.findIndex(p => p.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Purchase order not found' });
     const b = req.body;
-    pos[idx] = Object.assign({}, pos[idx], b, {
-      id:        pos[idx].id,
-      createdAt: pos[idx].createdAt,
-      updatedAt: new Date().toISOString()
-    });
+    const PO_WRITABLE = ['poNumber', 'supplier', 'eta', 'status', 'notes', 'items', 'projectCode', 'site'];
+    const clean = {};
+    for (const k of PO_WRITABLE) { if (b[k] !== undefined) clean[k] = b[k]; }
+    Object.assign(pos[idx], clean);
+    pos[idx].updatedAt = new Date().toISOString();
     if (!['Ordered', 'In Transit', 'Delivered', 'Overdue'].includes(pos[idx].status)) pos[idx].status = 'Ordered';
     writePOs(pos);
     logActivity('po.updated', { id: pos[idx].id, status: pos[idx].status });
@@ -4316,55 +4854,71 @@ app.post('/api/purchase-requisitions', postRateLimit, async (req, res) => {
     writePRs(prs);
     logActivity('pr.created', { id: pr.id, prNumber, projectCode: pr.projectCode });
     res.status(201).json(pr);
-    // Email Rena + CC Lai
-    const renaEmail = getStaffEmail('Rena') || 'enquiry@laiyewseng.com.sg';
-    const laiEmail  = getStaffEmail('Lai Wei Xiang') || 'laiwx@laiyewseng.com.sg';
+    // Email Purchaser + CC boss
+    const purchaserStaff = readStaff()['Purchaser'] || {};
+    const purchaserName  = purchaserStaff.name || 'Purchaser';
+    const purchaserEmail = getRoleEmail('Purchaser');
+    const bossEmail      = getRoleEmail('Project Manager');
+    const bossName       = getBossName();
     const itemsSummary = pr.items.map(i => `${i.description || '—'} (${i.qty} ${i.unit})`).join('; ') || '—';
     try {
       const accessToken = await getAccessToken();
       if (accessToken && process.env.SENDER_EMAIL) {
-        const toAddr = process.env.EMAIL_TEST_OVERRIDE || renaEmail;
-        const ccAddr = process.env.EMAIL_TEST_OVERRIDE || laiEmail;
+        const toAddr = process.env.EMAIL_TEST_OVERRIDE || purchaserEmail;
+        const ccAddr = process.env.EMAIL_TEST_OVERRIDE || bossEmail;
         await fetch(`https://graph.microsoft.com/v1.0/users/${process.env.SENDER_EMAIL}/sendMail`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: {
             subject: `New PR: ${prNumber} — ${pr.projectCode || 'General'}`,
             body: { contentType: 'HTML', content:
-              `<p>Hi Rena,</p><p>A new Purchase Requisition has been submitted.</p>
+              `<p>Hi ${escHtml(purchaserName)},</p><p>A new Purchase Requisition has been submitted.</p>
               <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PR Number</td><td>${prNumber}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${pr.projectCode || '—'}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Site</td><td>${pr.site || '—'}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Urgency</td><td>${pr.urgency}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Items</td><td>${itemsSummary}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Submitted By</td><td>${pr.submittedBy || '—'}</td></tr>
-                ${pr.notes ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${pr.notes}</td></tr>` : ''}
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PR Number</td><td>${escHtml(prNumber)}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(pr.projectCode || '—')}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Site</td><td>${escHtml(pr.site || '—')}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Urgency</td><td>${escHtml(pr.urgency)}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Items</td><td>${escHtml(itemsSummary)}</td></tr>
+                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Submitted By</td><td>${escHtml(pr.submittedBy || '—')}</td></tr>
+                ${pr.notes ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${escHtml(pr.notes)}</td></tr>` : ''}
               </table>
               <p><a href="${APP_URL}/procurement">Open Procurement →</a></p>` },
-            toRecipients: [{ emailAddress: { address: toAddr, name: 'Rena' } }],
-            ccRecipients: [{ emailAddress: { address: ccAddr, name: 'Lai Wei Xiang' } }]
+            toRecipients: [{ emailAddress: { address: toAddr, name: purchaserName } }],
+            ccRecipients: [{ emailAddress: { address: ccAddr, name: bossName } }]
           }})
         });
-        console.log(`[EMAIL] New PR notification → Rena (CC: Lai)`);
+        console.log(`[EMAIL] New PR notification → ${purchaserName} (CC: ${bossName})`);
       }
     } catch (mailErr) { console.error('[EMAIL] PR notify failed:', mailErr.message); }
   } catch (e) { logError('route.post.purchase-requisitions', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
 
-app.put('/api/purchase-requisitions/:id', async (req, res) => {
+app.put('/api/purchase-requisitions/:id', postRateLimit, async (req, res) => {
   try {
     const prs = readPRs();
     const idx = prs.findIndex(p => p.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'PR not found' });
     const b = req.body, pr = { ...prs[idx], items: prs[idx].items ? prs[idx].items.map(i => ({ ...i })) : [] };
     const oldStatus = pr.status, hadPO = !!pr.poNumber;
+    if (b.prNumber    !== undefined) pr.prNumber    = String(b.prNumber    || '').trim().slice(0, 30);
+    if (b.urgency     !== undefined && ['Normal','Urgent'].includes(b.urgency)) pr.urgency = b.urgency;
     if (b.poNumber    !== undefined) pr.poNumber    = String(b.poNumber    || '').trim().slice(0, 100) || null;
     if (b.supplier    !== undefined) pr.supplier    = String(b.supplier    || '').trim().slice(0, 200) || null;
     if (b.eta         !== undefined) pr.eta         = String(b.eta         || '').trim().slice(0, 10)  || null;
     if (b.notes       !== undefined) pr.notes       = String(b.notes       || '').trim().slice(0, 1000);
+    if (b.poDocPath   !== undefined) pr.poDocPath   = String(b.poDocPath   || '').trim().slice(0, 300) || null;
     if (b.site        !== undefined) pr.site        = String(b.site        || '').trim().slice(0, 200);
     if (b.projectCode !== undefined) pr.projectCode = String(b.projectCode || '').trim().slice(0, 100);
+    // Full item replacement when PR is still Pending (factory-side edit)
+    if (Array.isArray(b.replaceItems) && pr.status === 'Pending') {
+      pr.items = b.replaceItems.map(it => ({
+        description: String(it.description || '').trim().slice(0, 500),
+        qty: parseFloat(it.qty) || 0,
+        unit: String(it.unit || '').trim().slice(0, 50),
+        unitPrice: null, requiredDate: it.requiredDate ? String(it.requiredDate).trim().slice(0, 10) : null,
+        qtyArrived: 0, arriveDate: null, outstanding: parseFloat(it.qty) || 0
+      }));
+    }
     if (Array.isArray(b.items)) {
       b.items.forEach((upd, i) => {
         if (!pr.items[i]) return;
@@ -4390,19 +4944,22 @@ app.put('/api/purchase-requisitions/:id', async (req, res) => {
     writePRs(prs);
     logActivity('pr.updated', { id: pr.id, status: pr.status });
     res.json(pr);
-    // Email: PO created → Chris
+    // Email: PO created → Factory Manager (whoever requested)
     if (pr.poNumber && !hadPO) {
-      const chrisEmail = getStaffEmail('Chris');
-      if (chrisEmail) {
-        sendEmail(chrisEmail, 'Chris',
+      const fmStaff = readStaff()['Factory Manager'] || {};
+      const fmName  = fmStaff.name || 'Factory Manager';
+      const fmEmail = getRoleEmail('Factory Manager');
+      if (fmEmail) {
+        sendEmail(fmEmail, fmName,
           `PO Created for ${pr.prNumber}: ${pr.supplier || 'Supplier TBC'}, ETA: ${pr.eta || 'TBC'}, PO#: ${pr.poNumber}`,
-          `<p>Hi Chris,</p><p>A Purchase Order has been created for <strong>${pr.prNumber}</strong>.</p>
+          `<p>Hi ${escHtml(fmName)},</p><p>A Purchase Order has been created for <strong>${escHtml(pr.prNumber)}</strong>.</p>
           <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${pr.projectCode || '—'}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PO Number</td><td>${pr.poNumber}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${pr.supplier || '—'}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">ETA</td><td>${pr.eta || 'TBC'}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(pr.projectCode || '—')}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PO Number</td><td>${escHtml(pr.poNumber)}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${escHtml(pr.supplier || '—')}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">ETA</td><td>${escHtml(pr.eta || 'TBC')}</td></tr>
           </table>
+          ${pr.poDocPath ? `<p><a href="${APP_URL}${pr.poDocPath}">📄 View PO Document</a></p>` : ''}
           <p><a href="${APP_URL}/procurement">Open Procurement →</a></p>`
         ).catch(() => {});
       }
@@ -4433,20 +4990,24 @@ app.put('/api/purchase-requisitions/:id', async (req, res) => {
         if (pricesChanged) writePrices(prices);
       }
     }
-    // Email: fully delivered → Chris
+    // Email: fully delivered → Purchaser + CC Finance (Chris receives, Rena tracks, Alex Chew reconciles)
     if (pr.status === 'Delivered' && oldStatus !== 'Delivered') {
-      const chrisEmail = getStaffEmail('Chris');
-      if (chrisEmail) {
-        const itemsList = pr.items.map(i => `${i.description || '—'} (${i.qtyArrived || 0} ${i.unit || ''})`).join(', ');
-        sendEmail(chrisEmail, 'Chris',
-          `Materials Delivered: ${pr.prNumber} — ${pr.projectCode || ''} ✅`,
-          `<p>Hi Chris,</p><p>Materials for <strong>${pr.prNumber}</strong> have been fully delivered.</p>
+      const purchStaff2 = readStaff()['Purchaser'] || {};
+      const purchName2  = purchStaff2.name || 'Purchaser';
+      const purchEmail2 = getRoleEmail('Purchaser');
+      const finEmail2   = getRoleEmail('Finance');
+      if (purchEmail2) {
+        const itemsList = pr.items.map(i => `${escHtml(i.description || '—')} (${i.qtyArrived || 0} ${escHtml(i.unit || '')})`).join(', ');
+        sendEmail(purchEmail2, purchName2,
+          `Materials Delivered: ${pr.prNumber} — ${pr.projectCode || ''}`,
+          `<p>Hi ${escHtml(purchName2)},</p><p>Materials for <strong>${escHtml(pr.prNumber)}</strong> have been fully delivered.</p>
           <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${pr.projectCode || '—'}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${pr.supplier || '—'}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(pr.projectCode || '—')}</td></tr>
+            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${escHtml(pr.supplier || '—')}</td></tr>
             <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Items</td><td>${itemsList}</td></tr>
           </table>
-          <p>Materials are ready to use ✅</p><p><a href="${APP_URL}/procurement">Open Procurement →</a></p>`
+          <p>Materials have been received at factory.</p><p><a href="${APP_URL}/procurement">Open Procurement →</a></p>`,
+          finEmail2 ? [finEmail2] : []
         ).catch(() => {});
       }
       // Auto-update price book for items that have unitPrice + supplier set

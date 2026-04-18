@@ -198,5 +198,17 @@
     "date": "2026-04-15",
     "records": [],
     "savedAt": "2026-04-15T02:53:59.808Z"
+  },
+  {
+    "date": "2026-04-18",
+    "records": [
+      {
+        "workerId": "wi-jayabalan-ramesh",
+        "workerName": "Jayabalan Ramesh",
+        "status": "MC",
+        "notes": ""
+      }
+    ],
+    "savedAt": "2026-04-18T13:30:32.992Z"
   }
 ]

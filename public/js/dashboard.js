@@ -78,6 +78,23 @@
         if (el) el.textContent = 'Error';
       });
     }
+
+    // OT summary for current month
+    try {
+      var otData = await api('GET', '/api/manpower-plan/ot-summary');
+      var heroOT = document.getElementById('hero-ot');
+      var heroOTSub = document.getElementById('hero-ot-sub');
+      if (heroOT) {
+        heroOT.textContent = otData.totalOT + 'h';
+        heroOT.style.color = otData.atRisk > 0 ? 'var(--red)' : 'var(--text)';
+      }
+      if (heroOTSub) {
+        heroOTSub.textContent = otData.workerCount + ' workers' + (otData.atRisk > 0 ? ' · ' + otData.atRisk + ' near cap' : '');
+      }
+    } catch (err) {
+      var heroOT = document.getElementById('hero-ot');
+      if (heroOT) heroOT.textContent = '—';
+    }
   }
 
   // ── Factory Panel (merged: Queue + Fab Status) ────────────────────────────

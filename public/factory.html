@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776423159">
+  <link rel="stylesheet" href="/css/style.css?v=1776523455">
   <style>
     body { background: var(--bg); }
-    .factory-page { max-width: 600px; margin: 0 auto; padding: 16px; }
+    .factory-page { max-width: 960px; margin: 0 auto; padding: 16px; }
 
     /* ── Section headers ── */
     .factory-section-hdr {
@@ -30,91 +30,48 @@
     }
 
     /* ── Priority banner ── */
-    .priority-banner {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 14px;
-      margin-bottom: 14px;
+    /* ── Priority queue grid ── */
+    #section-pq {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
     }
-    .priority-banner-title {
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .priority-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      line-height: 1.3;
-      background: var(--bg3);
-      margin-bottom: 4px;
-    }
-    .priority-row:last-child { margin-bottom: 0; }
-    .priority-row:active { filter: brightness(1.1); }
-    .priority-row-dot { font-size: 10px; flex-shrink: 0; }
-    .priority-row-main { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .priority-row-item { font-weight: 700; color: var(--text); }
-    .priority-row-proj { color: var(--text-muted); font-weight: 500; }
-    .priority-row-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .priority-empty {
-      font-size: 12px;
-      color: var(--text-muted);
-      padding: 4px 2px;
-      font-style: italic;
+    @media (min-width: 640px) {
+      #section-pq { grid-template-columns: 1fr 1fr; }
+      .pq-card.expanded { grid-column: 1 / -1; }
     }
 
-    /* ── Quick stats chips ── */
-    .quick-stats-bar {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .stat-chip {
-      flex: 1;
-      min-width: 72px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 8px 10px;
-      font-size: 11px;
+    /* ── Timeline band headers ── */
+    .pq-band-header {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 8px 10px 4px;
       color: var(--text-muted);
-      text-align: center;
-      line-height: 1.3;
+      border-radius: var(--radius-sm);
     }
-    .stat-chip b {
-      display: block;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--text);
+    .pq-band-header:not(:first-child) { margin-top: 12px; }
+    .pq-band-overdue {
+      color: var(--red);
+      background: rgba(226,68,92,0.08);
+      border-left: 3px solid var(--red);
+      padding: 10px 10px 6px;
     }
-    .stat-chip.red   b { color: var(--red); }
-    .stat-chip.amber b { color: var(--amber); }
-    .stat-chip.green b { color: var(--green); }
-    .stat-chip.blue  b { color: var(--accent); }
+    .pq-band-due-soon { color: var(--amber); }
+    .pq-band-no-deadline {
+      color: var(--amber);
+      background: rgba(255,171,0,0.06);
+      border-left: 3px solid var(--amber);
+      padding: 10px 10px 6px;
+    }
 
     /* ── Priority queue cards ── */
     .pq-card {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      margin-bottom: 12px;
       overflow: hidden;
       border-left: 3px solid var(--border);
     }
@@ -146,6 +103,26 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+    }
+    .pq-due-badge {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      white-space: nowrap;
+      line-height: 1.3;
+      text-align: center;
+      align-self: center;
+    }
+    .pq-due-badge.due-red   { background: rgba(226,68,92,0.15); color: var(--red); }
+    .pq-due-badge.due-amber { background: rgba(255,171,0,0.15); color: var(--amber); }
+    .pq-due-badge.due-green { background: rgba(0,200,117,0.12); color: var(--green); }
+    .pq-due-badge.due-grey  { background: var(--bg3); color: var(--text-muted); }
+    .pq-sr-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--red);
     }
     .pq-expand-icon {
       font-size: 18px;
@@ -192,6 +169,33 @@
       color: var(--text-muted);
     }
     .factory-item.flash-highlight { background: rgba(51,102,255,0.22); }
+
+    .fab-row-deadline {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .fab-row-deadline.no-date span { font-style: italic; }
+    .fab-row-deadline input[type="date"] {
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+    .fab-deadline-clear {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 2px 4px;
+    }
+    .fab-deadline-clear:hover { color: var(--red); }
 
     .factory-item-row {
       display: flex;
@@ -458,6 +462,12 @@
       color: var(--text-muted);
       margin-top: 2px;
     }
+    .mp-notes {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 2px;
+    }
     .mp-empty {
       text-align: center;
       padding: 24px;
@@ -531,7 +541,7 @@
       margin-bottom: 6px;
       font-family: inherit;
     }
-    .sr-chris-notes {
+    .sr-factory-notes {
       font-size: 11px;
       color: var(--text-muted);
       padding: 0 14px 10px;
@@ -559,6 +569,31 @@
     .sr-admin-btn:active { filter: brightness(0.9); }
     .sr-admin-btn.danger { color: var(--red); border-color: rgba(226,68,92,0.4); }
     .sr-admin-btn.danger:hover { background: rgba(226,68,92,0.1); }
+    .sr-delivered-section { margin-top: 16px; }
+    .sr-delivered-toggle {
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+    }
+    .sr-delivered-toggle:hover { background: var(--bg3); }
+    .sr-delivered-toggle.open { border-radius: var(--radius) var(--radius) 0 0; }
+    .sr-delivered-list {
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      background: var(--bg);
+    }
+    .sr-card-delivered { opacity: 0.7; }
+    .sr-card-delivered:hover { opacity: 1; }
     .sr-edit-panel {
       display: none;
       padding: 10px 14px 12px;
@@ -591,6 +626,129 @@
       box-sizing: border-box;
     }
     .do-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Request Materials modal items ── */
+    .fpr-item-row {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+    .fpr-item-top {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .fpr-item-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .fpr-input {
+      padding: 7px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg2);
+      color: var(--text);
+      font-size: 13px;
+      box-sizing: border-box;
+      font-family: inherit;
+      width: 100%;
+    }
+    .fpr-del-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg3);
+      color: var(--red);
+      font-size: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .fpr-del-btn:hover { background: rgba(226,68,92,0.1); }
+
+    /* ── DO cards ── */
+    .do-card {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 8px 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-top: 6px;
+    }
+    .do-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .do-card-file {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .do-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ── PR tracking cards ── */
+    .pr-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+    .pr-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .pr-number {
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .pr-status {
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .pr-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .pr-card-items {
+      font-size: 11px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -1009,23 +1167,13 @@
 <div class="tasks-main" style="overflow-y:auto;padding:0;">
 <div class="factory-page">
 
-  <!-- ── Request Materials button ── -->
-  <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
-    <button onclick="openFactoryPRModal()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:700;cursor:pointer;">
-      📋 Request Materials
-    </button>
-  </div>
-
   <!-- ── SECTION A: Today's Priority Queue ── -->
   <div class="factory-section-hdr">
     <div>
       <div class="factory-section-title">🏗 Today's Priority Queue</div>
-      <div class="factory-section-sub">FAB items needing work — tap to expand</div>
+      <div id="pq-summary" class="factory-section-sub"></div>
     </div>
-    <div id="pq-count" style="font-size:12px;color:var(--text-muted);"></div>
   </div>
-  <div id="pq-stats" class="quick-stats-bar"></div>
-  <div id="pq-banner"></div>
   <div id="section-pq">
     <div class="empty-state">Loading…</div>
   </div>
@@ -1064,9 +1212,39 @@
   <div style="margin-bottom:16px;">
     <label class="do-upload-btn">
       📸 Photo a DO (tap to upload)
-      <input type="file" accept="image/*,application/pdf" capture="environment" id="do-file-input" style="display:none;" multiple>
+      <input type="file" accept="image/*,application/pdf" capture="environment" id="do-file-input" style="display:none;">
     </label>
-    <div id="do-uploaded-list"></div>
+    <!-- Upload form shown after photo is taken -->
+    <div id="do-upload-form" style="display:none;margin-top:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:8px;" id="do-upload-filename"></div>
+      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Link to PR</label>
+      <select id="do-pr-select" class="fpr-input" style="width:100%;margin-bottom:8px;" onchange="onDOPRChange()">
+        <option value="">— No PR / General —</option>
+      </select>
+      <div id="do-arrival-section" style="display:none;margin-bottom:8px;">
+        <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Confirm qty arrived</label>
+        <div id="do-arrival-items"></div>
+      </div>
+      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Notes (optional)</label>
+      <input type="text" id="do-notes" class="fpr-input" placeholder="e.g. supplier name, PO ref" style="width:100%;margin-bottom:10px;">
+      <div style="display:flex;gap:8px;">
+        <button onclick="cancelDOUpload()" class="sr-admin-btn" style="flex:1;padding:8px;">Cancel</button>
+        <button onclick="submitDOUpload()" class="sr-admin-btn" style="flex:1;padding:8px;background:var(--accent);color:#fff;border-color:var(--accent);">Save DO</button>
+      </div>
+    </div>
+    <div id="do-list"></div>
+  </div>
+
+  <!-- ── Request Materials ── -->
+  <div class="factory-section-hdr" style="margin-top:16px;">
+    <div>
+      <div class="factory-section-title">📋 Material Requests</div>
+      <div class="factory-section-sub">Purchase requisitions sent to procurement</div>
+    </div>
+    <button onclick="openFactoryPRModal()" class="sr-admin-btn" style="font-size:12px;padding:5px 12px;background:var(--accent);color:#fff;border-color:var(--accent);">+ New Request</button>
+  </div>
+  <div id="section-prs">
+    <div class="empty-state">Loading…</div>
   </div>
 
   <div style="height:40px;"></div>
@@ -1075,9 +1253,13 @@
 </div><!-- /tasks-layout -->
 
 <!-- ── Request Materials Modal ── -->
-<div id="factory-pr-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:flex-start;justify-content:center;padding:20px 16px;overflow-y:auto;">
+<div id="factory-pr-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;align-items:center;justify-content:center;padding:20px 16px;overflow-y:auto;">
   <div style="background:var(--bg2);border-radius:var(--radius);padding:20px;width:100%;max-width:560px;box-shadow:var(--shadow-lg);margin:auto 0;">
-    <h3 style="font-size:15px;margin:0 0 16px;">Request Materials</h3>
+    <h3 id="fpr-title" style="font-size:15px;margin:0 0 16px;">Request Materials</h3>
+    <div style="margin-bottom:12px;" id="fpr-pr-number-row">
+      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">PR Number</label>
+      <input type="text" id="fpr-pr-number" placeholder="Auto-generated" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
       <div>
         <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Project Code</label>
@@ -1097,19 +1279,16 @@
       <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Site / Location</label>
       <input type="text" id="fpr-site" placeholder="e.g. Factory — Level 2" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">
     </div>
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin:14px 0 6px;border-top:1px solid var(--border);padding-top:12px;">Items Required</div>
-    <div style="margin-bottom:6px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);padding:0 34px 0 0;">
-      <span>Description</span><span>Qty</span><span>Unit</span><span>Required By</span>
-    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-muted);margin:14px 0 8px;border-top:1px solid var(--border);padding-top:12px;">Items Required</div>
     <div id="fpr-items-container"></div>
     <button onclick="addFactoryItemRow()" style="display:inline-block;padding:6px 12px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text);cursor:pointer;margin-bottom:12px;">+ Add Item</button>
     <div style="margin-bottom:12px;">
       <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Notes</label>
       <textarea id="fpr-notes" rows="2" placeholder="Any special requirements…" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;resize:vertical;"></textarea>
     </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
-      <button onclick="closeFactoryPRModal()" style="padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text);font-size:13px;cursor:pointer;">Cancel</button>
-      <button id="fpr-submit-btn" onclick="submitFactoryPR()" style="padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;">Submit Request</button>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button onclick="closeFactoryPRModal()" style="flex:1;padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+      <button id="fpr-submit-btn" onclick="submitFactoryPR()" style="flex:1;padding:10px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Submit Request</button>
     </div>
   </div>
 </div>
@@ -1144,30 +1323,49 @@ function getWeekStart(dateStr) {
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   d.setDate(diff);
-  return d.toISOString().split('T')[0];
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 const DAY_KEYS = ['sun','mon','tue','wed','thu','fri','sat'];
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+let _factoryManagerName = 'Factory Manager';
+let _purchaserName = 'Purchaser';
+const _srBusy = new Set();   // SR IDs currently in-flight (prevents double-click)
+const _logBusy = new Set();  // log IDs currently in-flight
+let _srDeliveredOpen = false; // preserve toggle state across re-renders
+
 async function init() {
   const weekStart = getWeekStart(today);
   const dayKey    = DAY_KEYS[new Date(today + 'T00:00:00').getDay()];
 
-  const [queue, srAll, mpPlan, workers] = await Promise.all([
+  const [queue, srAll, mpPlan, workers, staffData, allPRs] = await Promise.all([
     fetch('/api/factory-queue').then(r => r.json()).catch(() => []),
     fetch('/api/site-requests').then(r => r.json()).catch(() => []),
     fetch('/api/manpower-plan?weekStart=' + weekStart).then(r => r.ok ? r.json() : null).catch(() => null),
-    fetch('/api/workers?active=true').then(r => r.json()).catch(() => [])
+    fetch('/api/workers?active=true').then(r => r.json()).catch(() => []),
+    fetch('/api/staff').then(r => r.json()).catch(() => ({})),
+    fetch('/api/purchase-requisitions').then(r => r.json()).catch(() => [])
   ]);
+
+  if (staffData['Factory Manager']) _factoryManagerName = staffData['Factory Manager'].name || _factoryManagerName;
+  if (staffData['Purchaser']) _purchaserName = staffData['Purchaser'].name || _purchaserName;
 
   siteRequests = srAll;
+  _allPRs = allPRs;
   updateSRBadge();
 
-  await Promise.all([
-    renderPriorityQueue(queue, siteRequests),
-    renderManpower(mpPlan, workers, dayKey),
-    renderSiteRequests()
-  ]);
+  try {
+    await Promise.all([
+      renderPriorityQueue(queue, siteRequests),
+      renderManpower(mpPlan, workers, dayKey),
+      renderSiteRequests(),
+      renderPRList(allPRs),
+      loadDOList()
+    ]);
+  } catch (e) {
+    console.error('init render failed:', e);
+    factoryToast('Page failed to load fully — please refresh', false);
+  }
 }
 
 // ── SECTION A: Priority Queue ─────────────────────────────────────────────────
@@ -1192,7 +1390,14 @@ function computeItemDeadline(item, proj, fp, srIndex) {
     if (hit) { date = hit.neededByDate; source = 'site-request'; }
   }
 
-  // 3. Fallback: project.endDate − leadDays
+  // 3. fabDeadline set by factory manager on the row
+  if (!date) {
+    const fabRow = fp && fp.fabrication && fp.fabrication[item.idx];
+    const fd = fabRow && fabRow.fabDeadline;
+    if (fd) { date = fd; source = 'fab-deadline'; }
+  }
+
+  // 4. Fallback: project.endDate − leadDays
   if (!date && proj.endDate) {
     const endMs = new Date(proj.endDate + 'T00:00:00').getTime();
     if (!isNaN(endMs)) {
@@ -1207,7 +1412,7 @@ function computeItemDeadline(item, proj, fp, srIndex) {
     const todayMs = new Date(today + 'T00:00:00').getTime();
     const dMs     = new Date(date + 'T00:00:00').getTime();
     daysLeft = Math.floor((dMs - todayMs) / 86400000);
-    if      (daysLeft <= 3) color = 'red';
+    if      (daysLeft < 0)  color = 'red';
     else if (daysLeft <= 7) color = 'amber';
     else                    color = 'green';
   }
@@ -1228,18 +1433,15 @@ function formatDueLabel(d) {
 
 async function renderPriorityQueue(queue, srAll) {
   const container = document.getElementById('section-pq');
-  const bannerEl  = document.getElementById('pq-banner');
-  const statsEl   = document.getElementById('pq-stats');
+  const summaryEl = document.getElementById('pq-summary');
 
   const active = queue.filter(proj =>
     proj.items && proj.items.some(it => it.doneQty < it.totalQty)
   );
 
   if (!active.length) {
-    container.innerHTML = '<div class="empty-state">🎉 All fabrication items complete</div>';
-    if (bannerEl) bannerEl.innerHTML = '';
-    if (statsEl)  statsEl.innerHTML  = '';
-    document.getElementById('pq-count').textContent = '0 projects';
+    container.innerHTML = '<div class="empty-state">All fabrication items complete</div>';
+    if (summaryEl) summaryEl.textContent = '';
     return;
   }
 
@@ -1332,56 +1534,17 @@ async function renderPriorityQueue(queue, srAll) {
     return 0;
   });
 
-  // ── Quick stats bar ────────────────────────────────────────────────────
+  // ── Inline summary ─────────────────────────────────────────────────────
   const redCount   = flat.filter(x => x.d.color === 'red').length;
   const amberCount = flat.filter(x => x.d.color === 'amber').length;
-  let doneToday = 0, onFloorTotal = 0;
+  let onFloorTotal = 0;
   active.forEach(proj => {
     const fp = fabData[proj.projectId];
     if (!fp) return;
     (fp.fabrication || []).forEach(r => {
-      if (r.fab_completed_at && String(r.fab_completed_at).slice(0,10) === today) doneToday++;
       onFloorTotal += parseFloat(r._qtyOnFloor) || 0;
     });
   });
-  if (statsEl) {
-    statsEl.innerHTML =
-      `<div class="stat-chip red"><b>${redCount}</b>🔴 urgent</div>` +
-      `<div class="stat-chip amber"><b>${amberCount}</b>🟡 soon</div>` +
-      `<div class="stat-chip green"><b>${doneToday}</b>✅ done today</div>` +
-      `<div class="stat-chip blue"><b>${onFloorTotal}</b>📦 in factory</div>`;
-  }
-
-  // ── Priority banner (red + amber, max 5) ───────────────────────────────
-  const banner = flat.filter(x => x.d.color === 'red' || x.d.color === 'amber').slice(0, 5);
-  if (bannerEl) {
-    if (!banner.length) {
-      bannerEl.innerHTML =
-        `<div class="priority-banner">` +
-          `<div class="priority-banner-title">📌 Fabrication Priorities</div>` +
-          `<div class="priority-empty">No urgent items — all deadlines are &gt; 7 days away or unset.</div>` +
-        `</div>`;
-    } else {
-      bannerEl.innerHTML =
-        `<div class="priority-banner">` +
-          `<div class="priority-banner-title">📌 Fabrication Priorities</div>` +
-          banner.map(x =>
-            `<div class="priority-row" data-pid="${escHtml(x.fp.id)}" data-idx="${x.idx}">` +
-              `<span class="priority-row-dot">${COLOR_DOT[x.d.color]}</span>` +
-              `<div class="priority-row-main">` +
-                `<span class="priority-row-item">${escHtml(x.item.description || x.item.item || '')}</span>` +
-                ` <span class="priority-row-proj">· ${escHtml(x.fp.jobCode || '')}</span>` +
-              `</div>` +
-              `<span class="priority-row-meta">${escHtml(formatDueLabel(x.d))} · ${x.done}/${x.total}</span>` +
-            `</div>`
-          ).join('') +
-        `</div>`;
-      bannerEl.querySelectorAll('.priority-row').forEach(row => {
-        row.addEventListener('click', () => jumpToItem(row.dataset.pid, parseInt(row.dataset.idx, 10)));
-      });
-    }
-  }
-
   // ── Group flat items back by project, sorted by most-urgent item ──────
   const projOrder = [];
   const seen = new Set();
@@ -1391,51 +1554,91 @@ async function renderPriorityQueue(queue, srAll) {
     projOrder.push(x);
   });
 
-  document.getElementById('pq-count').textContent = projOrder.length + ' project' + (projOrder.length !== 1 ? 's' : '');
-
-  container.innerHTML = '';
-  projOrder.forEach(first => {
+  // ── Compute per-project metadata ─────────────────────────────────────
+  const projMeta = projOrder.map(first => {
     const proj = first.proj;
     const fp   = first.fp;
     const fabRows = fp.fabrication || [];
-
-    // Most-urgent color across this project's items
     const projItems = flat.filter(x => x.proj.projectId === proj.projectId);
     const cardColor = projItems.reduce((c, x) =>
       COLOR_RANK[x.d.color] < COLOR_RANK[c] ? x.d.color : c, 'grey');
-
     const totalQty = fabRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
     const doneQty  = fabRows.reduce((s, r) => s + (parseFloat(r.qtyDone)  || 0), 0);
     const pct      = totalQty > 0 ? Math.round(doneQty / totalQty * 100) : 0;
     const itemsLeft = fabRows.filter(r => (parseFloat(r.qtyDone)||0) < (parseFloat(r.totalQty)||0)).length;
-
     const earliest = projItems.reduce((m, x) =>
-      (x.d.daysLeft != null && (m == null || x.d.daysLeft < m.daysLeft)) ? x.d : m,
-      null);
+      (x.d.daysLeft != null && (m == null || x.d.daysLeft < m.daysLeft)) ? x.d : m, null);
     const dueLabel = earliest ? formatDueLabel(earliest) : '—';
-    const srBadge  = (srNewByProject[proj.projectId] || 0) > 0
-      ? ` · 🚨 ${srNewByProject[proj.projectId]} site req`
-      : '';
+    const dueColor = earliest ? earliest.color : 'grey';
+    const daysLeft = earliest ? earliest.daysLeft : null;
 
-    const card = document.createElement('div');
-    card.className = 'pq-card pri-' + cardColor;
-    card.id = 'pq-card-' + escHtml(fp.id);
-    card.innerHTML =
-      `<div class="pq-card-header" onclick="togglePQCard('${escHtml(fp.id)}')">` +
-        `<div class="pq-header-info">` +
-          `<div class="pq-project-name">${escHtml(fp.jobCode || '')} · ${escHtml(fp.projectName || '')}</div>` +
-          `<div class="pq-project-meta">` +
-            `<span>${itemsLeft} item${itemsLeft !== 1 ? 's' : ''} · ${pct}% done</span>` +
-            `<span>${COLOR_DOT[cardColor]} ${escHtml(dueLabel)}${srBadge}</span>` +
+    // Timeline band mapped to fab workflow stages
+    let band;
+    if (daysLeft == null)                        band = 'no-deadline';
+    else if (daysLeft < 0)                       band = 'overdue';
+    else if (daysLeft <= 7)                      band = 'due-soon';
+    else if (daysLeft <= 21)                     band = 'in-fab';
+    else                                         band = 'planning';
+
+    return { proj, fp, fabRows, cardColor, pct, itemsLeft, dueLabel, dueColor, daysLeft, band };
+  });
+
+  const noDeadlineCount = projMeta.filter(m => m.band === 'no-deadline').length;
+  if (summaryEl) {
+    const parts = [];
+    if (redCount)        parts.push(`${redCount} overdue`);
+    if (amberCount)      parts.push(`${amberCount} due soon`);
+    parts.push(`${projOrder.length} project${projOrder.length !== 1 ? 's' : ''}`);
+    if (noDeadlineCount) parts.push(`${noDeadlineCount} missing deadline`);
+    if (onFloorTotal)    parts.push(`${onFloorTotal} in factory`);
+    summaryEl.textContent = parts.join(' · ');
+  }
+
+  // ── Render by timeline band ────────────────────────────────────────────
+  const BANDS = [
+    { key: 'overdue',     label: 'Overdue — needs attention now' },
+    { key: 'due-soon',    label: 'Due within 7 days — finishing / QC' },
+    { key: 'in-fab',      label: 'Due 8–21 days — active fabrication' },
+    { key: 'planning',    label: 'Due 22+ days — planning phase' },
+    { key: 'no-deadline', label: 'No deadline set — needs a date' },
+  ];
+
+  container.innerHTML = '';
+  BANDS.forEach(band => {
+    const items = projMeta.filter(m => m.band === band.key);
+    if (!items.length) return;
+
+    const hdr = document.createElement('div');
+    hdr.className = 'pq-band-header pq-band-' + band.key;
+    hdr.textContent = `${band.label} (${items.length})`;
+    container.appendChild(hdr);
+
+    items.forEach(m => {
+      const srCount = srNewByProject[m.proj.projectId] || 0;
+      const srBadgeHtml = srCount > 0
+        ? `<span class="pq-sr-badge">🚨 ${srCount} new request${srCount > 1 ? 's' : ''}</span>` : '';
+
+      const card = document.createElement('div');
+      card.className = 'pq-card pri-' + m.cardColor;
+      card.id = 'pq-card-' + escHtml(m.fp.id);
+      card.innerHTML =
+        `<div class="pq-card-header" onclick="togglePQCard('${escHtml(m.fp.id)}')">` +
+          `<div class="pq-header-info">` +
+            `<div class="pq-project-name">${escHtml(m.fp.jobCode || '')} · ${escHtml(m.fp.projectName || '')}</div>` +
+            `<div class="pq-project-meta">` +
+              `<span>${m.itemsLeft} item${m.itemsLeft !== 1 ? 's' : ''} · ${m.pct}%</span>` +
+              srBadgeHtml +
+            `</div>` +
+            `<div class="pq-progress-bar"><div class="pq-progress-fill${m.pct >= 100 ? ' complete' : ''}" style="width:${m.pct}%"></div></div>` +
           `</div>` +
-          `<div class="pq-progress-bar"><div class="pq-progress-fill${pct >= 100 ? ' complete' : ''}" style="width:${pct}%"></div></div>` +
+          `<div class="pq-due-badge due-${m.dueColor}">${escHtml(m.dueLabel)}</div>` +
+          `<div class="pq-expand-icon">›</div>` +
         `</div>` +
-        `<div class="pq-expand-icon">›</div>` +
-      `</div>` +
-      `<div class="pq-items" id="pq-items-${escHtml(fp.id)}"></div>`;
+        `<div class="pq-items" id="pq-items-${escHtml(m.fp.id)}"></div>`;
 
-    container.appendChild(card);
-    renderFabItems(fp);
+      container.appendChild(card);
+      renderFabItems(m.fp);
+    });
   });
 }
 
@@ -1652,6 +1855,26 @@ function renderFabItems(fp) {
         `</div>`;
     }
 
+    // Deadline display for this row
+    const fabDeadline = row.fabDeadline || '';
+    let deadlineHtml = '';
+    if (!isDone) {
+      if (fabDeadline) {
+        deadlineHtml =
+          `<div class="fab-row-deadline">` +
+            `<span>📅 Target: <strong>${formatDate(fabDeadline)}</strong></span>` +
+            `<input type="date" class="fab-deadline-input" data-pid="${escHtml(fp.id)}" data-idx="${idx}" value="${escHtml(fabDeadline)}">` +
+            `<button class="fab-deadline-clear" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Clear deadline">✕</button>` +
+          `</div>`;
+      } else {
+        deadlineHtml =
+          `<div class="fab-row-deadline no-date">` +
+            `<span>📅 No target date</span>` +
+            `<input type="date" class="fab-deadline-input" data-pid="${escHtml(fp.id)}" data-idx="${idx}" value="">` +
+          `</div>`;
+      }
+    }
+
     item.innerHTML =
       `<div class="fab-row-head">` +
         `<div class="fab-row-name" title="${escHtml(itemName)}">${escHtml(itemName)}</div>` +
@@ -1660,6 +1883,7 @@ function renderFabItems(fp) {
       `<div class="fab-row-state">` +
         `<span><b class="fab-row-qty">${qtyDone}</b> / ${qtyTotal} built${shipLineHtml}${warnPillHtml}</span>` +
       `</div>` +
+      deadlineHtml +
       actionHtml +
       `<div class="stage-row">` +
         `<button class="stage-back" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Step back one stage"${atStart ? ' disabled' : ''}>↶</button>` +
@@ -1690,6 +1914,31 @@ function renderFabItems(fp) {
     const backEl = item.querySelector('.stage-back');
     if (backEl) backEl.addEventListener('click', () => updateFabItemStage(fp.id, idx, -1));
 
+    // Deadline: date input saves on change, clear button removes it
+    const dlInput = item.querySelector('.fab-deadline-input');
+    if (dlInput) {
+      dlInput.addEventListener('change', async () => {
+        const val = dlInput.value || '';
+        try {
+          await saveFabField(fp.id, row, idx, { fabDeadline: val || null });
+          row.fabDeadline = val || undefined;
+          factoryToast(val ? 'Target date set: ' + formatDate(val) : 'Target date cleared');
+          renderFabItems(fp);
+        } catch (e) { factoryToast('Failed to save deadline', false); }
+      });
+    }
+    const dlClear = item.querySelector('.fab-deadline-clear');
+    if (dlClear) {
+      dlClear.addEventListener('click', async () => {
+        try {
+          await saveFabField(fp.id, row, idx, { fabDeadline: null });
+          row.fabDeadline = undefined;
+          factoryToast('Target date cleared');
+          renderFabItems(fp);
+        } catch (e) { factoryToast('Failed to clear deadline', false); }
+      });
+    }
+
     container.appendChild(item);
   });
 
@@ -1700,13 +1949,16 @@ function renderFabItems(fp) {
     `<div class="upload-log-list" id="upload-log-${escHtml(fp.id)}">${renderUploadLogHtml(fp)}</div>`;
   container.appendChild(log);
 
-  container.addEventListener('click', e => {
-    const del = e.target.closest('.upload-log-del, .item-thumb-del');
-    if (!del) return;
-    e.preventDefault();
-    e.stopPropagation();
-    deleteUpload(fp.id, del.dataset.filename);
-  });
+  if (!container._delBound) {
+    container._delBound = true;
+    container.addEventListener('click', e => {
+      const del = e.target.closest('.upload-log-del, .item-thumb-del');
+      if (!del) return;
+      e.preventDefault();
+      e.stopPropagation();
+      deleteUpload(fp.id, del.dataset.filename);
+    });
+  }
 }
 
 async function deleteUpload(pid, filename) {
@@ -1918,7 +2170,7 @@ async function renderManpower(mpPlan, workers, dayKey) {
   const workerMap = {};
   workers.forEach(w => { workerMap[w.id] = w; });
 
-  // Find workers assigned today to factory (Fabrication type)
+  // Find workers assigned today to factory (Fabrication type only)
   const todayFactory = [];
   for (const [wid, dayAssigns] of Object.entries(mpPlan.assignments)) {
     const assign = dayAssigns[dayKey];
@@ -1926,15 +2178,15 @@ async function renderManpower(mpPlan, workers, dayKey) {
     if ((assign.type || '').toLowerCase().includes('fabrication') || assign.type === 'Factory') {
       const w = workerMap[wid];
       todayFactory.push({
-        name:    w ? w.name : wid,
-        project: assign.projectName || '',
-        type:    assign.type || ''
+        name:     w ? w.name : wid,
+        project:  assign.projectName || '',
+        type:     assign.type || '',
+        notes:    assign.notes || ''
       });
     }
   }
 
   if (!todayFactory.length) {
-    // Check if there are ANY assignments today (non-factory)
     const anyToday = Object.values(mpPlan.assignments).some(d => d[dayKey]);
     if (anyToday) {
       container.innerHTML =
@@ -1960,9 +2212,10 @@ async function renderManpower(mpPlan, workers, dayKey) {
     card.className = 'mp-card';
     card.innerHTML =
       `<div class="mp-avatar" style="background:${color};">${escHtml(init)}</div>` +
-      `<div>` +
+      `<div style="flex:1;min-width:0;">` +
         `<div class="mp-name">${escHtml(w.name)}</div>` +
         `<div class="mp-project">${escHtml(w.project || 'Fabrication')}</div>` +
+        (w.notes ? `<div class="mp-notes">${escHtml(w.notes)}</div>` : '') +
       `</div>`;
     container.appendChild(card);
   });
@@ -1991,72 +2244,147 @@ async function renderSiteRequests() {
     .filter(r => r.status !== 'Delivered')
     .slice()
     .sort((a, b) => {
-      // New requests first
       const aNew = a.status === 'New' ? 0 : 1;
       const bNew = b.status === 'New' ? 0 : 1;
       if (aNew !== bNew) return aNew - bNew;
-      // Then overdue
       const aOd = a.neededByDate && a.neededByDate < today ? 0 : 1;
       const bOd = b.neededByDate && b.neededByDate < today ? 0 : 1;
       if (aOd !== bOd) return aOd - bOd;
-      // Then by neededByDate ascending
       if (!a.neededByDate) return 1;
       if (!b.neededByDate) return -1;
       return a.neededByDate.localeCompare(b.neededByDate);
     });
 
-  if (!active.length) {
-    container.innerHTML = '<div class="empty-state">No pending site requests 🎉</div>';
+  // Recently delivered (last 7 days), newest first
+  const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+  const delivered = siteRequests
+    .filter(r => r.status === 'Delivered' && r.deliveredAt && r.deliveredAt >= sevenDaysAgo)
+    .slice()
+    .sort((a, b) => (b.deliveredAt || '').localeCompare(a.deliveredAt || ''));
+
+  if (!active.length && !delivered.length) {
+    container.innerHTML = '<div class="empty-state">No pending site requests</div>';
     return;
   }
 
   container.innerHTML = '';
+
+  if (!active.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'No pending site requests';
+    container.appendChild(empty);
+  }
+
   active.forEach(req => {
-    const overdue   = req.neededByDate && req.neededByDate < today && req.status !== 'Delivered';
-    const statusKey = req.status.replace(/ /g, '-');
-    const card      = document.createElement('div');
-    card.className  = 'sr-card' + (overdue ? ' overdue' : '');
-
-    card.innerHTML =
-      `<div class="sr-card-header">` +
-        `<div class="sr-item-name">` +
-          `${escHtml(req.item)} ` +
-          `<span class="sr-status-badge sr-status-${statusKey}">${escHtml(req.status)}</span>` +
-          (overdue ? ' <span style="color:var(--red);font-weight:700;font-size:11px;">⚠ OVERDUE</span>' : '') +
-        `</div>` +
-        `<div class="sr-meta">` +
-          `<span>📦 ${escHtml(String(req.quantity || ''))} ${escHtml(req.unit || '')}</span>` +
-          `<span>📋 ${escHtml(req.projectJobCode || req.projectName || '—')}</span>` +
-          `<span>👷 ${escHtml(req.requestedBy || '—')}</span>` +
-          `<span>📅 Needed: <strong>${escHtml(formatDate(req.neededByDate))}</strong></span>` +
-          (req.acknowledgedAt ? `<span>✅ Ack'd ${formatDate(req.acknowledgedAt.slice(0,10))}</span>` : '') +
-          (req.estimatedReadyDate ? `<span>🏭 Est. ready: ${formatDate(req.estimatedReadyDate)}</span>` : '') +
-        `</div>` +
-        (req.notes ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Note: ${escHtml(req.notes)}</div>` : '') +
-        (req.chrisNotes ? `<div class="sr-chris-notes">Chris: ${escHtml(req.chrisNotes)}</div>` : '') +
-        (req.issueReason ? `<div style="font-size:11px;color:var(--red);margin-top:4px;">Issue: ${escHtml(req.issueReason)}</div>` : '') +
-      `</div>` +
-      `<div class="sr-actions" id="sr-actions-${escHtml(req.id)}"></div>` +
-      `<div class="sr-admin-row">` +
-        `<button class="sr-admin-btn" onclick="toggleSREdit('${escHtml(req.id)}')">✏️ Edit</button>` +
-        `<button class="sr-admin-btn danger" onclick="deleteSR('${escHtml(req.id)}')">🗑 Delete</button>` +
-      `</div>` +
-      `<div class="sr-edit-panel" id="sr-edit-${escHtml(req.id)}">` +
-        `<label>Item</label>` +
-        `<input class="sr-inline-input" id="sred-item-${escHtml(req.id)}" value="${escHtml(req.item || '')}">` +
-        `<label>Quantity</label>` +
-        `<input class="sr-inline-input" type="number" id="sred-qty-${escHtml(req.id)}" value="${escHtml(String(req.quantity || 0))}" min="0">` +
-        `<label>Needed by</label>` +
-        `<input class="sr-inline-input" type="date" id="sred-date-${escHtml(req.id)}" value="${escHtml(req.neededByDate || '')}">` +
-        `<label>Notes</label>` +
-        `<textarea class="sr-inline-input" id="sred-notes-${escHtml(req.id)}" rows="2" style="resize:none;">${escHtml(req.notes || '')}</textarea>` +
-        `<button class="sr-btn sr-btn-primary" onclick="saveSREdit('${escHtml(req.id)}')">Save changes</button>` +
-        `<button class="sr-btn sr-btn-grey" style="margin-left:6px;" onclick="toggleSREdit('${escHtml(req.id)}')">Cancel</button>` +
-      `</div>`;
-
-    container.appendChild(card);
+    container.appendChild(_buildSRCard(req));
     renderSRActions(req);
   });
+
+  // Collapsible "Recently Delivered" section
+  if (delivered.length) {
+    const section = document.createElement('div');
+    section.className = 'sr-delivered-section';
+    const wasOpen = _srDeliveredOpen;
+    section.innerHTML =
+      `<button class="sr-delivered-toggle${wasOpen ? ' open' : ''}" onclick="_srDeliveredOpen=!_srDeliveredOpen;this.classList.toggle('open');this.nextElementSibling.style.display=this.classList.contains('open')?'block':'none'">` +
+        `Recently Delivered (${delivered.length}) ▸` +
+      `</button>` +
+      `<div class="sr-delivered-list" style="display:${wasOpen ? 'block' : 'none'}"></div>`;
+    container.appendChild(section);
+
+    const list = section.querySelector('.sr-delivered-list');
+    const now = Date.now();
+    const UNDO_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
+
+    delivered.forEach(req => {
+      const deliveredMs = new Date(req.deliveredAt).getTime();
+      const canUndo = (now - deliveredMs) < UNDO_WINDOW;
+      const timeAgo = _formatTimeAgo(deliveredMs, now);
+      const card = document.createElement('div');
+      card.className = 'sr-card sr-card-delivered';
+      card.innerHTML =
+        `<div class="sr-card-header">` +
+          `<div class="sr-item-name">` +
+            `${escHtml(req.item)} ` +
+            `<span class="sr-status-badge sr-status-Delivered">Delivered</span>` +
+          `</div>` +
+          `<div class="sr-meta">` +
+            `<span>📦 ${escHtml(String(req.quantity || ''))} ${escHtml(req.unit || '')}</span>` +
+            `<span>📋 ${escHtml(req.projectJobCode || req.projectName || '—')}</span>` +
+            `<span>👷 ${escHtml(req.requestedBy || '—')}</span>` +
+            `<span>🚚 Delivered ${timeAgo}</span>` +
+          `</div>` +
+        `</div>` +
+        (canUndo
+          ? `<div class="sr-actions"><button class="sr-btn sr-btn-grey" onclick="undoDelivery('${escHtml(req.id)}')">↩ Undo delivery</button></div>`
+          : '');
+      list.appendChild(card);
+    });
+  }
+}
+
+function _buildSRCard(req) {
+  const overdue   = req.neededByDate && req.neededByDate < today && req.status !== 'Delivered';
+  const statusKey = req.status.replace(/ /g, '-');
+  const card      = document.createElement('div');
+  card.className  = 'sr-card' + (overdue ? ' overdue' : '');
+
+  card.innerHTML =
+    `<div class="sr-card-header">` +
+      `<div class="sr-item-name">` +
+        `${escHtml(req.item)} ` +
+        `<span class="sr-status-badge sr-status-${statusKey}">${escHtml(req.status)}</span>` +
+        (overdue ? ' <span style="color:var(--red);font-weight:700;font-size:11px;">⚠ OVERDUE</span>' : '') +
+      `</div>` +
+      `<div class="sr-meta">` +
+        `<span>📦 ${escHtml(String(req.quantity || ''))} ${escHtml(req.unit || '')}</span>` +
+        `<span>📋 ${escHtml(req.projectJobCode || req.projectName || '—')}</span>` +
+        `<span>👷 ${escHtml(req.requestedBy || '—')}</span>` +
+        `<span>📅 Needed: <strong>${escHtml(formatDate(req.neededByDate))}</strong></span>` +
+        (req.acknowledgedAt ? `<span>✅ Acknowledged ${formatDate(req.acknowledgedAt.slice(0,10))}</span>` : '') +
+        (req.estimatedReadyDate ? `<span>🏭 Est. ready: ${formatDate(req.estimatedReadyDate)}</span>` : '') +
+      `</div>` +
+      (req.notes ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Note: ${escHtml(req.notes)}</div>` : '') +
+      (req.factoryNotes ? `<div class="sr-factory-notes">${escHtml(_factoryManagerName)}: ${escHtml(req.factoryNotes)}</div>` : '') +
+      (req.issueReason ? `<div style="font-size:11px;color:var(--red);margin-top:4px;">Issue: ${escHtml(req.issueReason)}</div>` : '') +
+    `</div>` +
+    `<div class="sr-actions" id="sr-actions-${escHtml(req.id)}"></div>` +
+    `<div class="sr-admin-row">` +
+      `<button class="sr-admin-btn" onclick="toggleSREdit('${escHtml(req.id)}')">✏️ Edit</button>` +
+      `<button class="sr-admin-btn danger" onclick="deleteSR('${escHtml(req.id)}')">🗑 Delete</button>` +
+    `</div>` +
+    `<div class="sr-edit-panel" id="sr-edit-${escHtml(req.id)}">` +
+      `<label>Item</label>` +
+      `<input class="sr-inline-input" id="sred-item-${escHtml(req.id)}" value="${escHtml(req.item || '')}">` +
+      `<label>Quantity</label>` +
+      `<input class="sr-inline-input" type="number" id="sred-qty-${escHtml(req.id)}" value="${escHtml(String(req.quantity || 0))}" min="0">` +
+      `<label>Needed by</label>` +
+      `<input class="sr-inline-input" type="date" id="sred-date-${escHtml(req.id)}" value="${escHtml(req.neededByDate || '')}">` +
+      `<label>Notes</label>` +
+      `<textarea class="sr-inline-input" id="sred-notes-${escHtml(req.id)}" rows="2" style="resize:none;">${escHtml(req.notes || '')}</textarea>` +
+      `<button class="sr-btn sr-btn-primary" onclick="saveSREdit('${escHtml(req.id)}')">Save changes</button>` +
+      `<button class="sr-btn sr-btn-grey" style="margin-left:6px;" onclick="toggleSREdit('${escHtml(req.id)}')">Cancel</button>` +
+    `</div>`;
+
+  return card;
+}
+
+function _formatTimeAgo(ms, now) {
+  const diff = now - ms;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return mins <= 1 ? 'just now' : mins + ' min ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs === 1 ? '1 hour ago' : hrs + ' hours ago';
+  const days = Math.floor(hrs / 24);
+  return days === 1 ? 'yesterday' : days + ' days ago';
+}
+
+async function undoDelivery(id) {
+  if (_srBusy.has(id)) return;
+  if (!confirm('Undo delivery? This will move the request back to Ready.')) return;
+  await srUpdate(id, { status: 'Ready' });
+  factoryToast('Delivery undone — moved back to Ready');
 }
 
 function toggleSREdit(id) {
@@ -2065,6 +2393,7 @@ function toggleSREdit(id) {
 }
 
 async function saveSREdit(id) {
+  if (_srBusy.has(id)) return;
   const item   = (document.getElementById('sred-item-'  + id) || {}).value || '';
   const qty    = parseFloat((document.getElementById('sred-qty-'  + id) || {}).value || 0);
   const needBy = (document.getElementById('sred-date-' + id) || {}).value || '';
@@ -2077,9 +2406,12 @@ async function saveSREdit(id) {
 }
 
 async function deleteSR(id) {
+  if (_srBusy.has(id)) return;
   if (!confirm('Delete this site request? This cannot be undone.')) return;
+  _srBusy.add(id);
+  _disableSRButtons(id);
   try {
-    const r = await fetch('/api/site-requests/' + id + '?actor=Chris', { method: 'DELETE' });
+    const r = await fetch('/api/site-requests/' + id + '?actor=' + encodeURIComponent(_factoryManagerName), { method: 'DELETE' });
     if (!r.ok) {
       const j = await r.json().catch(() => ({}));
       throw new Error(j.error || 'Delete failed');
@@ -2089,6 +2421,8 @@ async function deleteSR(id) {
     renderSiteRequests();
   } catch (e) {
     alert(e.message || 'Delete failed');
+  } finally {
+    _srBusy.delete(id);
   }
 }
 
@@ -2099,7 +2433,8 @@ function renderSRActions(req) {
   if (req.status === 'New') {
     el.innerHTML =
       `<div style="width:100%;">` +
-        `<input type="date" class="sr-inline-input" id="erd-${escHtml(req.id)}" placeholder="Estimated ready date (optional)">` +
+        `<label style="font-size:12px;color:var(--text-muted);margin-bottom:2px;">Estimated ready date (optional)</label>` +
+        `<input type="date" class="sr-inline-input" id="erd-${escHtml(req.id)}">` +
         `<textarea class="sr-inline-input" id="cn-${escHtml(req.id)}" placeholder="Notes for site engineer (optional)" rows="2" style="resize:none;"></textarea>` +
         `<button class="sr-btn sr-btn-primary" onclick="acknowledgeRequest('${escHtml(req.id)}')">✅ Acknowledge</button>` +
         `<button class="sr-btn sr-btn-red" style="margin-left:8px;" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>` +
@@ -2133,11 +2468,12 @@ function showFlagIssue(id) {
 }
 
 async function acknowledgeRequest(id) {
+  if (_srBusy.has(id)) return;
   const erdEl = document.getElementById('erd-' + id);
   const cnEl  = document.getElementById('cn-' + id);
   const body  = { status: 'Acknowledged' };
   if (erdEl && erdEl.value) body.estimatedReadyDate = erdEl.value;
-  if (cnEl && cnEl.value.trim()) body.chrisNotes = cnEl.value.trim();
+  if (cnEl && cnEl.value.trim()) body.factoryNotes = cnEl.value.trim();
   await srUpdate(id, body);
   // Notify requestor
   const req = siteRequests.find(r => r.id === id);
@@ -2151,20 +2487,25 @@ async function acknowledgeRequest(id) {
 }
 
 async function flagIssue(id) {
+  if (_srBusy.has(id)) return;
   const reasonEl = document.getElementById('issue-' + id);
   await srUpdate(id, { status: 'Issue', issueReason: reasonEl ? reasonEl.value.trim() : '' });
 }
 
 async function updateSRStatus(id, status) {
+  if (_srBusy.has(id)) return;
   await srUpdate(id, { status });
 }
 
 async function srUpdate(id, body) {
+  if (_srBusy.has(id)) return;
+  _srBusy.add(id);
+  _disableSRButtons(id);
   try {
     const r = await fetch('/api/site-requests/' + id, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...body, _actor: 'Chris' })
+      body: JSON.stringify({ ...body, _actor: _factoryManagerName })
     });
     if (!r.ok) throw new Error('Update failed');
     const updated = await r.json();
@@ -2174,32 +2515,163 @@ async function srUpdate(id, body) {
     renderSiteRequests();
   } catch (e) {
     alert('Failed to update: ' + e.message);
+  } finally {
+    _srBusy.delete(id);
   }
 }
 
+function _disableSRButtons(id) {
+  const actions = document.getElementById('sr-actions-' + id);
+  if (actions) actions.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '0.6'; });
+  const admin = actions && actions.closest('.sr-card');
+  if (admin) admin.querySelectorAll('.sr-admin-btn').forEach(b => { b.disabled = true; b.style.opacity = '0.6'; });
+}
+
 // ── DO Upload ──────────────────────────────────────────────────────────────────
+let _doFile = null;
+
 document.getElementById('do-file-input').addEventListener('change', async function () {
-  const files = Array.from(this.files);
-  const list  = document.getElementById('do-uploaded-list');
-  for (const file of files) {
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      const res = await fetch('/api/upload-do', { method: 'POST', body: formData });
-      if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      const item = document.createElement('div');
-      item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:4px;font-size:12px;';
-      item.innerHTML = `📄 ${escHtml(file.name)} <span style="color:var(--green);margin-left:auto;">✅ Uploaded</span>`;
-      list.appendChild(item);
-    } catch {
-      const item = document.createElement('div');
-      item.style.cssText = 'padding:8px;font-size:12px;color:var(--red);';
-      item.textContent = '❌ Failed to upload ' + file.name;
-      list.appendChild(item);
-    }
-  }
+  const file = this.files[0];
+  if (!file) return;
+  _doFile = file;
   this.value = '';
+
+  // Show the upload form with PR dropdown
+  document.getElementById('do-upload-filename').textContent = '📄 ' + file.name;
+  const sel = document.getElementById('do-pr-select');
+  sel.innerHTML = '<option value="">— No PR / General —</option>';
+  // Populate with open PRs from cached data
+  try {
+    const prs = _allPRs.length ? _allPRs : await fetch('/api/purchase-requisitions').then(r => r.json());
+    prs.filter(p => p.status !== 'Delivered').forEach(pr => {
+      const opt = document.createElement('option');
+      opt.value = pr.id;
+      opt.dataset.prNumber = pr.prNumber || '';
+      opt.dataset.projectCode = pr.projectCode || '';
+      opt.textContent = (pr.prNumber || '—') + ' · ' + (pr.projectCode || 'General');
+      sel.appendChild(opt);
+    });
+  } catch {}
+  document.getElementById('do-notes').value = '';
+  document.getElementById('do-upload-form').style.display = 'block';
 });
+
+function onDOPRChange() {
+  const sel = document.getElementById('do-pr-select');
+  const section = document.getElementById('do-arrival-section');
+  const container = document.getElementById('do-arrival-items');
+  const prId = sel.value;
+  if (!prId) { section.style.display = 'none'; return; }
+
+  const pr = _allPRs.find(p => p.id === prId);
+  if (!pr || !pr.items || !pr.items.length) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  container.innerHTML = pr.items.map((item, i) => {
+    const outstanding = item.outstanding != null ? item.outstanding : item.qty;
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;">
+      <span style="flex:1;min-width:0;">${escHtml(item.description || 'Item ' + (i+1))} <span style="color:var(--text-muted);">(${item.qty || 0}${item.unit ? ' ' + item.unit : ''}, ${outstanding} outstanding)</span></span>
+      <input type="number" class="do-arrival-qty" data-idx="${i}" min="0" value="${outstanding}" style="width:70px;padding:5px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:12px;">
+    </div>`;
+  }).join('');
+}
+
+function cancelDOUpload() {
+  _doFile = null;
+  document.getElementById('do-upload-form').style.display = 'none';
+}
+
+let _doUploading = false;
+async function submitDOUpload() {
+  if (_doUploading) return;
+  if (!_doFile) { factoryToast('No file selected', false); return; }
+  _doUploading = true;
+  const sel = document.getElementById('do-pr-select');
+  const selectedOpt = sel.options[sel.selectedIndex];
+  const prId = sel.value || null;
+  const prNumber = selectedOpt && selectedOpt.dataset.prNumber || null;
+  const projectCode = selectedOpt && selectedOpt.dataset.projectCode || null;
+  const notes = document.getElementById('do-notes').value.trim();
+
+  const formData = new FormData();
+  formData.append('file', _doFile);
+  if (prId) formData.append('prId', prId);
+  if (prNumber) formData.append('prNumber', prNumber);
+  if (projectCode) formData.append('projectCode', projectCode);
+  if (notes) formData.append('notes', notes);
+  formData.append('uploadedBy', _factoryManagerName);
+
+  try {
+    const res = await fetch('/api/delivery-orders', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error('Upload failed');
+
+    // If a PR was selected with arrival qty, update the PR delivery
+    if (prId) {
+      const arrivalInputs = document.querySelectorAll('.do-arrival-qty');
+      if (arrivalInputs.length) {
+        const pr = _allPRs.find(p => p.id === prId);
+        if (pr && pr.items) {
+          const items = pr.items.map((item, i) => {
+            const inp = document.querySelector(`.do-arrival-qty[data-idx="${i}"]`);
+            const arrived = inp ? parseFloat(inp.value) || 0 : 0;
+            return { qtyArrived: arrived };
+          });
+          await fetch('/api/purchase-requisitions/' + prId, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items })
+          }).catch(() => {});
+        }
+      }
+    }
+
+    _doFile = null;
+    document.getElementById('do-upload-form').style.display = 'none';
+    document.getElementById('do-arrival-section').style.display = 'none';
+    factoryToast('DO uploaded' + (prNumber ? ' — delivery recorded for ' + prNumber : ''));
+    loadDOList();
+    // Refresh PR list
+    fetch('/api/purchase-requisitions').then(r => r.json()).then(prs => { _allPRs = prs; renderPRList(prs); }).catch(() => {});
+  } catch (e) {
+    factoryToast(e.message || 'Upload failed', false);
+  } finally {
+    _doUploading = false;
+  }
+}
+
+async function loadDOList() {
+  const container = document.getElementById('do-list');
+  try {
+    const dos = await fetch('/api/delivery-orders').then(r => r.json());
+    // Show last 10, newest first
+    const recent = dos.slice().reverse().slice(0, 10);
+    if (!recent.length) { container.innerHTML = ''; return; }
+    container.innerHTML = recent.map(d =>
+      `<div class="do-card">` +
+        `<div class="do-card-top">` +
+          `<a href="/uploads/${escHtml(d.filename)}" target="_blank" class="do-card-file">📄 ${escHtml(d.originalName || d.filename)}</a>` +
+          `<button class="sr-admin-btn danger" onclick="deleteDO('${escHtml(d.id)}')" style="font-size:10px;padding:2px 6px;">🗑</button>` +
+        `</div>` +
+        `<div class="do-card-meta">` +
+          (d.prNumber ? `<span>🔗 ${escHtml(d.prNumber)}</span>` : '') +
+          (d.projectCode ? `<span>${escHtml(d.projectCode)}</span>` : '') +
+          `<span>${formatDate(d.uploadedAt ? d.uploadedAt.slice(0,10) : '')}</span>` +
+          (d.notes ? `<span>${escHtml(d.notes)}</span>` : '') +
+        `</div>` +
+      `</div>`
+    ).join('');
+  } catch { container.innerHTML = ''; }
+}
+
+async function deleteDO(id) {
+  if (!confirm('Delete this delivery order?')) return;
+  try {
+    const r = await fetch('/api/delivery-orders/' + id, { method: 'DELETE' });
+    if (!r.ok) throw new Error('Delete failed');
+    factoryToast('DO deleted');
+    loadDOList();
+  } catch (e) { factoryToast(e.message || 'Delete failed', false); }
+}
 
 // ── Request Materials Modal ───────────────────────────────────────────────────
 let _fprProjects = [];
@@ -2222,11 +2694,16 @@ async function openFactoryPRModal() {
   document.getElementById('fpr-site').value    = '';
   document.getElementById('fpr-urgency').value = 'Normal';
   document.getElementById('fpr-notes').value   = '';
+  document.getElementById('fpr-pr-number').value = '';
+  document.getElementById('fpr-pr-number-row').style.display = 'none';
+  document.getElementById('fpr-title').textContent = 'Request Materials';
   document.getElementById('fpr-items-container').innerHTML = '';
   addFactoryItemRow();
   const btn = document.getElementById('fpr-submit-btn');
   btn.textContent = 'Submit Request';
   btn.disabled    = false;
+  delete btn.dataset.editId;
+  delete btn.dataset.editPrNumber;
   document.getElementById('factory-pr-overlay').style.display = 'flex';
 }
 
@@ -2237,13 +2714,17 @@ function closeFactoryPRModal() {
 function addFactoryItemRow() {
   const container = document.getElementById('fpr-items-container');
   const row = document.createElement('div');
-  row.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:6px;align-items:end;margin-bottom:6px;';
+  row.className = 'fpr-item-row';
   row.innerHTML = `
-    <input type="text" placeholder="Description" class="fpr-desc" style="padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">
-    <input type="number" placeholder="Qty" min="0" step="any" class="fpr-qty" style="padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">
-    <input type="text" placeholder="Unit" class="fpr-unit" style="padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">
-    <input type="date" class="fpr-date" style="padding:7px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">
-    <button onclick="this.closest('div').remove()" style="width:28px;height:32px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--red);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
+    <div class="fpr-item-top">
+      <input type="text" placeholder="Item description" class="fpr-desc fpr-input" style="flex:1;">
+      <button onclick="this.closest('.fpr-item-row').remove()" class="fpr-del-btn">×</button>
+    </div>
+    <div class="fpr-item-bottom">
+      <input type="number" placeholder="Qty" min="0" step="any" class="fpr-qty fpr-input">
+      <input type="text" placeholder="e.g. pcs, m, kg" class="fpr-unit fpr-input">
+      <input type="date" class="fpr-date fpr-input" title="Required by">
+    </div>
   `;
   container.appendChild(row);
 }
@@ -2273,23 +2754,175 @@ async function submitFactoryPR() {
   if (errors.length) { factoryToast(errors[0], false); return; }
   if (!items.length) { factoryToast('Add at least one item', false); return; }
 
-  btn.textContent = 'Submitting…';
+  const editId = btn.dataset.editId;
+  const isEdit = !!editId;
+
+  btn.textContent = isEdit ? 'Updating…' : 'Submitting…';
   btn.disabled    = true;
 
   try {
-    const res = await fetch('/api/purchase-requisitions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projectCode, site, urgency, notes, submittedBy: 'Chris', items })
-    });
-    if (!res.ok) throw new Error((await res.json()).error || 'Failed');
-    const pr = await res.json();
-    closeFactoryPRModal();
-    factoryToast(`${pr.prNumber} submitted — Rena notified`);
+    let result;
+    if (isEdit) {
+      const prNumber = document.getElementById('fpr-pr-number').value.trim();
+      const res = await fetch('/api/purchase-requisitions/' + editId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectCode, site, urgency, notes, prNumber: prNumber || undefined, replaceItems: items })
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Update failed');
+      result = await res.json();
+      closeFactoryPRModal();
+      factoryToast(`${result.prNumber} updated`);
+    } else {
+      const res = await fetch('/api/purchase-requisitions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectCode, site, urgency, notes, submittedBy: _factoryManagerName, items })
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed');
+      result = await res.json();
+      closeFactoryPRModal();
+      factoryToast(`${result.prNumber} submitted — ${_purchaserName} notified`);
+    }
+    const prs = await fetch('/api/purchase-requisitions').then(r => r.json()).catch(() => []);
+    _allPRs = prs;
+    renderPRList(prs);
   } catch (e) {
-    btn.textContent = 'Submit Request';
+    btn.textContent = isEdit ? 'Update Request' : 'Submit Request';
     btn.disabled    = false;
     factoryToast(e.message, false);
+  }
+}
+
+const PR_SHOW_LIMIT = 5;
+
+function renderPRList(prs) {
+  const container = document.getElementById('section-prs');
+  const pending = (prs || []).filter(pr => pr.status === 'Pending');
+
+  if (!pending.length) {
+    container.innerHTML = '<div class="empty-state">No pending requests</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+
+  // Show only the most recent N, with expand option
+  const showAll = container.dataset.showAll === 'true';
+  const visible = showAll ? pending : pending.slice(0, PR_SHOW_LIMIT);
+
+  visible.forEach(pr => {
+    const itemsSummary = (pr.items || []).map(i =>
+      `${i.description || '—'} (${i.qty}${i.unit ? ' ' + i.unit : ''})`
+    ).join(', ');
+    const card = document.createElement('div');
+    card.className = 'pr-card';
+    card.innerHTML =
+      `<div class="pr-card-top">` +
+        `<span class="pr-number">${escHtml(pr.prNumber)}</span>` +
+        `<span class="pr-status" style="background:var(--amber);">Pending</span>` +
+      `</div>` +
+      `<div class="pr-card-meta">` +
+        `<span>${escHtml(pr.projectCode || '—')}</span>` +
+        `<span>Submitted ${formatDate(pr.requestDate)}</span>` +
+        (pr.urgency === 'Urgent' ? '<span style="color:var(--red);font-weight:600;">🚨 Urgent</span>' : '') +
+      `</div>` +
+      `<div class="pr-card-items">${escHtml(itemsSummary)}</div>` +
+      `<div class="sr-admin-row">` +
+        `<button class="sr-admin-btn" onclick="editPR('${escHtml(pr.id)}')">✏️ Edit</button>` +
+        `<button class="sr-admin-btn danger" onclick="deletePR('${escHtml(pr.id)}')">🗑 Delete</button>` +
+      `</div>`;
+    container.appendChild(card);
+  });
+
+  // Show more / collapse toggle + link to procurement
+  if (pending.length > PR_SHOW_LIMIT) {
+    const footer = document.createElement('div');
+    footer.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 0;';
+    if (!showAll) {
+      footer.innerHTML =
+        `<button onclick="document.getElementById('section-prs').dataset.showAll='true';renderPRList(_allPRs.length?_allPRs:null)" class="sr-admin-btn" style="font-size:11px;">Show all ${pending.length} pending</button>` +
+        `<a href="/procurement" style="font-size:11px;color:var(--accent);text-decoration:none;">View in Procurement →</a>`;
+    } else {
+      footer.innerHTML =
+        `<button onclick="document.getElementById('section-prs').dataset.showAll='false';renderPRList(_allPRs.length?_allPRs:null)" class="sr-admin-btn" style="font-size:11px;">Show less</button>` +
+        `<a href="/procurement" style="font-size:11px;color:var(--accent);text-decoration:none;">View in Procurement →</a>`;
+    }
+    container.appendChild(footer);
+  }
+}
+
+let _allPRs = [];
+
+async function editPR(id) {
+  if (!_allPRs.length) {
+    try { _allPRs = await fetch('/api/purchase-requisitions').then(r => r.json()); } catch { return; }
+  }
+  const pr = _allPRs.find(p => p.id === id);
+  if (!pr) { factoryToast('PR not found', false); return; }
+
+  // Load projects for dropdown
+  if (!_fprProjects.length) {
+    try { _fprProjects = await fetch('/api/projects').then(r => r.json()); } catch {}
+  }
+  const sel = document.getElementById('fpr-project');
+  sel.innerHTML = '<option value="">— Select Project —</option>';
+  _fprProjects
+    .filter(p => p.status !== 'Completed')
+    .sort((a, b) => (a.jobCode || '').localeCompare(b.jobCode || ''))
+    .forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.jobCode || '';
+      opt.textContent = p.jobCode + (p.projectName ? ' — ' + p.projectName : '');
+      sel.appendChild(opt);
+    });
+
+  // Fill form with existing data
+  sel.value = pr.projectCode || '';
+  document.getElementById('fpr-site').value    = pr.site || '';
+  document.getElementById('fpr-urgency').value = pr.urgency || 'Normal';
+  document.getElementById('fpr-notes').value   = pr.notes || '';
+
+  // Populate items
+  const itemsContainer = document.getElementById('fpr-items-container');
+  itemsContainer.innerHTML = '';
+  (pr.items || []).forEach(item => {
+    addFactoryItemRow();
+    const rows = itemsContainer.querySelectorAll('.fpr-item-row');
+    const lastRow = rows[rows.length - 1];
+    lastRow.querySelector('.fpr-desc').value = item.description || '';
+    lastRow.querySelector('.fpr-qty').value  = item.qty || '';
+    lastRow.querySelector('.fpr-unit').value = item.unit || '';
+    lastRow.querySelector('.fpr-date').value = item.requiredDate || '';
+  });
+  if (!pr.items || !pr.items.length) addFactoryItemRow();
+
+  // Show PR number field for editing
+  document.getElementById('fpr-pr-number-row').style.display = 'block';
+  document.getElementById('fpr-pr-number').value = pr.prNumber || '';
+  document.getElementById('fpr-title').textContent = 'Edit Request';
+
+  // Switch submit button to update mode
+  const btn = document.getElementById('fpr-submit-btn');
+  btn.textContent = 'Update Request';
+  btn.disabled    = false;
+  btn.dataset.editId = id;
+  btn.dataset.editPrNumber = pr.prNumber || '';
+
+  document.getElementById('factory-pr-overlay').style.display = 'flex';
+}
+
+async function deletePR(id) {
+  if (!confirm('Delete this material request? This cannot be undone.')) return;
+  try {
+    const r = await fetch('/api/purchase-requisitions/' + id, { method: 'DELETE' });
+    if (!r.ok) throw new Error('Delete failed');
+    factoryToast('Request deleted');
+    const prs = await fetch('/api/purchase-requisitions').then(r => r.json()).catch(() => []);
+    _allPRs = prs;
+    renderPRList(prs);
+  } catch (e) {
+    factoryToast(e.message || 'Delete failed', false);
   }
 }
 
@@ -2683,7 +3316,9 @@ async function saveLogEntry() {
 // Delete a log entry with confirmation. Called from the inline today's
 // logs panel. Re-renders the row on success.
 async function deleteLogEntry(projectId, fabIdx, logId) {
+  if (_logBusy.has(logId)) return;
   if (!confirm('Delete this log entry? The qty will be reduced accordingly.')) return;
+  _logBusy.add(logId);
   try {
     const res = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/logs/' + logId, {
       method: 'DELETE',
@@ -2721,6 +3356,8 @@ async function deleteLogEntry(projectId, fabIdx, logId) {
   } catch (e) {
     console.error('delete log failed:', e);
     factoryToast('Delete failed: ' + (e.message || 'unknown'), false);
+  } finally {
+    _logBusy.delete(logId);
   }
 }
 

@@ -16,3 +16,5 @@
 - [Feedback: notifications must be role-based](feedback_role_based_notifications.md) — never hardcode person names in email routing; use staff.json role aliases with boss fallback.
 - [Feedback: every metric must be legible to a cold-open user](feedback_legible_metrics.md) — if a KPI/chip/badge needs a tooltip, delete it or relabel to the user's own words; don't ship jargon from specialist-agent conversations; contextual metrics beat top-of-page chrome.
 - [Feedback: ship complete workflows](feedback_ship_complete_workflows.md) — every create/write action must ship with its undo/edit/delete path in the same bundle; slicing "Phase X ships create, Phase X+1 ships edit" is a scoping smell; server ahead of UI is fine, UI ahead of edit path is not.
+- [Feedback: factory page is factory-only](feedback_factory_scope.md) — don't mix other roles' data into an ops page; each page serves one role owner.
+- [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs via dropdown; PRs editable while Pending; procurement page is the full tracking view.

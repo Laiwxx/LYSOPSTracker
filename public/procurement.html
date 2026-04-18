@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LYS OPS · Procurement</title>
   <meta name="theme-color" content="#1a1d2e">
-  <link rel="stylesheet" href="css/style.css?v=1776423159">
+  <link rel="stylesheet" href="css/style.css?v=1776523455">
   <style>
     /* ── Tabs ──────────────────────────────────────────────────────────────── */
     .proc-tabs {
@@ -14,8 +14,6 @@
       padding: 10px 16px 0;
       border-bottom: 1px solid var(--border);
       background: var(--bg2);
-      position: sticky;
-      top: 52px;
       z-index: 100;
       overflow-x: auto;
       scrollbar-width: none;
@@ -52,89 +50,112 @@
     .section-toolbar-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     /* ── Filter bar ────────────────────────────────────────────────────────── */
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      margin-bottom: 14px;
-    }
-    .pr-filter-btn {
-      padding: 5px 10px;
+    /* ── Kanban board ── */
+    .pr-search-input {
+      width: 100%;
+      padding: 8px 12px;
       border: 1px solid var(--border);
-      border-radius: var(--radius-pill);
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
+      border-radius: var(--radius-sm);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+    .pr-search-input::placeholder { color: var(--text-muted); }
+    .kanban-board {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      min-height: 300px;
+    }
+    @media (max-width: 768px) {
+      .kanban-board { grid-template-columns: 1fr; }
+    }
+    .kanban-col {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       display: flex;
-      align-items: center;
-      gap: 5px;
+      flex-direction: column;
+      min-height: 200px;
     }
-    .pr-filter-btn .filter-count {
-      background: var(--bg3);
-      border-radius: 10px;
-      font-size: 10px;
+    .kanban-col-header {
+      padding: 10px 12px;
+      font-size: 13px;
       font-weight: 700;
-      padding: 1px 5px;
-      min-width: 16px;
-      text-align: center;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .pr-filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-    .pr-filter-btn.active .filter-count { background: rgba(255,255,255,0.25); color: #fff; }
-    .pr-filter-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+    .kanban-col-header .col-count {
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg3);
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 2px 8px;
+    }
+    .kanban-col.col-action .kanban-col-header { border-left: 3px solid var(--amber); }
+    .kanban-col.col-action .col-count { background: rgba(255,171,0,0.15); color: var(--amber); }
+    .kanban-col.col-tracking .kanban-col-header { border-left: 3px solid var(--accent); }
+    .kanban-col.col-tracking .col-count { background: rgba(51,102,255,0.15); color: var(--accent); }
+    .kanban-col.col-done .kanban-col-header { border-left: 3px solid var(--green); }
+    .kanban-col.col-done .col-count { background: rgba(0,200,117,0.15); color: var(--green); }
+    .kanban-col-body {
+      flex: 1;
+      padding: 8px;
+      overflow-y: auto;
+      max-height: 600px;
+    }
+    @media (max-width: 768px) {
+      .kanban-col-body { max-height: none; }
+    }
+    .kanban-empty {
+      text-align: center;
+      padding: 24px 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
 
-    /* ── PR Cards ──────────────────────────────────────────────────────────── */
+    /* ── PR Cards (kanban) ─────────────────────────────────────────────────── */
     .pr-card {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      margin-bottom: 10px;
-      overflow: hidden;
+      margin-bottom: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
     }
+    .pr-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     .pr-card.pr-card-urgent { border-left: 3px solid var(--red); }
-    .pr-card-header {
-      padding: 12px 14px 8px;
-    }
+    .pr-card-header { }
     .pr-card-meta {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       margin-bottom: 4px;
     }
-    .pr-number { font-size: 14px; font-weight: 800; }
+    .pr-number { font-size: 13px; font-weight: 700; }
     .pr-card-info {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 6px;
       font-size: 11px;
       color: var(--text-muted);
     }
-    .pr-items-list {
-      border-top: 1px solid var(--border);
-      padding: 8px 14px;
+    .pr-do-list { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pr-do-thumb {
+      width: 52px; display: flex; flex-direction: column; align-items: center;
+      text-decoration: none; gap: 2px;
     }
-    .pr-item-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      padding: 3px 0;
-      flex-wrap: wrap;
-    }
-    .pr-item-desc { flex: 1; min-width: 0; color: var(--text); font-weight: 500; }
-    .pr-item-qty  { color: var(--text-muted); white-space: nowrap; }
-    .pr-item-outstanding { font-size: 11px; font-weight: 600; white-space: nowrap; }
-    .pr-item-outstanding.has-outstanding { color: var(--amber); }
-    .pr-item-outstanding:not(.has-outstanding) { color: var(--green); }
-    .pr-actions {
-      padding: 8px 14px 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .pr-do-thumb img { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
+    .pr-do-file { font-size: 28px; }
+    .pr-do-date { font-size: 9px; color: var(--text-muted); }
 
     /* ── Badges ────────────────────────────────────────────────────────────── */
     .badge {
@@ -353,6 +374,22 @@
     .view-row:last-child { border-bottom: none; }
     .view-key { font-weight: 600; min-width: 110px; color: var(--text-muted); font-size: 12px; }
     .view-val { flex: 1; }
+    .view-edit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    @media (max-width: 500px) { .view-edit-grid { grid-template-columns: 1fr; } }
+    .view-edit-grid .field label {
+      display: block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 3px; letter-spacing: 0.4px;
+    }
+    .view-edit-grid .field input {
+      width: 100%; padding: 7px 8px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); background: var(--bg); color: var(--text);
+      font-size: 13px; box-sizing: border-box; font-family: inherit;
+    }
 
     /* ── Empty state ───────────────────────────────────────────────────────── */
     .empty-state {
@@ -438,17 +475,20 @@
           </div>
           <button class="btn btn-primary btn-sm" onclick="openNewPRModal()">+ New PR</button>
         </div>
-        <!-- Filter bar -->
-        <div class="filter-bar">
-          <button class="pr-filter-btn active" data-filter="all">All <span class="filter-count">0</span></button>
-          <button class="pr-filter-btn" data-filter="pending">Pending <span class="filter-count">0</span></button>
-          <button class="pr-filter-btn" data-filter="ordered">Ordered <span class="filter-count">0</span></button>
-          <button class="pr-filter-btn" data-filter="partial">Partial <span class="filter-count">0</span></button>
-          <button class="pr-filter-btn" data-filter="delivered">Delivered <span class="filter-count">0</span></button>
-          <button class="pr-filter-btn" data-filter="overdue">Overdue <span class="filter-count">0</span></button>
-        </div>
-        <div id="pr-list">
-          <div class="empty-state"><div class="icon">⏳</div>Loading…</div>
+        <input type="text" id="pr-search" class="pr-search-input" placeholder="Search PR number, project, supplier…">
+        <div class="kanban-board" id="pr-board">
+          <div class="kanban-col col-action">
+            <div class="kanban-col-header">Action Needed <span class="col-count" id="count-action">0</span></div>
+            <div class="kanban-col-body" id="col-action"></div>
+          </div>
+          <div class="kanban-col col-tracking">
+            <div class="kanban-col-header">Tracking <span class="col-count" id="count-tracking">0</span></div>
+            <div class="kanban-col-body" id="col-tracking"></div>
+          </div>
+          <div class="kanban-col col-done">
+            <div class="kanban-col-header">Done <span class="col-count" id="count-done">0</span></div>
+            <div class="kanban-col-body" id="col-done"></div>
+          </div>
         </div>
       </div>
 
@@ -572,7 +612,7 @@
       <button class="btn btn-ghost btn-sm" onclick="addPRItemRow()" style="margin-bottom:12px;">+ Add Item</button>
       <div class="field">
         <label>Submitted By</label>
-        <input type="text" id="pr-submitted-by" placeholder="Your name">
+        <select id="pr-submitted-by"><option value="">— Select —</option></select>
       </div>
       <div class="field">
         <label>Notes</label>
@@ -581,35 +621,6 @@
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="closeModal('modal-new-pr')">Cancel</button>
         <button class="btn btn-primary" onclick="submitNewPR()">Submit PR</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Process PR Modal (Rena) -->
-  <div class="proc-modal-overlay" id="modal-process-pr">
-    <div class="proc-modal">
-      <h3 id="process-modal-title">Process PR</h3>
-      <div id="process-pr-number" style="font-size:12px;color:var(--text-muted);margin-bottom:14px;"></div>
-      <div class="field">
-        <label>Supplier Name</label>
-        <input type="text" id="process-supplier" placeholder="Supplier name" list="supplier-names-list">
-        <datalist id="supplier-names-list"></datalist>
-      </div>
-      <div class="field-row field">
-        <div>
-          <label>PO Number (from Xero)</label>
-          <input type="text" id="process-po-number" placeholder="e.g. PO-2026-001">
-        </div>
-        <div>
-          <label>ETA Date</label>
-          <input type="date" id="process-eta">
-        </div>
-      </div>
-      <div class="modal-section-label">Unit Prices</div>
-      <div id="process-items-container"></div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modal-process-pr')">Cancel</button>
-        <button class="btn btn-primary" onclick="submitProcess()">Save & Notify Chris</button>
       </div>
     </div>
   </div>
@@ -633,8 +644,9 @@
       <h3 id="view-pr-title">PR Details</h3>
       <div id="view-pr-content"></div>
       <div class="modal-actions" style="margin-top:16px;">
-        <button class="btn btn-ghost btn-sm" id="view-delete-btn" style="margin-right:auto;color:var(--red);" onclick="deletePR()">Delete PR</button>
+        <button class="btn btn-ghost btn-sm" id="view-delete-btn" style="margin-right:auto;color:var(--red);" onclick="deletePR()">Delete</button>
         <button class="btn btn-ghost" onclick="closeModal('modal-view-pr')">Close</button>
+        <button class="btn btn-primary" id="view-save-btn" onclick="saveViewPR()">Save</button>
       </div>
     </div>
   </div>
@@ -756,7 +768,6 @@
 
   // ── State ──────────────────────────────────────────────────────────────────
   let allPRs = [], allProjects = [], allSuppliers = [], allPrices = [];
-  let prFilter = 'all';
   let editingPriceId = null, editingSuppId = null;
   let processingPRId = null, deliveryPRId = null, viewingPRId = null;
 
@@ -794,13 +805,25 @@
   }
 
   // ── Data loading ───────────────────────────────────────────────────────────
+  let _busy = false; // double-click guard for all save/delete actions
+  let _factoryManagerName = 'Factory Manager';
+  let _purchaserName = 'Purchaser';
+  let allDOs = [];
+
   async function loadAll() {
-    [allPRs, allProjects, allSuppliers, allPrices] = await Promise.all([
+    [allPRs, allProjects, allSuppliers, allPrices, allDOs] = await Promise.all([
       fetch('/api/purchase-requisitions').then(r => r.json()).catch(() => []),
       fetch('/api/projects').then(r => r.json()).catch(() => []),
       fetch('/api/suppliers').then(r => r.json()).catch(() => []),
-      fetch('/api/prices').then(r => r.json()).catch(() => [])
+      fetch('/api/prices').then(r => r.json()).catch(() => []),
+      fetch('/api/delivery-orders').then(r => r.json()).catch(() => [])
     ]);
+    // Resolve Factory Manager name
+    try {
+      const staff = await fetch('/api/staff').then(r => r.json());
+      if (staff['Factory Manager']) _factoryManagerName = staff['Factory Manager'].name || _factoryManagerName;
+      if (staff['Purchaser']) _purchaserName = staff['Purchaser'].name || _purchaserName;
+    } catch {}
   }
 
   // ── Tab switching ──────────────────────────────────────────────────────────
@@ -819,81 +842,96 @@
     });
   });
 
-  // ── Filter buttons ─────────────────────────────────────────────────────────
-  document.querySelectorAll('.pr-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      prFilter = btn.dataset.filter;
-      document.querySelectorAll('.pr-filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderPRs();
-    });
+  // ── Search ──────────────────────────────────────────────────────────────────
+  let prSearch = '';
+  document.getElementById('pr-search').addEventListener('input', (e) => {
+    prSearch = e.target.value.toLowerCase().trim();
+    renderPRs();
   });
 
   // ════════════════════════ TAB 1: PURCHASE REQUISITIONS ════════════════════
 
   function renderPRs() {
-    const counts = { all: allPRs.length, pending: 0, ordered: 0, partial: 0, delivered: 0, overdue: 0 };
-    allPRs.forEach(pr => {
-      const key = (pr.status || '').toLowerCase();
-      if (counts[key] !== undefined) counts[key]++;
-    });
-    document.querySelectorAll('.pr-filter-btn').forEach(btn => {
-      btn.querySelector('.filter-count').textContent = counts[btn.dataset.filter] || 0;
-    });
+    const ACTION_STATUSES   = ['Pending', 'Overdue'];
+    const TRACKING_STATUSES = ['Ordered', 'Partial'];
+    const DONE_STATUSES     = ['Delivered'];
 
-    let filtered = allPRs.slice();
-    if (prFilter !== 'all') filtered = filtered.filter(pr => (pr.status || '').toLowerCase() === prFilter);
-
-    const container = document.getElementById('pr-list');
-    if (!filtered.length) {
-      container.innerHTML = '<div class="empty-state"><div class="icon">📋</div>' + (prFilter === 'all' ? 'No purchase requisitions' : 'No ' + prFilter + ' PRs') + '</div>';
-      return;
+    // Apply search filter
+    let prs = allPRs.slice();
+    if (prSearch) {
+      prs = prs.filter(pr => {
+        const hay = [pr.prNumber, pr.projectCode, pr.supplier, pr.site, pr.submittedBy]
+          .filter(Boolean).join(' ').toLowerCase();
+        return hay.includes(prSearch);
+      });
     }
-    container.innerHTML = filtered.map(pr => buildPRCard(pr)).join('');
+
+    // Sort: urgent first, then newest first
+    prs.sort((a, b) => {
+      const aUrg = a.urgency === 'Urgent' ? 0 : 1;
+      const bUrg = b.urgency === 'Urgent' ? 0 : 1;
+      if (aUrg !== bUrg) return aUrg - bUrg;
+      return (b.requestDate || '').localeCompare(a.requestDate || '');
+    });
+
+    // Split into 3 columns
+    const action   = prs.filter(pr => ACTION_STATUSES.includes(pr.status));
+    const tracking = prs.filter(pr => TRACKING_STATUSES.includes(pr.status));
+    const done     = prs.filter(pr => DONE_STATUSES.includes(pr.status));
+
+    // Update counts
+    document.getElementById('count-action').textContent = action.length;
+    document.getElementById('count-tracking').textContent = tracking.length;
+    document.getElementById('count-done').textContent = done.length;
+
+    // Render columns
+    const colAction   = document.getElementById('col-action');
+    const colTracking = document.getElementById('col-tracking');
+    const colDone     = document.getElementById('col-done');
+
+    colAction.innerHTML   = action.length   ? action.map(pr => buildPRCard(pr)).join('')   : '<div class="kanban-empty">No pending requests</div>';
+    colTracking.innerHTML = tracking.length ? tracking.map(pr => buildPRCard(pr)).join('') : '<div class="kanban-empty">Nothing on order</div>';
+    colDone.innerHTML     = done.length     ? done.slice(0, 20).map(pr => buildPRCard(pr)).join('') + (done.length > 20 ? `<div class="kanban-empty">${done.length - 20} more...</div>` : '') : '<div class="kanban-empty">No deliveries yet</div>';
   }
 
   function buildPRCard(pr) {
     const statusMap = { Pending:'badge-pending', Ordered:'badge-ordered', Partial:'badge-partial', Delivered:'badge-delivered', Overdue:'badge-overdue' };
     const cls = statusMap[pr.status] || 'badge-pending';
-    const urgBadge = pr.urgency === 'Urgent'
-      ? '<span class="badge badge-overdue" style="font-size:10px;">URGENT</span>' : '';
+    const itemCount = (pr.items || []).length;
+    const outCount  = (pr.items || []).filter(i => i.outstanding > 0).length;
+    const canDeliver = ['Ordered','Partial','Overdue'].includes(pr.status);
 
-    const itemsHtml = (pr.items && pr.items.length)
-      ? pr.items.slice(0, 4).map(it => {
-          const hasOut = it.outstanding != null && it.outstanding > 0;
-          return `<div class="pr-item-row">
-            <span class="pr-item-desc">${escHtml(it.description || '—')}</span>
-            <span class="pr-item-qty">${it.qty != null ? escHtml(String(it.qty)) : '—'}${it.unit ? ' ' + escHtml(it.unit) : ''}</span>
-            ${it.outstanding != null ? `<span class="pr-item-outstanding ${hasOut ? 'has-outstanding' : ''}">${hasOut ? escHtml(String(it.outstanding)) + ' outstanding' : '✓ done'}</span>` : ''}
-          </div>`;
-        }).join('') + (pr.items.length > 4 ? `<div class="pr-item-row" style="color:var(--text-muted);font-size:11px;">+${pr.items.length - 4} more items</div>` : '')
-      : '<div class="pr-item-row" style="color:var(--text-muted);">No item details on record</div>';
-
-    const canProcess  = pr.status === 'Pending';
-    const canDeliver  = ['Ordered','Partial','Overdue'].includes(pr.status);
-
-    return `<div class="pr-card${pr.urgency === 'Urgent' ? ' pr-card-urgent' : ''}">
+    return `<div class="pr-card${pr.urgency === 'Urgent' ? ' pr-card-urgent' : ''}" onclick="openViewModal('${escHtml(pr.id)}')">
       <div class="pr-card-header">
         <div class="pr-card-meta">
           <span class="pr-number">${escHtml(pr.prNumber)}</span>
-          ${urgBadge}
-          <span class="badge ${cls}">${pr.status}</span>
+          ${pr.urgency === 'Urgent' ? '<span class="badge badge-overdue" style="font-size:10px;">URGENT</span>' : ''}
+          <span class="badge ${cls}">${escHtml(pr.status)}</span>
         </div>
         <div class="pr-card-info">
-          <span>📁 ${escHtml(pr.projectCode || '—')}</span>
-          ${pr.site ? `<span>📍 ${escHtml(pr.site)}</span>` : ''}
-          <span>📅 ${fmtDate(pr.requestDate)}</span>
-          ${pr.poNumber ? `<span>PO: ${escHtml(pr.poNumber)}</span>` : ''}
-          ${pr.supplier ? `<span>🏢 ${escHtml(pr.supplier)}</span>` : ''}
-          ${pr.eta ? `<span>ETA: ${fmtDateShort(pr.eta)}</span>` : ''}
+          <span>${escHtml(pr.projectCode || '—')}</span>
+          <span>${escHtml(pr.submittedBy || '—')}</span>
+          <span>${fmtDate(pr.requestDate)}</span>
+          <span>${itemCount} item${itemCount !== 1 ? 's' : ''}${outCount > 0 ? ', ' + outCount + ' outstanding' : ''}</span>
+          ${pr.supplier ? `<span>${escHtml(pr.supplier)}</span>` : ''}
+          ${pr.eta ? `<span>ETA ${fmtDateShort(pr.eta)}</span>` : ''}
         </div>
       </div>
-      <div class="pr-items-list">${itemsHtml}</div>
-      <div class="pr-actions">
-        ${canProcess  ? `<button class="btn btn-sm btn-primary" onclick="openProcessModal('${escHtml(pr.id)}')">Process</button>` : ''}
-        ${canDeliver  ? `<button class="btn btn-sm" style="background:var(--amber);color:#fff;" onclick="openDeliveryModal('${escHtml(pr.id)}')">Update Delivery</button>` : ''}
-        <button class="btn btn-sm btn-ghost" onclick="openViewModal('${escHtml(pr.id)}')">View</button>
-      </div>
+      ${canDeliver ? `<div class="pr-actions" onclick="event.stopPropagation()"><button class="btn btn-sm" style="background:var(--amber);color:#fff;" onclick="openDeliveryModal('${escHtml(pr.id)}')">Update Delivery</button></div>` : ''}
+    </div>`;
+  }
+
+  function buildDOSection(pr) {
+    const linked = allDOs.filter(d => d.prId === pr.id);
+    if (!linked.length) return '';
+    return `<div class="pr-do-section">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Delivery Orders (${linked.length})</div>
+      <div class="pr-do-list">${linked.map(d =>
+        `<a href="/uploads/${escHtml(d.filename)}" target="_blank" class="pr-do-thumb" title="${escHtml(d.originalName || d.filename)}">
+          ${/\.(jpg|jpeg|png|gif|webp)$/i.test(d.filename) ? `<img src="/uploads/${escHtml(d.filename)}" alt="DO">` : `<span class="pr-do-file">📄</span>`}
+          <span class="pr-do-date">${fmtDateShort(d.uploadedAt ? d.uploadedAt.slice(0,10) : '')}</span>
+        </a>`
+      ).join('')}</div>
     </div>`;
   }
 
@@ -908,7 +946,19 @@
     document.getElementById('pr-site').value = '';
     document.getElementById('pr-urgency').value = 'Normal';
     document.getElementById('pr-notes').value = '';
-    document.getElementById('pr-submitted-by').value = '';
+    // Populate submittedBy dropdown from staff
+    const sbSel = document.getElementById('pr-submitted-by');
+    sbSel.innerHTML = '<option value="">— Select —</option>';
+    try {
+      const staffNames = allProjects.length ? [] : []; // will use cached staff
+      fetch('/api/staff').then(r => r.json()).then(staff => {
+        const names = new Set();
+        Object.values(staff).forEach(s => { if (s.name) names.add(s.name); });
+        Array.from(names).sort().forEach(n => {
+          sbSel.innerHTML += `<option value="${escHtml(n)}">${escHtml(n)}</option>`;
+        });
+      }).catch(() => {});
+    } catch {}
     document.getElementById('pr-items-container').innerHTML = '';
     addPRItemRow();
     document.getElementById('modal-new-pr').classList.add('open');
@@ -929,6 +979,7 @@
   }
 
   async function submitNewPR() {
+    if (_busy) return; _busy = true;
     const projectCode = document.getElementById('pr-project').value.trim();
     const site        = document.getElementById('pr-site').value.trim();
     const urgency     = document.getElementById('pr-urgency').value;
@@ -958,72 +1009,8 @@
       allPRs.unshift(pr);
       closeModal('modal-new-pr');
       renderPRs();
-      toast(`PR ${pr.prNumber} submitted — Rena notified`);
-    } catch (e) { toast(e.message, false); }
-  }
-
-  // ─── Process PR Modal (Rena adds PO, supplier, ETA, unit prices) ───────────
-  function openProcessModal(prId) {
-    processingPRId = prId;
-    const pr = allPRs.find(p => p.id === prId);
-    if (!pr) return;
-    document.getElementById('process-modal-title').textContent = `Process ${pr.prNumber}`;
-    document.getElementById('process-pr-number').textContent   = `${pr.projectCode || ''}${pr.site ? ' · ' + pr.site : ''} · ${fmtDate(pr.requestDate)}`;
-    document.getElementById('process-supplier').value   = pr.supplier || '';
-    document.getElementById('process-po-number').value  = pr.poNumber || '';
-    document.getElementById('process-eta').value         = pr.eta || '';
-
-    // Populate supplier datalists
-    const names = allSuppliers.map(s => s.name).filter(Boolean);
-    ['supplier-names-list','supplier-names-list-2'].forEach(lid => {
-      const dl = document.getElementById(lid);
-      if (dl) dl.innerHTML = names.map(n => `<option value="${escHtml(n)}">`).join('');
-    });
-
-    const container = document.getElementById('process-items-container');
-    container.innerHTML = (pr.items || []).map((item, i) => `
-      <div style="margin-bottom:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);">
-        <div style="font-size:12px;font-weight:600;margin-bottom:6px;">${escHtml(item.description || 'Item ' + (i+1))} × ${item.qty != null ? item.qty : '—'}${item.unit ? ' ' + escHtml(item.unit) : ''}</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <label style="font-size:11px;color:var(--text-muted);white-space:nowrap;">Unit Price $</label>
-          <input type="number" step="0.01" min="0" placeholder="0.00" value="${item.unitPrice != null ? item.unitPrice : ''}"
-            class="process-unit-price" data-idx="${i}" style="width:120px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;">
-        </div>
-      </div>
-    `).join('');
-
-    document.getElementById('modal-process-pr').classList.add('open');
-  }
-
-  async function submitProcess() {
-    const pr = allPRs.find(p => p.id === processingPRId);
-    if (!pr) return;
-    const supplier = document.getElementById('process-supplier').value.trim();
-    const poNumber = document.getElementById('process-po-number').value.trim();
-    const eta      = document.getElementById('process-eta').value;
-    if (!supplier)  { toast('Supplier name required', false); return; }
-    if (!poNumber)  { toast('PO Number required', false); return; }
-    if (!eta)       { toast('ETA date required', false); return; }
-
-    const items = (pr.items || []).map((item, i) => {
-      const inp = document.querySelector(`.process-unit-price[data-idx="${i}"]`);
-      return { ...item, unitPrice: inp ? (parseFloat(inp.value) || null) : item.unitPrice };
-    });
-
-    try {
-      const res = await fetch(`/api/purchase-requisitions/${processingPRId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ supplier, poNumber, eta, items })
-      });
-      if (!res.ok) throw new Error((await res.json()).error || 'Failed');
-      const updated = await res.json();
-      const idx = allPRs.findIndex(p => p.id === processingPRId);
-      if (idx !== -1) allPRs[idx] = updated;
-      closeModal('modal-process-pr');
-      renderPRs();
-      toast(`${pr.prNumber} processed — PO ${poNumber} saved, Chris notified`);
-    } catch (e) { toast(e.message, false); }
+      toast(`PR ${pr.prNumber} submitted — ${_purchaserName} notified`);
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
   }
 
   // ─── Update Delivery Modal ─────────────────────────────────────────────────
@@ -1059,6 +1046,7 @@
   }
 
   async function submitDelivery() {
+    if (_busy) return; _busy = true;
     const pr = allPRs.find(p => p.id === deliveryPRId);
     if (!pr) return;
     const items = (pr.items || []).map((item, i) => {
@@ -1082,9 +1070,9 @@
       if (idx !== -1) allPRs[idx] = updated;
       closeModal('modal-delivery');
       renderPRs();
-      const msg = updated.status === 'Delivered' ? `${pr.prNumber} fully delivered ✅ — Chris notified` : `${pr.prNumber} delivery updated`;
+      const msg = updated.status === 'Delivered' ? `${pr.prNumber} fully delivered — ${_factoryManagerName} notified` : `${pr.prNumber} delivery updated`;
       toast(msg);
-    } catch (e) { toast(e.message, false); }
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
   }
 
   // ─── View PR Modal ─────────────────────────────────────────────────────────
@@ -1094,39 +1082,142 @@
     if (!pr) return;
     document.getElementById('view-pr-title').textContent = pr.prNumber;
     const statusMap = { Pending:'badge-pending', Ordered:'badge-ordered', Partial:'badge-partial', Delivered:'badge-delivered', Overdue:'badge-overdue' };
-    const rows = [
-      ['Status',       `<span class="badge ${statusMap[pr.status] || 'badge-pending'}">${pr.status}</span>`],
+    const isEditable = pr.status !== 'Delivered';
+
+    // Supplier datalist
+    const supplierOpts = allSuppliers.map(s => `<option value="${escHtml(s.name)}">`).join('');
+
+    // Info section (read-only)
+    const infoRows = [
+      ['Status',       `<span class="badge ${statusMap[pr.status] || 'badge-pending'}">${escHtml(pr.status)}</span>`],
       ['Project',      escHtml(pr.projectCode || '—')],
-      ['Site',         escHtml(pr.site || '—')],
+      ['Submitted by', escHtml(pr.submittedBy || '—')],
       ['Date',         fmtDate(pr.requestDate)],
-      ['Submitted By', escHtml(pr.submittedBy || '—')],
       ['Urgency',      pr.urgency === 'Urgent' ? '<span class="badge badge-overdue">URGENT</span>' : 'Normal'],
-      ['Supplier',     escHtml(pr.supplier || '—')],
-      ['PO Number',    escHtml(pr.poNumber || '—')],
-      ['ETA',          fmtDateShort(pr.eta)],
       ['Notes',        escHtml(pr.notes || '—')],
     ];
+
+    // Editable procurement fields
+    const procHtml = isEditable ? `
+      <div class="modal-section-label" style="margin-top:14px;">Procurement</div>
+      <div class="view-edit-grid">
+        <div class="field">
+          <label>Supplier</label>
+          <input type="text" id="vpr-supplier" list="vpr-supplier-list" value="${escHtml(pr.supplier || '')}" placeholder="Select or type supplier">
+          <datalist id="vpr-supplier-list">${supplierOpts}</datalist>
+        </div>
+        <div class="field">
+          <label>PO Number</label>
+          <input type="text" id="vpr-po" value="${escHtml(pr.poNumber || '')}" placeholder="e.g. PO-2026-001">
+        </div>
+        <div class="field">
+          <label>ETA</label>
+          <input type="date" id="vpr-eta" value="${escHtml(pr.eta || '')}">
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <label style="display:block;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">PO Document (PDF)</label>
+        ${pr.poDocPath ? `<div style="margin-bottom:6px;font-size:12px;"><a href="${escHtml(pr.poDocPath)}" target="_blank" style="color:var(--accent);">📄 View current PO document</a></div>` : ''}
+        <input type="file" id="vpr-po-doc" accept="application/pdf" style="font-size:12px;">
+      </div>` : `
+      <div class="modal-section-label" style="margin-top:14px;">Procurement</div>
+      ${[['Supplier', pr.supplier], ['PO Number', pr.poNumber], ['ETA', pr.eta ? fmtDateShort(pr.eta) : '—']].map(([k,v]) =>
+        `<div class="view-row"><div class="view-key">${k}</div><div class="view-val">${escHtml(v || '—')}</div></div>`
+      ).join('')}
+      ${pr.poDocPath ? `<div class="view-row"><div class="view-key">PO Document</div><div class="view-val"><a href="${escHtml(pr.poDocPath)}" target="_blank" style="color:var(--accent);">📄 View PDF</a></div></div>` : ''}`;
+
+    // Items with inline unit price edit
     const itemsHtml = (pr.items && pr.items.length)
-      ? `<div class="modal-section-label" style="margin-top:12px;">Items</div>
+      ? `<div class="modal-section-label" style="margin-top:14px;">Items</div>
          <table class="proc-table" style="margin-top:6px;">
-           <thead><tr><th>Description</th><th>Ordered</th><th>Arrived</th><th>Outstanding</th><th>Unit Price</th></tr></thead>
+           <thead><tr><th>Description</th><th>Qty</th><th>Arrived</th><th>Outstanding</th><th>Unit $</th></tr></thead>
            <tbody>
-           ${pr.items.map(it => `<tr>
+           ${pr.items.map((it, i) => `<tr>
              <td>${escHtml(it.description || '—')}</td>
              <td>${it.qty != null ? it.qty : '—'}${it.unit ? ' ' + escHtml(it.unit) : ''}</td>
              <td>${it.qtyArrived != null ? it.qtyArrived : '—'}</td>
              <td style="${(it.outstanding||0)>0?'color:var(--amber);font-weight:600;':''}">${it.outstanding != null ? it.outstanding : '—'}</td>
-             <td>${fmtPrice(it.unitPrice)}</td>
+             <td>${isEditable ? `<input type="number" step="0.01" min="0" class="vpr-unit-price" data-idx="${i}" value="${it.unitPrice != null ? it.unitPrice : ''}" style="width:80px;padding:4px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:12px;">` : fmtPrice(it.unitPrice)}</td>
            </tr>`).join('')}
            </tbody>
          </table>` : '';
 
+    // DOs linked to this PR
+    const linked = allDOs.filter(d => d.prId === pr.id);
+    const dosHtml = linked.length ? `
+      <div class="modal-section-label" style="margin-top:14px;">Delivery Orders (${linked.length})</div>
+      <div class="pr-do-list" style="margin-top:6px;">
+        ${linked.map(d =>
+          `<a href="/uploads/${escHtml(d.filename)}" target="_blank" class="pr-do-thumb" title="${escHtml(d.originalName || d.filename)}">
+            ${/\.(jpg|jpeg|png|gif|webp)$/i.test(d.filename) ? `<img src="/uploads/${escHtml(d.filename)}" alt="DO">` : `<span class="pr-do-file">📄</span>`}
+            <span class="pr-do-date">${fmtDateShort(d.uploadedAt ? d.uploadedAt.slice(0,10) : '')}</span>
+          </a>`
+        ).join('')}
+      </div>` : '';
+
     document.getElementById('view-pr-content').innerHTML =
-      rows.map(([k,v]) => `<div class="view-row"><div class="view-key">${k}</div><div class="view-val">${v}</div></div>`).join('') + itemsHtml;
+      infoRows.map(([k,v]) => `<div class="view-row"><div class="view-key">${k}</div><div class="view-val">${v}</div></div>`).join('') +
+      procHtml + itemsHtml + dosHtml;
+
+    // Show/hide save button
+    document.getElementById('view-save-btn').style.display = isEditable ? '' : 'none';
     document.getElementById('modal-view-pr').classList.add('open');
   }
 
+  async function saveViewPR() {
+    if (_busy) return; _busy = true;
+    if (!viewingPRId) return;
+    const pr = allPRs.find(p => p.id === viewingPRId);
+    if (!pr) return;
+    const supplier = (document.getElementById('vpr-supplier') || {}).value || '';
+    const poNumber = (document.getElementById('vpr-po') || {}).value || '';
+    const eta      = (document.getElementById('vpr-eta') || {}).value || '';
+
+    const items = (pr.items || []).map((item, i) => {
+      const inp = document.querySelector(`.vpr-unit-price[data-idx="${i}"]`);
+      return { ...item, unitPrice: inp ? (parseFloat(inp.value) || null) : item.unitPrice };
+    });
+
+    // Upload PO document if selected
+    let poDocPath = pr.poDocPath || null;
+    const poDocInput = document.getElementById('vpr-po-doc');
+    if (poDocInput && poDocInput.files.length) {
+      const formData = new FormData();
+      formData.append('file', poDocInput.files[0]);
+      formData.append('prId', viewingPRId);
+      try {
+        const uploadRes = await fetch('/api/upload-po-doc', { method: 'POST', body: formData });
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          poDocPath = uploadData.filePath;
+        }
+      } catch {}
+    }
+
+    const payload = { items };
+    if (supplier) payload.supplier = supplier;
+    if (poNumber) payload.poNumber = poNumber;
+    if (eta)      payload.eta = eta;
+    if (poDocPath) payload.poDocPath = poDocPath;
+
+    try {
+      const res = await fetch(`/api/purchase-requisitions/${viewingPRId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed');
+      const updated = await res.json();
+      const idx = allPRs.findIndex(p => p.id === viewingPRId);
+      if (idx !== -1) allPRs[idx] = updated;
+      closeModal('modal-view-pr');
+      renderPRs();
+      toast(`${pr.prNumber} saved`);
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
+  }
+
   async function deletePR() {
+    if (_busy) return; _busy = true;
     if (!viewingPRId) return;
     const pr = allPRs.find(p => p.id === viewingPRId);
     if (!pr) return;
@@ -1144,7 +1235,7 @@
       closeModal('modal-view-pr');
       renderPRs();
       toast(`${pr.prNumber} deleted`);
-    } catch (e) { toast(e.message, false); }
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
   }
 
   // ═══════════════════════════ TAB 2: PRICE BOOK ════════════════════════════
@@ -1214,6 +1305,7 @@
   }
 
   async function savePrice() {
+    if (_busy) return; _busy = true;
     const material  = document.getElementById('price-material').value.trim();
     const supplier  = document.getElementById('price-supplier').value.trim();
     const grade     = document.getElementById('price-grade').value.trim();
@@ -1245,7 +1337,7 @@
       closeModal('modal-price');
       renderPrices();
       toast('Price saved');
-    } catch (e) { toast(e.message, false); }
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
   }
 
   async function deletePrice(id) {
@@ -1256,7 +1348,7 @@
       allPrices = allPrices.filter(p => p.id !== id);
       renderPrices();
       toast('Price deleted');
-    } catch (e) { toast(e.message, false); }
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
   }
 
   // ═══════════════════════════ TAB 3: SUPPLIERS ════════════════════════════
@@ -1315,6 +1407,7 @@
   }
 
   async function saveSupplier() {
+    if (_busy) return; _busy = true;
     const name = document.getElementById('supp-name').value.trim();
     if (!name) { toast('Supplier name required', false); return; }
     const materialsRaw = document.getElementById('supp-materials').value.trim();
@@ -1349,7 +1442,7 @@
       closeModal('modal-supplier');
       renderSuppliers();
       toast('Supplier saved');
-    } catch (e) { toast(e.message, false); }
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
   }
 
   async function deleteSupplier(id) {
@@ -1360,7 +1453,7 @@
       allSuppliers = allSuppliers.filter(s => s.id !== id);
       renderSuppliers();
       toast('Supplier deleted');
-    } catch (e) { toast(e.message, false); }
+    } catch (e) { toast(e.message, false); } finally { _busy = false; }
   }
 
   // ═══════════════════════════ TAB 4: ANALYTICS ════════════════════════════
