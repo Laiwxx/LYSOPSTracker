@@ -5624,7 +5624,7 @@
     "drafter": "Senthil",
     "purchaser": "Rena",
     "sales": "Janessa",
-    "siteEngineer": "",
+    "siteEngineer": "Jun Jie",
     "status": "On Track",
     "currentStage": "Quotation",
     "actionBy": "Sales",
@@ -6020,7 +6020,9 @@
         "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "PE Bollard with sleeve - 5 No's",
@@ -6031,7 +6033,9 @@
         "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       }
     ],
     "installation": [
@@ -6063,13 +6067,19 @@
         "item": "PE Bollard - Engineered",
         "qty": 43,
         "unit": "pcs",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       },
       {
         "item": "PE Bollard with sleeve - 5 No's",
         "qty": 1,
         "unit": "pcs",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
     "scopeNotes": "",

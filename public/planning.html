@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776523455">
+  <link rel="stylesheet" href="/css/style.css?v=1776527483">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -719,7 +719,8 @@ async function init() {
 
   await loadWeek();
 
-  // X button delegation — clear assignment inline + auto-save
+  // X button delegation — clear assignment inline + debounced auto-save
+  let _xSaveTimer = null;
   document.getElementById('grid-body').addEventListener('click', (e) => {
     const xBtn = e.target.closest('.chip-x');
     if (!xBtn) return;
@@ -728,7 +729,8 @@ async function init() {
     const day = xBtn.dataset.day;
     if (plan[wid]) delete plan[wid][day];
     render();
-    document.getElementById('save-btn').click();
+    clearTimeout(_xSaveTimer);
+    _xSaveTimer = setTimeout(() => document.getElementById('save-btn').click(), 500);
   });
 }
 
@@ -746,21 +748,6 @@ document.getElementById('next-week').addEventListener('click', () => {
 async function loadWeek() {
   const ws = toStr(weekStart);
   updateWeekLabel();
-
-  // Fetch attendance for all 6 days in parallel
-  attendance = {};
-  await Promise.all(weekDates().map(d => {
-    const ds = toStr(d);
-    return fetch('/api/attendance?date=' + ds)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data && Array.isArray(data.records)) {
-          attendance[ds] = {};
-          data.records.forEach(r => { attendance[ds][r.workerId] = r.status; });
-        }
-      })
-      .catch(() => {});
-  }));
 
   // Fetch weekly plan
   planCarriedOver = false;
@@ -817,26 +804,7 @@ async function loadWeek() {
     }
   } catch { plan = {}; supplyWorkers = []; }
 
-  // Auto-mark MC/Off from attendance (non-destructive: only fills empty cells)
-  const allIds = [...workers.map(w => w.id), ...supplyWorkers.map(w => w.id)];
-  weekDates().forEach((d, i) => {
-    const ds  = toStr(d);
-    const day = DAYS[i];
-    if (!attendance[ds]) return;
-    allIds.forEach(wid => {
-      const status = attendance[ds][wid];
-      if (!status) return;
-      const existing = (plan[wid] || {})[day];
-      if (existing && existing.type && !existing._auto) return; // keep manual assignment
-      if (status === 'MC') {
-        if (!plan[wid]) plan[wid] = {};
-        plan[wid][day] = { type:'MC', notes:'MC', _auto: true };
-      } else if (['Absent','Off','On Leave'].includes(status)) {
-        if (!plan[wid]) plan[wid] = {};
-        plan[wid][day] = { type:'Off', notes: status, _auto: true };
-      }
-    });
-  });
+  // MC/Off is now set directly in the manpower plan — no auto-apply from attendance
 
   // Compute monthly OT from all weeks in the current month
   await loadMonthlyOT();
@@ -848,25 +816,30 @@ async function loadMonthlyOT() {
   monthlyOT = {};
   monthlyOTCurrentWeek = {};
   try {
-    // Get all Mondays in the current month
+    // Get all Mondays that have days falling in the current month
+    // Include the Monday before month start (week may spill into this month)
     const yr = weekStart.getFullYear();
     const mo = weekStart.getMonth();
-    const mondays = [];
+    const mondays = new Set();
+    // Walk every day of the month and find its Monday
     const d = new Date(yr, mo, 1);
     while (d.getMonth() === mo) {
-      if (d.getDay() === 1) mondays.push(toStr(d));
+      const mon = new Date(d);
+      const dow = mon.getDay();
+      mon.setDate(mon.getDate() - (dow === 0 ? 6 : dow - 1));
+      mondays.add(toStr(mon));
       d.setDate(d.getDate() + 1);
     }
-    // Also check if weekStart's month differs (e.g. weekStart is in prev month but days spill into this month)
     const currentWs = toStr(weekStart);
+    const mondayList = Array.from(mondays);
 
     const plans = await Promise.all(
-      mondays.map(ws => fetch('/api/manpower-plan?weekStart=' + ws).then(r => r.ok ? r.json() : null).catch(() => null))
+      mondayList.map(ws => fetch('/api/manpower-plan?weekStart=' + ws).then(r => r.ok ? r.json() : null).catch(() => null))
     );
 
     plans.forEach((p, i) => {
       if (!p || !p.assignments) return;
-      const isCurrentWeek = mondays[i] === currentWs;
+      const isCurrentWeek = mondayList[i] === currentWs;
       Object.entries(p.assignments).forEach(([wid, days]) => {
         Object.values(days).forEach(a => {
           const ot = parseFloat(a.otHours) || 0;
@@ -1110,25 +1083,8 @@ function showFields(type) {
 
 document.getElementById('popup-cancel').addEventListener('click', closePopup);
 
-document.getElementById('popup-clear').addEventListener('click', async () => {
+document.getElementById('popup-clear').addEventListener('click', () => {
   if (plan[popupWorker.id]) delete plan[popupWorker.id][popupDay];
-  // Also clear from attendance so it doesn't come back on refresh
-  const dayIndex = DAYS.indexOf(popupDay);
-  const dates = weekDates();
-  const dateStr = toStr(dates[dayIndex]);
-  if (attendance[dateStr] && attendance[dateStr][popupWorker.id]) {
-    delete attendance[dateStr][popupWorker.id];
-    // Persist attendance clear to server
-    try {
-      const existing = await fetch('/api/attendance?date=' + dateStr).then(r => r.json()).catch(() => ({ records: [] }));
-      const records = (existing.records || []).filter(r => r.workerId !== popupWorker.id);
-      await fetch('/api/attendance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: dateStr, records })
-      });
-    } catch(e) { console.error('Clear attendance failed:', e); }
-  }
   closePopup();
   render();
   setTimeout(() => document.getElementById('save-btn') && document.getElementById('save-btn').click(), 100);
@@ -1137,40 +1093,6 @@ document.getElementById('popup-overlay').addEventListener('click', e => {
   if (e.target.id === 'popup-overlay') closePopup();
 });
 
-// Save MC status to attendance.json for a specific worker+day
-async function saveMCToAttendance(worker, day) {
-  const dateIdx = DAYS.indexOf(day);
-  if (dateIdx < 0) return;
-  const date = toStr(weekDates()[dateIdx]);
-
-  // Fetch current attendance records for that date (to merge, not overwrite)
-  let currentRecords = [];
-  try {
-    const r = await fetch('/api/attendance?date=' + date);
-    if (r.ok) {
-      const data = await r.json();
-      if (data && Array.isArray(data.records)) currentRecords = data.records.slice();
-    }
-  } catch {}
-
-  // Update or add this worker's MC status
-  const mcRecord = { workerId: worker.id, workerName: worker.name, status: 'MC', notes: '' };
-  const idx = currentRecords.findIndex(rec => rec.workerId === worker.id);
-  if (idx >= 0) currentRecords[idx] = mcRecord;
-  else currentRecords.push(mcRecord);
-
-  // POST merged records back to server
-  try {
-    await fetch('/api/attendance', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, records: currentRecords })
-    });
-    // Update local attendance cache so render() reflects the change
-    if (!attendance[date]) attendance[date] = {};
-    attendance[date][worker.id] = 'MC';
-  } catch {}
-}
 
 document.getElementById('popup-save').addEventListener('click', () => {
   const selBtn = document.querySelector('.type-btn[class*="sel-"]');
@@ -1184,10 +1106,7 @@ document.getElementById('popup-save').addEventListener('click', () => {
   if (!type) {
     delete plan[popupWorker.id][popupDay];
   } else if (type === 'MC') {
-    // Mark MC in plan (as auto-derived so it won't be saved to plan file)
-    // and persist to attendance.json so it survives week reload
     plan[popupWorker.id][popupDay] = { type: 'MC', notes: 'MC' };
-    saveMCToAttendance(popupWorker, popupDay);
   } else {
     // projectId/projectName persist for Installation AND Fabrication — both need to
     // know which project the worker is assigned to. Transport/Off/other types leave blank.
@@ -1362,38 +1281,29 @@ function tpNewId() {
 async function loadTransport() {
   document.getElementById('tp-date').value = tpDate;
 
-  // Auto-suggest trips from today's manpower plan (installation assignments)
+  // Workers assigned today + auto-suggest trips — from manpower plan
+  tpPresent = [];
+  tpSuggestedTrips = [];
   const dayIndex = weekDates().findIndex(d => toStr(d) === tpDate);
   if (dayIndex >= 0) {
     const dayKey = DAYS[dayIndex];
-    const allIds = [...workers.map(w => w.id), ...supplyWorkers.map(w => w.id)];
-    const siteGroups = {}; // group by projectId
-    allIds.forEach(wid => {
-      const a = (plan[wid] || {})[dayKey];
-      if (a && a.type === 'Installation' && a.projectId) {
+    const allW = [...workers, ...supplyWorkers];
+    const siteGroups = {};
+    allW.forEach(w => {
+      const a = (plan[w.id] || {})[dayKey];
+      if (!a || !a.type || a.type === 'MC' || a.type === 'Off') return;
+      tpPresent.push({ workerId: w.id, workerName: w.name, name: w.name, type: a.type });
+      // Group installation workers by project for trip suggestions
+      if (a.type === 'Installation' && a.projectId) {
         if (!siteGroups[a.projectId]) siteGroups[a.projectId] = { projectName: a.projectName || '', location: a.location || '', workers: [] };
-        const w = workers.find(x => x.id === wid) || supplyWorkers.find(x => x.id === wid);
-        siteGroups[a.projectId].workers.push({ workerId: wid, name: w ? w.name : wid });
+        siteGroups[a.projectId].workers.push({ workerId: w.id, name: w.name });
       }
     });
     tpSuggestedTrips = Object.entries(siteGroups).map(([pid, g]) => ({
       projectId: pid, projectName: g.projectName, destination: g.location || g.projectName,
       workers: g.workers
     }));
-  } else {
-    tpSuggestedTrips = [];
   }
-
-  // Present workers for tpDate
-  try {
-    const r = await fetch('/api/attendance?date=' + tpDate);
-    if (r.ok) {
-      const data = await r.json();
-      tpPresent = (data.records || []).filter(rec =>
-        rec.status === 'Present' || rec.status === 'On Site'
-      );
-    } else { tpPresent = []; }
-  } catch { tpPresent = []; }
 
   // Existing trips
   try {
@@ -1425,7 +1335,7 @@ function renderTransport() {
           tpSuggestedTrips.map((s, i) =>
             `<div class="tp-suggest-row">` +
               `<span>${esc(s.destination || s.projectName)} — ${s.workers.length} worker${s.workers.length !== 1 ? 's' : ''}: ${s.workers.map(w => esc(w.name)).join(', ')}</span>` +
-              `<button class="wp-btn primary" style="font-size:11px;padding:4px 10px;" onclick="createTripFromSuggestion(${i})">Create Trip</button>` +
+              `<button class="wp-btn primary tp-suggest-btn" data-idx="${i}" style="font-size:11px;padding:4px 10px;">Create Trip</button>` +
             `</div>`
           ).join('') +
         `</div>`;
@@ -1441,8 +1351,13 @@ function renderTransport() {
   const remaining  = Math.max(0, tpPresent.length - dispatched);
   document.getElementById('tp-summary').textContent =
     tpPresent.length
-      ? `${dispatched} dispatched · ${remaining} in factory (${tpPresent.length} present)`
-      : 'No attendance recorded for this day';
+      ? `${dispatched} dispatched · ${remaining} in factory (${tpPresent.length} assigned today)`
+      : 'No workers assigned for this day';
+
+  // Wire suggest buttons
+  container.querySelectorAll('.tp-suggest-btn').forEach(btn => {
+    btn.addEventListener('click', () => createTripFromSuggestion(parseInt(btn.dataset.idx)));
+  });
 }
 
 function createTripFromSuggestion(idx) {
@@ -1467,7 +1382,7 @@ function renderTripCard(trip, idx, allAssigned, container) {
   // Worker chips HTML
   let workerHtml = '';
   if (tpPresent.length === 0) {
-    workerHtml = '<span class="tp-empty-msg">No workers marked Present today — mark attendance first.</span>';
+    workerHtml = '<span class="tp-empty-msg">No workers assigned for this day — plan manpower first.</span>';
   } else {
     tpPresent.forEach(pw => {
       const wid      = pw.workerId;

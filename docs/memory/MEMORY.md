@@ -3,18 +3,19 @@
 - [People and roles](people.md) — Chris/Teo/Jun Jie/Rena/Alex Chew/Salve/Alex Mac/Janessa/Murugan. Two QSs own different projects (not shared). Alex Chew = finance/invoices only, NOT on cert CC.
 - [Feedback: page-by-page workflow](feedback_workflow.md) — he prefers scoping work by page, not by feature.
 - [Page map (routes, labels, owners)](page_map.md) — verified page list; /my-tasks is labelled "Team", /planning is labelled "Manpower", no /claims page exists.
-- [Team page model and UX](team_page_model.md) — 3 task types (Mandatory/Requests/Personal), hours only on self/recurring, mark-as-seen (no In Progress), ack ladder capped at 3 days, calendar events. Plain professional styling.
-- [Visual style feedback](feedback_visual_style.md) — prefers plain/professional UI consistent across pages; themed aesthetics get reverted. Default to existing design tokens.
-- [Token discipline feedback](feedback_token_discipline.md) — cost-conscious about token spend; narrow before Read, batch parallel calls, short outputs, no ceremony. Applies to main + all sub-agents.
-- [Use agents for validation](feedback_use_agents_for_validation.md) — default to specialist sub-agents (debugger, senior-engineer) for "check/validate/find bugs" asks; trivial edits stay direct.
-- Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder. Spawn via Agent tool with `subagent_type=<name>`.
-- [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. Currently: at least one project has `qs="Lai Wei Xiang"` (wrong — should be Salve or Alex Mac).
+- [Team page model and UX](team_page_model.md) — 3 task types (Mandatory/Requests/Personal), hours only on self/recurring, mark-as-seen (no In Progress), ack ladder capped at 3 days, calendar events.
+- [Visual style feedback](feedback_visual_style.md) — prefers plain/professional UI consistent across pages; themed aesthetics get reverted.
+- [Token discipline feedback](feedback_token_discipline.md) — cost-conscious about token spend; narrow before Read, batch parallel calls, short outputs, no ceremony.
+- [Use agents for validation](feedback_use_agents_for_validation.md) — default to specialist sub-agents for "check/validate/find bugs" asks; trivial edits stay direct.
+- Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
+- [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. 15/17 projects missing endDate + siteEngineer.
 - [Pre-launch test gates](test_gates.md) — EMAIL_TEST_OVERRIDE + CALENDAR_TEST_OVERRIDE env vars route everything to boss during testing.
-- [Page-by-page sweep status](project_page_sweep_status.md) — Team page stable; Factory page mid-sweep (Phase A/B daily-log data model shipped, Phase C UI pending); other pages pending; email HTML refactor deferred.
-- [Tri-layer workflow: fab → site-request → install](project_tri_layer_workflow.md) — critical domain model. Fab, delivery, and install run concurrently with their own progressions. Don't collapse into one % bar.
-- [Factory daily-log model](project_factory_daily_log_model.md) — canonical fab-row accountability model. Every build event is a log entry with a mandatory photo; qtyDone is derived (sum of deltas); edits preserved in editHistory. Kills the autosave / card-camera proposals.
+- [Page-by-page sweep status](project_page_sweep_status.md) — 8 pages stable; Project page in progress; Dashboard/NewProject/Admin pending.
+- [Tri-layer workflow: fab → site-request → install](project_tri_layer_workflow.md) — critical domain model. Fab, delivery, and install run concurrently.
+- [Factory daily-log model](project_factory_daily_log_model.md) — every build event is a log entry with mandatory photo; qtyDone derived from sum of deltas.
 - [Feedback: notifications must be role-based](feedback_role_based_notifications.md) — never hardcode person names in email routing; use staff.json role aliases with boss fallback.
-- [Feedback: every metric must be legible to a cold-open user](feedback_legible_metrics.md) — if a KPI/chip/badge needs a tooltip, delete it or relabel to the user's own words; don't ship jargon from specialist-agent conversations; contextual metrics beat top-of-page chrome.
-- [Feedback: ship complete workflows](feedback_ship_complete_workflows.md) — every create/write action must ship with its undo/edit/delete path in the same bundle; slicing "Phase X ships create, Phase X+1 ships edit" is a scoping smell; server ahead of UI is fine, UI ahead of edit path is not.
+- [Feedback: every metric must be legible](feedback_legible_metrics.md) — if a KPI needs a tooltip, delete it or relabel.
+- [Feedback: ship complete workflows](feedback_ship_complete_workflows.md) — every create/write action must ship with its undo/edit/delete path.
 - [Feedback: factory page is factory-only](feedback_factory_scope.md) — don't mix other roles' data into an ops page; each page serves one role owner.
-- [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs via dropdown; PRs editable while Pending; procurement page is the full tracking view.
+- [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs; PRs editable while Pending; procurement page is the full tracking view.
+- [Manpower OT and supply workers](project_manpower_ot.md) — Mon-Fri 8-5:30 standard, after = OT. Saturday = full OT (8h default). Supply workers 10h/day no OT. 72h monthly MOM cap tracked.

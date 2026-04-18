@@ -707,3 +707,15 @@
 {"ts":"2026-04-18T14:59:28.816Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-18T14:59:32.207Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-18T14:59:45.843Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:14:45.177Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:14:46.592Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:14:47.675Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:14:48.715Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:14:49.882Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:18:27.493Z","event":"attendance.saved","date":"2026-04-18","count":1}
+{"ts":"2026-04-18T15:18:27.574Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:18:33.974Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:18:38.941Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:18:40.828Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:18:41.534Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T15:37:06.582Z","event":"project.updated","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}

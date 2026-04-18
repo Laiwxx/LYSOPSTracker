@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="LYS OPS">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="css/style.css?v=1776523455">
+  <link rel="stylesheet" href="css/style.css?v=1776527483">
   <script src="/js/chart.min.js"></script>
 </head>
 <body>
@@ -52,6 +52,7 @@
       <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
     </a>
     <div class="tasks-sidebar-label" style="margin-top:8px;">Projects</div>
+    <input type="text" id="sidebar-project-search" placeholder="Search projects…" style="width:100%;padding:6px 10px;margin-bottom:6px;border:1px solid rgba(255,255,255,0.12);border-radius:var(--radius-sm);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85);font-size:11px;box-sizing:border-box;font-family:inherit;">
     <div id="sidebar-projects" style="overflow-y:auto;flex:1;"></div>
     <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:8px;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
       <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
@@ -139,8 +140,8 @@
   </div><!-- /page -->
 
   <div class="toast" id="toast"></div>
-  <script src="js/utils.js?v=1776523455"></script>
-  <script src="js/dashboard.js?v=1776523455"></script>
+  <script src="js/utils.js?v=1776527483"></script>
+  <script src="js/dashboard.js?v=1776527483"></script>
   </div>
 </body>
 </html>

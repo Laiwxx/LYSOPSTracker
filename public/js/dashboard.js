@@ -924,15 +924,14 @@
         var parts = (p.jobCode || '').split(' ').slice(0, 2);
         var code = parts.join(' ');
         var name = p.projectName || '';
-        var short = name.length > 12 ? name.slice(0, 12) + '...' : name;
         return '<a href="project.html?id=' + p.id + '" class="staff-nav-btn sidebar-project-item"' +
           ' draggable="true" data-project-id="' + p.id + '" data-project-cat="' + esc(cat) + '"' +
+          ' data-search="' + esc((code + ' ' + name).toLowerCase()) + '"' +
           ' style="text-decoration:none;display:flex;align-items:center;gap:8px;padding:6px 10px 6px 16px;cursor:grab;">' +
           '<span style="width:7px;height:7px;border-radius:50%;background:' + color + ';flex-shrink:0;"></span>' +
-          '<span style="font-size:11px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.8);">' +
-          code + (short ? ' · ' + short : '') +
+          '<span style="font-size:11px;flex:1;min-width:0;white-space:normal;line-height:1.3;color:rgba(255,255,255,0.8);">' +
+          code + (name ? ' · ' + name : '') +
           '</span>' +
-          '<span class="drag-handle" style="opacity:0.3;font-size:10px;flex-shrink:0;" title="Drag to change category">⠿</span>' +
           '</a>';
       }).join('');
 
@@ -1008,6 +1007,18 @@
         draggedEl = null;
       });
     });
+
+    // Wire search
+    var searchInput = document.getElementById('sidebar-project-search');
+    if (searchInput && !searchInput._bound) {
+      searchInput._bound = true;
+      searchInput.addEventListener('input', function() {
+        var q = searchInput.value.toLowerCase().trim();
+        document.querySelectorAll('.sidebar-project-item').forEach(function(el) {
+          el.style.display = !q || (el.dataset.search || '').includes(q) ? '' : 'none';
+        });
+      });
+    }
   }
 
 

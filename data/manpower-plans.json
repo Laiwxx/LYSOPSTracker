@@ -44,46 +44,7 @@
   },
   {
     "weekStart": "2026-04-13",
-    "assignments": {
-      "wi-mariyappan-malayandi": {
-        "mon": {
-          "type": "Driver",
-          "projectId": "bd-21923-shimizu-dnr",
-          "projectName": "Development @ Neil Road",
-          "location": "",
-          "notes": "",
-          "otHours": 2
-        },
-        "sat": {
-          "type": "Installation",
-          "projectId": "",
-          "projectName": "",
-          "location": "",
-          "notes": "",
-          "otHours": 8
-        }
-      },
-      "wt-hoomphaeng-kritsana": {
-        "sat": {
-          "type": "Installation",
-          "projectId": "bd-19121-rbss-dnr",
-          "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
-          "location": "",
-          "notes": "",
-          "otHours": 8
-        }
-      },
-      "wi-kannaiyan-jaishankar": {
-        "sat": {
-          "type": "Installation",
-          "projectId": "",
-          "projectName": "",
-          "location": "",
-          "notes": "",
-          "otHours": 8
-        }
-      }
-    },
+    "assignments": {},
     "supplyWorkers": [
       {
         "id": "supply-1776523111944",
@@ -93,6 +54,6 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-18T14:59:45.843Z"
+    "savedAt": "2026-04-18T15:18:41.534Z"
   }
 ]

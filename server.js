@@ -687,18 +687,34 @@ app.post('/api/tickets', postRateLimit, (req, res) => {
     tickets.push(ticket);
     writeTickets(tickets);
     res.json(ticket);
-    // Trigger 6: email Lai Wei Xiang on every new feedback ticket
+
+    // Write feedback as MD file for Claude to pick up next session
+    try {
+      const memDir = path.join(__dirname, '..', '.claude', 'projects', '-home-ubuntu-ops-tracker', 'memory');
+      const memFile = path.join(memDir, `feedback_${ticket.id}.md`);
+      const memIndex = path.join(memDir, 'MEMORY.md');
+      const md = `---\nname: Feedback — ${ticket.title}\ndescription: ${ticket.type} reported by ${ticket.submittedBy} on ${ticket.submittedAt.slice(0,10)}. Priority: ${ticket.priority}.\ntype: project\n---\n\n**${ticket.type}** reported by ${ticket.submittedBy}\n\n**Title:** ${ticket.title}\n\n**Description:** ${ticket.description || 'No description'}\n\n**Priority:** ${ticket.priority}\n\n**Status:** ${ticket.status}\n\n**How to apply:** Read the feedback, investigate the issue in the relevant page, fix it, then delete this memory file once resolved.\n`;
+      fs.writeFileSync(memFile, md);
+      // Append to MEMORY.md index
+      const indexLine = `\n- [Feedback: ${ticket.title}](feedback_${ticket.id}.md) — ${ticket.type} by ${ticket.submittedBy}, ${ticket.priority} priority`;
+      fs.appendFileSync(memIndex, indexLine);
+      console.log(`[FEEDBACK] Written to Claude memory: feedback_${ticket.id}.md`);
+    } catch (memErr) {
+      console.error('[FEEDBACK] Failed to write memory file:', memErr.message);
+    }
+
+    // Trigger 6: email boss on every new feedback ticket
     const laiEmail = getBossEmail() || process.env.ADMIN_EMAIL || '';
     if (laiEmail) {
       sendEmail(laiEmail, getBossName(),
         `[New Feedback] ${ticket.title} — ${ticket.type}`,
         `<p>A new feedback ticket has been submitted:</p>
         <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Title</td><td>${ticket.title}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Type</td><td>${ticket.type}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Submitted By</td><td>${ticket.submittedBy}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Priority</td><td>${ticket.priority}</td></tr>
-          ${ticket.description ? `<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Description</td><td>${ticket.description}</td></tr>` : ''}
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Title</td><td>${escHtml(ticket.title)}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Type</td><td>${escHtml(ticket.type)}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Submitted By</td><td>${escHtml(ticket.submittedBy)}</td></tr>
+          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Priority</td><td>${escHtml(ticket.priority)}</td></tr>
+          ${ticket.description ? `<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Description</td><td>${escHtml(ticket.description)}</td></tr>` : ''}
         </table>
         <p><a href="${APP_URL}/feedback">View Feedback →</a></p>`
       ).catch(() => {});
@@ -724,6 +740,15 @@ app.put('/api/tickets/:id', (req, res) => {
     if (notes    !== undefined) tickets[idx].notes    = notes;
     writeTickets(tickets);
     res.json(tickets[idx]);
+
+    // Clean up Claude memory file when ticket is resolved
+    if (status === 'Resolved' || status === 'Closed') {
+      try {
+        const memDir = path.join(__dirname, '..', '.claude', 'projects', '-home-ubuntu-ops-tracker', 'memory');
+        const memFile = path.join(memDir, `feedback_${req.params.id}.md`);
+        if (fs.existsSync(memFile)) fs.unlinkSync(memFile);
+      } catch {}
+    }
   } catch (e) { logError('route.put.tickets', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 

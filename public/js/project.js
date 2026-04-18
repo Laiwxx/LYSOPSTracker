@@ -1265,6 +1265,16 @@ function buildFabRow(row, idx) {
     </td>
   `;
 
+  // Fab tab is read-only — editing happens on the Factory page
+  tr.querySelectorAll('input, select').forEach(el => { el.disabled = true; el.style.opacity = '0.8'; });
+  // Hide edit-only buttons
+  const logBtn = tr.querySelector('.btn-log-step');
+  if (logBtn) logBtn.style.display = 'none';
+  const delBtn = tr.querySelector('.del-row-btn');
+  if (delBtn) delBtn.style.display = 'none';
+  const readyBtn = tr.querySelector('.btn-mark-ready-row') || tr.querySelector('.btn-unmark-ready');
+  if (readyBtn) readyBtn.style.display = 'none';
+
   const iItem       = tr.querySelector('.fab-item');
   const iTotalQty   = tr.querySelector('.fab-totalqty');
   const iUnit       = tr.querySelector('.fab-unit');
@@ -1651,6 +1661,20 @@ function buildInstallRow(row, idx) {
     <td><input class="tbl-input inst-notes" value="${escHtml(row.notes||'')}" placeholder="Notes" style="min-width:100px;"></td>
     <td><button class="btn btn-ghost btn-sm del-row-btn">✕</button></td>
   `;
+
+  // Install tab is read-only — editing happens on the Installation page
+  tr.querySelectorAll('input, select').forEach(el => { el.disabled = true; el.style.opacity = '0.8'; });
+  const delBtn = tr.querySelector('.del-row-btn');
+  if (delBtn) delBtn.style.display = 'none';
+
+  // Show install log photo count if logs exist
+  const logs = Array.isArray(row.logs) ? row.logs : [];
+  if (logs.length) {
+    const photoCount = logs.filter(l => l.photoPath).length;
+    const td = document.createElement('td');
+    td.innerHTML = `<span style="font-size:11px;color:var(--accent);">${photoCount} photo${photoCount !== 1 ? 's' : ''}</span>`;
+    tr.appendChild(td);
+  }
 
   const iItem       = tr.querySelector('.inst-item');
   const iTotalQty   = tr.querySelector('.inst-totalqty');
