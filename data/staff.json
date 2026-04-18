@@ -54,5 +54,21 @@
   "Purchaser": {
     "name": "Rena",
     "email": "laiwx@laiyewseng.com.sg"
+  },
+  "QS2": {
+    "name": "Salve",
+    "email": "laiwx@laiyewseng.com.sg"
+  },
+  "Sales": {
+    "name": "Janessa",
+    "email": "laiwx@laiyewseng.com.sg"
+  },
+  "Site Engineer 2": {
+    "name": "Jun Jie",
+    "email": "laiwx@laiyewseng.com.sg"
+  },
+  "Finance": {
+    "name": "Alex Chew",
+    "email": "laiwx@laiyewseng.com.sg"
   }
 }

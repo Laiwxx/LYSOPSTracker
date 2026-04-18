@@ -562,3 +562,107 @@
 {"ts":"2026-04-17T10:55:58.547Z","event":"fab.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"logId":"log_mo2slnrisev1","originalSize":69832,"originalMime":"image/jpeg"}
 {"ts":"2026-04-17T10:55:58.568Z","event":"fab.log.created","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo2slnrisev1","delta":50,"newTotal":50}
 {"ts":"2026-04-17T10:56:09.736Z","event":"fab.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo2slnrisev1","deletedDelta":50,"newTotal":0,"photoUnlinked":true}
+{"ts":"2026-04-18T01:02:31.502Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T01:02:39.098Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T01:02:40.930Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T06:16:53.236Z","event":"site-request.created","id":"mo3y2ltf3hse","item":"Engineered Bollard - Clementi","requestedBy":"Teo Meei Haw","fabIdx":5}
+{"ts":"2026-04-18T06:19:05.787Z","event":"site-request.updated","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"},"estimatedReadyDate":{"from":null,"to":"2026-05-02"}}}
+{"ts":"2026-04-18T06:19:18.758Z","event":"site-request.updated","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"Acknowledged","newStatus":"Issue","changes":{"status":{"from":"Acknowledged","to":"Issue"},"issueReason":{"from":null,"to":"Need To Order material"}}}
+{"ts":"2026-04-18T06:19:21.863Z","event":"site-request.updated","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"Issue","newStatus":"Acknowledged","changes":{"status":{"from":"Issue","to":"Acknowledged"}}}
+{"ts":"2026-04-18T06:19:22.727Z","event":"site-request.updated","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"Acknowledged","newStatus":"In Fabrication","changes":{"status":{"from":"Acknowledged","to":"In Fabrication"}}}
+{"ts":"2026-04-18T06:19:23.780Z","event":"site-request.updated","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Ready","changes":{"status":{"from":"In Fabrication","to":"Ready"}}}
+{"ts":"2026-04-18T06:19:24.984Z","event":"site-request.updated","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"Ready","newStatus":"Delivered","changes":{"status":{"from":"Ready","to":"Delivered"}}}
+{"ts":"2026-04-18T06:25:23.852Z","event":"site-request.created","id":"mo3ydjt8by0o","item":"SP30 Fixed Bollard","requestedBy":"Teo Meei Haw","fabIdx":1}
+{"ts":"2026-04-18T06:25:33.258Z","event":"site-request.updated","id":"mo3ydjt8by0o","actor":"Chris","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"}}}
+{"ts":"2026-04-18T06:25:33.419Z","event":"site-request.updated","id":"mo3ydjt8by0o","actor":"Chris","previousStatus":"Acknowledged","newStatus":"In Fabrication","changes":{"status":{"from":"Acknowledged","to":"In Fabrication"}}}
+{"ts":"2026-04-18T06:25:33.754Z","event":"site-request.updated","id":"mo3ydjt8by0o","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Ready","changes":{"status":{"from":"In Fabrication","to":"Ready"}}}
+{"ts":"2026-04-18T06:25:34.055Z","event":"site-request.updated","id":"mo3ydjt8by0o","actor":"Chris","previousStatus":"Ready","newStatus":"Delivered","changes":{"status":{"from":"Ready","to":"Delivered"}}}
+{"ts":"2026-04-18T06:27:25.213Z","event":"site-request.created","id":"mo3yg5gc0wfy","item":"M30 Arm Barrier","requestedBy":"Teo Meei Haw","fabIdx":0}
+{"ts":"2026-04-18T06:27:33.050Z","event":"site-request.updated","id":"mo3yg5gc0wfy","actor":"Teo Meei Haw","previousStatus":"New","newStatus":"New","changes":{"neededByDate":{"from":"2026-04-25","to":"2026-05-09"}}}
+{"ts":"2026-04-18T06:27:37.410Z","event":"site-request.updated","id":"mo3yg5gc0wfy","actor":"Chris","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"}}}
+{"ts":"2026-04-18T06:27:37.657Z","event":"site-request.updated","id":"mo3yg5gc0wfy","actor":"Chris","previousStatus":"Acknowledged","newStatus":"In Fabrication","changes":{"status":{"from":"Acknowledged","to":"In Fabrication"}}}
+{"ts":"2026-04-18T06:27:37.852Z","event":"site-request.updated","id":"mo3yg5gc0wfy","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Ready","changes":{"status":{"from":"In Fabrication","to":"Ready"}}}
+{"ts":"2026-04-18T06:27:38.004Z","event":"site-request.updated","id":"mo3yg5gc0wfy","actor":"Chris","previousStatus":"Ready","newStatus":"Delivered","changes":{"status":{"from":"Ready","to":"Delivered"}}}
+{"ts":"2026-04-18T06:27:56.233Z","event":"site-request.updated","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"Delivered","newStatus":"Ready","changes":{"status":{"from":"Delivered","to":"Ready"}}}
+{"ts":"2026-04-18T06:28:01.743Z","event":"site-request.deleted","id":"mo3y2ltf3hse","actor":"Chris","previousStatus":"Ready","projectId":"bd-24025-chiong-de189","projectJobCode":"BD 24025- CHIONG (DE189)","item":"Engineered Bollard - Clementi","quantity":7,"requestedBy":"Teo Meei Haw"}
+{"ts":"2026-04-18T06:29:08.684Z","event":"site-request.updated","id":"mo3ydjt8by0o","actor":"Chris","previousStatus":"Delivered","newStatus":"Ready","changes":{"status":{"from":"Delivered","to":"Ready"}}}
+{"ts":"2026-04-18T07:03:30.743Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":1,"item":"Cova Sliding Gate - 6 Meters + HPU","changes":[{"field":"fabDeadline","to":"2026-06-02"}]}
+{"ts":"2026-04-18T07:03:34.538Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":1,"item":"Cova Sliding Gate - 6 Meters + HPU","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-18T07:03:34.985Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":1,"item":"Cova Sliding Gate - 6 Meters + HPU","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-18T07:03:52.209Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-18T07:03:52.621Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-18T07:03:53.308Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-18T07:03:54.635Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-18T07:03:55.178Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-18T07:03:55.981Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-18T07:03:59.386Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":1,"item":"Cova Sliding Gate - 6 Meters + HPU","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-18T07:04:02.016Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":3,"item":"SP400 Fixed Bollard Shallow Mounted","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-18T07:04:02.225Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":3,"item":"SP400 Fixed Bollard Shallow Mounted","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-18T07:04:02.427Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":3,"item":"SP400 Fixed Bollard Shallow Mounted","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-18T07:04:03.608Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":3,"item":"SP400 Fixed Bollard Shallow Mounted","changes":[{"field":"status","from":"Ready for Delivery","to":"Delivered"}]}
+{"ts":"2026-04-18T07:04:08.541Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":3,"item":"SP400 Fixed Bollard Shallow Mounted","changes":[{"field":"fabDeadline","to":"2026-04-02"}]}
+{"ts":"2026-04-18T07:21:36.913Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T07:21:48.616Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T07:22:21.597Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
+{"ts":"2026-04-18T07:28:05.236Z","event":"site-request.updated","id":"mo3yg5gc0wfy","actor":"Chris","previousStatus":"Delivered","newStatus":"Ready","changes":{"status":{"from":"Delivered","to":"Ready"}}}
+{"ts":"2026-04-18T07:28:08.505Z","event":"site-request.deleted","id":"mo3yg5gc0wfy","actor":"Chris","previousStatus":"Ready","projectId":"bd-21222-qa-ica-kallang","projectJobCode":"BD 21222 - QA (ICA Kallang)","item":"M30 Arm Barrier","quantity":1,"requestedBy":"Teo Meei Haw"}
+{"ts":"2026-04-18T07:28:14.636Z","event":"site-request.deleted","id":"mo3ydjt8by0o","actor":"Chris","previousStatus":"Ready","projectId":"bd-21222-qa-ica-kallang","projectJobCode":"BD 21222 - QA (ICA Kallang)","item":"SP30 Fixed Bollard","quantity":50,"requestedBy":"Teo Meei Haw"}
+{"ts":"2026-04-18T07:30:26.405Z","event":"site-request.created","id":"mo40p71ho72s","item":"Block S - City Scape Gate - 4.4 Meters","requestedBy":"Teo Meei Haw","fabIdx":0}
+{"ts":"2026-04-18T07:30:46.885Z","event":"site-request.updated","id":"mo40p71ho72s","actor":"Chris","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"},"estimatedReadyDate":{"from":null,"to":"2026-04-25"}}}
+{"ts":"2026-04-18T07:31:14.382Z","event":"site-request.updated","id":"mo40p71ho72s","actor":"Chris","previousStatus":"Acknowledged","newStatus":"In Fabrication","changes":{"status":{"from":"Acknowledged","to":"In Fabrication"}}}
+{"ts":"2026-04-18T07:31:20.890Z","event":"site-request.updated","id":"mo40p71ho72s","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Ready","changes":{"status":{"from":"In Fabrication","to":"Ready"}}}
+{"ts":"2026-04-18T07:57:03.481Z","event":"pr.created","id":"PR26-313","prNumber":"PR26-313","projectCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-18T08:12:33.841Z","event":"do.uploaded","id":"do_mo427d803l93","prId":"PR26-024","prNumber":"PR26-024","filename":"1776499953838-Screenshot_2026-04-18_154118.png"}
+{"ts":"2026-04-18T08:12:56.944Z","event":"do.deleted","id":"do_mo427d803l93","filename":"1776499953838-Screenshot_2026-04-18_154118.png"}
+{"ts":"2026-04-18T08:16:12.090Z","event":"site-request.deleted","id":"mo40p71ho72s","actor":"Chris","previousStatus":"Ready","projectId":"bd-19121-rbss-dnr","projectJobCode":"BD 19121- RBSS (DNR)","item":"Block S - City Scape Gate - 4.4 Meters","quantity":1,"requestedBy":"Teo Meei Haw"}
+{"ts":"2026-04-18T08:50:20.623Z","event":"do.uploaded","id":"do_mo43jya6mm4p","prId":"PR26-313","prNumber":"PR26-313","filename":"delivery-orders/1776502220620-Screenshot_2026-04-16_005408.png"}
+{"ts":"2026-04-18T08:50:33.369Z","event":"do.deleted","id":"do_mo43jya6mm4p","filename":"delivery-orders/1776502220620-Screenshot_2026-04-16_005408.png"}
+{"ts":"2026-04-18T09:31:34.724Z","event":"install.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo450z60k3n6"}
+{"ts":"2026-04-18T09:31:34.746Z","event":"install.log.created","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mo450z60k3n6","delta":30,"newTotal":30}
+{"ts":"2026-04-18T09:31:41.336Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
+{"ts":"2026-04-18T09:31:44.364Z","event":"install.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo450z60k3n6","deletedDelta":30,"newTotal":0}
+{"ts":"2026-04-18T09:37:54.807Z","event":"install.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo4594fuvddf"}
+{"ts":"2026-04-18T09:37:54.832Z","event":"install.log.created","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mo4594fuvddf","delta":5,"newTotal":5}
+{"ts":"2026-04-18T09:38:08.464Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"installSteps","to":["Rebar Installation"]}]}
+{"ts":"2026-04-18T09:38:19.896Z","event":"install.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo4594fuvddf","deletedDelta":5,"newTotal":0}
+{"ts":"2026-04-18T09:55:45.337Z","event":"install.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo45w2h9yfk0"}
+{"ts":"2026-04-18T09:55:45.364Z","event":"install.log.created","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mo45w2h9yfk0","delta":20,"newTotal":20,"step":"Full Bollard Installation"}
+{"ts":"2026-04-18T10:09:26.206Z","event":"install.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo46dnuky0gv"}
+{"ts":"2026-04-18T10:09:26.228Z","event":"install.log.created","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mo46dnuky0gv","delta":40,"newTotal":60,"step":"Full Bollard Installation"}
+{"ts":"2026-04-18T10:09:56.131Z","event":"install.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo46dnuky0gv","deletedDelta":40,"newTotal":20}
+{"ts":"2026-04-18T10:09:59.182Z","event":"install.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo45w2h9yfk0","deletedDelta":20,"newTotal":0}
+{"ts":"2026-04-18T11:00:36.912Z","event":"pr.updated","id":"PR26-313","status":"Overdue"}
+{"ts":"2026-04-18T11:00:47.571Z","event":"pr.updated","id":"PR26-313","status":"Overdue"}
+{"ts":"2026-04-18T11:12:05.794Z","event":"pr.updated","id":"PR26-313","status":"Overdue"}
+{"ts":"2026-04-18T11:20:54.659Z","event":"price.deleted","id":"mo487hde345e","material":"Material - Plate 4mm"}
+{"ts":"2026-04-18T11:21:59.046Z","event":"pr.created","id":"PR26-001","prNumber":"PR26-001","projectCode":"BD 22724 - POC (T232 Woodland)"}
+{"ts":"2026-04-18T11:22:42.716Z","event":"pr.updated","id":"PR26-001","status":"Ordered"}
+{"ts":"2026-04-18T11:23:25.968Z","event":"do.uploaded","id":"do_mo490tqo3l4x","prId":"PR26-001","prNumber":"PR26-001","filename":"delivery-orders/1776511405966-Screenshot_2026-04-18_154118.png"}
+{"ts":"2026-04-18T11:23:25.983Z","event":"pr.updated","id":"PR26-001","status":"Delivered"}
+{"ts":"2026-04-18T11:24:03.650Z","event":"do.deleted","id":"do_mo490tqo3l4x","filename":"delivery-orders/1776511405966-Screenshot_2026-04-18_154118.png"}
+{"ts":"2026-04-18T11:24:38.946Z","event":"pr.created","id":"PR26-002","prNumber":"PR26-002","projectCode":"BD 24025- CHIONG (DE189)"}
+{"ts":"2026-04-18T11:25:33.634Z","event":"pr.updated","id":"PR26-002","status":"Ordered"}
+{"ts":"2026-04-18T11:26:29.253Z","event":"do.uploaded","id":"do_mo494r5xnph9","prId":"PR26-002","prNumber":"PR26-002","filename":"delivery-orders/1776511589252-Screenshot_2026-04-16_005408.png"}
+{"ts":"2026-04-18T11:26:29.271Z","event":"pr.updated","id":"PR26-002","status":"Delivered"}
+{"ts":"2026-04-18T11:27:05.944Z","event":"do.deleted","id":"do_mo494r5xnph9","filename":"delivery-orders/1776511589252-Screenshot_2026-04-16_005408.png"}
+{"ts":"2026-04-18T11:27:25.496Z","event":"pr.deleted","id":"PR26-002","prNumber":"PR26-002"}
+{"ts":"2026-04-18T11:27:30.316Z","event":"pr.deleted","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-18T11:28:02.698Z","event":"price.updated","id":"mo48zwdaae75","material":"MS Plate - 4mm Thick"}
+{"ts":"2026-04-18T11:29:13.124Z","event":"price.updated","id":"mo48zwdaae75","material":"MS Plate - 4mm Thick"}
+{"ts":"2026-04-18T11:30:14.800Z","event":"price.deleted","id":"mo48zwdaae75","material":"MS Plate - 4mm Thick"}
+{"ts":"2026-04-18T11:30:16.633Z","event":"price.deleted","id":"mo493k8yi2bz","material":"Reflective Band"}
+{"ts":"2026-04-18T11:33:14.278Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-18T11:33:14.771Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-18T11:34:01.434Z","event":"install.log.photo.uploaded","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":4,"logId":"log_mo49efzhnhqq"}
+{"ts":"2026-04-18T11:34:01.455Z","event":"install.log.created","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":4,"item":"Cometa Man Trap","logId":"log_mo49efzhnhqq","delta":1,"newTotal":1,"step":"dff"}
+{"ts":"2026-04-18T11:34:27.579Z","event":"install.log.deleted","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":4,"logId":"log_mo49efzhnhqq","deletedDelta":1,"newTotal":0}
+{"ts":"2026-04-18T11:34:28.873Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-18T11:34:30.550Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[{"field":"status","from":"Verified","to":"Installed"}]}
+{"ts":"2026-04-18T11:34:30.872Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[{"field":"status","from":"Installed","to":"In Progress"}]}
+{"ts":"2026-04-18T11:34:31.052Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
+{"ts":"2026-04-18T11:37:18.559Z","event":"pr.created","id":"PR26-001","prNumber":"PR26-001","projectCode":"BD 21222 - QA (ICA Kallang)"}
+{"ts":"2026-04-18T11:37:45.717Z","event":"po.doc.uploaded","prId":"PR26-001","filename":"1776512265714-HORIBA_MIRA_Memorandum_of_Performance_ISO22343-1_2023_Test_E009.pdf"}
+{"ts":"2026-04-18T11:37:45.741Z","event":"pr.updated","id":"PR26-001","status":"Ordered"}
+{"ts":"2026-04-18T11:38:13.810Z","event":"pr.updated","id":"PR26-001","status":"Ordered"}
+{"ts":"2026-04-18T11:38:19.823Z","event":"pr.deleted","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-18T11:38:33.897Z","event":"price.deleted","id":"mo49j95ap0vh","material":"M30 Barrier"}

@@ -489,16 +489,14 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "QC Check",
+        "status": "Not Started",
         "started": "2026-04-01",
         "done": "2026-04-10",
         "readyForDelivery": true,
         "readyAt": "2026-04-10T13:07:04.852Z",
         "process": "Packing",
         "targetDeliveryDate": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -513,9 +511,7 @@
         "targetDeliveryDate": "",
         "readyForDelivery": false,
         "readyAt": null,
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -528,9 +524,7 @@
         "done": "",
         "process": "",
         "targetDeliveryDate": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -543,9 +537,7 @@
         "done": "",
         "process": "",
         "targetDeliveryDate": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -558,9 +550,7 @@
         "done": "",
         "process": "",
         "targetDeliveryDate": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -573,9 +563,7 @@
         "done": "",
         "process": "",
         "targetDeliveryDate": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       }
     ],
     "installation": [
@@ -1043,9 +1031,7 @@
         "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       },
       {
         "item": "SP30 Fixed Bollard",
@@ -1057,9 +1043,7 @@
         "done": "",
         "process": "",
         "targetDeliveryDate": "2026-08-30",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       },
       {
         "item": "SPTT Bollard",
@@ -1069,9 +1053,7 @@
         "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null
+        "logs": []
       }
     ],
     "installation": [
@@ -1167,28 +1149,19 @@
         "item": "M30 Arm Barrier",
         "qty": 1,
         "unit": "sets",
-        "zoneLabel": "",
-        "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": true
+        "zoneLabel": ""
       },
       {
         "item": "SP30 Fixed Bollard",
         "qty": 103,
         "unit": "units",
-        "zoneLabel": "",
-        "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": false
+        "zoneLabel": ""
       },
       {
         "item": "SPTT Bollard",
         "qty": 5,
         "unit": "sets",
-        "zoneLabel": "",
-        "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": false
+        "zoneLabel": ""
       }
     ],
     "drawings": [
@@ -1574,8 +1547,7 @@
         "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": [],
-        "fab_started_at": "2026-04-17T10:51:06.240Z"
+        "logs": []
       }
     ],
     "installation": [
@@ -2146,7 +2118,7 @@
     "drafter": "Senthil",
     "purchaser": "Rena",
     "sales": "Janessa",
-    "siteEngineer": "Jun Jie",
+    "siteEngineer": "",
     "status": "Delayed",
     "currentStage": "Quotation",
     "actionBy": "Sales",
@@ -4308,7 +4280,7 @@
     "id": "bd-25225-nakano-st-eng-dc",
     "jobCode": "BD 25225- Nakano (ST Eng DC)",
     "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
-    "product": "127x SP30 Fixed Bollard, 1x Cova Sliding Gate - 6 Meters + HPU, 3x Cova Road Blocker 3 Meters, 22x SP400 Fixed Bollard Shallow Mounted, 2x Cometa Man Trap",
+    "product": "127x SP30 Fixed Bollard, 1x Cova Sliding Gate - 6 Meters + HPU, 3x Cova Road Blocker 3 Meters, 22x SP400 Fixed Bollard Shallow Mounted",
     "contractValue": 662875,
     "voValue": 0,
     "client": "",
@@ -4316,9 +4288,9 @@
     "mainCon": "",
     "consultant": "",
     "startDate": "2024-11-13",
-    "endDate": "2026-05-15",
+    "endDate": "2026-03-31",
     "projectManager": "Lai Wei Xiang",
-    "qs": "Alex Mac",
+    "qs": "Salve",
     "factoryManager": "Chris",
     "drafter": "Senthil",
     "purchaser": "Rena",
@@ -4327,7 +4299,7 @@
     "status": "On Track",
     "currentStage": "Quotation",
     "actionBy": "Sales",
-    "fabPercent": 0,
+    "fabPercent": 99,
     "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
@@ -4714,67 +4686,75 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 127,
         "unit": "units",
-        "qtyDone": 0,
+        "qtyDone": 127,
         "qtySent": 0,
-        "status": "Ready for Delivery",
+        "status": "QC Check",
         "started": "",
         "done": "",
         "fab_completed_at": "2026-04-15T15:49:02.385Z",
+        "logs": [],
         "fab_started_at": "2026-04-15T16:41:24.955Z",
-        "cycle_days": 0,
-        "logs": []
+        "cycle_days": 0
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
         "totalQty": 1,
         "unit": "units",
-        "qtyDone": 0,
+        "qtyDone": 1,
         "qtySent": 0,
-        "status": "Ready for Delivery",
+        "status": "In Progress",
         "started": "",
         "done": "",
+        "logs": [],
         "fab_started_at": "2026-04-15T16:50:45.295Z",
         "fab_completed_at": "2026-04-15T16:50:45.295Z",
-        "cycle_days": 0,
-        "logs": [],
-        "fabDeadline": "2026-06-02"
+        "cycle_days": 0
       },
       {
         "item": "Cova Road Blocker 3 Meters",
         "totalQty": 3,
         "unit": "set-of-1",
-        "qtyDone": 0,
+        "qtyDone": 2,
         "qtySent": 0,
-        "status": "Ready for Delivery",
+        "status": "Delivered",
         "started": "",
         "done": "",
-        "logs": [],
-        "fab_started_at": "2026-04-15T17:41:28.013Z",
-        "fab_completed_at": null
+        "logs": [
+          {
+            "id": "log_baseline_bd-25225_2",
+            "loggedAt": "2026-04-15T16:39:00.282Z",
+            "loggedBy": "system",
+            "delta": 2,
+            "photoPath": null,
+            "note": "Pre-launch baseline — no photo available",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ]
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
         "totalQty": 22,
         "unit": "units",
-        "qtyDone": 0,
+        "qtyDone": 22,
         "qtySent": 0,
         "status": "Delivered",
         "started": "",
         "done": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": "2026-04-15T17:48:58.206Z",
-        "fabDeadline": "2026-04-02"
-      },
-      {
-        "item": "Cometa Man Trap",
-        "totalQty": 2,
-        "unit": "units",
-        "qtyDone": 0,
-        "qtySent": 0,
-        "status": "Not Started",
-        "started": "",
-        "done": ""
+        "logs": [
+          {
+            "id": "log_baseline_bd-25225_3",
+            "loggedAt": "2026-04-15T16:39:00.282Z",
+            "loggedBy": "system",
+            "delta": 22,
+            "photoPath": null,
+            "note": "Pre-launch baseline — no photo available",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ]
       }
     ],
     "installation": [
@@ -4784,12 +4764,7 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "In Progress",
-        "logs": [],
-        "qtyDone": 0,
-        "installSteps": [
-          "Rebar Installation"
-        ]
+        "status": "Not Started"
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
@@ -4814,16 +4789,6 @@
         "doneQty": 0,
         "notes": "",
         "status": "Not Started"
-      },
-      {
-        "item": "Cometa Man Trap",
-        "totalQty": 2,
-        "unit": "units",
-        "doneQty": 0,
-        "notes": "",
-        "status": "Not Started",
-        "logs": [],
-        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -4868,22 +4833,13 @@
         "type": "Local Fabrication",
         "itemType": "Fixed",
         "partsRequired": false
-      },
-      {
-        "item": "Cometa Man Trap",
-        "qty": 2,
-        "unit": "units",
-        "type": "Overseas Order",
-        "itemType": "Mechanical",
-        "partsRequired": false,
-        "zoneLabel": ""
       }
     ],
     "scopeNotes": "",
     "drawingFolders": [
       "General"
     ],
-    "fabLeadTimeDays": 120
+    "fabLeadTimeDays": 90
   },
   {
     "id": "bd-25325-sam-lain-tt-tuas",

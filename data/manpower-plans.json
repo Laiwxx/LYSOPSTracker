@@ -45,13 +45,38 @@
   {
     "weekStart": "2026-04-13",
     "assignments": {
-      "wm-lin-chee-cheong": {
-        "thu": {
+      "wm-ee-kok-keong": {
+        "sat": {
           "type": "Fabrication",
-          "projectId": "bd-25225-nakano-st-eng-dc",
-          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
           "location": "",
           "notes": ""
+        }
+      },
+      "wt-hoomphaeng-kritsana": {
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "bd-19121-rbss-dnr",
+          "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
+          "location": "",
+          "notes": ""
+        },
+        "sat": {
+          "type": "Fabrication",
+          "projectId": "bd-23525-china-harbour-8sw",
+          "projectName": "8 Shenton Way",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wi-venkatakrishnapuram-palani": {
+        "sat": {
+          "type": "Fabrication",
+          "projectId": "bd-23625-the-reserve-residence",
+          "projectName": "The Reserve Residence",
+          "location": "",
+          "notes": "Cutting - Bollard"
         }
       }
     },
@@ -64,70 +89,6 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-17T10:55:37.587Z"
-  },
-  {
-    "weekStart": "2026-04-12",
-    "assignments": {
-      "wi-jayabalan-ramesh": {
-        "thu": {
-          "type": "Installation",
-          "projectId": "pj10726-clementi-close-metal",
-          "projectName": "Installation of Metal Works @ Clemeti Close Polyclinic",
-          "location": "",
-          "notes": ""
-        }
-      },
-      "supply-1776097870040": {
-        "tue": {
-          "type": "Installation",
-          "projectId": "bd-25526-parry-ave",
-          "projectName": "Nursing Home & Bed @ Parry Avenue",
-          "location": "",
-          "notes": ""
-        }
-      },
-      "wm-chin-poh-fatt": {
-        "mon": {
-          "type": "MC",
-          "notes": "MC"
-        },
-        "tue": {
-          "type": "Installation",
-          "projectId": "",
-          "projectName": "",
-          "location": "",
-          "notes": ""
-        }
-      },
-      "wm-pow-kin-pheng": {
-        "tue": {
-          "type": "Installation",
-          "projectId": "",
-          "projectName": "",
-          "location": "",
-          "notes": ""
-        }
-      },
-      "wm-tan-yock-wan": {
-        "wed": {
-          "type": "Fabrication",
-          "projectId": "",
-          "projectName": "",
-          "location": "",
-          "notes": ""
-        }
-      }
-    },
-    "supplyWorkers": [
-      {
-        "id": "supply-1776097870040",
-        "name": "Batman",
-        "company": "Greenmark",
-        "role": "Worker",
-        "code": "EXT"
-      }
-    ],
-    "savedAt": "2026-04-14T01:54:23.029Z"
+    "savedAt": "2026-04-18T07:22:21.597Z"
   }
 ]
