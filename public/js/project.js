@@ -1060,7 +1060,8 @@ function buildDocRow(doc, idx) {
   });
 
   row.querySelector('.doc-del-btn').addEventListener('click', async () => {
-    if (!confirm('Remove this document?')) return;
+    const result = await confirmDelete('Remove this document?', doc.name);
+    if (!result) return;
     // Delete all attached files from disk first
     const files = Array.isArray(project.documents[idx].files) ? project.documents[idx].files : [];
     for (const f of files) {
@@ -1358,7 +1359,8 @@ function buildDrawingRow(drawing, idx) {
 
   // Delete drawing
   row.querySelector('.drw-del-btn').addEventListener('click', async () => {
-    if (!confirm('Remove this drawing?')) return;
+    const result = await confirmDelete('Remove this drawing?', drawing.name || drawing.drawingNumber);
+    if (!result) return;
     if (drawing.file) {
       try { await fetch('/api/projects/' + projectId + '/upload/' + encodeURIComponent(drawing.file), { method: 'DELETE' }); } catch {}
     }
@@ -2365,9 +2367,9 @@ function buildMeetingCard(row, idx) {
     debouncedSave();
   });
 
-  div.querySelector('.del-meeting-btn').addEventListener('click', () => {
-    const confirmed = confirm('Delete this meeting note?');
-    if (!confirmed) return;
+  div.querySelector('.del-meeting-btn').addEventListener('click', async () => {
+    const result = await confirmDelete('Delete this meeting note?', meeting.date || 'Meeting ' + (idx+1));
+    if (!result) return;
     project.meetingNotes.splice(idx, 1);
     renderMeetings();
     saveProject();
@@ -2563,11 +2565,13 @@ async function renderClaimsTab() {
 
     // Wire delete buttons
     listEl.querySelectorAll('.claim-delete-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
+        const delResult = await confirmDelete('Delete this claim?', 'Claim ' + btn.dataset.id);
+        if (!delResult) return;
         showPinModal(async (pin) => {
           const result = await api('POST', '/api/admin/pin', { action: 'verify', pin });
           if (!result.ok) return false;
-          await api('DELETE', `/api/claims/${btn.dataset.id}`, { pin });
+          await api('DELETE', `/api/claims/${btn.dataset.id}`, { pin, deleteReason: delResult.reason });
           renderClaimsTab();
           return true;
         });

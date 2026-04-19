@@ -1024,7 +1024,8 @@ async function handleRequestAction(action, id) {
     return;
   }
   if (action === 'delete') {
-    if (!confirm('Delete this request? This cannot be undone.')) return;
+    const result = await confirmDelete('Delete this request?');
+    if (!result) return;
     try {
       const who = encodeURIComponent(currentEngineer || 'Site Engineer');
       const r = await fetch('/api/site-requests/' + id + '?actor=' + who, { method: 'DELETE' });
@@ -1357,7 +1358,8 @@ async function saveInstallLogEntry() {
 }
 
 async function deleteInstallLogEntry(pid, idx, logId) {
-  if (!confirm('Delete this log entry?')) return;
+  const result = await confirmDelete('Delete this log entry?');
+  if (!result) return;
   try {
     const res = await fetch(`/api/projects/${pid}/installation/${idx}/logs/${logId}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Delete failed');

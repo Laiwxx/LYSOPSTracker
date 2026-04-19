@@ -1099,13 +1099,11 @@ function buildCompactRow(task, opts) {
   delBtn.textContent = '🗑 Delete';
   delBtn.addEventListener('click', async e => {
     e.stopPropagation();
-    if (!confirm('Delete "' + task.title + '"? Cannot be undone.')) return;
-    const reason = prompt('Reason for deleting? (required)');
-    if (reason === null) return;
-    if (!reason.trim()) { alert('Reason is required.'); return; }
+    const result = await confirmDelete('Delete task?', task.title);
+    if (!result) return;
     await fetch('/api/tasks/' + task.id, {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deletedBy: 'Team View', reason: reason.trim() })
+      body: JSON.stringify({ deletedBy: 'Team View', reason: result.reason })
     });
     reloadAndRender();
   });

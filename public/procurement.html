@@ -1341,7 +1341,8 @@
   }
 
   async function deletePrice(id) {
-    if (!confirm('Delete this price entry?')) return;
+    const result = await confirmDelete('Delete this price entry?');
+    if (!result) return;
     try {
       const res = await fetch(`/api/prices/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed');
@@ -1446,7 +1447,8 @@
   }
 
   async function deleteSupplier(id) {
-    if (!confirm('Delete this supplier?')) return;
+    const result = await confirmDelete('Delete this supplier?');
+    if (!result) return;
     try {
       const res = await fetch(`/api/suppliers/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed');

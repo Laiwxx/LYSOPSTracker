@@ -125,3 +125,70 @@ function slugify(str) {
     .replace(/-+/g, '-')
     .slice(0, 60);
 }
+
+// ---------------------------------------------------------------------------
+// Delete confirmation with reason — returns Promise<{reason}> or null if cancelled
+// Usage: const result = await confirmDelete('Remove this document?');
+//        if (!result) return; // cancelled
+//        console.log(result.reason); // e.g. "Duplicate entry"
+// ---------------------------------------------------------------------------
+const DELETE_REASONS = [
+  'Duplicate entry',
+  'Created by mistake',
+  'No longer needed',
+  'Replaced by another',
+  'Data entered wrongly',
+  'Client / scope change',
+  'Other',
+];
+
+function confirmDelete(title, itemName) {
+  return new Promise(resolve => {
+    // Remove any existing modal
+    const old = document.getElementById('delete-reason-modal');
+    if (old) old.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'delete-reason-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:16px;';
+
+    overlay.innerHTML =
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;max-width:400px;width:100%;">' +
+        '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + escHtml(title || 'Confirm Delete') + '</div>' +
+        (itemName ? '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' + escHtml(itemName) + '</div>' : '<div style="margin-bottom:12px;"></div>') +
+        '<div style="margin-bottom:12px;">' +
+          '<label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Reason for deletion</label>' +
+          '<select id="delete-reason-select" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;">' +
+            '<option value="">-- Select a reason --</option>' +
+            DELETE_REASONS.map(r => '<option value="' + escHtml(r) + '">' + escHtml(r) + '</option>').join('') +
+          '</select>' +
+        '</div>' +
+        '<div id="delete-reason-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;">Please select a reason.</div>' +
+        '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+          '<button type="button" id="delete-cancel-btn" class="btn btn-ghost" style="padding:8px 16px;">Cancel</button>' +
+          '<button type="button" id="delete-confirm-btn" class="btn btn-primary" style="padding:8px 16px;background:var(--red);border-color:var(--red);">Delete</button>' +
+        '</div>' +
+      '</div>';
+
+    document.body.appendChild(overlay);
+
+    const sel = overlay.querySelector('#delete-reason-select');
+    const errDiv = overlay.querySelector('#delete-reason-error');
+    const confirmBtn = overlay.querySelector('#delete-confirm-btn');
+    const cancelBtn = overlay.querySelector('#delete-cancel-btn');
+
+    const cleanup = () => overlay.remove();
+
+    cancelBtn.addEventListener('click', () => { cleanup(); resolve(null); });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) { cleanup(); resolve(null); } });
+
+    confirmBtn.addEventListener('click', () => {
+      if (!sel.value) { errDiv.style.display = 'block'; sel.focus(); return; }
+      const reason = sel.value;
+      cleanup();
+      resolve({ reason });
+    });
+
+    sel.focus();
+  });
+}
