@@ -1019,21 +1019,200 @@ app.post('/api/projects', (req, res) => {
 const FAB_STAGES     = ['Not Started', 'In Progress', 'QC Check', 'Ready for Delivery', 'Delivered'];
 const INSTALL_STAGES = ['Not Started', 'In Progress', 'Installed', 'Verified'];
 
+// ── Auto-derive project stage statuses from operational data ─────────────────
+// Each stage maps to data the team already enters on ops pages.
+// Reads external files (PRs, POs, DOs) — cached per deriveFields batch.
+let _stageCache = null;
+function _getStageExternalData() {
+  if (!_stageCache) {
+    _stageCache = {
+      prs: readPRs(),
+      pos: readPOs(),
+      dos: readDOs(),
+    };
+    // Auto-clear after current tick to avoid stale reads
+    process.nextTick(() => { _stageCache = null; });
+  }
+  return _stageCache;
+}
+
+function deriveStages(p) {
+  const stages = p.stages;
+  if (!Array.isArray(stages) || stages.length === 0) return;
+
+  const ext = _getStageExternalData();
+
+  // ── Data signals from project sub-arrays ──
+  const fab       = p.fabrication   || [];
+  const inst      = p.installation  || [];
+  const docs      = p.documents     || [];
+  const drawings  = p.drawings      || [];
+  const meetings  = p.meetingNotes  || [];
+  const ms        = p.paymentMilestones || [];
+  const prpo      = p.prpo          || [];
+
+  // External data filtered to this project
+  const projectPRs = ext.prs.filter(pr => pr.projectCode === p.jobCode);
+  const projectPOs = ext.pos.filter(po => po.projectId === p.id || po.projectJobCode === p.jobCode);
+  const projectDOs = ext.dos.filter(d => d.projectCode === p.jobCode);
+
+  // ── Document signals ──
+  const safetyDocs = docs.filter(d => (d.group || '').includes('Safety'));
+  const hasSubmittedSafety = safetyDocs.some(d => d.status && d.status !== 'Not Submitted');
+  const allSafetyDone = safetyDocs.length > 0 &&
+    safetyDocs.every(d => d.status === 'Approved' || d.status === 'Submitted for Approval');
+
+  const drawingDocs = docs.filter(d => /shop.?draw|drawing/i.test(d.name || ''));
+  const hasDrawingSubmitted = drawingDocs.some(d => d.status && d.status !== 'Not Submitted') || drawings.length > 0;
+  const hasDrawingApproved = drawingDocs.some(d => d.status === 'Approved');
+
+  const sicDocs = docs.filter(d => /sic/i.test(d.name || ''));
+  const hasSICSubmitted = sicDocs.some(d => d.status && d.status !== 'Not Submitted');
+
+  // ── Fab signals ──
+  const hasFabRows       = fab.length > 0;
+  const anyFabStarted    = fab.some(r => r.status !== 'Not Started');
+  const anyFabHasLogs    = fab.some(r => Array.isArray(r.logs) && r.logs.length > 0);
+  const anyFabInProgress = fab.some(r => r.status === 'In Progress' || r.status === 'QC Check');
+  const anyFabReady      = fab.some(r => r.status === 'Ready for Delivery');
+  const anyFabDelivered  = fab.some(r => r.status === 'Delivered');
+  const allFabDelivered  = hasFabRows && fab.every(r => r.status === 'Delivered');
+
+  // ── Install signals ──
+  const anyInstStarted   = inst.some(r => r.status !== 'Not Started');
+  const anyInstHasLogs   = inst.some(r => Array.isArray(r.logs) && r.logs.length > 0);
+  const allInstDone      = inst.length > 0 && inst.every(r => r.status === 'Installed' || r.status === 'Verified');
+  const allInstVerified  = inst.length > 0 && inst.every(r => r.status === 'Verified');
+
+  // ── PR/PO signals ──
+  const hasPRs = projectPRs.length > 0 || prpo.some(r => r.prNo);
+  const hasPOs = projectPOs.length > 0 || prpo.some(r => r.poNo);
+
+  // ── Meeting signals ──
+  const hasMeetings = meetings.some(m => m.date || m.notes || m.attendees);
+
+  // ── Payment signals ──
+  const allPaid = ms.length > 0 && ms.every(m => m.status === 'Paid' || m.paid === true);
+
+  // ── Stage derivation map ──
+  // Key = stage name (supports both 21-stage and 12-stage variants)
+  // Value = { completed: bool, inProgress: bool }
+  const rules = {
+    // Bucket 1: project exists = done
+    'Quotation':              { c: true },
+    'LOI Received':           { c: true },
+    'Awarded':                { c: !!p.contractValue },
+    'LOA Received':           { c: !!p.contractValue },
+    'Contract Review':        { c: !!p.contractValue },
+    'QS Breakdown':           { c: !!p.qs },
+    'Job Code Created':       { c: !!p.jobCode },
+
+    // Bucket 2: auto-derived from ops data
+    'Kick-off Meeting':              { c: hasMeetings },
+    'Kickoff Meeting':               { c: hasMeetings },
+    'Safety Document Submission':    { c: allSafetyDone, ip: hasSubmittedSafety },
+    'Drawing Submission':            { c: hasDrawingApproved, ip: hasDrawingSubmitted },
+    'Drawing Approved':              { c: hasDrawingApproved },
+    'SIC Submission':                { c: hasSICSubmitted },
+    'Assign to Factory':             { c: anyFabStarted, ip: hasFabRows },
+    'Factory Take-off':              { c: anyFabStarted, ip: anyFabHasLogs || hasFabRows },
+    'PR to Purchaser':               { c: hasPRs },
+    'PO Issued':                     { c: hasPOs },
+    'Production / Fabrication':      { c: anyFabReady || anyFabDelivered, ip: anyFabInProgress },
+    'Fabrication':                   { c: anyFabReady || anyFabDelivered, ip: anyFabInProgress },
+    'Shipping':                      { c: anyFabDelivered, ip: anyFabReady },
+    'Delivered':                     { c: allFabDelivered, ip: anyFabDelivered },
+    'Delivery':                      { c: allFabDelivered, ip: anyFabDelivered },
+    'Site Ready':                    { c: false, ip: anyInstStarted },
+    'Installation':                  { c: allInstDone, ip: anyInstStarted || anyInstHasLogs },
+    'Handover':                      { c: allInstVerified && allPaid, ip: allInstDone },
+    'Handover / Inspection':         { c: allInstVerified && allPaid, ip: allInstDone },
+    'Final Claim & Closure':         { c: allPaid },
+  };
+
+  // Apply rules — always reflect current data (stages regress if items removed)
+  for (const stage of stages) {
+    const rule = rules[stage.name];
+    if (!rule) continue; // stages not in rules map are untouched (manual)
+
+    const derived = rule.c ? 'Completed' : rule.ip ? 'In Progress' : 'Not Started';
+
+    if (derived !== stage.status) {
+      stage.status = derived;
+      stage.statusChangedAt = new Date().toISOString();
+
+      // Set date fields on advance
+      if (derived === 'In Progress' && !stage.started) {
+        stage.started = new Date().toISOString().split('T')[0];
+      }
+      if (derived === 'Completed') {
+        if (!stage.started) stage.started = new Date().toISOString().split('T')[0];
+        if (!stage.done) stage.done = new Date().toISOString().split('T')[0];
+      }
+      // Clear done date on regress
+      if (derived !== 'Completed') {
+        stage.done = '';
+      }
+    }
+  }
+}
+
 // ── Derive computed fields from live sub-arrays ──────────────────────────────
 // Call this on every project before saving to keep derived fields accurate.
 function deriveFields(p) {
-  // fabPercent — from fabrication array
+  // fabPercent — from fabrication array (exclude parent container rows)
   const fabRows  = p.fabrication  || [];
-  const fabTotal = fabRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
-  const fabDone  = fabRows.reduce((s, r) => s + (parseFloat(r.qtyDone)  || 0), 0);
+  const fabRowsForPct = fabRows.filter(r => !r.isMechanicalParent);
+  const fabTotal = fabRowsForPct.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
+  const fabDone  = fabRowsForPct.reduce((s, r) => s + (parseFloat(r.qtyDone)  || 0), 0);
   p.fabPercent   = fabTotal > 0 ? Math.round(fabDone  / fabTotal  * 100) : 0;
 
   // Fab per-item stage: normalize + forward-only auto-advance from qty.
   // Only Not Started → In Progress is automatic; every other transition is manual.
+  // Skip parent rows — their status is derived from children below.
+  const PARENT_VALID = ['Not Started', 'Parts In Progress', 'Assembly', 'QC Check', 'Ready for Delivery', 'Delivered'];
   fabRows.forEach(r => {
+    if (r.isMechanicalParent) return; // derived below
     if (!FAB_STAGES.includes(r.status)) r.status = 'Not Started';
     const done = parseFloat(r.qtyDone) || 0;
     if (done > 0 && r.status === 'Not Started') r.status = 'In Progress';
+  });
+
+  // Auto-derive parent status from child fab parts + order parts
+  fabRows.forEach((r, idx) => {
+    if (!r.isMechanicalParent) return;
+    const children = fabRows.filter(c => c.parentIdx === idx && c.isPartRow);
+    const orderParts = Array.isArray(r.orderParts) ? r.orderParts : [];
+    const fabPartsDone = children.length === 0 || children.every(c =>
+      c.status === 'QC Check' || c.status === 'Ready for Delivery' || c.status === 'Delivered'
+    );
+    const orderPartsDone = orderParts.length === 0 || orderParts.every(p => p.status === 'Done');
+    const allPartsReady = fabPartsDone && orderPartsDone;
+    const anyStarted = children.some(c => c.status !== 'Not Started') ||
+      orderParts.some(p => p.status === 'Done');
+
+    // Parent status ladder: Not Started → Parts In Progress → Assembly → QC Check → Ready → Delivered
+    // If not all parts ready, force back to parts tracking (even if status was inherited).
+    // Only preserve manual status if it was set via Assembly flow (has _assemblyStarted flag).
+    if (!allPartsReady && (children.length > 0 || orderParts.length > 0)) {
+      // Parts incomplete — force to parts tracking regardless of inherited status
+      r.status = anyStarted ? 'Parts In Progress' : 'Not Started';
+    } else if (r._assemblyStarted && ['Assembly', 'QC Check', 'Ready for Delivery', 'Delivered'].includes(r.status)) {
+      // Manual control from Assembly onward — don't auto-regress
+    } else if (allPartsReady && (children.length > 0 || orderParts.length > 0)) {
+      r.status = 'Assembly';
+      r._assemblyStarted = true;
+    } else if (anyStarted) {
+      r.status = 'Parts In Progress';
+    } else {
+      r.status = 'Not Started';
+    }
+    // Compute parts progress counts for display
+    const totalParts = children.length + orderParts.length;
+    const doneParts = children.filter(c =>
+      c.status === 'QC Check' || c.status === 'Ready for Delivery' || c.status === 'Delivered'
+    ).length + orderParts.filter(p => p.status === 'Done').length;
+    r.partsProgress = { done: doneParts, total: totalParts };
   });
 
   // installPercent — from installation array
@@ -1061,6 +1240,9 @@ function deriveFields(p) {
   p.paidAmount = milestones
     .filter(m => m.status === 'Paid' || m.paid === true)
     .reduce((s, m) => s + (parseFloat(m.amount) || 0), 0);
+
+  // Auto-derive stage statuses from operational data
+  deriveStages(p);
 
   // currentStage — first In Progress, else first Not Started
   const stages = p.stages || [];
@@ -1322,6 +1504,13 @@ app.get('/api/factory-queue', (req, res) => {
         acknowledgedBy: req ? (req.acknowledgedBy || '') : '',
         acknowledgedAt: req ? (req.acknowledgedAt || null) : null,
         inProductionAt: req ? (req.inProductionAt || null) : null,
+        // Parts/BOM fields
+        isMechanicalParent: !!f.isMechanicalParent,
+        isPartRow: !!f.isPartRow,
+        parentIdx: f.parentIdx != null ? f.parentIdx : null,
+        partSource: f.partSource || null,
+        orderParts: Array.isArray(f.orderParts) ? f.orderParts : [],
+        partsProgress: f.partsProgress || null,
       };
     });
 
@@ -1345,7 +1534,7 @@ app.get('/api/factory-queue', (req, res) => {
 // writes from /project will NOT create a log entry — that's a temporary dual
 // path. When /project's fab edit UI is retired in Phase 4, qtyDone comes off
 // this list and logs[] becomes the only write path.
-const FAB_WRITABLE_FIELDS = ['item','unit','totalQty','qtyDone','status','readyForDelivery','targetDeliveryDate','readyAt','fabDeadline'];
+const FAB_WRITABLE_FIELDS = ['item','unit','totalQty','qtyDone','status','readyForDelivery','targetDeliveryDate','readyAt','fabDeadline','isMechanicalParent','parentIdx','isPartRow','partSource','orderParts'];
 
 // recomputeQtyDone — source of truth for qtyDone is sum(logs[].delta).
 // We keep qtyDone on the fab row as a CACHE so readers don't have to sum on
@@ -1379,6 +1568,7 @@ function recomputeQtyDone(fabItem) {
 // Only auto-derive for items currently in the pre-QC half of the ladder —
 // once Chris has advanced to QC/Ready/Delivered, we leave the status alone.
 function autoDeriveFabStatus(fabItem) {
+  if (fabItem.isMechanicalParent) return; // parent status derived from parts
   const total = parseFloat(fabItem.totalQty) || 0;
   const done  = parseFloat(fabItem.qtyDone)  || 0;
   if (total <= 1) return; // singletons: manual ladder only
@@ -2328,8 +2518,7 @@ function buildDefaultProject(data) {
     { num: 4,  name: 'Safety Document Submission',  owner: 'Project Manager' },
     { num: 5,  name: 'Drawing Submission',          owner: 'Drafter' },
     { num: 6,  name: 'SIC Submission',              owner: 'Project Manager' },
-    { num: 7,  name: 'Conduit Installation',        owner: 'Site Engineer' },
-    { num: 8,  name: 'Fabrication',                 owner: 'Factory Manager' },
+    { num: 7,  name: 'Fabrication',                 owner: 'Factory Manager' },
     { num: 9,  name: 'Delivery',                    owner: 'Purchaser' },
     { num: 10, name: 'Installation',                owner: 'Site Engineer' },
     { num: 11, name: 'Handover / Inspection',       owner: 'Project Manager' },

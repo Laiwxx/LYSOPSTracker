@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776527483">
+  <link rel="stylesheet" href="/css/style.css?v=1776604000">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 960px; margin: 0 auto; padding: 16px; }
@@ -354,6 +354,8 @@
     .stage-chip.s-qc-check         { background: rgba(217,119,6,0.15);   color: var(--amber);      border-color: var(--amber); }
     .stage-chip.s-ready-for-delivery { background: rgba(16,185,129,0.15); color: var(--green);     border-color: var(--green); }
     .stage-chip.s-delivered        { background: rgba(16,185,129,0.22);  color: var(--green);      border-color: var(--green); }
+    .stage-chip.s-assembly         { background: rgba(139,92,246,0.15);  color: #a78bfa;           border-color: #a78bfa; }
+    .stage-chip.s-parts-in-progress { background: rgba(217,119,6,0.12); color: var(--amber);      border-color: var(--amber); }
     .stage-chip.s-installed        { background: rgba(16,185,129,0.15);  color: var(--green);      border-color: var(--green); }
     .stage-chip.s-verified         { background: rgba(16,185,129,0.22);  color: var(--green);      border-color: var(--green); }
     .stage-chip.saving { opacity: 0.6; pointer-events: none; }
@@ -1783,6 +1785,9 @@ function renderFabItems(fp) {
     .toISOString().slice(0, 10);
 
   fabRows.forEach((row, idx) => {
+    // Skip child part rows — they render inside their parent card
+    if (row.isPartRow) return;
+
     const qtyTotal  = parseFloat(row.totalQty) || 0;
     const qtyDone   = parseFloat(row.qtyDone)  || 0;
     const isDone    = qtyTotal > 0 && qtyDone >= qtyTotal;
@@ -1792,6 +1797,109 @@ function renderFabItems(fp) {
     item.dataset.itemIdx = idx;
 
     const itemName   = row.item || row.product || 'Item ' + (idx + 1);
+
+    // ── Mechanical parent with parts — render parts card instead ──
+    if (row.isMechanicalParent) {
+      const children = fabRows.filter(c => c.parentIdx === idx && c.isPartRow);
+      const orderParts = Array.isArray(row.orderParts) ? row.orderParts : [];
+      const pp = row.partsProgress || { done: 0, total: children.length + orderParts.length };
+      const allReady = pp.total > 0 && pp.done === pp.total;
+      const ASSEMBLY_STAGES = ['Assembly', 'QC Check', 'Ready for Delivery', 'Delivered'];
+      const inAssembly = ASSEMBLY_STAGES.includes(row.status);
+      const parentStage = row.status || 'Not Started';
+      const stageClass = 's-' + parentStage.toLowerCase().replace(/\s+/g, '-');
+
+      let partsHtml = '';
+      // Fabricate parts — workable by Chris
+      children.forEach((child, ci) => {
+        const cIdx = fabRows.indexOf(child);
+        const cDone = parseFloat(child.qtyDone) || 0;
+        const cTotal = parseFloat(child.totalQty) || 0;
+        const cStatus = child.status || 'Not Started';
+        const cStageClass = 's-' + cStatus.toLowerCase().replace(/\s+/g, '-');
+        const cName = (child.item || '').replace(itemName + ' > ', '');
+        const cIsDone = cStatus === 'QC Check' || cStatus === 'Ready for Delivery' || cStatus === 'Delivered';
+        const cLogs = Array.isArray(child.logs) ? child.logs : [];
+        const cTodaysLogs = cLogs.filter(l => {
+          if (!l.loggedAt) return false;
+          const dSgt = new Date(new Date(l.loggedAt).toLocaleString('en-US', { timeZone: 'Asia/Singapore' })).toISOString().slice(0, 10);
+          return dSgt === todaySgt;
+        });
+        const cLoggedToday = cTodaysLogs.length > 0;
+        const cTodayDelta = cTodaysLogs.reduce((a, l) => a + (parseFloat(l.delta) || 0), 0);
+
+        partsHtml += `
+          <div class="part-row" style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);${cIsDone ? 'opacity:0.6;' : ''}">
+            <span style="font-size:12px;color:${cIsDone ? 'var(--green)' : 'var(--text)'};flex:1;font-weight:500;">${cIsDone ? '●' : '○'} ${escHtml(cName)}</span>
+            <span style="font-size:11px;color:var(--text-muted);">${cDone}/${cTotal}</span>
+            <span class="stage-chip ${cStageClass}" data-pid="${escHtml(fp.id)}" data-idx="${cIdx}" style="font-size:10px;padding:2px 8px;cursor:pointer;" title="Tap to advance">${escHtml(cStatus)}</span>
+            ${cLoggedToday
+              ? `<span style="font-size:10px;color:var(--green);">✓ +${cTodayDelta}</span>`
+              : `<button class="btn btn-ghost btn-sm fab-part-log-btn" data-pid="${escHtml(fp.id)}" data-idx="${cIdx}" data-name="${escHtml(child.item)}" style="font-size:10px;padding:2px 8px;">📷 Log</button>`
+            }
+          </div>`;
+      });
+
+      // Order parts — read-only for Chris
+      orderParts.forEach((op, opi) => {
+        const opDone = op.status === 'Done';
+        partsHtml += `
+          <div class="part-row" style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);${opDone ? 'opacity:0.6;' : ''}">
+            <span style="font-size:12px;color:${opDone ? 'var(--green)' : 'var(--amber)'};flex:1;font-weight:500;">${opDone ? '●' : '○'} ${escHtml(op.name)}</span>
+            <span style="font-size:11px;color:var(--text-muted);">qty: ${op.qty || 1}</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:${opDone ? 'rgba(16,185,129,0.15)' : 'rgba(217,119,6,0.15)'};color:${opDone ? 'var(--green)' : 'var(--amber)'};">${opDone ? 'Arrived' : 'Ordered'}</span>
+          </div>`;
+      });
+
+      // Assembly controls — only show if all parts ready
+      let assemblyHtml = '';
+      if (inAssembly) {
+        const aStageClass = 's-' + parentStage.toLowerCase().replace(/\s+/g, '-');
+        assemblyHtml = `
+          <div style="margin-top:8px;padding:8px;background:rgba(16,185,129,0.06);border-radius:6px;border:1px solid rgba(16,185,129,0.2);">
+            <div style="font-size:12px;font-weight:600;color:var(--green);margin-bottom:4px;">All parts ready — Assembly phase</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="stage-chip ${aStageClass}" data-pid="${escHtml(fp.id)}" data-idx="${idx}" style="cursor:pointer;" title="Tap to advance">${escHtml(parentStage)}</span>
+              <button class="stage-back" data-pid="${escHtml(fp.id)}" data-idx="${idx}" title="Step back">↶</button>
+            </div>
+          </div>`;
+      } else if (allReady) {
+        assemblyHtml = `
+          <div style="margin-top:8px;padding:8px;background:rgba(16,185,129,0.06);border-radius:6px;border:1px solid rgba(16,185,129,0.2);">
+            <div style="font-size:12px;font-weight:600;color:var(--green);">All parts ready — tap stage to begin assembly</div>
+            <span class="stage-chip s-assembly" data-pid="${escHtml(fp.id)}" data-idx="${idx}" style="cursor:pointer;margin-top:4px;" title="Begin assembly">Assembly</span>
+          </div>`;
+      }
+
+      item.innerHTML = `
+        <div class="fab-row-head">
+          <div class="fab-row-name" title="${escHtml(itemName)}">🔧 ${escHtml(itemName)}</div>
+          <span style="font-size:11px;color:var(--text-muted);font-weight:600;">${pp.done}/${pp.total} parts ready</span>
+        </div>
+        <div style="padding:4px 0 0 12px;">
+          ${partsHtml}
+        </div>
+        ${assemblyHtml}
+      `;
+
+      // Wire part log buttons
+      item.querySelectorAll('.fab-part-log-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          openLogModal(btn.dataset.pid, +btn.dataset.idx, btn.dataset.name, fp.jobCode || fp.projectName || '');
+        });
+      });
+      // Wire stage chips on parts
+      item.querySelectorAll('.stage-chip[data-idx]').forEach(chip => {
+        chip.addEventListener('click', () => updateFabItemStage(chip.dataset.pid, +chip.dataset.idx, +1));
+      });
+      // Wire stage back buttons
+      item.querySelectorAll('.stage-back[data-idx]').forEach(btn => {
+        btn.addEventListener('click', () => updateFabItemStage(btn.dataset.pid, +btn.dataset.idx, -1));
+      });
+
+      container.appendChild(item);
+      return; // skip normal rendering for parent rows
+    }
     const thumbsHtml = collectItemPhotos(fp, itemName).map(renderItemThumbHtml).join('');
     const curStage   = FAB_STAGES.includes(row.status) ? row.status : 'Not Started';
     const stageClass = 's-' + curStage.toLowerCase().replace(/\s+/g, '-');
@@ -2121,14 +2229,17 @@ async function saveFabField(pid, localRow, localIdx, fields) {
   return updated;
 }
 
+const PARENT_STAGES = ['Assembly', 'QC Check', 'Ready for Delivery', 'Delivered'];
 async function updateFabItemStage(pid, idx, direction) {
   const localRow = fabData[pid] && fabData[pid].fabrication && fabData[pid].fabrication[idx];
   if (!localRow) return;
-  const curStage = FAB_STAGES.includes(localRow.status) ? localRow.status : 'Not Started';
-  const curPos   = FAB_STAGES.indexOf(curStage);
-  const nextPos  = Math.max(0, Math.min(FAB_STAGES.length - 1, curPos + direction));
+  // Parent rows use a different stage ladder (Assembly onward)
+  const stages = localRow.isMechanicalParent ? PARENT_STAGES : FAB_STAGES;
+  const curStage = stages.includes(localRow.status) ? localRow.status : stages[0];
+  const curPos   = stages.indexOf(curStage);
+  const nextPos  = Math.max(0, Math.min(stages.length - 1, curPos + direction));
   if (nextPos === curPos) return;
-  const nextStage = FAB_STAGES[nextPos];
+  const nextStage = stages[nextPos];
 
   const item   = document.querySelector(`#pq-card-${pid} .factory-item[data-item-idx="${idx}"]`);
   const chipEl = item && item.querySelector('.stage-chip');

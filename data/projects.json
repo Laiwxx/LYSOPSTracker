@@ -3,7 +3,7 @@
     "id": "bd-19121-rbss-dnr",
     "jobCode": "BD 19121- RBSS (DNR)",
     "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
-    "product": "1x Block S - City Scape Gate - 4.4 Meters, 2x Block S - Auto Bollard Cova, 3x Block S - Auto Bollard Cova, 7x Block S - Auto Bollard Cova, 2x Block S - Cova Road Blocker, 1x Block S - Cova Road Blocker",
+    "product": "2x Block S - Auto Bollard Cova, 3x Block S - Auto Bollard Cova, 7x Block S - Auto Bollard Cova, 2x Block S - Cova Road Blocker, 1x Block S - Cova Road Blocker",
     "contractValue": 1595650,
     "voValue": 0,
     "client": "Police Force",
@@ -20,8 +20,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Job Code Created",
-    "actionBy": "Accounts",
+    "currentStage": "Assign to Factory",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -35,7 +35,7 @@
         "started": "2026-04-14",
         "done": "2026-04-14",
         "notes": "",
-        "statusChangedAt": "2026-04-14T03:49:06.513Z",
+        "statusChangedAt": "2026-04-19T09:58:45.273Z",
         "refs": [],
         "fileName": ""
       },
@@ -79,11 +79,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.619Z",
         "refs": [],
         "fileName": ""
       },
@@ -149,42 +149,30 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.619Z",
         "refs": [],
         "fileName": ""
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.619Z",
         "refs": [],
         "fileName": ""
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "refs": [],
-        "fileName": ""
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -196,7 +184,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -208,7 +196,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -220,7 +208,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -232,7 +220,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -244,7 +232,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -256,7 +244,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -268,7 +256,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -657,22 +645,14 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "Block S - City Scape Gate - 4.4 Meters",
-        "qty": 1,
-        "unit": "sets",
-        "zoneLabel": "",
-        "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": false
-      },
-      {
         "item": "Block S - Auto Bollard Cova",
         "qty": 2,
         "unit": "units",
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": true,
+        "parts": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -681,7 +661,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -690,7 +671,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -699,7 +681,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -708,7 +691,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "scopeNotes": "",
@@ -737,8 +721,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "LOI Received",
-    "actionBy": "Project Manager",
+    "currentStage": "Drawing Submission",
+    "actionBy": "Drafter",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -748,11 +732,11 @@
         "num": 1,
         "name": "LOI Received",
         "owner": "Project Manager",
-        "status": "In Progress",
+        "status": "Completed",
         "started": "2026-04-13",
-        "done": "",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": "2026-04-13T15:13:45.722Z",
+        "statusChangedAt": "2026-04-19T10:58:49.619Z",
         "refs": [],
         "fileName": ""
       },
@@ -760,11 +744,11 @@
         "num": 2,
         "name": "LOA Received",
         "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": "2026-04-13T15:13:49.457Z",
+        "statusChangedAt": "2026-04-19T10:58:49.619Z",
         "refs": [],
         "fileName": ""
       },
@@ -796,11 +780,11 @@
         "num": 5,
         "name": "Drawing Submission",
         "owner": "Drafter",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.619Z",
         "refs": [],
         "fileName": ""
       },
@@ -818,18 +802,6 @@
       },
       {
         "num": 7,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "refs": [],
-        "fileName": ""
-      },
-      {
-        "num": 8,
         "name": "Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -841,7 +813,7 @@
         "fileName": ""
       },
       {
-        "num": 9,
+        "num": 8,
         "name": "Delivery",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -853,7 +825,7 @@
         "fileName": ""
       },
       {
-        "num": 10,
+        "num": 9,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -865,7 +837,7 @@
         "fileName": ""
       },
       {
-        "num": 11,
+        "num": 10,
         "name": "Handover / Inspection",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -877,7 +849,7 @@
         "fileName": ""
       },
       {
-        "num": 12,
+        "num": 11,
         "name": "Final Claim & Closure",
         "owner": "QS",
         "status": "Not Started",
@@ -1227,8 +1199,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Conduit Installation",
-    "actionBy": "Site Engineer",
+    "currentStage": "Drawing Submission",
+    "actionBy": "Drafter",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -1262,11 +1234,11 @@
         "num": 3,
         "name": "Kickoff Meeting",
         "owner": "Project Manager",
-        "status": "Completed",
+        "status": "Not Started",
         "started": "2026-03-26",
-        "done": "2026-04-11",
+        "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-11T15:05:57.960Z",
+        "statusChangedAt": "2026-04-19T11:44:10.616Z",
         "refs": [],
         "fileName": ""
       },
@@ -1286,11 +1258,11 @@
         "num": 5,
         "name": "Drawing Submission",
         "owner": "Drafter",
-        "status": "Completed",
+        "status": "In Progress",
         "started": "2026-04-11",
-        "done": "2026-04-11",
+        "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-11T15:06:03.906Z",
+        "statusChangedAt": "2026-04-19T11:44:10.616Z",
         "refs": [],
         "fileName": ""
       },
@@ -1308,18 +1280,6 @@
       },
       {
         "num": 7,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "In Progress",
-        "started": "2026-04-11",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": "2026-04-11T15:06:08.421Z",
-        "refs": [],
-        "fileName": ""
-      },
-      {
-        "num": 8,
         "name": "Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -1331,7 +1291,7 @@
         "fileName": ""
       },
       {
-        "num": 9,
+        "num": 8,
         "name": "Delivery",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -1343,7 +1303,7 @@
         "fileName": ""
       },
       {
-        "num": 10,
+        "num": 9,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -1355,7 +1315,7 @@
         "fileName": ""
       },
       {
-        "num": 11,
+        "num": 10,
         "name": "Handover / Inspection",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -1367,7 +1327,7 @@
         "fileName": ""
       },
       {
-        "num": 12,
+        "num": 11,
         "name": "Final Claim & Closure",
         "owner": "QS",
         "status": "Not Started",
@@ -1575,7 +1535,8 @@
         "started": "",
         "done": "",
         "logs": [],
-        "fab_started_at": "2026-04-17T10:51:06.240Z"
+        "fab_started_at": "2026-04-17T10:51:06.240Z",
+        "fab_completed_at": null
       }
     ],
     "installation": [
@@ -1672,8 +1633,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Assign to Factory",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -1683,11 +1644,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "refs": [],
         "fileName": ""
       },
@@ -1695,11 +1656,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "refs": [],
         "fileName": ""
       },
@@ -1707,11 +1668,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "refs": [],
         "fileName": ""
       },
@@ -1719,11 +1680,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "refs": [],
         "fileName": ""
       },
@@ -1731,11 +1692,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "refs": [],
         "fileName": ""
       },
@@ -1801,42 +1762,30 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "refs": [],
         "fileName": ""
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "refs": [],
         "fileName": ""
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "refs": [],
-        "fileName": ""
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -1848,7 +1797,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -1860,7 +1809,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -1872,7 +1821,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -1884,7 +1833,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -1896,7 +1845,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -1908,7 +1857,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -1920,7 +1869,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -2153,8 +2102,8 @@
     "sales": "Janessa",
     "siteEngineer": "Jun Jie",
     "status": "Delayed",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Kick-off Meeting",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -2164,11 +2113,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -2176,11 +2125,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -2188,11 +2137,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -2200,11 +2149,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -2212,11 +2161,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -2282,18 +2231,6 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 12,
         "name": "Assign to Factory",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -2305,7 +2242,7 @@
         "refs": []
       },
       {
-        "num": 13,
+        "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -2317,7 +2254,7 @@
         "refs": []
       },
       {
-        "num": 14,
+        "num": 13,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -2329,7 +2266,7 @@
         "refs": []
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -2341,7 +2278,7 @@
         "refs": []
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -2353,7 +2290,7 @@
         "refs": []
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -2365,7 +2302,7 @@
         "refs": []
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -2377,7 +2314,7 @@
         "refs": []
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -2389,7 +2326,7 @@
         "refs": []
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -2401,7 +2338,7 @@
         "refs": []
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -2590,8 +2527,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "Delayed",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Assign to Factory",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -2601,55 +2538,55 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
@@ -2709,39 +2646,28 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": ""
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -2752,7 +2678,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -2763,7 +2689,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -2774,7 +2700,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -2785,7 +2711,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -2796,7 +2722,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -2807,7 +2733,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -2818,7 +2744,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -2918,7 +2844,9 @@
         "unit": "units",
         "qtyDone": 0,
         "status": "Not Started",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       }
     ],
     "installation": [],
@@ -2959,8 +2887,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "Delayed",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Kick-off Meeting",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -2970,55 +2898,55 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
@@ -3078,17 +3006,6 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": ""
-      },
-      {
-        "num": 12,
         "name": "Assign to Factory",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -3099,7 +3016,7 @@
         "fileName": ""
       },
       {
-        "num": 13,
+        "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -3110,7 +3027,7 @@
         "fileName": ""
       },
       {
-        "num": 14,
+        "num": 13,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -3121,7 +3038,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -3132,7 +3049,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -3143,7 +3060,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -3154,7 +3071,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -3165,7 +3082,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -3176,7 +3093,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -3187,7 +3104,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -3319,8 +3236,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Assign to Factory",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -3330,11 +3247,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -3342,11 +3259,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -3354,11 +3271,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -3366,11 +3283,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -3378,11 +3295,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -3448,42 +3365,30 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -3495,7 +3400,7 @@
         "refs": []
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -3507,7 +3412,7 @@
         "refs": []
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -3519,7 +3424,7 @@
         "refs": []
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -3531,7 +3436,7 @@
         "refs": []
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -3543,7 +3448,7 @@
         "refs": []
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -3555,7 +3460,7 @@
         "refs": []
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -3567,7 +3472,7 @@
         "refs": []
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -3723,7 +3628,9 @@
         ],
         "process": "Assembly",
         "targetDeliveryDate": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "Engineered Bollard - Ang Mo Kio",
@@ -3744,7 +3651,9 @@
         ],
         "process": "Assembly",
         "targetDeliveryDate": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "Engineered Bollard - Seng Kang",
@@ -3765,7 +3674,9 @@
         ],
         "process": "Assembly",
         "targetDeliveryDate": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "Engineered Bollard - Bedok",
@@ -3786,7 +3697,9 @@
         ],
         "process": "Assembly",
         "targetDeliveryDate": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "Engineered Bollard - Toh Payoh Interchange",
@@ -3807,7 +3720,9 @@
         ],
         "process": "Assembly",
         "targetDeliveryDate": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "Engineered Bollard - Clementi",
@@ -3820,7 +3735,9 @@
         "done": "",
         "process": "",
         "targetDeliveryDate": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "Engineered Bollard - Serangoon",
@@ -3833,7 +3750,9 @@
         "done": "",
         "process": "",
         "targetDeliveryDate": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       }
     ],
     "installation": [
@@ -3970,8 +3889,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Kick-off Meeting",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -3981,55 +3900,55 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
@@ -4089,17 +4008,6 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": ""
-      },
-      {
-        "num": 12,
         "name": "Assign to Factory",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -4110,7 +4018,7 @@
         "fileName": ""
       },
       {
-        "num": 13,
+        "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -4121,7 +4029,7 @@
         "fileName": ""
       },
       {
-        "num": 14,
+        "num": 13,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -4132,7 +4040,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -4143,7 +4051,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -4154,7 +4062,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -4165,7 +4073,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -4176,7 +4084,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -4187,7 +4095,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -4198,7 +4106,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -4330,8 +4238,8 @@
     "sales": "Janessa",
     "siteEngineer": "Teo Meei Haw",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Delivered",
+    "actionBy": "Purchaser",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -4341,11 +4249,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -4353,11 +4261,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -4365,11 +4273,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -4377,11 +4285,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -4389,11 +4297,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -4459,42 +4367,30 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T11:45:27.098Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T11:45:27.098Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -4506,7 +4402,7 @@
         "refs": []
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -4518,67 +4414,67 @@
         "refs": []
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T11:45:27.098Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 16,
+        "name": "Shipping",
+        "owner": "Purchaser",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
+        "notes": "",
+        "statusChangedAt": "2026-04-19T11:45:27.098Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 17,
-        "name": "Shipping",
+        "name": "Delivered",
         "owner": "Purchaser",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T11:45:27.098Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 18,
-        "name": "Delivered",
-        "owner": "Purchaser",
-        "status": "Not Started",
-        "started": "",
+        "name": "Site Ready",
+        "owner": "Project Manager/Site Engineer",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 19,
-        "name": "Site Ready",
-        "owner": "Project Manager/Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Installation",
+        "owner": "Site Engineer",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 20,
-        "name": "Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 21,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -4735,14 +4631,68 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "Ready for Delivery",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "fab_started_at": "2026-04-15T16:50:45.295Z",
         "fab_completed_at": "2026-04-15T16:50:45.295Z",
         "cycle_days": 0,
         "logs": [],
-        "fabDeadline": "2026-06-02"
+        "fabDeadline": "2026-06-02",
+        "isMechanicalParent": true,
+        "orderParts": [
+          {
+            "name": "Hydraulic Power Unit",
+            "qty": 1,
+            "status": "Pending"
+          },
+          {
+            "name": "Control panel",
+            "qty": 1,
+            "status": "Pending"
+          },
+          {
+            "name": "Motor + gearbox",
+            "qty": 1,
+            "status": "Pending"
+          }
+        ],
+        "partsProgress": {
+          "done": 0,
+          "total": 5
+        }
+      },
+      {
+        "item": "Cova Sliding Gate - 6 Meters + HPU > Gate frame",
+        "totalQty": 1,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "isPartRow": true,
+        "parentIdx": 1,
+        "partSource": "Fabricate",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
+      },
+      {
+        "item": "Cova Sliding Gate - 6 Meters + HPU > Track rail 6m",
+        "totalQty": 2,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "isPartRow": true,
+        "parentIdx": 1,
+        "partSource": "Fabricate",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       },
       {
         "item": "Cova Road Blocker 3 Meters",
@@ -4770,16 +4720,6 @@
         "fab_started_at": null,
         "fab_completed_at": "2026-04-15T17:48:58.206Z",
         "fabDeadline": "2026-04-02"
-      },
-      {
-        "item": "Cometa Man Trap",
-        "totalQty": 2,
-        "unit": "units",
-        "qtyDone": 0,
-        "qtySent": 0,
-        "status": "Not Started",
-        "started": "",
-        "done": ""
       }
     ],
     "installation": [
@@ -4845,7 +4785,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
@@ -4853,8 +4794,35 @@
         "unit": "units",
         "zoneLabel": "",
         "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": false
+        "itemType": "Mechanical",
+        "partsRequired": false,
+        "parts": [
+          {
+            "name": "Gate frame",
+            "qty": 1,
+            "source": "Fabricate"
+          },
+          {
+            "name": "Track rail 6m",
+            "qty": 2,
+            "source": "Fabricate"
+          },
+          {
+            "name": "Hydraulic Power Unit",
+            "qty": 1,
+            "source": "Order"
+          },
+          {
+            "name": "Control panel",
+            "qty": 1,
+            "source": "Order"
+          },
+          {
+            "name": "Motor + gearbox",
+            "qty": 1,
+            "source": "Order"
+          }
+        ]
       },
       {
         "item": "Cova Road Blocker 3 Meters",
@@ -4862,8 +4830,9 @@
         "unit": "set-of-1",
         "zoneLabel": "",
         "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": false
+        "itemType": "Mechanical",
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
@@ -4872,7 +4841,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Cometa Man Trap",
@@ -4881,7 +4851,8 @@
         "type": "Overseas Order",
         "itemType": "Mechanical",
         "partsRequired": false,
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "parts": []
       }
     ],
     "scopeNotes": "",
@@ -4911,8 +4882,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "Delayed",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Kick-off Meeting",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -4922,55 +4893,55 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
@@ -5030,17 +5001,6 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": ""
-      },
-      {
-        "num": 12,
         "name": "Assign to Factory",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -5051,7 +5011,7 @@
         "fileName": ""
       },
       {
-        "num": 13,
+        "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5062,7 +5022,7 @@
         "fileName": ""
       },
       {
-        "num": 14,
+        "num": 13,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5073,7 +5033,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5084,7 +5044,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5095,7 +5055,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5106,7 +5066,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5117,7 +5077,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -5128,7 +5088,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -5139,7 +5099,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -5271,8 +5231,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Kick-off Meeting",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -5282,55 +5242,55 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
@@ -5390,17 +5350,6 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": ""
-      },
-      {
-        "num": 12,
         "name": "Assign to Factory",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -5411,7 +5360,7 @@
         "fileName": ""
       },
       {
-        "num": 13,
+        "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5422,7 +5371,7 @@
         "fileName": ""
       },
       {
-        "num": 14,
+        "num": 13,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5433,7 +5382,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5444,7 +5393,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5455,7 +5404,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5466,7 +5415,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5477,7 +5426,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -5488,7 +5437,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -5499,7 +5448,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -5631,8 +5580,8 @@
     "sales": "Janessa",
     "siteEngineer": "Jun Jie",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Assign to Factory",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -5642,11 +5591,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -5654,11 +5603,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -5666,11 +5615,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -5678,11 +5627,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -5690,11 +5639,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -5760,42 +5709,30 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5807,7 +5744,7 @@
         "refs": []
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5819,7 +5756,7 @@
         "refs": []
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -5831,7 +5768,7 @@
         "refs": []
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5843,7 +5780,7 @@
         "refs": []
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -5855,7 +5792,7 @@
         "refs": []
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -5867,7 +5804,7 @@
         "refs": []
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -5879,7 +5816,7 @@
         "refs": []
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -6113,8 +6050,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Assign to Factory",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -6124,11 +6061,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6136,11 +6073,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6148,11 +6085,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6160,11 +6097,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6172,11 +6109,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6242,42 +6179,30 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -6289,7 +6214,7 @@
         "refs": []
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -6301,7 +6226,7 @@
         "refs": []
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -6313,7 +6238,7 @@
         "refs": []
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -6325,7 +6250,7 @@
         "refs": []
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -6337,7 +6262,7 @@
         "refs": []
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -6349,7 +6274,7 @@
         "refs": []
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -6361,7 +6286,7 @@
         "refs": []
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -6507,7 +6432,9 @@
         "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       }
     ],
     "installation": [
@@ -6572,8 +6499,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Assign to Factory",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -6583,11 +6510,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6595,11 +6522,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6607,11 +6534,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6619,11 +6546,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6631,11 +6558,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -6701,42 +6628,30 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 12,
-        "name": "Assign to Factory",
-        "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
       {
         "num": 13,
-        "name": "Factory Take-off",
-        "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 14,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -6748,7 +6663,7 @@
         "refs": []
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -6760,7 +6675,7 @@
         "refs": []
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -6772,7 +6687,7 @@
         "refs": []
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -6784,7 +6699,7 @@
         "refs": []
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -6796,7 +6711,7 @@
         "refs": []
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -6808,7 +6723,7 @@
         "refs": []
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -6820,7 +6735,7 @@
         "refs": []
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -6966,7 +6881,9 @@
         "status": "Not Started",
         "started": "",
         "done": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       }
     ],
     "installation": [
@@ -7022,8 +6939,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Kick-off Meeting",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -7033,11 +6950,11 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -7045,11 +6962,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -7057,11 +6974,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -7069,11 +6986,11 @@
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -7081,11 +6998,11 @@
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": "",
         "refs": []
       },
@@ -7151,18 +7068,6 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": "",
-        "refs": []
-      },
-      {
-        "num": 12,
         "name": "Assign to Factory",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -7174,7 +7079,7 @@
         "refs": []
       },
       {
-        "num": 13,
+        "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -7186,7 +7091,7 @@
         "refs": []
       },
       {
-        "num": 14,
+        "num": 13,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -7198,7 +7103,7 @@
         "refs": []
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -7210,7 +7115,7 @@
         "refs": []
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -7222,7 +7127,7 @@
         "refs": []
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -7234,7 +7139,7 @@
         "refs": []
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -7246,7 +7151,7 @@
         "refs": []
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -7258,7 +7163,7 @@
         "refs": []
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -7270,7 +7175,7 @@
         "refs": []
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -7449,8 +7354,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Quotation",
-    "actionBy": "Sales",
+    "currentStage": "Kick-off Meeting",
+    "actionBy": "Project Manager",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -7460,55 +7365,55 @@
         "num": 1,
         "name": "Quotation",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 4,
         "name": "QS Breakdown",
         "owner": "QS",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
         "num": 5,
         "name": "Job Code Created",
         "owner": "Accounts",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-19",
+        "done": "2026-04-19",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T10:58:49.620Z",
         "fileName": ""
       },
       {
@@ -7568,17 +7473,6 @@
       },
       {
         "num": 11,
-        "name": "Conduit Installation",
-        "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "notes": "",
-        "statusChangedAt": null,
-        "fileName": ""
-      },
-      {
-        "num": 12,
         "name": "Assign to Factory",
         "owner": "Project Manager",
         "status": "Not Started",
@@ -7589,7 +7483,7 @@
         "fileName": ""
       },
       {
-        "num": 13,
+        "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -7600,7 +7494,7 @@
         "fileName": ""
       },
       {
-        "num": 14,
+        "num": 13,
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -7611,7 +7505,7 @@
         "fileName": ""
       },
       {
-        "num": 15,
+        "num": 14,
         "name": "PO Issued",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -7622,7 +7516,7 @@
         "fileName": ""
       },
       {
-        "num": 16,
+        "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
         "status": "Not Started",
@@ -7633,7 +7527,7 @@
         "fileName": ""
       },
       {
-        "num": 17,
+        "num": 16,
         "name": "Shipping",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -7644,7 +7538,7 @@
         "fileName": ""
       },
       {
-        "num": 18,
+        "num": 17,
         "name": "Delivered",
         "owner": "Purchaser",
         "status": "Not Started",
@@ -7655,7 +7549,7 @@
         "fileName": ""
       },
       {
-        "num": 19,
+        "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
@@ -7666,7 +7560,7 @@
         "fileName": ""
       },
       {
-        "num": 20,
+        "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
@@ -7677,7 +7571,7 @@
         "fileName": ""
       },
       {
-        "num": 21,
+        "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
         "status": "Not Started",

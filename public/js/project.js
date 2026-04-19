@@ -176,6 +176,7 @@ function renderAll() {
   renderDocuments();
   renderDrawings();
   renderProjectTimeline();
+  renderStageProgress();
   renderFabrication();
   renderInstallation();
   renderDeliveryRequestsTab();
@@ -371,6 +372,145 @@ function renderFields() {
       });
     }
   });
+}
+
+// ── Stage Progress (auto-derived, with trigger reasons) ─────────────────────
+function renderStageProgress() {
+  const el = document.getElementById('stage-progress-list');
+  if (!el) return;
+
+  const stages = project.stages || [];
+  if (!stages.length) {
+    el.innerHTML = '<div style="color:var(--text-muted);padding:6px 0;">No stages defined.</div>';
+    return;
+  }
+
+  // Build trigger reasons client-side (mirrors server deriveStages logic)
+  const fab       = project.fabrication   || [];
+  const inst      = project.installation  || [];
+  const docs      = project.documents     || [];
+  const drawings  = project.drawings      || [];
+  const meetings  = project.meetingNotes  || [];
+  const ms        = project.paymentMilestones || [];
+  const prpo      = project.prpo          || [];
+
+  const safetyDocs = docs.filter(d => (d.group || '').includes('Safety'));
+  const drawingDocs = docs.filter(d => /shop.?draw|drawing/i.test(d.name || ''));
+  const sicDocs = docs.filter(d => /sic/i.test(d.name || ''));
+
+  // Trigger reason map — explains WHY each stage has its status
+  const reasons = {
+    'Quotation':            () => project.contractValue ? 'Contract value set ($' + Number(project.contractValue).toLocaleString() + ')' : 'No contract value',
+    'LOI Received':         () => project.contractValue ? 'Contract value set' : 'No contract value',
+    'Awarded':              () => project.contractValue ? 'Contract value: $' + Number(project.contractValue).toLocaleString() : 'No contract value set',
+    'LOA Received':         () => project.contractValue ? 'Contract value set' : 'No contract value',
+    'Contract Review':      () => project.contractValue ? 'Contract value exists' : 'No contract value',
+    'QS Breakdown':         () => project.qs ? 'QS: ' + project.qs : 'No QS assigned',
+    'Job Code Created':     () => project.jobCode ? 'Code: ' + project.jobCode : 'No job code',
+    'Kick-off Meeting':     () => { const m = meetings.find(m2 => m2.date || m2.notes); return m ? 'Meeting logged' + (m.date ? ' on ' + m.date : '') : 'No meeting notes in Meetings tab'; },
+    'Kickoff Meeting':      () => { const m = meetings.find(m2 => m2.date || m2.notes); return m ? 'Meeting logged' + (m.date ? ' on ' + m.date : '') : 'No meeting notes in Meetings tab'; },
+    'Safety Document Submission': () => {
+      const submitted = safetyDocs.filter(d => d.status && d.status !== 'Not Submitted').length;
+      return submitted > 0 ? submitted + '/' + safetyDocs.length + ' safety docs submitted' : safetyDocs.length + ' safety docs — none submitted yet (Documents tab)';
+    },
+    'Drawing Submission':   () => {
+      const hasFiles = drawings.length > 0;
+      const hasDoc = drawingDocs.some(d => d.status && d.status !== 'Not Submitted');
+      if (hasDoc) return 'Shop drawing submitted in Documents tab';
+      if (hasFiles) return drawings.length + ' drawing file(s) uploaded';
+      return 'No drawings uploaded (Drawings tab) and no shop drawing submitted (Documents tab)';
+    },
+    'Drawing Approved':     () => { const a = drawingDocs.find(d => d.status === 'Approved'); return a ? 'Shop drawing approved' : 'Shop drawing not yet approved (Documents tab)'; },
+    'SIC Submission':       () => { const s = sicDocs.find(d => d.status && d.status !== 'Not Submitted'); return s ? 'SIC doc: ' + s.status : 'SIC not submitted (Documents tab)'; },
+    'Assign to Factory':    () => {
+      const started = fab.filter(r => r.status !== 'Not Started').length;
+      return fab.length > 0 ? fab.length + ' fab items (' + started + ' started)' : 'No fab items created yet (Product Scope)';
+    },
+    'Factory Take-off':     () => {
+      const withLogs = fab.filter(r => Array.isArray(r.logs) && r.logs.length > 0).length;
+      const started = fab.filter(r => r.status !== 'Not Started').length;
+      if (withLogs > 0) return withLogs + ' fab items have daily logs (Factory page)';
+      if (started > 0) return started + ' fab items started';
+      return fab.length > 0 ? fab.length + ' fab items — none started (Factory page)' : 'No fab items';
+    },
+    'PR to Purchaser':      () => { const hasPR = prpo.some(r => r.prNo); return hasPR ? 'PR found in PRPO records' : 'No PRs raised (Procurement page)'; },
+    'PO Issued':            () => { const hasPO = prpo.some(r => r.poNo); return hasPO ? 'PO found in PRPO records' : 'No POs issued (Procurement page)'; },
+    'Production / Fabrication': () => {
+      const ip = fab.filter(r => r.status === 'In Progress' || r.status === 'QC Check').length;
+      const ready = fab.filter(r => r.status === 'Ready for Delivery' || r.status === 'Delivered').length;
+      if (ready > 0) return ready + '/' + fab.length + ' items past production';
+      if (ip > 0) return ip + '/' + fab.length + ' items in production (Factory page)';
+      return 'No fab items in production yet (Factory page)';
+    },
+    'Fabrication':          () => {
+      const ip = fab.filter(r => r.status === 'In Progress' || r.status === 'QC Check').length;
+      const ready = fab.filter(r => r.status === 'Ready for Delivery' || r.status === 'Delivered').length;
+      if (ready > 0) return ready + '/' + fab.length + ' items past production';
+      if (ip > 0) return ip + '/' + fab.length + ' items in production';
+      return 'No fab items in production yet';
+    },
+    'Shipping':             () => {
+      const ready = fab.filter(r => r.status === 'Ready for Delivery').length;
+      const delivered = fab.filter(r => r.status === 'Delivered').length;
+      if (delivered > 0) return delivered + '/' + fab.length + ' delivered';
+      if (ready > 0) return ready + '/' + fab.length + ' ready for delivery (Factory page)';
+      return 'No items ready for delivery yet';
+    },
+    'Delivered':            () => {
+      const delivered = fab.filter(r => r.status === 'Delivered').length;
+      return delivered > 0 ? delivered + '/' + fab.length + ' items delivered' : 'No items delivered yet (Factory page)';
+    },
+    'Delivery':             () => {
+      const delivered = fab.filter(r => r.status === 'Delivered').length;
+      return delivered > 0 ? delivered + '/' + fab.length + ' items delivered' : 'No items delivered yet';
+    },
+    'Site Ready':           () => { const started = inst.filter(r => r.status !== 'Not Started').length; return started > 0 ? 'Install items started — site is active' : 'No install items started (Installation page)'; },
+    'Installation':         () => {
+      const done = inst.filter(r => r.status === 'Installed' || r.status === 'Verified').length;
+      const ip = inst.filter(r => r.status === 'In Progress').length;
+      if (done === inst.length && inst.length > 0) return 'All ' + inst.length + ' items installed';
+      if (ip > 0 || done > 0) return (ip + done) + '/' + inst.length + ' items in progress/done (Installation page)';
+      return 'No install items started (Installation page)';
+    },
+    'Handover':             () => {
+      const allVerified = inst.length > 0 && inst.every(r => r.status === 'Verified');
+      const allPaid = ms.length > 0 && ms.every(m => m.status === 'Paid' || m.paid === true);
+      if (allVerified && allPaid) return 'All installed + all paid';
+      const parts = [];
+      if (!allVerified) { const v = inst.filter(r => r.status === 'Verified').length; parts.push(v + '/' + inst.length + ' verified (Installation page)'); }
+      if (!allPaid) { const p2 = ms.filter(m => m.status === 'Paid' || m.paid === true).length; parts.push(p2 + '/' + ms.length + ' milestones paid (Payment tab)'); }
+      return parts.join(' · ') || 'No install/payment data';
+    },
+    'Handover / Inspection': () => reasons['Handover'](),
+    'Final Claim & Closure': () => { const p2 = ms.filter(m => m.status === 'Paid' || m.paid === true).length; return p2 + '/' + ms.length + ' milestones paid (Payment tab)'; },
+  };
+
+  const completed = stages.filter(s => s.status === 'Completed').length;
+
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <span style="font-size:11px;color:var(--text-muted);">${completed} / ${stages.length} completed</span>
+    <div class="progress-bar" style="height:6px;flex:1;margin-left:12px;max-width:200px;">
+      <div class="progress-fill green" style="width:${Math.round(completed/stages.length*100)}%"></div>
+    </div>
+  </div>`;
+
+  stages.forEach(s => {
+    const icon = s.status === 'Completed' ? '●' : s.status === 'In Progress' ? '◐' : '○';
+    const color = s.status === 'Completed' ? 'var(--green)' : s.status === 'In Progress' ? 'var(--accent)' : 'var(--text-muted)';
+    const reasonFn = reasons[s.name];
+    const reason = reasonFn ? reasonFn() : '';
+
+    html += `<div style="display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <span style="color:${color};font-size:13px;line-height:1;margin-top:1px;">${icon}</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:${s.status === 'Not Started' ? '400' : '600'};color:${s.status === 'Not Started' ? 'var(--text-muted)' : 'var(--text)'};">${escHtml(s.name)}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:1px;">${escHtml(reason)}</div>
+      </div>
+      ${s.done ? '<span style="font-size:10px;color:var(--text-muted);white-space:nowrap;">' + escHtml(s.done) + '</span>' : ''}
+    </div>`;
+  });
+
+  el.innerHTML = html;
 }
 
 // ── Tab Switching ────────────────────────────────────────────────────────────
@@ -1026,6 +1166,76 @@ function bindRemovePdf(fileDisplay, section, idx) {
 }
 
 // ── Product Scope Table ───────────────────────────────────────────────────────
+// ── Parts sub-row builder ────────────────────────────────────────────────────
+function _buildPartsRow(scopeIdx, row) {
+  const tr = document.createElement('tr');
+  tr.className = 'parts-row';
+  const td = document.createElement('td');
+  td.colSpan = 7;
+  td.style.cssText = 'padding:6px 12px 10px 32px; background:rgba(255,255,255,0.02); border-left:3px solid var(--accent);';
+
+  if (!Array.isArray(row.parts)) row.parts = [];
+
+  const renderInner = () => {
+    const parts = project.productScope[scopeIdx].parts;
+    let html = '<div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:6px;">Parts / Components</div>';
+    html += '<table style="width:100%;border-collapse:collapse;">';
+    html += '<thead><tr><th style="text-align:left;font-size:11px;padding:2px 6px;color:var(--text-muted);">Part Name</th><th style="width:60px;font-size:11px;padding:2px 6px;color:var(--text-muted);">Qty</th><th style="width:120px;font-size:11px;padding:2px 6px;color:var(--text-muted);">Source</th><th style="width:30px;"></th></tr></thead>';
+    html += '<tbody>';
+    parts.forEach((part, pi) => {
+      html += `<tr>
+        <td style="padding:2px 4px;"><input class="tbl-input part-name" data-pi="${pi}" value="${escHtml(part.name || '')}" placeholder="e.g. Hydraulic pump" style="width:100%;font-size:12px;"></td>
+        <td style="padding:2px 4px;"><input class="tbl-input part-qty" data-pi="${pi}" type="number" value="${part.qty || 1}" min="1" style="width:50px;font-size:12px;"></td>
+        <td style="padding:2px 4px;">
+          <select class="tbl-input part-source" data-pi="${pi}" style="width:110px;font-size:12px;">
+            <option value="Fabricate" ${part.source === 'Fabricate' ? 'selected' : ''}>Fabricate</option>
+            <option value="Order"     ${part.source === 'Order'     ? 'selected' : ''}>Order</option>
+          </select>
+        </td>
+        <td style="padding:2px 4px;"><button class="btn btn-ghost btn-sm part-del" data-pi="${pi}" title="Remove" style="font-size:11px;padding:1px 6px;">✕</button></td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    html += '<button class="btn btn-ghost btn-sm part-add" style="font-size:11px;margin-top:4px;">+ Add Part</button>';
+    td.innerHTML = html;
+
+    // Wire events
+    td.querySelectorAll('.part-name').forEach(el => {
+      el.addEventListener('input', () => {
+        project.productScope[scopeIdx].parts[+el.dataset.pi].name = el.value;
+        debouncedSave();
+      });
+    });
+    td.querySelectorAll('.part-qty').forEach(el => {
+      el.addEventListener('input', () => {
+        project.productScope[scopeIdx].parts[+el.dataset.pi].qty = Number(el.value) || 1;
+        debouncedSave();
+      });
+    });
+    td.querySelectorAll('.part-source').forEach(el => {
+      el.addEventListener('change', () => {
+        project.productScope[scopeIdx].parts[+el.dataset.pi].source = el.value;
+        debouncedSave();
+      });
+    });
+    td.querySelectorAll('.part-del').forEach(el => {
+      el.addEventListener('click', () => {
+        project.productScope[scopeIdx].parts.splice(+el.dataset.pi, 1);
+        debouncedSave();
+        renderInner();
+      });
+    });
+    td.querySelector('.part-add').addEventListener('click', () => {
+      project.productScope[scopeIdx].parts.push({ name: '', qty: 1, source: 'Fabricate' });
+      renderInner();
+    });
+  };
+
+  renderInner();
+  tr.appendChild(td);
+  return tr;
+}
+
 function renderProductScope() {
   const tbody = document.getElementById('product-scope-tbody');
   if (!tbody) return;
@@ -1043,29 +1253,17 @@ function renderProductScope() {
   tbody.innerHTML = '';
   project.productScope.forEach((row, idx) => {
     const tr = document.createElement('tr');
-    const zoneLabelHtml = row.unit === 'zone'
-      ? `<input class="tbl-input zone-label-input" type="text" value="${escHtml(row.zoneLabel || '')}" placeholder="e.g. Zone A" style="width:80px; margin-left:4px;">`
-      : `<input class="tbl-input zone-label-input" type="text" value="${escHtml(row.zoneLabel || '')}" placeholder="e.g. Zone A" style="width:80px; margin-left:4px; display:none;">`;
-    // Default new rows to Local Fabrication / Fixed / Parts: No
+    // Default new rows
     if (row.type == null)       row.type       = 'Local Fabrication';
     if (row.itemType == null)   row.itemType   = 'Fixed';
     if (row.partsRequired == null) row.partsRequired = false;
+    if (!Array.isArray(row.parts)) row.parts = [];
 
     tr.innerHTML = `
       <td><input class="tbl-input ps-item" value="${escHtml(row.item || '')}" placeholder="e.g. SP30 Fixed Bollard" style="min-width:160px; width:100%;"></td>
       <td><input class="tbl-input ps-qty" type="number" value="${row.qty || 1}" min="1" style="width:60px;"></td>
       <td style="white-space:nowrap;">
-        <select class="tbl-input unit-select" style="width:100px;">
-          <option value="units"     ${row.unit === 'units'     ? 'selected' : ''}>units</option>
-          <option value="sets"      ${row.unit === 'sets'      ? 'selected' : ''}>sets</option>
-          <option value="set-of-1"  ${row.unit === 'set-of-1'  ? 'selected' : ''}>Set of 1</option>
-          <option value="set-of-2"  ${row.unit === 'set-of-2'  ? 'selected' : ''}>Set of 2</option>
-          <option value="set-of-3"  ${row.unit === 'set-of-3'  ? 'selected' : ''}>Set of 3</option>
-          <option value="set-of-4"  ${row.unit === 'set-of-4'  ? 'selected' : ''}>Set of 4</option>
-          <option value="m"         ${row.unit === 'm'         ? 'selected' : ''}>m</option>
-          <option value="pcs"       ${row.unit === 'pcs'       ? 'selected' : ''}>pcs</option>
-          <option value="zone"      ${row.unit === 'zone'      ? 'selected' : ''}>Zone</option>
-        </select>${zoneLabelHtml}
+        <input class="tbl-input unit-input" type="text" list="unit-suggestions" value="${escHtml(row.unit || 'units')}" placeholder="units" style="width:100px;">
       </td>
       <td>
         <select class="tbl-input ps-type" style="width:140px;">
@@ -1087,16 +1285,15 @@ function renderProductScope() {
     `;
     const iItem = tr.querySelector('input.ps-item');
     const iQty  = tr.querySelector('input.ps-qty');
-    const iUnit = tr.querySelector('select.unit-select');
-    const iZoneLabel = tr.querySelector('.zone-label-input');
+    const iUnit = tr.querySelector('input.unit-input');
     const iType = tr.querySelector('select.ps-type');
     const iItemType = tr.querySelector('select.ps-itemtype');
     const iParts = tr.querySelector('input.ps-parts');
+
     const sync = () => {
       project.productScope[idx].item      = iItem.value;
       project.productScope[idx].qty       = Number(iQty.value) || 1;
       project.productScope[idx].unit      = iUnit.value;
-      project.productScope[idx].zoneLabel = iUnit.value === 'zone' ? iZoneLabel.value : '';
       project.productScope[idx].type      = iType.value;
       project.productScope[idx].itemType  = iItemType.value;
       project.productScope[idx].partsRequired = !!iParts.checked;
@@ -1107,21 +1304,42 @@ function renderProductScope() {
         .join(', ');
       debouncedSave();
     };
-    [iItem, iQty, iZoneLabel].forEach(el => el.addEventListener('input', sync));
+    [iItem, iQty, iUnit].forEach(el => el.addEventListener('input', sync));
     iQty.addEventListener('change', sync);
     iType.addEventListener('change', sync);
     iItemType.addEventListener('change', sync);
-    iParts.addEventListener('change', sync);
-    iUnit.addEventListener('change', () => {
-      iZoneLabel.style.display = iUnit.value === 'zone' ? 'inline-block' : 'none';
+
+    // Parts toggle — show/hide parts sub-table
+    const updatePartsVisibility = () => {
+      const show = iParts.checked;
+      project.productScope[idx].partsRequired = show;
+      // Find or create parts row
+      let partsRow = tr.nextElementSibling;
+      if (partsRow && partsRow.classList.contains('parts-row')) {
+        partsRow.style.display = show ? '' : 'none';
+      } else if (show) {
+        partsRow = _buildPartsRow(idx, row);
+        tr.parentNode.insertBefore(partsRow, tr.nextSibling);
+      }
       sync();
-    });
+    };
+    iParts.addEventListener('change', updatePartsVisibility);
+
     tr.querySelector('.del-row-btn').addEventListener('click', () => {
+      // Remove parts row if it exists
+      const nextRow = tr.nextElementSibling;
+      if (nextRow && nextRow.classList.contains('parts-row')) nextRow.remove();
       project.productScope.splice(idx, 1);
       renderProductScope();
       debouncedSave();
     });
     tbody.appendChild(tr);
+
+    // If parts already checked, render parts row
+    if (row.partsRequired) {
+      const partsRow = _buildPartsRow(idx, row);
+      tbody.appendChild(partsRow);
+    }
   });
 
   // Add row button
@@ -1140,34 +1358,118 @@ function renderProductScope() {
       if (!Array.isArray(project.fabrication)) project.fabrication = [];
       if (!Array.isArray(project.installation)) project.installation = [];
 
-      // Sync each product scope row as-is — no merging, preserve individual rows
-      const items = project.productScope.filter(r => r.item && r.item.trim());
+      // Only sync Local Fabrication items to FAB — skip Overseas Order / Purchase Item
+      const allItems = project.productScope.filter(r => r.item && r.item.trim());
+      const fabItems = allItems.filter(r => (r.type || 'Local Fabrication') === 'Local Fabrication');
 
-      // Rebuild FAB: keep existing progress (qtyDone, status etc), just update totalQty
-      // Match by index first, then fall back to name match for existing rows
-      const newFab = items.map((scopeRow, i) => {
-        const existingByIndex = project.fabrication[i];
-        const key = scopeRow.item.trim().toLowerCase();
-        // Use same-index row if it matches the item name, else find by name
-        const existing = (existingByIndex && existingByIndex.item && existingByIndex.item.trim().toLowerCase() === key)
-          ? existingByIndex
-          : project.fabrication.find(r => r.item && r.item.trim().toLowerCase() === key);
-        if (existing) {
-          return Object.assign({}, existing, { item: scopeRow.item.trim(), totalQty: scopeRow.qty });
-        }
-        return { item: scopeRow.item.trim(), totalQty: scopeRow.qty, unit: scopeRow.unit || 'units', qtyDone: 0, qtySent: 0, status: 'Not Started', started: '', done: '' };
+      // Check for data loss: fab rows with progress that would be removed
+      const scopeKeys = new Set(fabItems.map(r => r.item.trim().toLowerCase()));
+      const lostRows = project.fabrication.filter(f => {
+        const key = (f.item || '').trim().toLowerCase();
+        const hasProgress = (parseFloat(f.qtyDone) || 0) > 0 || (Array.isArray(f.logs) && f.logs.length > 0);
+        return hasProgress && !scopeKeys.has(key);
       });
+      if (lostRows.length > 0) {
+        const names = lostRows.map(r => r.item).join(', ');
+        if (!confirm(`Warning: ${lostRows.length} fab item(s) with progress will be removed:\n${names}\n\nContinue?`)) return;
+      }
+
+      // Rebuild FAB — handles both Fixed items and Mechanical items with parts
+      const newFab = [];
+
+      // Helper: find existing fab row by item name (first unclaimed match)
+      const claimedFabIdx = new Set();
+      const findExisting = (name) => {
+        const key = name.trim().toLowerCase();
+        const idx = project.fabrication.findIndex((r, fi) =>
+          !claimedFabIdx.has(fi) && (r.item || '').trim().toLowerCase() === key
+        );
+        if (idx !== -1) { claimedFabIdx.add(idx); return project.fabrication[idx]; }
+        return null;
+      };
+
+      for (const scopeRow of fabItems) {
+        const hasParts = scopeRow.partsRequired && Array.isArray(scopeRow.parts) && scopeRow.parts.length > 0;
+
+        if (!hasParts) {
+          // Fixed item or Mechanical without parts — single fab row (same as before)
+          const existing = findExisting(scopeRow.item);
+          if (existing) {
+            newFab.push(Object.assign({}, existing, { item: scopeRow.item.trim(), totalQty: scopeRow.qty, unit: scopeRow.unit || 'units' }));
+          } else {
+            newFab.push({ item: scopeRow.item.trim(), totalQty: scopeRow.qty, unit: scopeRow.unit || 'units', qtyDone: 0, qtySent: 0, status: 'Not Started', started: '', done: '' });
+          }
+        } else {
+          // Mechanical item with parts — create parent + child rows
+          const parentName = scopeRow.item.trim();
+          const fabParts = scopeRow.parts.filter(p => p.source === 'Fabricate' && p.name && p.name.trim());
+          const orderParts = scopeRow.parts.filter(p => p.source === 'Order' && p.name && p.name.trim());
+          const parentIdx = newFab.length;
+
+          // Parent container row
+          const existingParent = findExisting(parentName);
+          const parentRow = existingParent
+            ? Object.assign({}, existingParent, {
+                item: parentName, totalQty: scopeRow.qty, unit: scopeRow.unit || 'units',
+                isMechanicalParent: true,
+                orderParts: orderParts.map(p => {
+                  // Preserve existing order part status
+                  const oldOrder = (existingParent.orderParts || []).find(o => o.name === p.name);
+                  return { name: p.name.trim(), qty: p.qty || 1, status: oldOrder ? oldOrder.status : 'Pending' };
+                }),
+              })
+            : {
+                item: parentName, totalQty: scopeRow.qty, unit: scopeRow.unit || 'units',
+                qtyDone: 0, qtySent: 0, status: 'Not Started', started: '', done: '',
+                isMechanicalParent: true,
+                orderParts: orderParts.map(p => ({ name: p.name.trim(), qty: p.qty || 1, status: 'Pending' })),
+              };
+          // Clear child-row fields from parent if they leaked in
+          delete parentRow.isPartRow; delete parentRow.parentIdx; delete parentRow.partSource;
+          newFab.push(parentRow);
+
+          // Child fab rows for Fabricate parts
+          for (const part of fabParts) {
+            const childName = parentName + ' > ' + part.name.trim();
+            const existingChild = findExisting(childName);
+            if (existingChild) {
+              newFab.push(Object.assign({}, existingChild, {
+                item: childName, totalQty: part.qty || 1, unit: scopeRow.unit || 'units',
+                isPartRow: true, parentIdx, partSource: 'Fabricate',
+              }));
+            } else {
+              newFab.push({
+                item: childName, totalQty: part.qty || 1, unit: scopeRow.unit || 'units',
+                qtyDone: 0, qtySent: 0, status: 'Not Started', started: '', done: '',
+                isPartRow: true, parentIdx, partSource: 'Fabricate',
+              });
+            }
+          }
+        }
+      }
       project.fabrication = newFab;
 
-      // Rebuild Install the same way
-      const newInst = items.map((scopeRow, i) => {
-        const existingByIndex = project.installation[i];
+      // Rebuild Install — all items get install rows (regardless of type)
+      const instNameCounts = {};
+      allItems.forEach(r => { const k = r.item.trim().toLowerCase(); instNameCounts[k] = (instNameCounts[k]||0) + 1; });
+
+      const usedInstIdx = new Set();
+      const newInst = allItems.map((scopeRow, i) => {
         const key = scopeRow.item.trim().toLowerCase();
-        const existing = (existingByIndex && existingByIndex.item && existingByIndex.item.trim().toLowerCase() === key)
-          ? existingByIndex
-          : project.installation.find(r => r.item && r.item.trim().toLowerCase() === key);
-        if (existing) {
-          return Object.assign({}, existing, { item: scopeRow.item.trim(), totalQty: scopeRow.qty, unit: scopeRow.unit || 'units' });
+        const isDuplicate = instNameCounts[key] > 1;
+        const byIndex = project.installation[i];
+        if (byIndex && (byIndex.item || '').trim().toLowerCase() === key && !usedInstIdx.has(i)) {
+          usedInstIdx.add(i);
+          return Object.assign({}, byIndex, { item: scopeRow.item.trim(), totalQty: scopeRow.qty, unit: scopeRow.unit || 'units' });
+        }
+        if (!isDuplicate) {
+          const nameIdx = project.installation.findIndex((r, ii) =>
+            !usedInstIdx.has(ii) && (r.item || '').trim().toLowerCase() === key
+          );
+          if (nameIdx !== -1) {
+            usedInstIdx.add(nameIdx);
+            return Object.assign({}, project.installation[nameIdx], { item: scopeRow.item.trim(), totalQty: scopeRow.qty, unit: scopeRow.unit || 'units' });
+          }
         }
         return { item: scopeRow.item.trim(), totalQty: scopeRow.qty, unit: scopeRow.unit || 'units', doneQty: 0, notes: '' };
       });
@@ -1181,7 +1483,13 @@ function renderProductScope() {
       const orig = syncBtn.textContent;
       syncBtn.textContent = '↻ Synced!';
       setTimeout(() => { syncBtn.textContent = orig; }, 1500);
-      showToast(`Synced ${items.length} item${items.length !== 1 ? 's' : ''} to FAB and Install`, 'success');
+      const skipped = allItems.length - fabItems.length;
+      const partRows = newFab.filter(r => r.isPartRow).length;
+      const parentRows = newFab.filter(r => r.isMechanicalParent).length;
+      let msg = `Synced ${newFab.length} fab rows, ${newInst.length} install rows`;
+      if (parentRows > 0) msg += ` (${parentRows} mechanical with ${partRows} parts)`;
+      if (skipped > 0) msg += ` · ${skipped} non-fab skipped`;
+      showToast(msg, 'success');
     };
   }
 }

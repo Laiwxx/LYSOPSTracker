@@ -19,3 +19,4 @@
 - [Feedback: factory page is factory-only](feedback_factory_scope.md) — don't mix other roles' data into an ops page; each page serves one role owner.
 - [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs; PRs editable while Pending; procurement page is the full tracking view.
 - [Manpower OT and supply workers](project_manpower_ot.md) — Mon-Fri 8-5:30 standard, after = OT. Saturday = full OT (8h default). Supply workers 10h/day no OT. 72h monthly MOM cap tracked.
+- [Parts/BOM design](project_parts_bom_design.md) — Mechanical items have sub-parts (Fabricate/Order); parts become child fab rows; parent auto-derives status; Order parts visible read-only on Factory.
