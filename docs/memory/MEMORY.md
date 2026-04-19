@@ -10,7 +10,7 @@
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
 - [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. 15/17 projects missing endDate + siteEngineer.
 - [Pre-launch test gates](test_gates.md) — EMAIL_TEST_OVERRIDE + CALENDAR_TEST_OVERRIDE env vars route everything to boss during testing.
-- [Page-by-page sweep status](project_page_sweep_status.md) — 8 pages stable; Project page in progress; Dashboard/NewProject/Admin pending.
+- [Page-by-page sweep status](project_page_sweep_status.md) — All 10 project tabs + new project done; Dashboard/Admin pending.
 - [Tri-layer workflow: fab → site-request → install](project_tri_layer_workflow.md) — critical domain model. Fab, delivery, and install run concurrently.
 - [Factory daily-log model](project_factory_daily_log_model.md) — every build event is a log entry with mandatory photo; qtyDone derived from sum of deltas.
 - [Feedback: notifications must be role-based](feedback_role_based_notifications.md) — never hardcode person names in email routing; use staff.json role aliases with boss fallback.
@@ -20,4 +20,6 @@
 - [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs; PRs editable while Pending; procurement page is the full tracking view.
 - [Manpower OT and supply workers](project_manpower_ot.md) — Mon-Fri 8-5:30 standard, after = OT. Saturday = full OT (8h default). Supply workers 10h/day no OT. 72h monthly MOM cap tracked.
 - [Parts/BOM design](project_parts_bom_design.md) — Mechanical items have sub-parts (Fabricate/Order); parts become child fab rows; parent auto-derives status; Order parts visible read-only on Factory.
-- [1000-scenario audit results](audit_1000_scenario_results.md) — 977 scenarios, 945 pass, 5 bugs fixed (attendance/SR/dates/rate-limiter). Data integrity clean.
+- [1000-scenario audit results](audit_1000_scenario_results.md) — 977 scenarios, 945 pass, 5 bugs fixed. Data integrity clean across all 17 projects.
+- [Delete actions require reason](feedback_delete_reason.md) — every user-facing delete uses confirmDelete() with reason dropdown, not plain confirm().
+- [New project template](project_new_project_template.md) — 20-stage lifecycle, role-based team defaults, blank documents/drawings, deriveFields on create.
