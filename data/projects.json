@@ -489,7 +489,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "QC Check",
+        "status": "Not Started",
         "started": "2026-04-01",
         "done": "2026-04-10",
         "readyForDelivery": true,
@@ -1671,7 +1671,7 @@
     "purchaser": "Rena",
     "sales": "Janessa",
     "siteEngineer": "",
-    "status": "Delayed",
+    "status": "On Track",
     "currentStage": "Quotation",
     "actionBy": "Sales",
     "fabPercent": 0,
@@ -2087,7 +2087,9 @@
         "targetDeliveryDate": "",
         "readyAt": null,
         "process": "",
-        "logs": []
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null
       }
     ],
     "installation": [
@@ -2118,7 +2120,10 @@
         "item": "SP30 Fixed Bollard",
         "qty": 730,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false
       }
     ],
     "drawings": [],

@@ -719,3 +719,10 @@
 {"ts":"2026-04-18T15:18:40.828Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-18T15:18:41.534Z","event":"manpower-plan.saved","weekStart":"2026-04-13","type":"weekly"}
 {"ts":"2026-04-18T15:37:06.582Z","event":"project.updated","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-19T02:26:24.578Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-19T02:26:25.026Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Ready for Delivery","to":"Delivered"}]}
+{"ts":"2026-04-19T02:26:27.359Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Delivered","to":"Ready for Delivery"}]}
+{"ts":"2026-04-19T02:26:27.503Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Ready for Delivery","to":"QC Check"}]}
+{"ts":"2026-04-19T02:26:27.666Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"QC Check","to":"In Progress"}]}
+{"ts":"2026-04-19T02:26:27.804Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
+{"ts":"2026-04-19T02:57:40.957Z","event":"project.updated","projectId":"bd-22724-poc-t232-woodland","jobCode":"BD 22724 - POC (T232 Woodland)"}
