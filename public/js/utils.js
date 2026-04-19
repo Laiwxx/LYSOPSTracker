@@ -143,8 +143,10 @@ const DELETE_REASONS = [
 ];
 
 function confirmDelete(title, itemName) {
+  // Self-contained escape — works on pages that don't load utils.js
+  const _esc = typeof escHtml === 'function' ? escHtml : (typeof esc === 'function' ? esc : function(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); });
+
   return new Promise(resolve => {
-    // Remove any existing modal
     const old = document.getElementById('delete-reason-modal');
     if (old) old.remove();
 
@@ -154,13 +156,13 @@ function confirmDelete(title, itemName) {
 
     overlay.innerHTML =
       '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;max-width:400px;width:100%;">' +
-        '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + escHtml(title || 'Confirm Delete') + '</div>' +
-        (itemName ? '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' + escHtml(itemName) + '</div>' : '<div style="margin-bottom:12px;"></div>') +
+        '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + _esc(title || 'Confirm Delete') + '</div>' +
+        (itemName ? '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' + _esc(itemName) + '</div>' : '<div style="margin-bottom:12px;"></div>') +
         '<div style="margin-bottom:12px;">' +
           '<label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Reason for deletion</label>' +
           '<select id="delete-reason-select" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;">' +
             '<option value="">-- Select a reason --</option>' +
-            DELETE_REASONS.map(r => '<option value="' + escHtml(r) + '">' + escHtml(r) + '</option>').join('') +
+            DELETE_REASONS.map(r => '<option value="' + _esc(r) + '">' + _esc(r) + '</option>').join('') +
           '</select>' +
         '</div>' +
         '<div id="delete-reason-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;">Please select a reason.</div>' +

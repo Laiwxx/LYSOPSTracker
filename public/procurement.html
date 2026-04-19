@@ -764,6 +764,40 @@
 
   <!-- ════════════════════════════════════════════════ SCRIPT ══════════════ -->
   <script>
+// ── Delete confirmation with reason dropdown ──
+var DELETE_REASONS = ['Duplicate entry','Created by mistake','No longer needed','Replaced by another','Data entered wrongly','Client / scope change','Other'];
+function confirmDelete(title, itemName) {
+  var _e = typeof escHtml === 'function' ? escHtml : (typeof esc === 'function' ? esc : function(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');});
+  return new Promise(function(resolve) {
+    var old = document.getElementById('delete-reason-modal');
+    if (old) old.remove();
+    var ov = document.createElement('div');
+    ov.id = 'delete-reason-modal';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:16px;';
+    ov.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;max-width:400px;width:100%;">' +
+      '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + _e(title||'Confirm Delete') + '</div>' +
+      (itemName ? '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' + _e(itemName) + '</div>' : '<div style="margin-bottom:12px;"></div>') +
+      '<div style="margin-bottom:12px;"><label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);display:block;margin-bottom:4px;">Reason for deletion</label>' +
+      '<select id="delete-reason-select" style="width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;"><option value="">-- Select a reason --</option>' +
+      DELETE_REASONS.map(function(r){return '<option value="'+_e(r)+'">'+_e(r)+'</option>';}).join('') + '</select></div>' +
+      '<div id="delete-reason-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;">Please select a reason.</div>' +
+      '<div style="display:flex;gap:8px;justify-content:flex-end;">' +
+      '<button type="button" id="delete-cancel-btn" class="btn btn-ghost" style="padding:8px 16px;">Cancel</button>' +
+      '<button type="button" id="delete-confirm-btn" class="btn btn-primary" style="padding:8px 16px;background:var(--red);border-color:var(--red);">Delete</button></div></div>';
+    document.body.appendChild(ov);
+    var sel = ov.querySelector('#delete-reason-select');
+    var errDiv = ov.querySelector('#delete-reason-error');
+    var cleanup = function(){ov.remove();};
+    ov.querySelector('#delete-cancel-btn').addEventListener('click', function(){cleanup();resolve(null);});
+    ov.addEventListener('click', function(e){if(e.target===ov){cleanup();resolve(null);}});
+    ov.querySelector('#delete-confirm-btn').addEventListener('click', function(){
+      if(!sel.value){errDiv.style.display='block';sel.focus();return;}
+      var reason=sel.value;cleanup();resolve({reason:reason});
+    });
+    sel.focus();
+  });
+}
+
   'use strict';
 
   // ── State ──────────────────────────────────────────────────────────────────
