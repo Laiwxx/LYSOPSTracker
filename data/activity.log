@@ -726,3 +726,523 @@
 {"ts":"2026-04-19T02:26:27.666Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"QC Check","to":"In Progress"}]}
 {"ts":"2026-04-19T02:26:27.804Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
 {"ts":"2026-04-19T02:57:40.957Z","event":"project.updated","projectId":"bd-22724-poc-t232-woodland","jobCode":"BD 22724 - POC (T232 Woodland)"}
+{"ts":"2026-04-19T09:58:45.240Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.249Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.265Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.271Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.274Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.278Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.289Z","event":"project.created","id":"test-1776592725280","jobCode":"TEST-001"}
+{"ts":"2026-04-19T09:58:45.314Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[]}
+{"ts":"2026-04-19T09:58:45.327Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[]}
+{"ts":"2026-04-19T09:58:45.346Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.349Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.363Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.371Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.375Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.378Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.386Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.392Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T09:58:45.400Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T10:03:37.040Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[]}
+{"ts":"2026-04-19T10:03:37.045Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":1,"item":"Block S - Auto Bollard Cova","changes":[]}
+{"ts":"2026-04-19T10:03:37.049Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":2,"item":"Block S - Auto Bollard Cova","changes":[]}
+{"ts":"2026-04-19T10:03:37.054Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":3,"item":"Block S - Auto Bollard Cova","changes":[]}
+{"ts":"2026-04-19T10:03:37.062Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":4,"item":"Block S - Cova Road Blocker","changes":[]}
+{"ts":"2026-04-19T10:03:37.066Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":5,"item":"Block S - Cova Road Blocker","changes":[]}
+{"ts":"2026-04-19T10:03:37.074Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[]}
+{"ts":"2026-04-19T10:03:37.078Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":1,"item":"Block S - Auto Bollard Cova","changes":[]}
+{"ts":"2026-04-19T10:03:37.086Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":2,"item":"Block S - Auto Bollard Cova","changes":[]}
+{"ts":"2026-04-19T10:03:37.090Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":3,"item":"Block S - Auto Bollard Cova","changes":[]}
+{"ts":"2026-04-19T10:03:37.094Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":4,"item":"Block S - Cova Road Blocker","changes":[]}
+{"ts":"2026-04-19T10:03:37.102Z","event":"install.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":5,"item":"Block S - Cova Road Blocker","changes":[]}
+{"ts":"2026-04-19T10:03:37.108Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T10:03:37.115Z","event":"fab.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":0,"item":"M30 Arm Barrier","changes":[]}
+{"ts":"2026-04-19T10:03:37.121Z","event":"fab.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":1,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.125Z","event":"fab.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":2,"item":"SPTT Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.133Z","event":"install.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":0,"item":"Cova Road Blocker","changes":[]}
+{"ts":"2026-04-19T10:03:37.140Z","event":"install.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":1,"item":"SP400 Auto matic","changes":[]}
+{"ts":"2026-04-19T10:03:37.144Z","event":"install.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":2,"item":"M30 Arm Barrier","changes":[]}
+{"ts":"2026-04-19T10:03:37.155Z","event":"install.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":3,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.158Z","event":"install.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)","itemIndex":4,"item":"SPTT Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.167Z","event":"project.updated","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)"}
+{"ts":"2026-04-19T10:03:37.176Z","event":"fab.updated","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)","itemIndex":0,"item":"SP30 FIXED","changes":[]}
+{"ts":"2026-04-19T10:03:37.180Z","event":"install.updated","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)","itemIndex":0,"item":"SP30 FIXED","changes":[]}
+{"ts":"2026-04-19T10:03:37.184Z","event":"project.updated","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-19T10:03:37.193Z","event":"fab.updated","projectId":"bd-22724-poc-t232-woodland","jobCode":"BD 22724 - POC (T232 Woodland)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.197Z","event":"install.updated","projectId":"bd-22724-poc-t232-woodland","jobCode":"BD 22724 - POC (T232 Woodland)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.202Z","event":"project.updated","projectId":"bd-22724-poc-t232-woodland","jobCode":"BD 22724 - POC (T232 Woodland)"}
+{"ts":"2026-04-19T10:03:37.214Z","event":"project.updated","projectId":"bd-23525-china-harbour-8sw","jobCode":"BD 23525- CHINA HARBOUR (8SW)"}
+{"ts":"2026-04-19T10:03:37.221Z","event":"fab.updated","projectId":"bd-23625-the-reserve-residence","jobCode":"BD 23625-The Reserve Residence","itemIndex":0,"item":"SP30 Fixed Bollard - 135 No's","changes":[]}
+{"ts":"2026-04-19T10:03:37.226Z","event":"project.updated","projectId":"bd-23625-the-reserve-residence","jobCode":"BD 23625-The Reserve Residence"}
+{"ts":"2026-04-19T10:03:37.234Z","event":"project.updated","projectId":"bd-23925-chong-pang-id","jobCode":"BD 23925- (Chong Pang ID)"}
+{"ts":"2026-04-19T10:03:37.240Z","event":"fab.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":0,"item":"Engineered Bollard - Boon Lay","changes":[]}
+{"ts":"2026-04-19T10:03:37.244Z","event":"fab.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":1,"item":"Engineered Bollard - Ang Mo Kio","changes":[]}
+{"ts":"2026-04-19T10:03:37.247Z","event":"fab.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":2,"item":"Engineered Bollard - Seng Kang","changes":[]}
+{"ts":"2026-04-19T10:03:37.251Z","event":"fab.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":3,"item":"Engineered Bollard - Bedok","changes":[]}
+{"ts":"2026-04-19T10:03:37.254Z","event":"fab.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":4,"item":"Engineered Bollard - Toh Payoh Interchange","changes":[]}
+{"ts":"2026-04-19T10:03:37.261Z","event":"fab.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":5,"item":"Engineered Bollard - Clementi","changes":[]}
+{"ts":"2026-04-19T10:03:37.265Z","event":"fab.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":6,"item":"Engineered Bollard - Serangoon","changes":[]}
+{"ts":"2026-04-19T10:03:37.271Z","event":"install.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":0,"item":"Engineered Bollard - Boon Lay","changes":[]}
+{"ts":"2026-04-19T10:03:37.274Z","event":"install.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":1,"item":"Engineered Bollard - Ang Mo Kio","changes":[]}
+{"ts":"2026-04-19T10:03:37.277Z","event":"install.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":2,"item":"Engineered Bollard - Seng Kang","changes":[]}
+{"ts":"2026-04-19T10:03:37.280Z","event":"install.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":3,"item":"Engineered Bollard - Bedok","changes":[]}
+{"ts":"2026-04-19T10:03:37.283Z","event":"install.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":4,"item":"Engineered Bollard - Toh Payoh Interchange","changes":[]}
+{"ts":"2026-04-19T10:03:37.287Z","event":"install.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":5,"item":"Engineered Bollard - Clementi","changes":[]}
+{"ts":"2026-04-19T10:03:37.291Z","event":"install.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)","itemIndex":6,"item":"Engineered Bollard - Serangoon","changes":[]}
+{"ts":"2026-04-19T10:03:37.310Z","event":"project.updated","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)"}
+{"ts":"2026-04-19T10:03:37.321Z","event":"project.updated","projectId":"bd-24425-qing-feng-somerset","jobCode":"BD 24425- QING FENG (Somerset)"}
+{"ts":"2026-04-19T10:03:37.327Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.329Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":1,"item":"Cova Sliding Gate - 6 Meters + HPU","changes":[]}
+{"ts":"2026-04-19T10:03:37.332Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[]}
+{"ts":"2026-04-19T10:03:37.337Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":3,"item":"SP400 Fixed Bollard Shallow Mounted","changes":[]}
+{"ts":"2026-04-19T10:03:37.341Z","event":"fab.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[]}
+{"ts":"2026-04-19T10:03:37.344Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.346Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":1,"item":"Cova Sliding Gate - 6 Meters + HPU","changes":[]}
+{"ts":"2026-04-19T10:03:37.349Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Road Blocker 3 Meters","changes":[]}
+{"ts":"2026-04-19T10:03:37.352Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":3,"item":"SP400 Fixed Bollard Shallow Mounted","changes":[]}
+{"ts":"2026-04-19T10:03:37.354Z","event":"install.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cometa Man Trap","changes":[]}
+{"ts":"2026-04-19T10:03:37.359Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T10:03:37.367Z","event":"project.updated","projectId":"bd-25325-sam-lain-tt-tuas","jobCode":"BD 25325- SAM LAIN  (TT Tuas)"}
+{"ts":"2026-04-19T10:03:37.374Z","event":"project.updated","projectId":"bd-25426-woh-hup-wcp","jobCode":"BD 25426- WOH HUP (WCP)"}
+{"ts":"2026-04-19T10:03:37.381Z","event":"fab.updated","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","itemIndex":0,"item":"PE Bollard - Engineered","changes":[]}
+{"ts":"2026-04-19T10:03:37.384Z","event":"fab.updated","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","itemIndex":1,"item":"PE Bollard with sleeve - 5 No's","changes":[]}
+{"ts":"2026-04-19T10:03:37.387Z","event":"install.updated","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","itemIndex":0,"item":"PE Bollard - Engineered","changes":[]}
+{"ts":"2026-04-19T10:03:37.390Z","event":"install.updated","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","itemIndex":1,"item":"PE Bollard with sleeve - 5 No's","changes":[]}
+{"ts":"2026-04-19T10:03:37.396Z","event":"project.updated","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-19T10:03:37.401Z","event":"fab.updated","projectId":"bd-xxx26-hwa-seng-t5-ers","jobCode":"BD xxx26- HWA SENG (T5-ERS)","itemIndex":0,"item":"CSG10506","changes":[]}
+{"ts":"2026-04-19T10:03:37.404Z","event":"install.updated","projectId":"bd-xxx26-hwa-seng-t5-ers","jobCode":"BD xxx26- HWA SENG (T5-ERS)","itemIndex":0,"item":"CSG10506","changes":[]}
+{"ts":"2026-04-19T10:03:37.408Z","event":"project.updated","projectId":"bd-xxx26-hwa-seng-t5-ers","jobCode":"BD xxx26- HWA SENG (T5-ERS)"}
+{"ts":"2026-04-19T10:03:37.415Z","event":"fab.updated","projectId":"bd-xxx26-v3-taman-jurong","jobCode":"BD xxx26 - V3 (Taman Jurong)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.418Z","event":"install.updated","projectId":"bd-xxx26-v3-taman-jurong","jobCode":"BD xxx26 - V3 (Taman Jurong)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[]}
+{"ts":"2026-04-19T10:03:37.425Z","event":"project.updated","projectId":"bd-xxx26-v3-taman-jurong","jobCode":"BD xxx26 - V3 (Taman Jurong)"}
+{"ts":"2026-04-19T10:03:37.433Z","event":"project.updated","projectId":"pj10025-ica-kallang","jobCode":"PJ10025 - ICA Kallang"}
+{"ts":"2026-04-19T10:03:37.443Z","event":"project.updated","projectId":"pj10726-clementi-close-metal","jobCode":"PJ10726 - Clementi Close Metal"}
+{"ts":"2026-04-19T11:45:27.063Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T11:45:27.099Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T12:03:40.909Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T12:03:50.243Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T12:03:52.356Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T12:16:25.212Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T13:54:42.408Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T13:54:44.470Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T13:54:51.070Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T13:54:52.671Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T14:19:57.866Z","event":"project.created","id":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.881Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.889Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.894Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.901Z","event":"fab.upserted","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item"}
+{"ts":"2026-04-19T14:19:57.908Z","event":"fab.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","changes":[{"field":"qtyDone","to":2},{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-19T14:19:57.912Z","event":"fab.deleted","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","srReindexed":0,"srNulled":0}
+{"ts":"2026-04-19T14:19:57.916Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.920Z","event":"install.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001","itemIndex":0,"item":"Bollard SP30","changes":[{"field":"notes","to":"Installed 3 at Block A"}]}
+{"ts":"2026-04-19T14:19:57.924Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.930Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.943Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.948Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.952Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.955Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.958Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.962Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.968Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.976Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.985Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.988Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.991Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.994Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:57.998Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:58.004Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:58.007Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:58.011Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:58.015Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:19:58.018Z","event":"project.updated","projectId":"test-audit-1776608397856","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.854Z","event":"project.created","id":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.866Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.881Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.893Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.900Z","event":"fab.upserted","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item"}
+{"ts":"2026-04-19T14:28:42.906Z","event":"fab.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","changes":[{"field":"qtyDone","to":2},{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-19T14:28:42.911Z","event":"fab.deleted","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","srReindexed":0,"srNulled":0}
+{"ts":"2026-04-19T14:28:42.914Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.917Z","event":"install.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001","itemIndex":0,"item":"Bollard SP30","changes":[{"field":"notes","to":"Installed 3 at Block A"}]}
+{"ts":"2026-04-19T14:28:42.920Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.926Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.929Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.933Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.936Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.940Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.943Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.946Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.954Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.960Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.970Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.980Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:42.990Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:43.003Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:43.011Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:43.017Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:43.022Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:43.026Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:43.030Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:43.034Z","event":"project.updated","projectId":"test-audit-1776608922847","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:28:44.576Z","event":"email.sent","to":"Chris","subject":"New Task: Audit test task"}
+{"ts":"2026-04-19T14:28:44.595Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 1"}
+{"ts":"2026-04-19T14:28:44.601Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 2"}
+{"ts":"2026-04-19T14:28:44.605Z","event":"task.updated","id":"mo5v2zks","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:28:44.608Z","event":"task.updated","id":"mo5v2zks","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:28:44.610Z","event":"task.acknowledged","id":"mo5v2zks","title":"Audit test task","by":"Chris"}
+{"ts":"2026-04-19T14:28:44.612Z","event":"task.hours.logged","id":"mo5v2zks","hours":2.5}
+{"ts":"2026-04-19T14:28:44.615Z","event":"task.updated","id":"mo5v2zks","title":"Audit test task","status":"Done"}
+{"ts":"2026-04-19T14:28:44.621Z","event":"email.sent","to":"Chris","subject":"New Task: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-19T14:28:44.629Z","event":"task.deleted","id":"mo5v2zks","title":"Audit test task"}
+{"ts":"2026-04-19T14:28:44.632Z","event":"task.deleted","id":"mo5v2zld","title":"Rapid 1"}
+{"ts":"2026-04-19T14:28:44.635Z","event":"task.deleted","id":"mo5v2zli","title":"Rapid 2"}
+{"ts":"2026-04-19T14:28:44.638Z","event":"task.deleted","id":"mo5v2zm8","title":"Future task"}
+{"ts":"2026-04-19T14:28:44.672Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 0"}
+{"ts":"2026-04-19T14:28:44.677Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 1"}
+{"ts":"2026-04-19T14:28:44.680Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 2"}
+{"ts":"2026-04-19T14:28:44.685Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 3"}
+{"ts":"2026-04-19T14:28:44.689Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 4"}
+{"ts":"2026-04-19T14:28:44.693Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 5"}
+{"ts":"2026-04-19T14:28:44.698Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 6"}
+{"ts":"2026-04-19T14:28:44.704Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 7"}
+{"ts":"2026-04-19T14:28:44.708Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 8"}
+{"ts":"2026-04-19T14:28:44.714Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 9"}
+{"ts":"2026-04-19T14:28:44.722Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 10"}
+{"ts":"2026-04-19T14:28:44.730Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 11"}
+{"ts":"2026-04-19T14:28:44.738Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 12"}
+{"ts":"2026-04-19T14:28:44.752Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 13"}
+{"ts":"2026-04-19T14:28:44.759Z","event":"task.deleted","id":"mo5v2zni","title":"Batch task 0"}
+{"ts":"2026-04-19T14:28:44.769Z","event":"task.deleted","id":"mo5v2znn","title":"Batch task 1"}
+{"ts":"2026-04-19T14:28:44.781Z","event":"task.deleted","id":"mo5v2znr","title":"Batch task 2"}
+{"ts":"2026-04-19T14:28:44.792Z","event":"task.deleted","id":"mo5v2znv","title":"Batch task 3"}
+{"ts":"2026-04-19T14:28:44.799Z","event":"task.deleted","id":"mo5v2zo0","title":"Batch task 4"}
+{"ts":"2026-04-19T14:28:44.808Z","event":"task.deleted","id":"mo5v2zo4","title":"Batch task 5"}
+{"ts":"2026-04-19T14:28:44.816Z","event":"task.deleted","id":"mo5v2zo8","title":"Batch task 6"}
+{"ts":"2026-04-19T14:28:44.829Z","event":"task.deleted","id":"mo5v2zof","title":"Batch task 7"}
+{"ts":"2026-04-19T14:28:44.832Z","event":"task.deleted","id":"mo5v2zoi","title":"Batch task 8"}
+{"ts":"2026-04-19T14:28:44.845Z","event":"task.deleted","id":"mo5v2zop","title":"Batch task 9"}
+{"ts":"2026-04-19T14:28:44.851Z","event":"task.deleted","id":"mo5v2zox","title":"Batch task 10"}
+{"ts":"2026-04-19T14:28:44.863Z","event":"task.deleted","id":"mo5v2zp5","title":"Batch task 11"}
+{"ts":"2026-04-19T14:28:44.866Z","event":"task.deleted","id":"mo5v2zpd","title":"Batch task 12"}
+{"ts":"2026-04-19T14:28:44.879Z","event":"task.deleted","id":"mo5v2zpk","title":"Batch task 13"}
+{"ts":"2026-04-19T14:29:54.826Z","event":"project.created","id":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.849Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.860Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.873Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.879Z","event":"fab.upserted","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item"}
+{"ts":"2026-04-19T14:29:54.893Z","event":"fab.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","changes":[{"field":"qtyDone","to":2},{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-19T14:29:54.900Z","event":"fab.deleted","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","srReindexed":0,"srNulled":0}
+{"ts":"2026-04-19T14:29:54.916Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.928Z","event":"install.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001","itemIndex":0,"item":"Bollard SP30","changes":[{"field":"notes","to":"Installed 3 at Block A"}]}
+{"ts":"2026-04-19T14:29:54.936Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.948Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.957Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.970Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.988Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:54.993Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.001Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.016Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.031Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.104Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.192Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.213Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.222Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.236Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.246Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.251Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.255Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.263Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.290Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:55.301Z","event":"project.updated","projectId":"test-audit-1776608994815","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:29:56.847Z","event":"email.sent","to":"Chris","subject":"New Task: Audit test task"}
+{"ts":"2026-04-19T14:29:56.862Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 1"}
+{"ts":"2026-04-19T14:29:56.865Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 2"}
+{"ts":"2026-04-19T14:29:56.870Z","event":"task.updated","id":"mo5v4jcc","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:29:56.872Z","event":"task.updated","id":"mo5v4jcc","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:29:56.874Z","event":"task.acknowledged","id":"mo5v4jcc","title":"Audit test task","by":"Chris"}
+{"ts":"2026-04-19T14:29:56.876Z","event":"task.hours.logged","id":"mo5v4jcc","hours":2.5}
+{"ts":"2026-04-19T14:29:56.878Z","event":"task.updated","id":"mo5v4jcc","title":"Audit test task","status":"Done"}
+{"ts":"2026-04-19T14:29:56.883Z","event":"email.sent","to":"Chris","subject":"New Task: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-19T14:29:56.890Z","event":"task.deleted","id":"mo5v4jcc","title":"Audit test task"}
+{"ts":"2026-04-19T14:29:56.912Z","event":"task.deleted","id":"mo5v4jcs","title":"Rapid 1"}
+{"ts":"2026-04-19T14:29:56.914Z","event":"task.deleted","id":"mo5v4jcw","title":"Rapid 2"}
+{"ts":"2026-04-19T14:29:56.923Z","event":"task.deleted","id":"mo5v4jdi","title":"Future task"}
+{"ts":"2026-04-19T14:29:56.946Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 0"}
+{"ts":"2026-04-19T14:29:56.951Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 1"}
+{"ts":"2026-04-19T14:29:56.955Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 2"}
+{"ts":"2026-04-19T14:29:56.963Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 3"}
+{"ts":"2026-04-19T14:29:56.973Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 4"}
+{"ts":"2026-04-19T14:29:56.981Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 5"}
+{"ts":"2026-04-19T14:29:56.991Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 6"}
+{"ts":"2026-04-19T14:29:57.014Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 7"}
+{"ts":"2026-04-19T14:29:57.033Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 8"}
+{"ts":"2026-04-19T14:29:57.045Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 9"}
+{"ts":"2026-04-19T14:29:57.082Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 10"}
+{"ts":"2026-04-19T14:29:57.107Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 11"}
+{"ts":"2026-04-19T14:29:57.137Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 12"}
+{"ts":"2026-04-19T14:29:57.162Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 13"}
+{"ts":"2026-04-19T14:29:57.182Z","event":"task.deleted","id":"mo5v4jf5","title":"Batch task 0"}
+{"ts":"2026-04-19T14:29:57.193Z","event":"task.deleted","id":"mo5v4jfa","title":"Batch task 1"}
+{"ts":"2026-04-19T14:29:57.229Z","event":"task.deleted","id":"mo5v4jfe","title":"Batch task 2"}
+{"ts":"2026-04-19T14:29:57.256Z","event":"task.deleted","id":"mo5v4jfl","title":"Batch task 3"}
+{"ts":"2026-04-19T14:29:57.277Z","event":"task.deleted","id":"mo5v4jfo","title":"Batch task 4"}
+{"ts":"2026-04-19T14:29:57.295Z","event":"task.deleted","id":"mo5v4jfz","title":"Batch task 5"}
+{"ts":"2026-04-19T14:29:57.304Z","event":"task.deleted","id":"mo5v4jg9","title":"Batch task 6"}
+{"ts":"2026-04-19T14:29:57.319Z","event":"task.deleted","id":"mo5v4jh0","title":"Batch task 7"}
+{"ts":"2026-04-19T14:29:57.331Z","event":"task.deleted","id":"mo5v4jhk","title":"Batch task 8"}
+{"ts":"2026-04-19T14:29:57.354Z","event":"task.deleted","id":"mo5v4jhv","title":"Batch task 9"}
+{"ts":"2026-04-19T14:29:57.368Z","event":"task.deleted","id":"mo5v4jiw","title":"Batch task 10"}
+{"ts":"2026-04-19T14:29:57.380Z","event":"task.deleted","id":"mo5v4jjm","title":"Batch task 11"}
+{"ts":"2026-04-19T14:29:57.385Z","event":"task.deleted","id":"mo5v4jk3","title":"Batch task 12"}
+{"ts":"2026-04-19T14:29:57.391Z","event":"task.deleted","id":"mo5v4jkw","title":"Batch task 13"}
+{"ts":"2026-04-19T14:32:16.108Z","event":"project.created","id":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.116Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.122Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.127Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.135Z","event":"fab.upserted","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item"}
+{"ts":"2026-04-19T14:32:16.140Z","event":"fab.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","changes":[{"field":"qtyDone","to":2},{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-19T14:32:16.145Z","event":"fab.deleted","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","srReindexed":0,"srNulled":0}
+{"ts":"2026-04-19T14:32:16.149Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.152Z","event":"install.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001","itemIndex":0,"item":"Bollard SP30","changes":[{"field":"notes","to":"Installed 3 at Block A"}]}
+{"ts":"2026-04-19T14:32:16.156Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.161Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.163Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.166Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.169Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.172Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.175Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.179Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.186Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.193Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.202Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.205Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.208Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.210Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.212Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.216Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.218Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.221Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.224Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:16.226Z","event":"project.updated","projectId":"test-audit-1776609136097","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:32:17.757Z","event":"email.sent","to":"Chris","subject":"New Task: Audit test task"}
+{"ts":"2026-04-19T14:32:17.773Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 1"}
+{"ts":"2026-04-19T14:32:17.777Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 2"}
+{"ts":"2026-04-19T14:32:17.782Z","event":"task.updated","id":"mo5v7k2j","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:32:17.784Z","event":"task.updated","id":"mo5v7k2j","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:32:17.786Z","event":"task.acknowledged","id":"mo5v7k2j","title":"Audit test task","by":"Chris"}
+{"ts":"2026-04-19T14:32:17.789Z","event":"task.hours.logged","id":"mo5v7k2j","hours":2.5}
+{"ts":"2026-04-19T14:32:17.793Z","event":"task.updated","id":"mo5v7k2j","title":"Audit test task","status":"Done"}
+{"ts":"2026-04-19T14:32:17.799Z","event":"email.sent","to":"Chris","subject":"New Task: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-19T14:32:17.804Z","event":"task.deleted","id":"mo5v7k2j","title":"Audit test task"}
+{"ts":"2026-04-19T14:32:17.807Z","event":"task.deleted","id":"mo5v7k2z","title":"Rapid 1"}
+{"ts":"2026-04-19T14:32:17.810Z","event":"task.deleted","id":"mo5v7k33","title":"Rapid 2"}
+{"ts":"2026-04-19T14:32:17.812Z","event":"task.deleted","id":"mo5v7k3u","title":"Future task"}
+{"ts":"2026-04-19T14:32:17.828Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 0"}
+{"ts":"2026-04-19T14:32:17.831Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 1"}
+{"ts":"2026-04-19T14:32:17.833Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 2"}
+{"ts":"2026-04-19T14:32:17.836Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 3"}
+{"ts":"2026-04-19T14:32:17.841Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 4"}
+{"ts":"2026-04-19T14:32:17.844Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 5"}
+{"ts":"2026-04-19T14:32:17.848Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 6"}
+{"ts":"2026-04-19T14:32:17.851Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 7"}
+{"ts":"2026-04-19T14:32:17.854Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 8"}
+{"ts":"2026-04-19T14:32:17.857Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 9"}
+{"ts":"2026-04-19T14:32:17.862Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 10"}
+{"ts":"2026-04-19T14:32:17.865Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 11"}
+{"ts":"2026-04-19T14:32:17.871Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 12"}
+{"ts":"2026-04-19T14:32:17.876Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 13"}
+{"ts":"2026-04-19T14:32:17.882Z","event":"task.deleted","id":"mo5v7k4k","title":"Batch task 0"}
+{"ts":"2026-04-19T14:32:17.888Z","event":"task.deleted","id":"mo5v7k4m","title":"Batch task 1"}
+{"ts":"2026-04-19T14:32:17.892Z","event":"task.deleted","id":"mo5v7k4o","title":"Batch task 2"}
+{"ts":"2026-04-19T14:32:17.898Z","event":"task.deleted","id":"mo5v7k4r","title":"Batch task 3"}
+{"ts":"2026-04-19T14:32:17.904Z","event":"task.deleted","id":"mo5v7k4w","title":"Batch task 4"}
+{"ts":"2026-04-19T14:32:17.910Z","event":"task.deleted","id":"mo5v7k50","title":"Batch task 5"}
+{"ts":"2026-04-19T14:32:17.913Z","event":"task.deleted","id":"mo5v7k53","title":"Batch task 6"}
+{"ts":"2026-04-19T14:32:17.917Z","event":"task.deleted","id":"mo5v7k56","title":"Batch task 7"}
+{"ts":"2026-04-19T14:32:17.921Z","event":"task.deleted","id":"mo5v7k59","title":"Batch task 8"}
+{"ts":"2026-04-19T14:32:17.923Z","event":"task.deleted","id":"mo5v7k5c","title":"Batch task 9"}
+{"ts":"2026-04-19T14:32:17.925Z","event":"task.deleted","id":"mo5v7k5h","title":"Batch task 10"}
+{"ts":"2026-04-19T14:32:17.928Z","event":"task.deleted","id":"mo5v7k5k","title":"Batch task 11"}
+{"ts":"2026-04-19T14:32:17.934Z","event":"task.deleted","id":"mo5v7k5q","title":"Batch task 12"}
+{"ts":"2026-04-19T14:32:17.935Z","event":"task.deleted","id":"mo5v7k5v","title":"Batch task 13"}
+{"ts":"2026-04-19T14:34:12.455Z","event":"project.created","id":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.464Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.471Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.475Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.482Z","event":"fab.upserted","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item"}
+{"ts":"2026-04-19T14:34:12.488Z","event":"fab.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","changes":[{"field":"qtyDone","to":2},{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-19T14:34:12.494Z","event":"fab.deleted","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","srReindexed":0,"srNulled":0}
+{"ts":"2026-04-19T14:34:12.497Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.501Z","event":"install.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001","itemIndex":0,"item":"Bollard SP30","changes":[{"field":"notes","to":"Installed 3 at Block A"}]}
+{"ts":"2026-04-19T14:34:12.505Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.510Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.514Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.517Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.521Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.525Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.528Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.542Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.550Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.557Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.568Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.571Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.575Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.579Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.582Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.586Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.591Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.594Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.599Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:12.605Z","event":"project.updated","projectId":"test-audit-1776609252447","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:34:14.145Z","event":"email.sent","to":"Chris","subject":"New Task: Audit test task"}
+{"ts":"2026-04-19T14:34:14.160Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 1"}
+{"ts":"2026-04-19T14:34:14.164Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 2"}
+{"ts":"2026-04-19T14:34:14.170Z","event":"task.updated","id":"mo5va1vi","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:34:14.173Z","event":"task.updated","id":"mo5va1vi","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:34:14.176Z","event":"task.acknowledged","id":"mo5va1vi","title":"Audit test task","by":"Chris"}
+{"ts":"2026-04-19T14:34:14.178Z","event":"task.hours.logged","id":"mo5va1vi","hours":2.5}
+{"ts":"2026-04-19T14:34:14.181Z","event":"task.updated","id":"mo5va1vi","title":"Audit test task","status":"Done"}
+{"ts":"2026-04-19T14:34:14.188Z","event":"email.sent","to":"Chris","subject":"New Task: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-19T14:34:14.194Z","event":"task.deleted","id":"mo5va1vi","title":"Audit test task"}
+{"ts":"2026-04-19T14:34:14.196Z","event":"task.deleted","id":"mo5va1vy","title":"Rapid 1"}
+{"ts":"2026-04-19T14:34:14.198Z","event":"task.deleted","id":"mo5va1w2","title":"Rapid 2"}
+{"ts":"2026-04-19T14:34:14.200Z","event":"task.deleted","id":"mo5va1wu","title":"Future task"}
+{"ts":"2026-04-19T14:34:14.210Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 0"}
+{"ts":"2026-04-19T14:34:14.214Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 1"}
+{"ts":"2026-04-19T14:34:14.218Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 2"}
+{"ts":"2026-04-19T14:34:14.221Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 3"}
+{"ts":"2026-04-19T14:34:14.227Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 4"}
+{"ts":"2026-04-19T14:34:14.233Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 5"}
+{"ts":"2026-04-19T14:34:14.237Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 6"}
+{"ts":"2026-04-19T14:34:14.241Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 7"}
+{"ts":"2026-04-19T14:34:14.246Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 8"}
+{"ts":"2026-04-19T14:34:14.251Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 9"}
+{"ts":"2026-04-19T14:34:14.258Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 10"}
+{"ts":"2026-04-19T14:34:14.267Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 11"}
+{"ts":"2026-04-19T14:34:14.285Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 12"}
+{"ts":"2026-04-19T14:34:14.308Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 13"}
+{"ts":"2026-04-19T14:34:14.319Z","event":"task.deleted","id":"mo5va1xd","title":"Batch task 0"}
+{"ts":"2026-04-19T14:34:14.325Z","event":"task.deleted","id":"mo5va1xg","title":"Batch task 1"}
+{"ts":"2026-04-19T14:34:14.331Z","event":"task.deleted","id":"mo5va1xk","title":"Batch task 2"}
+{"ts":"2026-04-19T14:34:14.334Z","event":"task.deleted","id":"mo5va1xo","title":"Batch task 3"}
+{"ts":"2026-04-19T14:34:14.339Z","event":"task.deleted","id":"mo5va1xr","title":"Batch task 4"}
+{"ts":"2026-04-19T14:34:14.342Z","event":"task.deleted","id":"mo5va1y0","title":"Batch task 5"}
+{"ts":"2026-04-19T14:34:14.345Z","event":"task.deleted","id":"mo5va1y4","title":"Batch task 6"}
+{"ts":"2026-04-19T14:34:14.348Z","event":"task.deleted","id":"mo5va1y8","title":"Batch task 7"}
+{"ts":"2026-04-19T14:34:14.349Z","event":"task.deleted","id":"mo5va1yd","title":"Batch task 8"}
+{"ts":"2026-04-19T14:34:14.351Z","event":"task.deleted","id":"mo5va1yh","title":"Batch task 9"}
+{"ts":"2026-04-19T14:34:14.353Z","event":"task.deleted","id":"mo5va1ym","title":"Batch task 10"}
+{"ts":"2026-04-19T14:34:14.354Z","event":"task.deleted","id":"mo5va1yx","title":"Batch task 11"}
+{"ts":"2026-04-19T14:34:14.357Z","event":"task.deleted","id":"mo5va1zf","title":"Batch task 12"}
+{"ts":"2026-04-19T14:34:14.359Z","event":"task.deleted","id":"mo5va203","title":"Batch task 13"}
+{"ts":"2026-04-19T14:36:50.250Z","event":"project.created","id":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.262Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.275Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.287Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.293Z","event":"fab.upserted","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item"}
+{"ts":"2026-04-19T14:36:50.298Z","event":"fab.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","changes":[{"field":"qtyDone","to":2},{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-19T14:36:50.303Z","event":"fab.deleted","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001","itemIndex":0,"item":"Test Fab Item","srReindexed":0,"srNulled":0}
+{"ts":"2026-04-19T14:36:50.305Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.311Z","event":"install.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001","itemIndex":0,"item":"Bollard SP30","changes":[{"field":"notes","to":"Installed 3 at Block A"}]}
+{"ts":"2026-04-19T14:36:50.314Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.319Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.322Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.325Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.328Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.332Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.334Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.337Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.342Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.347Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.360Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.363Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.366Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.368Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.371Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.375Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.378Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.381Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.385Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:50.391Z","event":"project.updated","projectId":"test-audit-1776609410240","jobCode":"AUDIT-001"}
+{"ts":"2026-04-19T14:36:51.924Z","event":"email.sent","to":"Chris","subject":"New Task: Audit test task"}
+{"ts":"2026-04-19T14:36:51.938Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 1"}
+{"ts":"2026-04-19T14:36:51.941Z","event":"email.sent","to":"Chris","subject":"New Task: Rapid 2"}
+{"ts":"2026-04-19T14:36:51.945Z","event":"task.updated","id":"mo5vdfma","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:36:51.947Z","event":"task.updated","id":"mo5vdfma","title":"Audit test task","status":"In Progress"}
+{"ts":"2026-04-19T14:36:51.949Z","event":"task.acknowledged","id":"mo5vdfma","title":"Audit test task","by":"Chris"}
+{"ts":"2026-04-19T14:36:51.951Z","event":"task.hours.logged","id":"mo5vdfma","hours":2.5}
+{"ts":"2026-04-19T14:36:51.954Z","event":"task.updated","id":"mo5vdfma","title":"Audit test task","status":"Done"}
+{"ts":"2026-04-19T14:36:51.957Z","event":"email.sent","to":"Chris","subject":"New Task: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-19T14:36:51.964Z","event":"task.deleted","id":"mo5vdfma","title":"Audit test task"}
+{"ts":"2026-04-19T14:36:51.967Z","event":"task.deleted","id":"mo5vdfmp","title":"Rapid 1"}
+{"ts":"2026-04-19T14:36:51.970Z","event":"task.deleted","id":"mo5vdfms","title":"Rapid 2"}
+{"ts":"2026-04-19T14:36:51.972Z","event":"task.deleted","id":"mo5vdfnd","title":"Future task"}
+{"ts":"2026-04-19T14:36:51.988Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 0"}
+{"ts":"2026-04-19T14:36:51.991Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 1"}
+{"ts":"2026-04-19T14:36:51.994Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 2"}
+{"ts":"2026-04-19T14:36:52.002Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 3"}
+{"ts":"2026-04-19T14:36:52.007Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 4"}
+{"ts":"2026-04-19T14:36:52.027Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 5"}
+{"ts":"2026-04-19T14:36:52.030Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 6"}
+{"ts":"2026-04-19T14:36:52.036Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 7"}
+{"ts":"2026-04-19T14:36:52.042Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 8"}
+{"ts":"2026-04-19T14:36:52.046Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 9"}
+{"ts":"2026-04-19T14:36:52.053Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 10"}
+{"ts":"2026-04-19T14:36:52.058Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 11"}
+{"ts":"2026-04-19T14:36:52.063Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 12"}
+{"ts":"2026-04-19T14:36:52.068Z","event":"email.sent","to":"Chris","subject":"New Task: Batch task 13"}
+{"ts":"2026-04-19T14:36:52.071Z","event":"task.deleted","id":"mo5vdfo3","title":"Batch task 0"}
+{"ts":"2026-04-19T14:36:52.074Z","event":"task.deleted","id":"mo5vdfo6","title":"Batch task 1"}
+{"ts":"2026-04-19T14:36:52.076Z","event":"task.deleted","id":"mo5vdfoa","title":"Batch task 2"}
+{"ts":"2026-04-19T14:36:52.080Z","event":"task.deleted","id":"mo5vdfoe","title":"Batch task 3"}
+{"ts":"2026-04-19T14:36:52.083Z","event":"task.deleted","id":"mo5vdfom","title":"Batch task 4"}
+{"ts":"2026-04-19T14:36:52.091Z","event":"task.deleted","id":"mo5vdfp6","title":"Batch task 5"}
+{"ts":"2026-04-19T14:36:52.093Z","event":"task.deleted","id":"mo5vdfpa","title":"Batch task 6"}
+{"ts":"2026-04-19T14:36:52.101Z","event":"task.deleted","id":"mo5vdfpf","title":"Batch task 7"}
+{"ts":"2026-04-19T14:36:52.109Z","event":"task.deleted","id":"mo5vdfpl","title":"Batch task 8"}
+{"ts":"2026-04-19T14:36:52.113Z","event":"task.deleted","id":"mo5vdfpp","title":"Batch task 9"}
+{"ts":"2026-04-19T14:36:52.115Z","event":"task.deleted","id":"mo5vdfpw","title":"Batch task 10"}
+{"ts":"2026-04-19T14:36:52.116Z","event":"task.deleted","id":"mo5vdfq1","title":"Batch task 11"}
+{"ts":"2026-04-19T14:36:52.118Z","event":"task.deleted","id":"mo5vdfq6","title":"Batch task 12"}
+{"ts":"2026-04-19T14:36:52.120Z","event":"task.deleted","id":"mo5vdfqb","title":"Batch task 13"}
+{"ts":"2026-04-19T14:36:52.194Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[]}
+{"ts":"2026-04-19T14:36:52.199Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-19T14:36:52.201Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-19T14:36:52.205Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-19T14:36:52.210Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Ready for Delivery","to":"Delivered"}]}
+{"ts":"2026-04-19T14:36:52.218Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Delivered","to":"Not Started"}]}
+{"ts":"2026-04-19T14:36:52.226Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Not Started","to":"InvalidStatus"}]}
+{"ts":"2026-04-19T14:36:52.233Z","event":"fab.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[]}
+{"ts":"2026-04-19T14:36:52.241Z","event":"supplier.created","id":"mo5vdfv4y2rm","name":"Audit Supplier"}
+{"ts":"2026-04-19T14:36:52.243Z","event":"supplier.updated","id":"mo5vdfv4y2rm","name":"Audit Supplier"}
+{"ts":"2026-04-19T14:36:52.245Z","event":"supplier.deleted","id":"mo5vdfv4y2rm","name":"Audit Supplier"}
+{"ts":"2026-04-19T14:36:52.250Z","event":"price.logged","id":"mo5vdfvdknoz","material":"Audit Steel","unitPrice":150}
+{"ts":"2026-04-19T14:36:52.251Z","event":"price.updated","id":"mo5vdfvdknoz","material":"Audit Steel"}
+{"ts":"2026-04-19T14:36:52.254Z","event":"price.deleted","id":"mo5vdfvdknoz","material":"Audit Steel"}
+{"ts":"2026-04-19T14:36:52.267Z","event":"worker.created","workerId":"mo5vdfvuuh6i","name":"Audit Worker"}
+{"ts":"2026-04-19T14:36:52.268Z","event":"worker.updated","workerId":"mo5vdfvuuh6i","name":"Audit Worker"}
+{"ts":"2026-04-19T14:36:52.269Z","event":"worker.deleted","workerId":"mo5vdfvuuh6i","name":"Audit Worker"}
+{"ts":"2026-04-19T14:36:52.275Z","event":"attendance.saved","date":"2026-04-19","count":1}
+{"ts":"2026-04-19T14:36:52.276Z","event":"attendance.saved","date":"2026-04-19","count":1}
+{"ts":"2026-04-19T14:36:52.284Z","event":"site-request.created","id":"mo5vdfwcilmj","item":"Bollard SP30","requestedBy":"Jun Jie","fabIdx":null}
+{"ts":"2026-04-19T14:36:52.287Z","event":"site-request.created","id":"mo5vdfwfuoaz","item":"No project","requestedBy":"Test","fabIdx":null}
+{"ts":"2026-04-19T14:36:52.289Z","event":"site-request.created","id":"mo5vdfwhddcs","item":"Test","requestedBy":"Test","fabIdx":null}
+{"ts":"2026-04-19T14:37:04.301Z","event":"claim.created","id":"mo5vdp65","projectId":"bd-19121-rbss-dnr","claimNumber":"AUDIT-CLM-001","amount":0}
+{"ts":"2026-04-19T14:37:04.302Z","event":"claim.updated","id":"mo5vdp65","claimNumber":"AUDIT-CLM-001","status":"Submitted"}
+{"ts":"2026-04-19T14:37:04.303Z","event":"claim.updated","id":"mo5vdp65","claimNumber":"AUDIT-CLM-001","status":"Certified"}
+{"ts":"2026-04-19T14:37:23.310Z","event":"notify.delivery-acknowledged","item":"Bollard"}
+{"ts":"2026-04-19T14:37:23.311Z","event":"notify.delivery-ready","item":"Bollard"}
+{"ts":"2026-04-19T14:37:35.460Z","event":"export.projects","count":18}
+{"ts":"2026-04-19T14:42:35.559Z","event":"attendance.saved","date":"2026-04-19","count":1}
+{"ts":"2026-04-19T14:42:35.597Z","event":"site-request.created","id":"mo5vksstibvy","item":"Test","requestedBy":"Boss","fabIdx":null}
+{"ts":"2026-04-19T14:42:35.653Z","event":"site-request.created","id":"mo5vksudol25","item":"Test","requestedBy":"Boss","fabIdx":null}
+{"ts":"2026-04-19T14:42:35.702Z","event":"project.updated","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-19T14:42:51.644Z","event":"attendance.saved","date":"2026-04-20","count":1}
+{"ts":"2026-04-19T14:59:01.866Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T14:59:18.477Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T14:59:21.185Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T14:59:49.655Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T14:59:54.149Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-19T14:59:55.479Z","event":"project.updated","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}

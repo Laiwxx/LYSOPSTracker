@@ -1412,18 +1412,35 @@ tr.clickable:hover td { background: var(--bg3); }
 }
 
 /* ── Documents — Collapsed List View ── */
+/* ── Documents tab ── */
 .doc-group-header {
-  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: var(--text-muted);
-  padding: 12px 4px 6px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2px;
+  padding: 14px 8px 8px;
+  margin-bottom: 0;
 }
+.doc-group-counter {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: var(--bg3);
+  color: var(--text-muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.doc-group-counter.all-done { background: rgba(16,185,129,0.15); color: var(--green); }
 .doc-group {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 .doc-row {
   border-bottom: 1px solid var(--border);
@@ -1435,33 +1452,63 @@ tr.clickable:hover td { background: var(--bg3); }
 .doc-row-summary {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 8px;
+  gap: 8px;
+  padding: 10px 12px;
   cursor: pointer;
+  min-height: 42px;
 }
+.doc-status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.doc-status-dot.s-approved         { background: var(--green); }
+.doc-status-dot.s-submitted        { background: var(--amber); }
+.doc-status-dot.s-not-submitted    { background: var(--border); border: 1px solid var(--text-muted); }
+.doc-status-dot.s-rejected         { background: var(--red); }
 .doc-row-name {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
   color: var(--text);
-}
-.doc-row-status {
-  font-size: 12px;
-  font-weight: 500;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
+.doc-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.doc-row-status {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg3);
+}
+.doc-row-status.s-approved      { background: rgba(16,185,129,0.12); color: var(--green); }
+.doc-row-status.s-submitted     { background: rgba(217,119,6,0.12); color: var(--amber); }
+.doc-row-status.s-not-submitted { color: var(--text-muted); }
+.doc-row-status.s-rejected      { background: rgba(239,68,68,0.12); color: var(--red); }
 .doc-file-indicator {
   font-size: 11px;
   color: var(--accent);
   white-space: nowrap;
 }
 .doc-row-toggle {
-  font-size: 11px;
-  padding: 2px 6px;
+  font-size: 14px;
+  padding: 4px 6px;
   flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.15s;
 }
+.doc-row-open .doc-row-toggle { transform: rotate(180deg); }
 .doc-row-detail {
-  padding: 12px 8px 16px;
+  padding: 12px 12px 16px;
   border-top: 1px solid var(--border);
   background: var(--bg2);
 }
@@ -1471,28 +1518,44 @@ tr.clickable:hover td { background: var(--bg3); }
   gap: 10px;
   margin-bottom: 12px;
 }
+.doc-detail-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
 .doc-files-section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 .doc-file-item {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 4px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 12px;
 }
 .doc-file-link {
   color: var(--accent);
   font-size: 12px;
   text-decoration: none;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .doc-file-link:hover { text-decoration: underline; }
 .btn-upload-pdf {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   background: var(--bg3);
   border: 1px dashed var(--border);
   border-radius: var(--radius-sm);
@@ -2131,6 +2194,8 @@ tr.clickable:hover td { background: var(--bg3); }
   .attention-item .att-project { min-width: auto; }
   .proj-name-input { font-size: 16px; }
   .doc-detail-grid { grid-template-columns: 1fr 1fr; }
+  .doc-row-status { font-size: 10px; padding: 2px 6px; }
+  .doc-row-summary { padding: 8px 10px; }
   .tl-row { flex-direction: column; gap: 8px; }
 
   /* Toast moves up on mobile (above tab bar) */

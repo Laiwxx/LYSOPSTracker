@@ -20,3 +20,4 @@
 - [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs; PRs editable while Pending; procurement page is the full tracking view.
 - [Manpower OT and supply workers](project_manpower_ot.md) — Mon-Fri 8-5:30 standard, after = OT. Saturday = full OT (8h default). Supply workers 10h/day no OT. 72h monthly MOM cap tracked.
 - [Parts/BOM design](project_parts_bom_design.md) — Mechanical items have sub-parts (Fabricate/Order); parts become child fab rows; parent auto-derives status; Order parts visible read-only on Factory.
+- [1000-scenario audit results](audit_1000_scenario_results.md) — 977 scenarios, 945 pass, 5 bugs fixed (attendance/SR/dates/rate-limiter). Data integrity clean.

@@ -108,24 +108,36 @@ function ensureStages() {
 function ensureDocuments() {
   if (!Array.isArray(project.documents) || project.documents.length === 0) {
     project.documents = DEFAULT_DOCUMENTS.map(d => ({
-      name: d.name,
-      status: 'Not Submitted',
-      submitted: '',
-      approved: '',
-      notes: '',
+      name: d.name, group: d.group, allowMultiple: d.allowMultiple,
+      status: 'Not Submitted', submitted: '', approved: '', notes: '', files: [],
     }));
   } else {
+    // Add missing defaults
     DEFAULT_DOCUMENTS.forEach(def => {
       const existing = project.documents.find(d => d.name === def.name);
       if (!existing) {
         project.documents.push({
-          name: def.name,
-          status: 'Not Submitted',
-          submitted: '',
-          approved: '',
-          notes: '',
+          name: def.name, group: def.group, allowMultiple: def.allowMultiple,
+          status: 'Not Submitted', submitted: '', approved: '', notes: '', files: [],
         });
       }
+    });
+    // Patch missing group/files on existing docs from defaults
+    project.documents.forEach(doc => {
+      if (!doc.group) {
+        const def = DEFAULT_DOCUMENTS.find(d => d.name === doc.name);
+        if (def) { doc.group = def.group; doc.allowMultiple = def.allowMultiple; }
+        else doc.group = 'Other';
+      }
+      if (!Array.isArray(doc.files)) doc.files = [];
+    });
+    // Remove duplicates (keep first occurrence by name)
+    const seen = new Set();
+    project.documents = project.documents.filter(d => {
+      const key = d.name.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
     });
   }
 }
@@ -801,14 +813,20 @@ function renderDocuments() {
 
   allGroups.forEach(groupName => {
     if (!groups[groupName]) return;
+    const items = groups[groupName];
+    const submitted = items.filter(({ doc }) => doc.status && doc.status !== 'Not Submitted').length;
+    const allDone = submitted === items.length;
+
     const header = document.createElement('div');
     header.className = 'doc-group-header';
-    header.textContent = groupName;
+    header.innerHTML = escHtml(groupName) +
+      ' <span class="doc-group-counter' + (allDone ? ' all-done' : '') + '">' +
+      submitted + '/' + items.length + '</span>';
     list.appendChild(header);
     const groupEl = document.createElement('div');
     groupEl.className = 'doc-group';
     list.appendChild(groupEl);
-    groups[groupName].forEach(({ doc, idx }) => {
+    items.forEach(({ doc, idx }) => {
       groupEl.appendChild(buildDocRow(doc, idx));
     });
   });
@@ -846,20 +864,27 @@ function buildDocRow(doc, idx) {
   row.className = 'doc-row';
   row.dataset.idx = idx;
 
-  const statusColors = { 'Approved': 'var(--green)', 'Submitted for Approval': 'var(--amber)', 'Not Submitted': 'var(--text-muted)', 'Rejected': 'var(--red)' };
-  const statusDots  = { 'Approved': '\u{1F7E2}', 'Submitted for Approval': '\u{1F7E1}', 'Not Submitted': '\u{1F534}', 'Rejected': '\u{1F534}' };
-  const dot = statusDots[doc.status] || '\u26AA';
+  const statusClass = {
+    'Approved': 's-approved',
+    'Submitted for Approval': 's-submitted',
+    'Not Submitted': 's-not-submitted',
+    'Rejected': 's-rejected'
+  }[doc.status] || 's-not-submitted';
+  const statusLabel = doc.status === 'Submitted for Approval' ? 'Submitted' : (doc.status || 'Not Submitted');
   const files = Array.isArray(doc.files) ? doc.files.filter(f => f.fileName) : [];
   const fileIndicator = files.length > 0
-    ? '<span class="doc-file-indicator">\u{1F4C4} ' + files.length + ' file' + (files.length > 1 ? 's' : '') + '</span>'
+    ? '<span class="doc-file-indicator">' + files.length + ' file' + (files.length > 1 ? 's' : '') + '</span>'
     : '';
 
   row.innerHTML =
     '<div class="doc-row-summary">' +
+      '<span class="doc-status-dot ' + statusClass + '"></span>' +
       '<span class="doc-row-name">' + escHtml(doc.name || 'Unnamed') + '</span>' +
-      '<span class="doc-row-status" style="color:' + (statusColors[doc.status] || 'var(--text-muted)') + ';">' + dot + ' ' + escHtml(doc.status || 'Not Submitted') + '</span>' +
-      fileIndicator +
-      '<button class="doc-row-toggle btn btn-ghost btn-sm">\u25BE</button>' +
+      '<div class="doc-row-meta">' +
+        fileIndicator +
+        '<span class="doc-row-status ' + statusClass + '">' + escHtml(statusLabel) + '</span>' +
+        '<span class="doc-row-toggle">&#9662;</span>' +
+      '</div>' +
     '</div>' +
     '<div class="doc-row-detail" style="display:none;">' +
       '<div class="doc-detail-grid">' +
@@ -882,43 +907,44 @@ function buildDocRow(doc, idx) {
         '</div>' +
         '<div class="field" style="margin:0; grid-column:1/-1;">' +
           '<label>Notes</label>' +
-          '<input type="text" class="doc-notes tbl-input" value="' + escHtml(doc.notes || '') + '" placeholder="Notes\u2026">' +
+          '<input type="text" class="doc-notes tbl-input" value="' + escHtml(doc.notes || '') + '" placeholder="Notes...">' +
         '</div>' +
       '</div>' +
       '<div class="doc-files-section">' +
         '<div class="doc-files-list" id="doc-files-' + idx + '">' +
           files.map((f, fi) =>
             '<div class="doc-file-item">' +
-              '<a href="/uploads/' + escHtml(f.fileName) + '" target="_blank" class="doc-file-link">\u{1F4C4} ' + escHtml(f.fileName.replace(/^\d+-/, '')) + '</a>' +
-              '<button class="btn btn-ghost btn-sm doc-remove-file" data-fi="' + fi + '" style="color:var(--red);">\u{1F5D1}</button>' +
+              '<a href="/uploads/' + escHtml(f.fileName) + '" target="_blank" class="doc-file-link">' + escHtml(f.fileName.replace(/^\d+-/, '')) + '</a>' +
+              '<button class="btn btn-ghost btn-sm doc-remove-file" data-fi="' + fi + '" style="color:var(--red); font-size:11px; padding:2px 6px;">Remove</button>' +
             '</div>'
           ).join('') +
         '</div>' +
         '<label class="btn-upload-pdf" style="margin-top:6px; cursor:pointer;">' +
-          '\u{1F4CE} ' + (doc.allowMultiple && files.length > 0 ? 'Upload Another PDF' : 'Upload PDF') +
+          (doc.allowMultiple && files.length > 0 ? 'Upload Another PDF' : 'Upload PDF') +
           '<input type="file" accept=".pdf" class="doc-file-input" style="display:none;">' +
         '</label>' +
       '</div>' +
-      '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">' +
+      '<div class="doc-detail-footer">' +
         '<input type="text" class="doc-name-edit tbl-input" value="' + escHtml(doc.name || '') + '" placeholder="Document name" style="flex:1; margin-right:8px;">' +
-        '<button class="btn btn-ghost btn-sm doc-del-btn" style="color:var(--red); flex-shrink:0;">Remove</button>' +
+        '<button class="btn btn-ghost btn-sm doc-del-btn" style="color:var(--red); flex-shrink:0;">Remove Document</button>' +
       '</div>' +
     '</div>';
 
-  const toggleBtn = row.querySelector('.doc-row-toggle');
-  const detail    = row.querySelector('.doc-row-detail');
-  toggleBtn.addEventListener('click', () => {
+  // Make entire summary row clickable (not just the toggle)
+  const summary = row.querySelector('.doc-row-summary');
+  const detail  = row.querySelector('.doc-row-detail');
+  summary.addEventListener('click', (e) => {
+    // Don't toggle if clicking inside detail or on a button
+    if (e.target.closest('.doc-row-detail')) return;
     const isOpen = detail.style.display !== 'none';
     detail.style.display = isOpen ? 'none' : 'block';
-    toggleBtn.textContent = isOpen ? '\u25BE' : '\u25B4';
     row.classList.toggle('doc-row-open', !isOpen);
   });
 
   row.querySelector('.doc-status-sel').addEventListener('change', function() {
     project.documents[idx].status = this.value;
-    const statusEl = row.querySelector('.doc-row-status');
-    statusEl.textContent = (statusDots[this.value] || '\u26AA') + ' ' + this.value;
-    statusEl.style.color = statusColors[this.value] || 'var(--text-muted)';
+    // Re-render to update dot, status pill, and group counter
+    renderDocuments();
     debouncedSave();
   });
 
@@ -931,8 +957,15 @@ function buildDocRow(doc, idx) {
     debouncedSave();
   });
 
-  row.querySelector('.doc-del-btn').addEventListener('click', () => {
+  row.querySelector('.doc-del-btn').addEventListener('click', async () => {
     if (!confirm('Remove this document?')) return;
+    // Delete all attached files from disk first
+    const files = Array.isArray(project.documents[idx].files) ? project.documents[idx].files : [];
+    for (const f of files) {
+      if (f.fileName) {
+        try { await fetch('/api/projects/' + projectId + '/upload/' + encodeURIComponent(f.fileName), { method: 'DELETE' }); } catch {}
+      }
+    }
     project.documents.splice(idx, 1);
     renderDocuments();
     saveProject();
@@ -960,12 +993,11 @@ function buildDocRow(doc, idx) {
     btn.addEventListener('click', async () => {
       if (!confirm('Remove this file?')) return;
       const fi = parseInt(btn.dataset.fi);
-      const fileName = project.documents[idx].files[fi] && project.documents[idx].files[fi].fileName;
-      if (fileName) {
-        await fetch('/api/projects/' + projectId + '/documents/' + idx + '/file', { method: 'DELETE' });
-      }
-      project.documents[idx].files.splice(fi, 1);
-      await saveProject();
+      // Server deletes file from disk + splices from files array
+      await fetch('/api/projects/' + projectId + '/documents/' + idx + '/file?fi=' + fi, { method: 'DELETE' });
+      // Refresh project data from server to stay in sync
+      const res = await fetch('/api/projects/' + projectId);
+      if (res.ok) { const fresh = await res.json(); project.documents = fresh.documents || []; }
       renderDocuments();
     });
   });

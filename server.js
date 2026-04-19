@@ -643,8 +643,10 @@ setInterval(() => {
 function postRateLimit(req, res, next) {
   const ip = req.ip || req.socket.remoteAddress || 'unknown';
   const now = Date.now();
-  const entry = _rlMap.get(ip) || { count: 0, start: now };
-  if (now - entry.start > 60000) { entry.count = 0; entry.start = now; }
+  let entry = _rlMap.get(ip);
+  if (!entry || now - entry.start > 60000) {
+    entry = { count: 0, start: now };
+  }
   entry.count++;
   _rlMap.set(ip, entry);
   if (entry.count > 30) return res.status(429).json({ error: 'Too many requests. Please try again later.' });
@@ -1283,6 +1285,13 @@ app.put('/api/projects/:id', async (req, res) => {
   const incoming = {};
   for (const k of PROJECT_WRITABLE) { if (req.body[k] !== undefined) incoming[k] = req.body[k]; }
   const oldProject = projects[idx];
+
+  // Validate startDate/endDate consistency
+  const effectiveStart = incoming.startDate !== undefined ? incoming.startDate : oldProject.startDate;
+  const effectiveEnd = incoming.endDate !== undefined ? incoming.endDate : oldProject.endDate;
+  if (effectiveStart && effectiveEnd && effectiveStart > effectiveEnd) {
+    return res.status(400).json({ error: 'endDate cannot be before startDate' });
+  }
 
   // Track statusChangedAt for stages
   if (incoming.stages && oldProject.stages) {
@@ -2353,16 +2362,34 @@ app.delete('/api/projects/:id/documents/:docIndex/file', (req, res) => {
     const projects = readProjects();
     const project = projects.find(p => p.id === req.params.id);
     if (!project) return res.status(404).json({ error: 'Not found' });
-    const doc = (project.documents || [])[parseInt(req.params.docIndex)];
+    const docIdx = parseInt(req.params.docIndex);
+    const doc = (project.documents || [])[docIdx];
     if (!doc) return res.status(404).json({ error: 'Document not found' });
-    if (doc.file) {
-      const filePath = path.join(UPLOADS_DIR, path.basename(doc.file));
-      try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
+
+    // Support both legacy single-file (doc.file) and new multi-file (doc.files[])
+    const fileIdx = req.query.fi !== undefined ? parseInt(req.query.fi) : -1;
+    let deletedFile = null;
+
+    if (fileIdx >= 0 && Array.isArray(doc.files) && doc.files[fileIdx]) {
+      // New multi-file: remove specific file from array
+      deletedFile = doc.files[fileIdx].fileName;
+      doc.files.splice(fileIdx, 1);
+    } else if (doc.file) {
+      // Legacy single-file
+      deletedFile = doc.file;
       doc.file = '';
       doc.fileUrl = '';
     }
+
+    // Delete from disk
+    if (deletedFile) {
+      const filePath = path.join(UPLOADS_DIR, path.basename(deletedFile));
+      try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
+      logActivity('document.file.deleted', { projectId: req.params.id, docIdx, fileName: deletedFile });
+    }
+
     writeProjects(projects);
-    res.json({ ok: true });
+    res.json({ ok: true, deletedFile });
   } catch (e) { logError('route.delete.document-file', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -3963,6 +3990,11 @@ app.post('/api/attendance', postRateLimit, (req, res) => {
       return res.status(400).json({ error: 'records array is required' });
     }
     const validStatuses = ['Present', 'Absent', 'MC', 'Off', 'On Site', 'On Leave'];
+    // Reject if any record has an invalid status
+    const badStatus = records.find(r => r.status && !validStatuses.includes(r.status));
+    if (badStatus) {
+      return res.status(400).json({ error: `Invalid status: "${badStatus.status}". Valid: ${validStatuses.join(', ')}` });
+    }
     const cleaned = records.map(r => ({
       workerId:   sanitizeStr(r.workerId, 100),
       workerName: sanitizeStr(r.workerName, 100),
@@ -4037,6 +4069,12 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
 
   if (!item || !requestedBy || !neededByDate) {
     return res.status(400).json({ error: 'item, requestedBy, and neededByDate are required' });
+  }
+  if (!projectId) {
+    return res.status(400).json({ error: 'projectId is required' });
+  }
+  if (req.body.urgency && !['Normal','Urgent'].includes(req.body.urgency)) {
+    return res.status(400).json({ error: 'urgency must be Normal or Urgent' });
   }
 
   // Validate project exists. Orphan requests (typo'd projectId, deleted project)
