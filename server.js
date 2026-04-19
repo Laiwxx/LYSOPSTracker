@@ -73,7 +73,16 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 // Multer: PDF uploads only, max 20 MB
 const uploadStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
+  destination: (req, file, cb) => {
+    // Route project uploads into per-project subdirectories
+    const projectId = req.params.id;
+    if (projectId) {
+      const projectDir = path.join(UPLOADS_DIR, 'projects', projectId);
+      if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+      return cb(null, projectDir);
+    }
+    cb(null, UPLOADS_DIR);
+  },
   filename:    (req, file, cb) => {
     const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
     cb(null, `${Date.now()}-${safe}`);
@@ -841,39 +850,29 @@ app.post('/api/admin/pin', (req, res) => {
   } catch (e) { logError('route.post.admin.pin', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// DELETE /api/projects/:id/upload/:filename — remove a FAB photo / document
-app.delete('/api/projects/:id/upload/:filename', (req, res) => {
+// DELETE /api/projects/:id/upload/:filename — remove an uploaded file from disk
+// Handles both flat filenames and project-subdir paths (projects/<id>/<file>)
+app.delete('/api/projects/:id/upload/:filename(*)', (req, res) => {
   try {
     const { id, filename } = req.params;
-    if (!/^[\w.\-]+$/.test(filename)) return res.status(400).json({ error: 'Invalid filename' });
+    // Security: prevent path traversal
+    const normalized = path.normalize(filename).replace(/^(\.\.(\/|\\|$))+/, '');
+    if (normalized.includes('..')) return res.status(400).json({ error: 'Invalid filename' });
 
-    const projects = readProjects();
-    const project = projects.find(p => p.id === id);
-    if (!project) return res.status(404).json({ error: 'Project not found' });
+    // Try project-specific path first, then flat uploads root
+    let diskPath = path.join(UPLOADS_DIR, normalized);
+    if (!fs.existsSync(diskPath)) {
+      diskPath = path.join(UPLOADS_DIR, 'projects', id, path.basename(normalized));
+    }
+    if (!fs.existsSync(diskPath)) {
+      // File already gone — treat as success
+      logActivity('project.upload.deleted', { projectId: id, filename, fileDeleted: false });
+      return res.json({ ok: true, fileDeleted: false });
+    }
 
-    project.documents = Array.isArray(project.documents) ? project.documents : [];
-    const before = project.documents.length;
-    const removed = project.documents.find(d => d && d.filename === filename);
-    project.documents = project.documents.filter(d => !(d && d.filename === filename));
-    if (project.documents.length === before) return res.status(404).json({ error: 'File not referenced by this project' });
-
-    writeProjects(projects);
-
-    const diskPath = path.join(UPLOADS_DIR, filename);
-    let fileDeleted = false;
-    try {
-      if (fs.existsSync(diskPath)) { fs.unlinkSync(diskPath); fileDeleted = true; }
-    } catch (unlinkErr) { logError('route.delete.upload.unlink', unlinkErr, { filename }); }
-
-    logActivity('project.upload.deleted', {
-      projectId: id,
-      jobCode: project.jobCode || '',
-      filename,
-      originalName: removed && removed.originalName || filename,
-      itemName: removed && removed.itemName || '',
-      fileDeleted
-    });
-    res.json({ ok: true, fileDeleted });
+    fs.unlinkSync(diskPath);
+    logActivity('project.upload.deleted', { projectId: id, filename, fileDeleted: true });
+    res.json({ ok: true, fileDeleted: true });
   } catch (e) { logError('route.delete.upload', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -892,7 +891,11 @@ app.post('/api/projects/:id/upload', uploadImageOrPdf.single('file'), (req, res)
       itemName: (req.body && req.body.itemName) || '',
       uploadedBy: (req.body && req.body.uploadedBy) || ''
     });
-    res.json({ filename: req.file.filename, originalName: req.file.originalname });
+    // Return path relative to /uploads/ so client can link: /uploads/<relativePath>
+    const relativePath = req.params.id
+      ? 'projects/' + req.params.id + '/' + req.file.filename
+      : req.file.filename;
+    res.json({ filename: relativePath, originalName: req.file.originalname });
   } catch (e) { logError('route.post.upload', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -1220,19 +1223,21 @@ function deriveFields(p) {
   // installPercent — from installation array
   const instRows  = p.installation || [];
   const instTotal = instRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
-  const instDone  = instRows.reduce((s, r) => s + (parseFloat(r.doneQty)  || 0), 0);
+  const instDone  = instRows.reduce((s, r) => s + (parseFloat(r.doneQty) || parseFloat(r.qtyDone) || 0), 0);
   p.installPercent = instTotal > 0 ? Math.round(instDone / instTotal * 100) : 0;
 
   // Install per-item stage: backfill from qty if missing, then forward-only auto-advance.
   instRows.forEach(r => {
+    // Sync field names: prefer qtyDone (from logs), fall back to doneQty (legacy)
+    const done = parseFloat(r.qtyDone) || parseFloat(r.doneQty) || 0;
+    r.doneQty = done;
+    r.qtyDone = done;
     if (!INSTALL_STAGES.includes(r.status)) {
       const total = parseFloat(r.totalQty) || 0;
-      const done  = parseFloat(r.doneQty)  || 0;
       if      (total > 0 && done >= total) r.status = 'Installed';
       else if (done > 0)                   r.status = 'In Progress';
       else                                 r.status = 'Not Started';
     } else {
-      const done = parseFloat(r.doneQty) || 0;
       if (done > 0 && r.status === 'Not Started') r.status = 'In Progress';
     }
   });
@@ -1563,6 +1568,8 @@ function recomputeQtyDone(fabItem) {
   if (!Array.isArray(fabItem.logs)) return;
   const sum = fabItem.logs.reduce((acc, l) => acc + (parseFloat(l.delta) || 0), 0);
   fabItem.qtyDone = Math.round(sum * 100) / 100;
+  // Keep doneQty in sync for install rows (legacy field name used by project.js + deriveFields)
+  fabItem.doneQty = fabItem.qtyDone;
 }
 
 // Auto-derive status from qtyDone for batch items (totalQty > 1). Chris
@@ -2381,9 +2388,10 @@ app.delete('/api/projects/:id/documents/:docIndex/file', (req, res) => {
       doc.fileUrl = '';
     }
 
-    // Delete from disk
+    // Delete from disk — handle both flat and per-project paths
     if (deletedFile) {
-      const filePath = path.join(UPLOADS_DIR, path.basename(deletedFile));
+      let filePath = path.join(UPLOADS_DIR, deletedFile);
+      if (!fs.existsSync(filePath)) filePath = path.join(UPLOADS_DIR, path.basename(deletedFile));
       try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
       logActivity('document.file.deleted', { projectId: req.params.id, docIdx, fileName: deletedFile });
     }
@@ -2402,7 +2410,9 @@ app.delete('/api/projects/:id/drawings/:drawingIndex/file', (req, res) => {
     const drawing = (project.drawings || [])[parseInt(req.params.drawingIndex)];
     if (!drawing) return res.status(404).json({ error: 'Drawing not found' });
     if (drawing.file) {
-      const filePath = path.join(UPLOADS_DIR, path.basename(drawing.file));
+      // Handle both flat and per-project paths
+      let filePath = path.join(UPLOADS_DIR, drawing.file);
+      if (!fs.existsSync(filePath)) filePath = path.join(UPLOADS_DIR, path.basename(drawing.file));
       try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
       drawing.file = '';
     }

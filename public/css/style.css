@@ -1412,35 +1412,48 @@ tr.clickable:hover td { background: var(--bg3); }
 }
 
 /* ── Documents — Collapsed List View ── */
-/* ── Documents tab ── */
+/* ── Documents tab — folder tree ── */
 .doc-group-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--text-muted);
-  padding: 14px 8px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 10px 12px;
   margin-bottom: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+  cursor: pointer;
+  user-select: none;
 }
+.doc-group-header:hover { background: rgba(255,255,255,0.06); }
 .doc-group-counter {
   font-size: 10px;
   font-weight: 600;
   padding: 1px 7px;
   border-radius: 10px;
-  background: var(--bg3);
+  background: var(--bg2);
   color: var(--text-muted);
-  letter-spacing: 0;
-  text-transform: none;
 }
 .doc-group-counter.all-done { background: rgba(16,185,129,0.15); color: var(--green); }
 .doc-group {
-  margin-bottom: 8px;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
   overflow: hidden;
+  background: var(--bg2);
+}
+/* Nested sub-folder visual hierarchy */
+.doc-folder-node { position: relative; }
+.doc-folder-node .doc-group-header {
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  padding: 8px 10px;
+}
+.doc-folder-node .doc-group {
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
 }
 .doc-row {
   border-bottom: 1px solid var(--border);
@@ -2296,79 +2309,137 @@ tr.clickable:hover td { background: var(--bg3); }
 }
 
 /* ── Drawing cards ─────────────────────────────────────────────────────────── */
-.doc-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-.doc-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.doc-card-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-}
-.doc-card .doc-name-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 2px 0;
-  width: 100%;
-}
-.doc-card .doc-name-input:focus { outline: none; border-color: var(--accent); }
-.doc-card .doc-status-row { display: flex; align-items: center; gap: 6px; }
-.doc-card .doc-upload-area { margin-top: 4px; }
+/* ── Drawing cards (legacy compat) ── */
+.doc-card-grid { display: grid; grid-template-columns: 1fr; gap: 0; }
 
 /* ── Drawing folder system ─────────────────────────────────────────────────── */
-.drawing-folder { margin-bottom: 12px; }
+.drawing-folder { margin-bottom: 8px; }
 .drawing-folder-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 10px 12px;
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius) var(--radius) 0 0;
   cursor: pointer;
   user-select: none;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
 }
 .drawing-folder-header:hover { background: rgba(255,255,255,0.06); }
 .drawing-folder-toggle {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--text-muted);
   transition: transform 0.2s;
   display: inline-block;
 }
+.drawing-folder.collapsed .drawing-folder-header {
+  border-radius: var(--radius);
+}
 .drawing-folder.collapsed .drawing-folder-toggle { transform: rotate(-90deg); }
 .drawing-folder-name { flex: 1; }
 .drawing-folder-count {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-muted);
-  background: rgba(255,255,255,0.08);
+  font-size: 10px;
+  font-weight: 600;
   padding: 1px 7px;
   border-radius: 10px;
+  background: var(--bg2);
+  letter-spacing: 0;
+  text-transform: none;
 }
 .drawing-folder-body {
   border: 1px solid var(--border);
   border-top: none;
   border-radius: 0 0 var(--radius) var(--radius);
-  padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
   background: var(--bg2);
+  overflow: hidden;
 }
 .drawing-folder.collapsed .drawing-folder-body { display: none; }
+.drawing-folder.collapsed > .drawing-folder { display: none; }
+
+/* ── Drawing row (list view, matches doc-row style) ── */
+.drw-row {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.drw-row:last-child { border-bottom: none; }
+.drw-row:hover { background: var(--bg3); }
+.drw-row.drw-row-open { background: var(--bg3); }
+.drw-row-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  min-height: 42px;
+}
+.drw-row-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.drw-row-name.empty { color: var(--text-muted); font-style: italic; }
+.drw-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.drw-row-rev {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg3);
+  color: var(--text-muted);
+}
+.drw-row-status {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.drw-row-status.s-approved    { background: rgba(16,185,129,0.12); color: var(--green); }
+.drw-row-status.s-for-approval { background: rgba(217,119,6,0.12); color: var(--amber); }
+.drw-row-status.s-superseded  { background: var(--bg3); color: var(--text-muted); }
+.drw-row-toggle {
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: transform 0.15s;
+  flex-shrink: 0;
+}
+.drw-row-open .drw-row-toggle { transform: rotate(180deg); }
+.drw-row-detail {
+  padding: 10px 12px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+}
+.drw-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.drw-detail-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
 
 /* btn-xs size */
 .btn-xs { padding: 2px 6px; font-size: 11px; }

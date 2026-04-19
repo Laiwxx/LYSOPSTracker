@@ -20,8 +20,8 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Assign to Factory",
-    "actionBy": "Project Manager",
+    "currentStage": "Drawing Submission",
+    "actionBy": "Drafter",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
@@ -115,11 +115,11 @@
         "num": 8,
         "name": "Drawing Submission",
         "owner": "Drafter",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-19T15:09:54.184Z",
         "refs": [],
         "fileName": ""
       },
@@ -268,228 +268,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "2026-04-08",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawings",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submittal",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Insurance Certificate",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Performance Bond",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "As-Built Drawings",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&M Manual",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "New Document",
-        "group": "Other",
-        "allowMultiple": false,
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "group": "Lifting Plan Docs",
-        "allowMultiple": false,
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "Block S - City Scape Gate - 4.4 Meters",
@@ -506,7 +285,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -523,7 +303,8 @@
         "readyAt": null,
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -538,7 +319,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -553,7 +335,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -568,7 +351,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -583,7 +367,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -593,7 +378,8 @@
         "unit": "sets",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -601,7 +387,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -609,7 +396,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -617,7 +405,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -625,7 +414,8 @@
         "unit": "set-of-1",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -633,7 +423,8 @@
         "unit": "set-of-2",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -662,7 +453,32 @@
         "loggedBy": "Alex Chew"
       }
     ],
-    "drawings": [],
+    "drawings": [
+      {
+        "name": "",
+        "drawingNumber": "",
+        "revision": "",
+        "status": "For Approval",
+        "file": "",
+        "folder": "General"
+      },
+      {
+        "name": "",
+        "drawingNumber": "",
+        "revision": "",
+        "status": "For Approval",
+        "file": "",
+        "folder": "nvv"
+      },
+      {
+        "name": "",
+        "drawingNumber": "",
+        "revision": "",
+        "status": "For Approval",
+        "file": "",
+        "folder": "nvv"
+      }
+    ],
     "productScope": [
       {
         "item": "Block S - Auto Bollard Cova",
@@ -881,151 +697,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "fwfwfwfw",
-        "file": "",
-        "fileUrl": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "fwfef",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "OMM",
-        "status": "Not Submitted",
-        "submitted": "2026-04-03",
-        "approved": "",
-        "notes": "",
-        "file": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "M30 Arm Barrier",
@@ -1037,7 +709,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "SP30 Fixed Bollard",
@@ -1051,7 +724,8 @@
         "targetDeliveryDate": "2026-08-30",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "SPTT Bollard",
@@ -1063,7 +737,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -1072,35 +747,40 @@
         "totalQty": 2,
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "SP400 Auto matic",
         "totalQty": 1,
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "M30 Arm Barrier",
         "totalQty": 1,
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "SP30 Fixed Bollard",
         "totalQty": 103,
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "SPTT Bollard",
         "totalQty": 5,
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [
@@ -1359,200 +1039,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "file": "",
-        "fileUrl": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawings",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submittal",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Insurance Certificate",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "As-Built Drawings",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&M Manual",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Submissions",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "SP30 FIXED",
@@ -1565,7 +1052,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": "2026-04-17T10:51:06.240Z",
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -1575,7 +1063,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -1910,148 +1399,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "SP30 Fixed Bollard",
@@ -2067,7 +1415,8 @@
         "process": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -2076,7 +1425,8 @@
         "totalQty": 730,
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -2379,148 +1729,7 @@
         "refs": []
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [],
     "installation": [],
     "prpo": [],
@@ -2802,88 +2011,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "SP30 Fixed Bollard - 135 No's",
@@ -2893,7 +2021,8 @@
         "status": "Not Started",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [],
@@ -3162,88 +2291,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [],
     "installation": [],
     "prpo": [],
@@ -3531,148 +2579,7 @@
         "refs": []
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "Engineered Bollard - Boon Lay",
@@ -3695,7 +2602,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Engineered Bollard - Ang Mo Kio",
@@ -3718,7 +2626,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Engineered Bollard - Seng Kang",
@@ -3741,7 +2650,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Engineered Bollard - Bedok",
@@ -3764,7 +2674,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Engineered Bollard - Toh Payoh Interchange",
@@ -3787,7 +2698,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Engineered Bollard - Clementi",
@@ -3802,7 +2714,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Engineered Bollard - Serangoon",
@@ -3817,7 +2730,8 @@
         "targetDeliveryDate": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -3827,7 +2741,8 @@
         "unit": "pcs",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Engineered Bollard - Ang Mo Kio",
@@ -3835,7 +2750,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Engineered Bollard - Seng Kang",
@@ -3843,7 +2759,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Engineered Bollard - Bedok",
@@ -3851,7 +2768,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Engineered Bollard - Toh Payoh Interchange",
@@ -3859,7 +2777,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Engineered Bollard - Clementi",
@@ -3867,7 +2786,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Engineered Bollard - Serangoon",
@@ -3875,7 +2795,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -4182,88 +3103,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [],
     "installation": [],
     "prpo": [],
@@ -4551,148 +3391,7 @@
         "refs": []
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "SP30 Fixed Bollard",
@@ -4706,7 +3405,8 @@
         "fab_completed_at": "2026-04-15T15:49:02.385Z",
         "fab_started_at": "2026-04-15T16:41:24.955Z",
         "cycle_days": 0,
-        "logs": []
+        "logs": [],
+        "doneQty": 0
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
@@ -4743,7 +3443,8 @@
         "partsProgress": {
           "done": 0,
           "total": 5
-        }
+        },
+        "doneQty": 0
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU > Gate frame",
@@ -4759,7 +3460,8 @@
         "partSource": "Fabricate",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU > Track rail 6m",
@@ -4775,7 +3477,8 @@
         "partSource": "Fabricate",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "Cova Road Blocker 3 Meters",
@@ -4788,7 +3491,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": "2026-04-15T17:41:28.013Z",
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
@@ -4802,7 +3506,8 @@
         "logs": [],
         "fab_started_at": null,
         "fab_completed_at": "2026-04-15T17:48:58.206Z",
-        "fabDeadline": "2026-04-02"
+        "fabDeadline": "2026-04-02",
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -4825,7 +3530,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Cova Road Blocker 3 Meters",
@@ -4833,7 +3539,8 @@
         "unit": "set-of-1",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
@@ -4841,7 +3548,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "Cometa Man Trap",
@@ -5193,88 +3901,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [],
     "installation": [],
     "prpo": [],
@@ -5542,88 +4169,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [],
     "installation": [],
     "prpo": [],
@@ -5911,148 +4457,7 @@
         "refs": []
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "PE Bollard - Engineered",
@@ -6065,7 +4470,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       },
       {
         "item": "PE Bollard with sleeve - 5 No's",
@@ -6078,7 +4484,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -6088,7 +4495,8 @@
         "unit": "pcs",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       },
       {
         "item": "PE Bollard with sleeve - 5 No's",
@@ -6096,7 +4504,8 @@
         "unit": "pcs",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -6399,148 +4808,7 @@
         "refs": []
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "CSG10506",
@@ -6553,7 +4821,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -6563,7 +4832,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -6866,148 +5136,7 @@
         "refs": []
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [
       {
         "item": "SP30 Fixed Bollard",
@@ -7020,7 +5149,8 @@
         "done": "",
         "logs": [],
         "fab_started_at": null,
-        "fab_completed_at": null
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
@@ -7030,7 +5160,8 @@
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started"
+        "status": "Not Started",
+        "qtyDone": 0
       }
     ],
     "prpo": [],
@@ -7324,148 +5455,7 @@
         "refs": []
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Safe Work Procedure",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Name List",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Permit to Work (PTW)",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Letter of Appointment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": true,
-        "files": []
-      },
-      {
-        "name": "Lifting Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      },
-      {
-        "name": "Fall Prevention Plan",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "group": "Safety Documents",
-        "allowMultiple": false,
-        "files": []
-      }
-    ],
+    "documents": [],
     "fabrication": [],
     "installation": [],
     "prpo": [],
@@ -7737,88 +5727,7 @@
         "fileName": ""
       }
     ],
-    "documents": [
-      {
-        "name": "Risk Assessment",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Method Statement",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Permit to Work",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Safety Documents",
-        "allowMultiple": false
-      },
-      {
-        "name": "Schedule Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "SIC Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Shop Drawing",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "Material Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      },
-      {
-        "name": "O&MM Submission",
-        "status": "Not Submitted",
-        "submitted": "",
-        "approved": "",
-        "notes": "",
-        "files": [],
-        "group": "Submissions",
-        "allowMultiple": false
-      }
-    ],
+    "documents": [],
     "fabrication": [],
     "installation": [],
     "prpo": [],

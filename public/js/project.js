@@ -14,19 +14,7 @@ if (!projectId) {
   window.location.href = 'index.html';
 }
 
-// ── Default document definitions ────────────────────────────────────────────
-const DEFAULT_DOCUMENTS = [
-  { name: 'Risk Assessment',       group: 'Safety Documents', allowMultiple: false },
-  { name: 'Method Statement',      group: 'Safety Documents', allowMultiple: true  },
-  { name: 'Safe Work Procedure',   group: 'Safety Documents', allowMultiple: false },
-  { name: 'Name List',             group: 'Safety Documents', allowMultiple: false },
-  { name: 'Permit to Work (PTW)',  group: 'Safety Documents', allowMultiple: true  },
-  { name: 'Letter of Appointment', group: 'Safety Documents', allowMultiple: true  },
-  { name: 'Lifting Plan',          group: 'Safety Documents', allowMultiple: false },
-  { name: 'Fall Prevention Plan',  group: 'Safety Documents', allowMultiple: false },
-  { name: 'Schedule Submission',   group: 'Submissions',      allowMultiple: false },
-  { name: 'SIC Submission',        group: 'Submissions',      allowMultiple: false },
-];
+// No default documents — users create their own folder structure per project.
 
 // ── Utility: save debounce ──────────────────────────────────────────────────
 const debouncedSave = debounce(saveProject, 300);
@@ -106,40 +94,12 @@ function ensureStages() {
 }
 
 function ensureDocuments() {
-  if (!Array.isArray(project.documents) || project.documents.length === 0) {
-    project.documents = DEFAULT_DOCUMENTS.map(d => ({
-      name: d.name, group: d.group, allowMultiple: d.allowMultiple,
-      status: 'Not Submitted', submitted: '', approved: '', notes: '', files: [],
-    }));
-  } else {
-    // Add missing defaults
-    DEFAULT_DOCUMENTS.forEach(def => {
-      const existing = project.documents.find(d => d.name === def.name);
-      if (!existing) {
-        project.documents.push({
-          name: def.name, group: def.group, allowMultiple: def.allowMultiple,
-          status: 'Not Submitted', submitted: '', approved: '', notes: '', files: [],
-        });
-      }
-    });
-    // Patch missing group/files on existing docs from defaults
-    project.documents.forEach(doc => {
-      if (!doc.group) {
-        const def = DEFAULT_DOCUMENTS.find(d => d.name === doc.name);
-        if (def) { doc.group = def.group; doc.allowMultiple = def.allowMultiple; }
-        else doc.group = 'Other';
-      }
-      if (!Array.isArray(doc.files)) doc.files = [];
-    });
-    // Remove duplicates (keep first occurrence by name)
-    const seen = new Set();
-    project.documents = project.documents.filter(d => {
-      const key = d.name.trim().toLowerCase();
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }
+  if (!Array.isArray(project.documents)) project.documents = [];
+  // Ensure every doc has group + files array
+  project.documents.forEach(doc => {
+    if (!doc.group) doc.group = 'General';
+    if (!Array.isArray(doc.files)) doc.files = [];
+  });
 }
 
 // ── Project Timeline bar ─────────────────────────────────────────────────────
@@ -311,17 +271,17 @@ function renderFinBar() {
     .reduce((s, m) => s + (parseFloat(m.amount) || 0), 0);
   project.paidAmount = pa; // keep in sync
 
-  // fabPercent: live from fabrication rows
-  const fabRows  = project.fabrication || [];
+  // fabPercent: live from fabrication rows (exclude parent containers)
+  const fabRows  = (project.fabrication || []).filter(r => !r.isMechanicalParent);
   const fabTotal = fabRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
   const fabDone  = fabRows.reduce((s, r) => s + (parseFloat(r.qtyDone)  || 0), 0);
   const fabPct   = fabTotal > 0 ? Math.round(fabDone / fabTotal * 100) : 0;
   project.fabPercent = fabPct;
 
-  // installPercent: live from installation rows
+  // installPercent: live from installation rows (read both field names)
   const instRows  = project.installation || [];
   const instTotal = instRows.reduce((s, r) => s + (parseFloat(r.totalQty) || 0), 0);
-  const instDone  = instRows.reduce((s, r) => s + (parseFloat(r.doneQty)  || 0), 0);
+  const instDone  = instRows.reduce((s, r) => s + (parseFloat(r.doneQty) || parseFloat(r.qtyDone) || 0), 0);
   const instPct   = instTotal > 0 ? Math.round(instDone / instTotal * 100) : 0;
   project.installPercent = instPct;
 
@@ -794,43 +754,58 @@ function daysSince(dateStr) {
 }
 
 
-// ── TAB: Documents — Collapsed List View ────────────────────────────────────
+// ── TAB: Documents — Nested Folder View ─────────────────────────────────────
+// Groups support path-based nesting: "Safety Documents/Site A/Block 1"
 function renderDocuments() {
   const list = document.getElementById('documents-list');
   if (!list) return;
   if (!Array.isArray(project.documents)) project.documents = [];
   list.innerHTML = '';
 
-  const groups = {};
+  // Build tree from path-based groups
+  const tree = {};
   project.documents.forEach((doc, idx) => {
     const g = doc.group || 'Other';
-    if (!groups[g]) groups[g] = [];
-    groups[g].push({ doc, idx });
+    if (!tree[g]) tree[g] = [];
+    tree[g].push({ doc, idx });
   });
 
-  const groupOrder = ['Safety Documents', 'Submissions', 'Other'];
-  const allGroups = [...new Set([...groupOrder, ...Object.keys(groups)])];
+  // Collect all unique folder paths (including parents of nested paths)
+  const allPaths = new Set(Object.keys(tree));
+  // Also include parent paths that have no direct docs but have sub-folders
+  for (const p of [...allPaths]) {
+    const parts = p.split('/');
+    for (let i = 1; i < parts.length; i++) {
+      allPaths.add(parts.slice(0, i).join('/'));
+    }
+  }
 
-  allGroups.forEach(groupName => {
-    if (!groups[groupName]) return;
-    const items = groups[groupName];
-    const submitted = items.filter(({ doc }) => doc.status && doc.status !== 'Not Submitted').length;
-    const allDone = submitted === items.length;
-
-    const header = document.createElement('div');
-    header.className = 'doc-group-header';
-    header.innerHTML = escHtml(groupName) +
-      ' <span class="doc-group-counter' + (allDone ? ' all-done' : '') + '">' +
-      submitted + '/' + items.length + '</span>';
-    list.appendChild(header);
-    const groupEl = document.createElement('div');
-    groupEl.className = 'doc-group';
-    list.appendChild(groupEl);
-    items.forEach(({ doc, idx }) => {
-      groupEl.appendChild(buildDocRow(doc, idx));
-    });
+  // Sort: top-level order first, then alphabetical
+  const topOrder = ['Safety Documents', 'Submissions', 'Other'];
+  const sortedPaths = [...allPaths].sort((a, b) => {
+    const aTop = a.split('/')[0], bTop = b.split('/')[0];
+    const aIdx = topOrder.indexOf(aTop), bIdx = topOrder.indexOf(bTop);
+    const aRank = aIdx >= 0 ? aIdx : topOrder.length;
+    const bRank = bIdx >= 0 ? bIdx : topOrder.length;
+    if (aRank !== bRank) return aRank - bRank;
+    return a.localeCompare(b);
   });
 
+  // Only render top-level paths; children rendered inside parent
+  const topLevel = sortedPaths.filter(p => !p.includes('/'));
+
+  if (topLevel.length === 0) {
+    // Empty state
+    list.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text-muted);font-size:13px;">' +
+      '<div style="font-size:24px;margin-bottom:8px;">No folders yet</div>' +
+      '<div>Click <strong>+ New Folder</strong> to create your first folder, then add documents inside it.</div></div>';
+  }
+
+  topLevel.forEach(rootPath => {
+    list.appendChild(_buildFolderNode(rootPath, tree, sortedPaths, 0));
+  });
+
+  // "+ Add Document" button
   const addBtn = document.getElementById('doc-add-btn');
   if (addBtn) {
     addBtn.onclick = () => {
@@ -840,23 +815,150 @@ function renderDocuments() {
     };
   }
 
-  // Wire "+ New Group" button
+  // "+ New Group" button (top-level)
   const newGroupBtn = document.getElementById('doc-new-group-btn');
   if (newGroupBtn) {
     newGroupBtn.onclick = () => {
-      const name = prompt('Group name:');
+      const name = prompt('Folder name:');
       if (!name || !name.trim()) return;
       project.documents.push({
-        name: 'New Document',
-        group: name.trim(),
-        allowMultiple: false,
-        status: 'Not Submitted',
-        submitted: '', approved: '', notes: '', files: []
+        name: 'New Document', group: name.trim(), allowMultiple: false,
+        status: 'Not Submitted', submitted: '', approved: '', notes: '', files: []
       });
       debouncedSave();
       renderDocuments();
     };
   }
+}
+
+// Recursively build a folder node with its docs + child sub-folders
+function _buildFolderNode(folderPath, tree, allPaths, depth) {
+  const docs = tree[folderPath] || [];
+  const folderName = folderPath.includes('/') ? folderPath.split('/').pop() : folderPath;
+
+  const childFolders = allPaths.filter(p => {
+    if (!p.startsWith(folderPath + '/')) return false;
+    return !p.slice(folderPath.length + 1).includes('/');
+  });
+
+  const allDocsInTree = _countDocsInTree(folderPath, tree, allPaths);
+  const submittedInTree = allDocsInTree.filter(({ doc }) => doc.status && doc.status !== 'Not Submitted').length;
+  const allDone = allDocsInTree.length > 0 && submittedInTree === allDocsInTree.length;
+  const isEmpty = allDocsInTree.length === 0;
+  const canDelete = depth > 0 && isEmpty && childFolders.length === 0;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = depth > 0 ? 'doc-folder-node' : '';
+  wrapper.style.marginLeft = depth > 0 ? '12px' : '0';
+  wrapper.style.marginTop = depth > 0 ? '4px' : '0';
+  wrapper.style.marginBottom = depth === 0 ? '10px' : '0';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'doc-group-header';
+  if (depth > 0) {
+    header.style.background = 'transparent';
+    header.style.border = '1px solid var(--border)';
+    header.style.borderRadius = 'var(--radius-sm)';
+    header.style.fontSize = '11px';
+    header.style.padding = '7px 10px';
+  }
+  header.innerHTML =
+    '<span class="doc-folder-toggle" style="font-size:14px;color:var(--text-muted);transition:transform 0.15s;display:inline-block;">&#9662;</span>' +
+    '<span style="flex:1;">' + escHtml(folderName) + '</span>' +
+    (isEmpty ? '' : '<span class="doc-group-counter' + (allDone ? ' all-done' : '') + '">' + submittedInTree + '/' + allDocsInTree.length + '</span>') +
+    '<button class="btn btn-ghost btn-xs doc-add-subfolder" style="font-size:10px;padding:1px 6px;" title="Add sub-folder">+ Sub-folder</button>' +
+    (canDelete ? '<button class="btn btn-ghost btn-xs doc-del-folder" style="color:var(--red);font-size:10px;padding:1px 6px;">Remove</button>' : '');
+  wrapper.appendChild(header);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'doc-group';
+  if (depth > 0) {
+    body.style.borderRadius = '0 0 var(--radius-sm) var(--radius-sm)';
+    body.style.marginBottom = '4px';
+  }
+
+  if (docs.length > 0) {
+    docs.forEach(({ doc, idx }) => body.appendChild(buildDocRow(doc, idx)));
+  }
+
+  // "+ Add Document" button inside
+  const addDiv = document.createElement('div');
+  addDiv.style.padding = '4px 12px 6px';
+  addDiv.innerHTML = '<button class="btn btn-ghost btn-sm" style="font-size:11px;">+ Add Document</button>';
+  body.appendChild(addDiv);
+  wrapper.appendChild(body);
+
+  // Child sub-folders rendered INSIDE the body so they visually nest
+  const childContainer = document.createElement('div');
+  childContainer.style.padding = docs.length > 0 || childFolders.length > 0 ? '0 0 4px 0' : '0';
+  childFolders.forEach(childPath => {
+    childContainer.appendChild(_buildFolderNode(childPath, tree, allPaths, depth + 1));
+  });
+  if (childFolders.length > 0) body.appendChild(childContainer);
+
+  // --- Events ---
+  // Toggle
+  let collapsed = false;
+  header.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    collapsed = !collapsed;
+    body.style.display = collapsed ? 'none' : '';
+    const toggle = header.querySelector('.doc-folder-toggle');
+    if (toggle) toggle.style.transform = collapsed ? 'rotate(-90deg)' : '';
+    if (depth === 0) header.style.borderRadius = collapsed ? 'var(--radius)' : 'var(--radius) var(--radius) 0 0';
+  });
+
+  // "+ Sub-folder"
+  header.querySelector('.doc-add-subfolder').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const name = prompt('Sub-folder name:');
+    if (!name || !name.trim()) return;
+    const newPath = folderPath + '/' + name.trim();
+    // Create empty folder by adding a placeholder doc
+    project.documents.push({
+      name: 'New Document', group: newPath, allowMultiple: false,
+      status: 'Not Submitted', submitted: '', approved: '', notes: '', files: []
+    });
+    debouncedSave();
+    renderDocuments();
+  });
+
+  // Delete folder
+  const delBtn = header.querySelector('.doc-del-folder');
+  if (delBtn) {
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Remove all docs in this folder path
+      project.documents = project.documents.filter(d => d.group !== folderPath);
+      debouncedSave();
+      renderDocuments();
+    });
+  }
+
+  // "+ Add Document"
+  addDiv.querySelector('button').addEventListener('click', () => {
+    project.documents.push({
+      name: 'New Document', group: folderPath, allowMultiple: false,
+      status: 'Not Submitted', submitted: '', approved: '', notes: '', files: []
+    });
+    renderDocuments();
+    debouncedSave();
+  });
+
+  return wrapper;
+}
+
+// Count all docs in a folder path + all descendant sub-folders
+function _countDocsInTree(folderPath, tree, allPaths) {
+  let docs = [...(tree[folderPath] || [])];
+  for (const p of allPaths) {
+    if (p.startsWith(folderPath + '/') && tree[p]) {
+      docs = docs.concat(tree[p]);
+    }
+  }
+  return docs;
 }
 
 function buildDocRow(doc, idx) {
@@ -1006,7 +1108,7 @@ function buildDocRow(doc, idx) {
 }
 
 
-// ── Drawings Tab ─────────────────────────────────────────────────────────────
+// ── Drawings Tab — Nested Folder View ────────────────────────────────────────
 function renderDrawings() {
   const container = document.getElementById('drawings-grid');
   if (!container) return;
@@ -1014,72 +1116,46 @@ function renderDrawings() {
   if (!Array.isArray(project.drawings)) project.drawings = [];
   if (!Array.isArray(project.drawingFolders)) project.drawingFolders = ['General'];
 
-  // Ensure all drawings have a folder
   project.drawings.forEach(d => { if (!d.folder) d.folder = 'General'; });
 
-  // Build folder list: defined folders + any folder referenced by a drawing
-  const allFolders = [...new Set([
-    ...project.drawingFolders,
-    ...project.drawings.map(d => d.folder || 'General')
-  ])];
-
-  allFolders.forEach(folderName => {
-    const folderItems = project.drawings
-      .map((d, i) => ({ d, i }))
-      .filter(({ d }) => (d.folder || 'General') === folderName);
-
-    const canDelete = folderName !== 'General' && folderItems.length === 0;
-
-    const folderEl = document.createElement('div');
-    folderEl.className = 'drawing-folder';
-    folderEl.innerHTML = `
-      <div class="drawing-folder-header">
-        <span class="drawing-folder-toggle">▾</span>
-        <span>📁</span>
-        <span class="drawing-folder-name">${escHtml(folderName)}</span>
-        <span class="drawing-folder-count">${folderItems.length}</span>
-        ${canDelete ? `<button class="btn btn-danger btn-xs del-folder-btn" data-folder="${escHtml(folderName)}">✕</button>` : ''}
-      </div>
-      <div class="drawing-folder-body"></div>
-    `;
-
-    const body = folderEl.querySelector('.drawing-folder-body');
-
-    // Drawing cards
-    folderItems.forEach(({ d, i }) => body.appendChild(buildDrawingCard(d, i)));
-
-    // Per-folder "Add Drawing" button
-    const addToBtn = document.createElement('button');
-    addToBtn.className = 'btn btn-ghost btn-sm';
-    addToBtn.style.cssText = 'grid-column:1/-1;margin-top:4px;';
-    addToBtn.textContent = `📎 Add Drawing`;
-    addToBtn.addEventListener('click', () => {
-      project.drawings.push({ name: '', drawingNumber: '', revision: '', status: 'For Approval', file: '', folder: folderName });
-      renderDrawings();
-      debouncedSave();
-    });
-    body.appendChild(addToBtn);
-
-    // Toggle collapse
-    folderEl.querySelector('.drawing-folder-header').addEventListener('click', e => {
-      if (e.target.closest('button')) return;
-      folderEl.classList.toggle('collapsed');
-    });
-
-    container.appendChild(folderEl);
+  // Build tree from path-based folders
+  const tree = {};
+  project.drawings.forEach((d, i) => {
+    const f = d.folder || 'General';
+    if (!tree[f]) tree[f] = [];
+    tree[f].push({ d, i });
   });
 
-  // Delete folder buttons
-  container.querySelectorAll('.del-folder-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const fname = btn.dataset.folder;
-      project.drawingFolders = project.drawingFolders.filter(f => f !== fname);
-      debouncedSave();
-      renderDrawings();
-    });
+  // Collect all folder paths (including parents + registered folders)
+  const allPaths = new Set([...project.drawingFolders, ...Object.keys(tree)]);
+  for (const p of [...allPaths]) {
+    const parts = p.split('/');
+    for (let i = 1; i < parts.length; i++) {
+      allPaths.add(parts.slice(0, i).join('/'));
+    }
+  }
+  // Ensure General always exists
+  allPaths.add('General');
+
+  const sortedPaths = [...allPaths].sort((a, b) => {
+    if (a === 'General') return -1;
+    if (b === 'General') return 1;
+    return a.localeCompare(b);
   });
 
-  // Top-level "+ Add Drawing" button → adds to General
+  const topLevel = sortedPaths.filter(p => !p.includes('/'));
+
+  if (topLevel.length === 0 || (topLevel.length === 1 && topLevel[0] === 'General' && !tree['General']?.length)) {
+    container.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text-muted);font-size:13px;">' +
+      '<div style="font-size:24px;margin-bottom:8px;">No drawings yet</div>' +
+      '<div>Click <strong>+ Add Drawing</strong> to upload your first drawing, or <strong>+ New Folder</strong> to organize by category.</div></div>';
+  }
+
+  topLevel.forEach(rootPath => {
+    container.appendChild(_buildDrawingFolderNode(rootPath, tree, sortedPaths, 0));
+  });
+
+  // "+ Add Drawing" → General folder
   const addBtn = document.getElementById('drawing-add-btn');
   if (addBtn) {
     addBtn.onclick = () => {
@@ -1089,14 +1165,13 @@ function renderDrawings() {
     };
   }
 
-  // "+ New Folder" button
+  // "+ New Folder" (top-level)
   const newFolderBtn = document.getElementById('drawing-new-folder-btn');
   if (newFolderBtn) {
     newFolderBtn.onclick = () => {
       const name = prompt('Folder name:');
       if (!name || !name.trim()) return;
       const trimmed = name.trim();
-      if (!Array.isArray(project.drawingFolders)) project.drawingFolders = ['General'];
       if (project.drawingFolders.includes(trimmed)) { showToast('Folder already exists', 'error'); return; }
       project.drawingFolders.push(trimmed);
       debouncedSave();
@@ -1105,96 +1180,223 @@ function renderDrawings() {
   }
 }
 
-function buildDrawingCard(drawing, idx) {
-  const card = document.createElement('div');
-  card.className = 'doc-card';
+function _buildDrawingFolderNode(folderPath, tree, allPaths, depth) {
+  const drawings = tree[folderPath] || [];
+  const folderName = folderPath.includes('/') ? folderPath.split('/').pop() : folderPath;
 
-  const fileLink = drawing.file
-    ? `<a class="doc-file-link" href="/uploads/${escHtml(drawing.file)}" target="_blank" rel="noopener">📄 ${escHtml(drawing.file.replace(/^\d+-/, ''))}</a>
-       <button class="btn btn-ghost btn-sm doc-remove-file" title="Remove PDF" style="margin-left:4px;color:var(--red);">🗑</button>`
-    : '';
-
-  card.innerHTML = `
-    <div class="doc-card-header">
-      <input class="doc-name-input" value="${escHtml(drawing.name || '')}" placeholder="Drawing name">
-      <button class="btn btn-ghost btn-sm drw-del-btn" title="Remove">✕</button>
-    </div>
-    <div class="doc-status-row" style="gap:6px;">
-      <input class="tbl-input" value="${escHtml(drawing.drawingNumber || '')}" placeholder="Drawing No." style="flex:1;">
-      <input class="tbl-input" value="${escHtml(drawing.revision || '')}" placeholder="Rev" style="width:50px;">
-    </div>
-    <div class="doc-status-row">
-      <select class="drw-status-sel tbl-select">
-        <option${drawing.status === 'For Approval' ? ' selected' : ''}>For Approval</option>
-        <option${drawing.status === 'Approved'     ? ' selected' : ''}>Approved</option>
-        <option${drawing.status === 'Superseded'   ? ' selected' : ''}>Superseded</option>
-      </select>
-    </div>
-    <div class="doc-upload-area">
-      <label class="btn-upload-pdf" style="display:${drawing.file ? 'none' : ''}">
-        📎 Upload PDF
-        <input type="file" accept=".pdf" class="drw-file-input" style="display:none;">
-      </label>
-      <span class="doc-file-display">${fileLink}</span>
-    </div>
-  `;
-
-  card.querySelector('.doc-name-input').addEventListener('input', function () {
-    project.drawings[idx].name = this.value; debouncedSave();
-  });
-  const [numInput, revInput] = card.querySelectorAll('input.tbl-input');
-  numInput.addEventListener('input', function () { project.drawings[idx].drawingNumber = this.value; debouncedSave(); });
-  revInput.addEventListener('input', function () { project.drawings[idx].revision = this.value; debouncedSave(); });
-  card.querySelector('.drw-status-sel').addEventListener('change', function () {
-    project.drawings[idx].status = this.value; saveProject();
-  });
-  card.querySelector('.drw-del-btn').addEventListener('click', () => {
-    project.drawings.splice(idx, 1); renderDrawings(); saveProject();
+  const childFolders = allPaths.filter(p => {
+    if (!p.startsWith(folderPath + '/')) return false;
+    const remainder = p.slice(folderPath.length + 1);
+    return !remainder.includes('/');
   });
 
-  const fileInput   = card.querySelector('.drw-file-input');
-  const fileDisplay = card.querySelector('.doc-file-display');
-  fileInput.addEventListener('change', async function () {
+  // Count all drawings in this tree
+  let totalInTree = drawings.length;
+  let approvedInTree = drawings.filter(({ d }) => d.status === 'Approved').length;
+  for (const p of allPaths) {
+    if (p.startsWith(folderPath + '/') && tree[p]) {
+      totalInTree += tree[p].length;
+      approvedInTree += tree[p].filter(({ d }) => d.status === 'Approved').length;
+    }
+  }
+
+  const canDelete = folderPath !== 'General' && drawings.length === 0 && childFolders.length === 0;
+
+  const isEmpty = totalInTree === 0;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'drawing-folder';
+  wrapper.style.marginLeft = depth > 0 ? '12px' : '0';
+  wrapper.style.marginTop = depth > 0 ? '4px' : '0';
+  wrapper.style.marginBottom = depth === 0 ? '10px' : '0';
+
+  wrapper.innerHTML =
+    '<div class="drawing-folder-header" style="' + (depth > 0 ? 'background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;padding:7px 10px;' : '') + '">' +
+      '<span class="drawing-folder-toggle">&#9662;</span>' +
+      '<span class="drawing-folder-name">' + escHtml(folderName) + '</span>' +
+      (isEmpty ? '' : '<span class="drawing-folder-count">' + approvedInTree + '/' + totalInTree + '</span>') +
+      '<button class="btn btn-ghost btn-xs drw-add-subfolder" style="font-size:10px;padding:1px 6px;" title="Add sub-folder">+ Sub-folder</button>' +
+      (canDelete ? '<button class="btn btn-ghost btn-xs del-folder-btn" style="color:var(--red);font-size:10px;padding:1px 6px;">Remove</button>' : '') +
+    '</div>' +
+    '<div class="drawing-folder-body"></div>';
+
+  const body = wrapper.querySelector('.drawing-folder-body');
+
+  drawings.forEach(({ d, i }) => body.appendChild(buildDrawingRow(d, i)));
+
+  const addDiv = document.createElement('div');
+  addDiv.style.padding = '4px 12px 6px';
+  addDiv.innerHTML = '<button class="btn btn-ghost btn-sm" style="font-size:11px;">+ Add Drawing</button>';
+  addDiv.querySelector('button').addEventListener('click', () => {
+    project.drawings.push({ name: '', drawingNumber: '', revision: '', status: 'For Approval', file: '', folder: folderPath });
+    renderDrawings();
+    debouncedSave();
+  });
+  body.appendChild(addDiv);
+
+  // Child sub-folders inside body
+  const childContainer = document.createElement('div');
+  childFolders.forEach(childPath => {
+    childContainer.appendChild(_buildDrawingFolderNode(childPath, tree, allPaths, depth + 1));
+  });
+  if (childFolders.length > 0) body.appendChild(childContainer);
+
+  // Toggle collapse
+  wrapper.querySelector('.drawing-folder-header').addEventListener('click', e => {
+    if (e.target.closest('button')) return;
+    wrapper.classList.toggle('collapsed');
+  });
+
+  // "+ Sub-folder" button
+  wrapper.querySelector('.drw-add-subfolder').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const name = prompt('Sub-folder name:');
+    if (!name || !name.trim()) return;
+    const newPath = folderPath + '/' + name.trim();
+    if (!project.drawingFolders.includes(newPath)) project.drawingFolders.push(newPath);
+    debouncedSave();
+    renderDrawings();
+  });
+
+  // Delete folder button
+  const delBtn = wrapper.querySelector('.del-folder-btn');
+  if (delBtn) {
+    delBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      project.drawingFolders = project.drawingFolders.filter(f => f !== folderPath);
+      debouncedSave();
+      renderDrawings();
+    });
+  }
+
+  return wrapper;
+}
+
+function buildDrawingRow(drawing, idx) {
+  const row = document.createElement('div');
+  row.className = 'drw-row';
+
+  const statusClass = { 'Approved': 's-approved', 'For Approval': 's-for-approval', 'Superseded': 's-superseded' }[drawing.status] || 's-for-approval';
+  const displayName = drawing.name || '';
+  const hasFile = !!drawing.file;
+  const revLabel = drawing.revision ? 'Rev ' + drawing.revision : '';
+
+  row.innerHTML =
+    '<div class="drw-row-summary">' +
+      '<span class="doc-status-dot ' + (drawing.status === 'Approved' ? 's-approved' : drawing.status === 'Superseded' ? 's-not-submitted' : 's-submitted') + '"></span>' +
+      '<span class="drw-row-name' + (displayName ? '' : ' empty') + '">' + escHtml(displayName || 'Untitled drawing') + '</span>' +
+      '<div class="drw-row-meta">' +
+        (hasFile ? '<span class="doc-file-indicator">PDF</span>' : '') +
+        (revLabel ? '<span class="drw-row-rev">' + escHtml(revLabel) + '</span>' : '') +
+        '<span class="drw-row-status ' + statusClass + '">' + escHtml(drawing.status || 'For Approval') + '</span>' +
+        '<span class="drw-row-toggle">&#9662;</span>' +
+      '</div>' +
+    '</div>' +
+    '<div class="drw-row-detail" style="display:none;">' +
+      '<div class="drw-detail-grid">' +
+        '<div class="field" style="margin:0;">' +
+          '<label>Drawing Name</label>' +
+          '<input class="tbl-input drw-name" value="' + escHtml(drawing.name || '') + '" placeholder="e.g. Shop Drawing - Bollard">' +
+        '</div>' +
+        '<div class="field" style="margin:0;">' +
+          '<label>Rev</label>' +
+          '<input class="tbl-input drw-rev" value="' + escHtml(drawing.revision || '') + '" placeholder="A">' +
+        '</div>' +
+        '<div class="field" style="margin:0;">' +
+          '<label>Status</label>' +
+          '<select class="tbl-select drw-status-sel">' +
+            '<option' + (drawing.status === 'For Approval' ? ' selected' : '') + '>For Approval</option>' +
+            '<option' + (drawing.status === 'Approved' ? ' selected' : '') + '>Approved</option>' +
+            '<option' + (drawing.status === 'Superseded' ? ' selected' : '') + '>Superseded</option>' +
+          '</select>' +
+        '</div>' +
+        '<div class="field" style="margin:0; grid-column:1/-1;">' +
+          '<label>Drawing No.</label>' +
+          '<input class="tbl-input drw-num" value="' + escHtml(drawing.drawingNumber || '') + '" placeholder="e.g. SD-001">' +
+        '</div>' +
+      '</div>' +
+      '<div class="doc-files-section">' +
+        (hasFile
+          ? '<div class="doc-file-item">' +
+              '<a href="/uploads/' + escHtml(drawing.file) + '" target="_blank" class="doc-file-link">' + escHtml(drawing.file.replace(/^\d+-/, '')) + '</a>' +
+              '<button class="btn btn-ghost btn-sm drw-remove-file" style="color:var(--red);font-size:11px;padding:2px 6px;">Remove</button>' +
+            '</div>'
+          : '') +
+        '<label class="btn-upload-pdf" style="margin-top:6px;cursor:pointer;' + (hasFile ? 'display:none;' : '') + '">' +
+          'Upload PDF' +
+          '<input type="file" accept=".pdf" class="drw-file-input" style="display:none;">' +
+        '</label>' +
+      '</div>' +
+      '<div class="drw-detail-footer">' +
+        '<span style="font-size:11px;color:var(--text-muted);">Folder: ' + escHtml(drawing.folder || 'General') + '</span>' +
+        '<button class="btn btn-ghost btn-sm drw-del-btn" style="color:var(--red);flex-shrink:0;">Remove Drawing</button>' +
+      '</div>' +
+    '</div>';
+
+  // Toggle
+  row.querySelector('.drw-row-summary').addEventListener('click', () => {
+    const detail = row.querySelector('.drw-row-detail');
+    const isOpen = detail.style.display !== 'none';
+    detail.style.display = isOpen ? 'none' : 'block';
+    row.classList.toggle('drw-row-open', !isOpen);
+  });
+
+  // Field edits
+  row.querySelector('.drw-name').addEventListener('input', function() {
+    project.drawings[idx].name = this.value;
+    row.querySelector('.drw-row-name').textContent = this.value || 'Untitled drawing';
+    row.querySelector('.drw-row-name').classList.toggle('empty', !this.value);
+    debouncedSave();
+  });
+  row.querySelector('.drw-rev').addEventListener('input', function() { project.drawings[idx].revision = this.value; debouncedSave(); });
+  row.querySelector('.drw-num').addEventListener('input', function() { project.drawings[idx].drawingNumber = this.value; debouncedSave(); });
+  row.querySelector('.drw-status-sel').addEventListener('change', function() {
+    project.drawings[idx].status = this.value;
+    renderDrawings();
+    saveProject();
+  });
+
+  // Delete drawing
+  row.querySelector('.drw-del-btn').addEventListener('click', async () => {
+    if (!confirm('Remove this drawing?')) return;
+    if (drawing.file) {
+      try { await fetch('/api/projects/' + projectId + '/upload/' + encodeURIComponent(drawing.file), { method: 'DELETE' }); } catch {}
+    }
+    project.drawings.splice(idx, 1);
+    renderDrawings();
+    saveProject();
+  });
+
+  // Upload
+  row.querySelector('.drw-file-input').addEventListener('change', async function() {
     if (!this.files || !this.files[0]) return;
     const formData = new FormData();
     formData.append('file', this.files[0]);
     try {
-      const res = await fetch(`/api/projects/${projectId}/upload`, { method: 'POST', body: formData });
+      const res = await fetch('/api/projects/' + projectId + '/upload', { method: 'POST', body: formData });
       if (!res.ok) throw new Error();
       const data = await res.json();
       project.drawings[idx].file = data.filename;
-      fileDisplay.innerHTML = `<a class="doc-file-link" href="/uploads/${escHtml(data.filename)}" target="_blank" rel="noopener">📄 ${escHtml(data.originalName)}</a>
-        <button class="btn btn-ghost btn-sm doc-remove-file" title="Remove PDF" style="margin-left:4px;color:var(--red);">🗑</button>`;
-      card.querySelector('label.btn-upload-pdf').style.display = 'none';
-      bindRemovePdf(fileDisplay, 'drawings', idx);
-      showToast('PDF uploaded.', 'success');
-      debouncedSave();
-    } catch { showToast('Upload failed.', 'error'); }
+      await saveProject();
+      renderDrawings();
+      showToast('PDF uploaded', 'success');
+    } catch { showToast('Upload failed', 'error'); }
   });
-  bindRemovePdf(fileDisplay, 'drawings', idx);
 
-  return card;
-}
+  // Remove file
+  const removeBtn = row.querySelector('.drw-remove-file');
+  if (removeBtn) {
+    removeBtn.addEventListener('click', async () => {
+      if (!confirm('Remove this file?')) return;
+      try { await fetch('/api/projects/' + projectId + '/drawings/' + idx + '/file', { method: 'DELETE' }); } catch {}
+      project.drawings[idx].file = '';
+      await saveProject();
+      renderDrawings();
+      showToast('File removed', 'success');
+    });
+  }
 
-// ── Bind Remove PDF (drawings) ───────────────────────────────────────────────
-function bindRemovePdf(fileDisplay, section, idx) {
-  const btn = fileDisplay.querySelector('.doc-remove-file');
-  if (!btn) return;
-  btn.addEventListener('click', async () => {
-    if (!confirm('Remove this file?')) return;
-    const fileName = section === 'drawings' ? project.drawings[idx]?.file : null;
-    if (fileName) {
-      try {
-        await fetch(`/api/projects/${projectId}/drawings/${idx}/file`, { method: 'DELETE' });
-      } catch (e) { /* ignore */ }
-    }
-    if (section === 'drawings') project.drawings[idx].file = '';
-    fileDisplay.innerHTML = '';
-    const card = fileDisplay.closest('.drawing-card');
-    if (card) card.querySelector('label.btn-upload-pdf').style.display = '';
-    debouncedSave();
-    showToast('File removed.', 'success');
-  });
+  return row;
 }
 
 // ── Product Scope Table ───────────────────────────────────────────────────────
@@ -1527,7 +1729,7 @@ function renderProductScope() {
 }
 
 // ── TAB 3: Fabrication ───────────────────────────────────────────────────────
-const FAB_DONE_STATUSES = ['Ready for Delivery', 'Delivered', 'Completed'];
+const FAB_DONE_STATUSES = ['Ready for Delivery', 'Delivered'];
 let _fabDragIdx = null;
 
 function renderFabrication() {
@@ -1547,7 +1749,7 @@ function renderFabrication() {
       if (isDone) { tr.style.background = 'rgba(0,200,117,0.06)'; tr.style.borderLeft = '3px solid var(--green)'; }
       tr.innerHTML = `
         <td style="padding:8px 10px;font-size:13px;">${escHtml(row.item || '—')}</td>
-        <td style="padding:8px 10px;font-size:13px;text-align:right;">${totalQty || '—'}</td>
+        <td style="padding:8px 10px;font-size:13px;text-align:right;">${totalQty != null ? totalQty : '—'}</td>
         <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.unit || '—')}</td>
         <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.process || '—')}</td>
         <td style="padding:8px 10px;font-size:13px;text-align:right;font-weight:600;color:${doneQty >= totalQty && totalQty > 0 ? 'var(--green)' : 'var(--text)'};">${doneQty}</td>
@@ -1563,226 +1765,9 @@ function renderFabrication() {
   updateFabPct(); updateFabLiveSummary(); renderProcessTimeline();
 }
 
-function buildFabRow(row, idx) {
-  const tr = document.createElement('tr');
-  const isReady = row.readyForDelivery || false;
-  tr.innerHTML = `
-    <td><input class="fab-item tbl-input" value="${escHtml(row.item || '')}" placeholder="Item" style="min-width:120px;"></td>
-    <td><input class="fab-totalqty tbl-input" type="number" value="${row.totalQty || 0}" min="0" style="min-width:60px;"></td>
-    <td>
-      <select class="fab-unit tbl-input" style="min-width:100px;">
-        ${['units','set-of-1','set-of-2','set-of-3','set-of-4','set-of-5','pairs','lots']
-          .map(u => `<option value="${u}"${(row.unit||'units') === u ? ' selected' : ''}>${u}</option>`).join('')}
-      </select>
-    </td>
-    <td>
-      <select class="fab-process tbl-input" style="min-width:140px;">
-        <option value="">— Process —</option>
-        ${['Cutting','Welding','Drilling','Tapping','Steel Fabrication','Galvanizing','Powder Coating','Painting','Assembly','Concrete Works','Electrical Works','Testing & Commissioning','Packing','Other']
-          .map(p => `<option value="${p}"${row.process === p ? ' selected' : ''}>${p}</option>`).join('')}
-      </select>
-    </td>
-    <td><input class="fab-qtydone tbl-input" type="number" value="${row.qtyDone || 0}" min="0" style="min-width:60px;"></td>
-    <td><input class="fab-qtysent tbl-input" type="number" value="${row.qtySent || 0}" min="0" style="min-width:60px;"></td>
-    <td>
-      <select class="fab-status tbl-input" style="min-width:120px;">
-        ${['Not Started','In Progress','QC Check','Ready for Delivery','Delivered','Completed']
-          .map(s => `<option value="${s}"${row.status === s ? ' selected' : ''}>${s}</option>`).join('')}
-      </select>
-    </td>
-    <td><input class="fab-started tbl-input" type="date" value="${escHtml(row.started || '')}"></td>
-    <td><input class="fab-done tbl-input" type="date" value="${escHtml(row.done || '')}"></td>
-    <td><input class="fab-targetdate tbl-input" type="date" value="${escHtml(row.targetDeliveryDate || '')}" title="Target delivery date"></td>
-    <td class="fab-ready-cell">
-      ${isReady
-        ? `<button class="btn btn-sm btn-unmark-ready" style="background:var(--bg3);color:var(--text-muted);white-space:nowrap;font-size:11px;">✓ Ready · Unmark</button>`
-        : `<button class="btn btn-sm btn-mark-ready-row" style="background:var(--green);color:#fff;white-space:nowrap;">Mark Ready</button>`
-      }
-    </td>
-    <td style="white-space:nowrap;">
-      <button class="btn btn-ghost btn-sm btn-log-step" title="Log a process step" style="font-size:10px;padding:2px 5px;margin-right:2px;">+ Log</button>
-      <button class="btn btn-ghost btn-sm del-row-btn" title="Remove">✕</button>
-    </td>
-  `;
-
-  // Fab tab is read-only — editing happens on the Factory page
-  tr.querySelectorAll('input, select').forEach(el => { el.disabled = true; el.style.opacity = '0.8'; });
-  // Hide edit-only buttons
-  const logBtn = tr.querySelector('.btn-log-step');
-  if (logBtn) logBtn.style.display = 'none';
-  const delBtn = tr.querySelector('.del-row-btn');
-  if (delBtn) delBtn.style.display = 'none';
-  const readyBtn = tr.querySelector('.btn-mark-ready-row') || tr.querySelector('.btn-unmark-ready');
-  if (readyBtn) readyBtn.style.display = 'none';
-
-  const iItem       = tr.querySelector('.fab-item');
-  const iTotalQty   = tr.querySelector('.fab-totalqty');
-  const iUnit       = tr.querySelector('.fab-unit');
-  const iProcess    = tr.querySelector('.fab-process');
-  const iQtyDone    = tr.querySelector('.fab-qtydone');
-  const iQtySent    = tr.querySelector('.fab-qtysent');
-  const iStatus     = tr.querySelector('.fab-status');
-  const iStarted    = tr.querySelector('.fab-started');
-  const iDone       = tr.querySelector('.fab-done');
-  const iTargetDate = tr.querySelector('.fab-targetdate');
-
-  const sync = () => {
-    project.fabrication[idx].item               = iItem.value;
-    project.fabrication[idx].totalQty           = Number(iTotalQty.value) || 0;
-    project.fabrication[idx].unit               = iUnit.value;
-    project.fabrication[idx].process            = iProcess.value;
-    project.fabrication[idx].qtyDone            = Number(iQtyDone.value) || 0;
-    project.fabrication[idx].qtySent            = Number(iQtySent.value) || 0;
-    project.fabrication[idx].status             = iStatus.value;
-    project.fabrication[idx].started            = iStarted.value;
-    project.fabrication[idx].done               = iDone.value;
-    project.fabrication[idx].targetDeliveryDate = iTargetDate.value;
-    updateFabPct();
-    debouncedSave();
-  };
-
-  // Auto-log when process changes
-  iProcess.addEventListener('change', () => {
-    const newProcess = iProcess.value;
-    if (!newProcess) return;
-    const fabRow = project.fabrication[idx];
-    if (!Array.isArray(fabRow.processLog)) fabRow.processLog = [];
-    const today = new Date().toISOString().split('T')[0];
-    const existing = fabRow.processLog.find(e => e.process === newProcess);
-    if (!existing) {
-      fabRow.processLog.push({ process: newProcess, startedAt: today, completedAt: '', notes: '' });
-      renderProcessTimeline();
-    }
-  });
-
-  // Auto-update completedAt when status becomes a done status
-  iStatus.addEventListener('change', () => {
-    const newStatus = iStatus.value;
-    const fabRow = project.fabrication[idx];
-    if (!Array.isArray(fabRow.processLog)) return;
-    if (FAB_DONE_STATUSES.includes(newStatus)) {
-      const today = new Date().toISOString().split('T')[0];
-      const activeEntry = fabRow.processLog.find(e => e.process === fabRow.process && !e.completedAt);
-      if (activeEntry) {
-        activeEntry.completedAt = today;
-        renderProcessTimeline();
-      }
-    }
-  });
-
-  iItem.addEventListener('input', sync);
-  [iTotalQty, iQtyDone, iQtySent].forEach(el => el.addEventListener('input', sync));
-  [iStarted, iDone, iTargetDate].forEach(el => el.addEventListener('change', sync));
-  [iUnit, iProcess, iStatus].forEach(el => el.addEventListener('change', sync));
-
-  // + Log Step button
-  tr.querySelector('.btn-log-step').addEventListener('click', () => {
-    const existingForm = document.getElementById(`fab-log-form-${idx}`);
-    if (existingForm) { existingForm.remove(); return; }
-    const formTr = document.createElement('tr');
-    formTr.id = `fab-log-form-${idx}`;
-    const LOG_PROCESSES = ['Cutting','Welding','Drilling','Tapping','Steel Fabrication','Galvanizing','Powder Coating','QC Check','Packing'];
-    formTr.innerHTML = `
-      <td colspan="13" style="background:var(--bg3); padding:10px 14px; border-top:1px dashed var(--border);">
-        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-end;">
-          <div>
-            <label style="font-size:10px; color:var(--text-muted); display:block; margin-bottom:3px;">Process</label>
-            <select id="logp-proc-${idx}" class="tbl-input" style="min-width:160px;">
-              <option value="">— Select —</option>
-              ${LOG_PROCESSES.map(p => `<option value="${escHtml(p)}">${escHtml(p)}</option>`).join('')}
-            </select>
-          </div>
-          <div>
-            <label style="font-size:10px; color:var(--text-muted); display:block; margin-bottom:3px;">Started</label>
-            <input type="date" id="logp-start-${idx}" class="tbl-input">
-          </div>
-          <div>
-            <label style="font-size:10px; color:var(--text-muted); display:block; margin-bottom:3px;">Completed</label>
-            <input type="date" id="logp-done-${idx}" class="tbl-input">
-          </div>
-          <div style="flex:1; min-width:140px;">
-            <label style="font-size:10px; color:var(--text-muted); display:block; margin-bottom:3px;">Notes</label>
-            <input type="text" id="logp-notes-${idx}" class="tbl-input" placeholder="Optional…" style="width:100%;">
-          </div>
-          <button class="btn btn-primary btn-sm" id="logp-save-${idx}">Save</button>
-          <button class="btn btn-ghost btn-sm" id="logp-cancel-${idx}">Cancel</button>
-        </div>
-      </td>
-    `;
-    tr.insertAdjacentElement('afterend', formTr);
-    document.getElementById(`logp-cancel-${idx}`).onclick = () => formTr.remove();
-    document.getElementById(`logp-save-${idx}`).onclick = () => {
-      const proc    = document.getElementById(`logp-proc-${idx}`).value;
-      const started = document.getElementById(`logp-start-${idx}`).value;
-      const done    = document.getElementById(`logp-done-${idx}`).value;
-      const notes   = document.getElementById(`logp-notes-${idx}`).value;
-      if (!proc) { showToast('Select a process', 'error'); return; }
-      const fabRow = project.fabrication[idx];
-      if (!Array.isArray(fabRow.processLog)) fabRow.processLog = [];
-      const existing = fabRow.processLog.find(e => e.process === proc);
-      if (existing) {
-        if (started)  existing.startedAt   = started;
-        if (done)     existing.completedAt = done;
-        if (notes)    existing.notes       = notes;
-      } else {
-        fabRow.processLog.push({ process: proc, startedAt: started, completedAt: done, notes });
-      }
-      formTr.remove();
-      renderProcessTimeline();
-      debouncedSave();
-      showToast('Step logged', 'success');
-    };
-  });
-
-  // Mark Ready / Unmark toggle
-  const markReadyBtn = tr.querySelector('.btn-mark-ready-row');
-  if (markReadyBtn) {
-    markReadyBtn.addEventListener('click', () => {
-      project.fabrication[idx].readyForDelivery = true;
-      project.fabrication[idx].readyAt = new Date().toISOString();
-      debouncedSave();
-      renderFabrication();
-    });
-  }
-  const unmarkBtn = tr.querySelector('.btn-unmark-ready');
-  if (unmarkBtn) {
-    unmarkBtn.addEventListener('click', () => {
-      project.fabrication[idx].readyForDelivery = false;
-      project.fabrication[idx].readyAt = null;
-      debouncedSave();
-      renderFabrication();
-    });
-  }
-
-  tr.querySelector('.del-row-btn').addEventListener('click', async () => {
-    if (!confirm('Delete this fabrication row? Linked site-requests will have their row-pointer cleared.')) return;
-    try {
-      const res = await fetch('/api/projects/' + encodeURIComponent(project.id) + '/fabrication/' + idx, { method: 'DELETE' });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || ('Delete failed (' + res.status + ')'));
-      }
-      const data = await res.json();
-      // Mirror the server-side splice on the local project object so
-      // subsequent edits work against correct indices without a reload.
-      project.fabrication.splice(idx, 1);
-      renderFabrication();
-      if (data && (data.srReindexed || data.srNulled)) {
-        showToast(`Deleted. Reindexed ${data.srReindexed} site-request${data.srReindexed !== 1 ? 's' : ''}, cleared ${data.srNulled}.`, 'success');
-      } else {
-        showToast('Fabrication row deleted', 'success');
-      }
-    } catch (e) {
-      console.error('delete fab row failed:', e);
-      alert('Delete failed: ' + e.message);
-    }
-  });
-
-  return tr;
-}
 
 function updateFabPct() {
-  const fab = project.fabrication || [];
+  const fab = (project.fabrication || []).filter(r => !r.isMechanicalParent);
   const totalQty = fab.reduce((s, r) => s + (Number(r.totalQty) || 0), 0);
   const doneQty  = fab.reduce((s, r) => s + (Number(r.qtyDone)  || 0), 0);
   const pct = totalQty > 0 ? Math.round(doneQty / totalQty * 100) : 0;
@@ -1799,26 +1784,7 @@ function updateFabLiveSummary() {
   const el = document.getElementById('fab-live-summary');
   if (!el || !project.fabrication) return;
 
-  // Drop zone: drag row from Progress → Completion = mark Ready for Delivery
-  el.ondragover = e => { e.preventDefault(); el.style.outline = '2px dashed var(--green)'; };
-  el.ondragleave = () => el.style.outline = '';
-  el.ondrop = e => {
-    e.preventDefault();
-    el.style.outline = '';
-    if (_fabDragIdx === null) return;
-    const row = project.fabrication[_fabDragIdx];
-    const total = Number(row.totalQty) || 0;
-    if (Number(row.qtyDone) < total) { showToast('Qty Done must be 100% first', 'error'); _fabDragIdx = null; return; }
-    if (Number(row.qtySent) < total) { showToast('Qty Sent must be 100% first', 'error'); _fabDragIdx = null; return; }
-    row.status = 'Ready for Delivery';
-    row.readyForDelivery = true;
-    row.readyAt = new Date().toISOString();
-    _fabDragIdx = null;
-    renderFabrication(); updateFabLiveSummary(); debouncedSave();
-    showToast('Marked Ready for Delivery ✓', 'success');
-  };
-
-  const allFab = project.fabrication.filter(f => f.totalQty > 0);
+  const allFab = project.fabrication.filter(f => f.totalQty > 0 && !f.isMechanicalParent);
   // Completion: status done AND qty done AND qty sent all at 100%
   const doneFab = allFab.filter(f =>
     FAB_DONE_STATUSES.includes(f.status) &&
@@ -1840,8 +1806,7 @@ function updateFabLiveSummary() {
   const cards = doneFab.map(f => {
     const sc = statusColors[f.status] || 'var(--green)';
     const fabIdx = project.fabrication.indexOf(f);
-    return `<div draggable="true" data-fab-done-idx="${fabIdx}" title="Drag up to move back to Progress"
-      style="background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:6px; padding:8px 12px; min-width:140px; cursor:grab;">
+    return `<div style="background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:6px; padding:8px 12px; min-width:140px;">
       <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${escHtml(f.item || '')}</div>
       <div style="font-size:11px; color:var(--text-muted);">${f.qtyDone || 0}/${f.totalQty || 0} ${escHtml(f.unit || 'units')}</div>
       <div style="font-size:10px; color:${sc}; margin-top:2px;">✓ ${escHtml(f.status)}</div>
@@ -1958,7 +1923,7 @@ function renderInstallation() {
       if (isDone) { tr.style.background = 'rgba(0,200,117,0.06)'; tr.style.borderLeft = '3px solid var(--green)'; }
       tr.innerHTML = `
         <td style="padding:8px 10px;font-size:13px;">${escHtml(row.item || '—')}</td>
-        <td style="padding:8px 10px;font-size:13px;text-align:right;">${totalQty || '—'}</td>
+        <td style="padding:8px 10px;font-size:13px;text-align:right;">${totalQty != null ? totalQty : '—'}</td>
         <td style="padding:8px 10px;font-size:12px;color:var(--text-muted);">${escHtml(row.unit || '—')}</td>
         <td style="padding:8px 10px;font-size:13px;text-align:right;font-weight:600;color:${pct >= 100 ? 'var(--green)' : 'var(--text)'};">${doneQty}</td>
         <td style="padding:8px 10px;font-size:13px;font-weight:700;color:${pctColor};">${pct}%</td>
@@ -1971,88 +1936,6 @@ function renderInstallation() {
   updateInstallPct();
 }
 
-function buildInstallRow(row, idx) {
-  const tr = document.createElement('tr');
-  const totalQty = Number(row.totalQty) || 0;
-  const doneQty  = Number(row.doneQty)  || 0;
-  const pct = totalQty > 0 ? Math.round(doneQty / totalQty * 100) : 0;
-  const pctColor = pct >= 80 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--text-muted)';
-
-  tr.innerHTML = `
-    <td><input class="tbl-input inst-item" value="${escHtml(row.item||'')}" placeholder="Item" style="min-width:120px;"></td>
-    <td><input class="tbl-input inst-totalqty" type="number" value="${totalQty}" min="0" style="width:70px;"></td>
-    <td>
-      <select class="tbl-input inst-unit" style="min-width:100px;">
-        ${['units','set-of-1','set-of-2','set-of-3','set-of-4','set-of-5','pairs','lots']
-          .map(u => `<option value="${u}"${(row.unit||'units') === u ? ' selected' : ''}>${u}</option>`).join('')}
-      </select>
-    </td>
-    <td><input class="tbl-input inst-doneqty" type="number" value="${doneQty}" min="0" style="width:70px;"></td>
-    <td><span class="install-pct-cell" style="font-weight:600; color:${pctColor};">${pct}%</span></td>
-    <td>
-      <select class="tbl-input inst-claimbasis" style="min-width:100px;">
-        <option value="">—</option>
-        <option value="Per unit"${row.claimBasis==='Per unit'?' selected':''}>Per unit</option>
-        <option value="Lump sum"${row.claimBasis==='Lump sum'?' selected':''}>Lump sum</option>
-        <option value="% complete"${row.claimBasis==='% complete'?' selected':''}>% complete</option>
-        <option value="Milestone"${row.claimBasis==='Milestone'?' selected':''}>Milestone</option>
-      </select>
-    </td>
-    <td><input class="tbl-input inst-notes" value="${escHtml(row.notes||'')}" placeholder="Notes" style="min-width:100px;"></td>
-    <td><button class="btn btn-ghost btn-sm del-row-btn">✕</button></td>
-  `;
-
-  // Install tab is read-only — editing happens on the Installation page
-  tr.querySelectorAll('input, select').forEach(el => { el.disabled = true; el.style.opacity = '0.8'; });
-  const delBtn = tr.querySelector('.del-row-btn');
-  if (delBtn) delBtn.style.display = 'none';
-
-  // Show install log photo count if logs exist
-  const logs = Array.isArray(row.logs) ? row.logs : [];
-  if (logs.length) {
-    const photoCount = logs.filter(l => l.photoPath).length;
-    const td = document.createElement('td');
-    td.innerHTML = `<span style="font-size:11px;color:var(--accent);">${photoCount} photo${photoCount !== 1 ? 's' : ''}</span>`;
-    tr.appendChild(td);
-  }
-
-  const iItem       = tr.querySelector('.inst-item');
-  const iTotalQty   = tr.querySelector('.inst-totalqty');
-  const iUnit       = tr.querySelector('.inst-unit');
-  const iDoneQty    = tr.querySelector('.inst-doneqty');
-  const iClaimBasis = tr.querySelector('.inst-claimbasis');
-  const iNotes      = tr.querySelector('.inst-notes');
-  const pctSpan     = tr.querySelector('.install-pct-cell');
-
-  const sync = () => {
-    project.installation[idx].item       = iItem.value;
-    project.installation[idx].totalQty   = Number(iTotalQty.value) || 0;
-    project.installation[idx].unit       = iUnit.value;
-    project.installation[idx].doneQty    = Number(iDoneQty.value)  || 0;
-    project.installation[idx].claimBasis = iClaimBasis ? iClaimBasis.value : '';
-    project.installation[idx].notes      = iNotes ? iNotes.value : '';
-    const t = Number(iTotalQty.value) || 0;
-    const d = Number(iDoneQty.value)  || 0;
-    const p = t > 0 ? Math.round(d / t * 100) : 0;
-    const c = p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--amber)' : 'var(--text-muted)';
-    pctSpan.textContent = p + '%';
-    pctSpan.style.color = c;
-    updateInstallPct();
-    debouncedSave();
-  };
-
-  [iItem, iNotes].forEach(el => el && el.addEventListener('input', sync));
-  [iTotalQty, iDoneQty].forEach(el => el && el.addEventListener('input', sync));
-  [iUnit, iClaimBasis].forEach(el => el && el.addEventListener('change', sync));
-
-  tr.querySelector('.del-row-btn').addEventListener('click', () => {
-    project.installation.splice(idx, 1);
-    renderInstallation();
-    saveProject();
-  });
-
-  return tr;
-}
 
 function updateInstallPct() {
   const inst = project.installation || [];
@@ -2108,8 +1991,7 @@ function updateInstallLiveSummary() {
 
   const cards = doneInst.map(f => {
     const instIdx = project.installation.indexOf(f);
-    return `<div draggable="true" data-inst-done-idx="${instIdx}" title="Drag up to move back to Progress"
-      style="background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:6px; padding:8px 12px; min-width:140px; cursor:grab;">
+    return `<div style="background:var(--bg); border:1px solid var(--border); border-left:3px solid var(--green); border-radius:6px; padding:8px 12px; min-width:140px;">
       <div style="font-size:12px; font-weight:600; margin-bottom:4px;">${escHtml(f.item || '')}</div>
       <div style="font-size:11px; color:var(--text-muted);">${f.doneQty || 0}/${f.totalQty || 0} ${escHtml(f.unit || 'units')}</div>
       <div style="font-size:10px; color:var(--green); margin-top:2px;">✓ Fully Installed</div>
@@ -2129,30 +2011,6 @@ function updateInstallLiveSummary() {
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">${cards}</div>
   `;
 
-  // Wire dragstart on completion cards — drag back up to Progress resets to 0
-  el.querySelectorAll('[data-inst-done-idx]').forEach(card => {
-    card.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('text/plain', card.dataset.instDoneIdx);
-      e.dataTransfer.effectAllowed = 'move';
-      setTimeout(() => card.style.opacity = '0.4', 0);
-    });
-    card.addEventListener('dragend', () => card.style.opacity = '');
-  });
-
-  const tbody = document.getElementById('install-tbody');
-  if (tbody) {
-    tbody.ondragover = e => { e.preventDefault(); tbody.style.outline = '2px dashed var(--amber)'; };
-    tbody.ondragleave = () => tbody.style.outline = '';
-    tbody.ondrop = e => {
-      e.preventDefault();
-      tbody.style.outline = '';
-      const idx = parseInt(e.dataTransfer.getData('text/plain'));
-      if (isNaN(idx)) return;
-      project.installation[idx].doneQty = 0;
-      renderInstallation(); updateInstallLiveSummary(); debouncedSave();
-      showToast('Moved back to Progress', 'success');
-    };
-  }
 }
 
 // ── Tab: Site Requests (read-only consolidation) ─────────────────────────────
