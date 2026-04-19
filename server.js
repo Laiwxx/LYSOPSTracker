@@ -2548,40 +2548,39 @@ app.post('/api/remind', async (req, res) => {
 
 // --- Default project structure ---
 function buildDefaultProject(data) {
+  // 20-stage template matching the real LYS project lifecycle.
+  // deriveStages() auto-derives status for each from live data.
   const stages = [
-    { num: 1,  name: 'LOI Received',               owner: 'Project Manager' },
-    { num: 2,  name: 'LOA Received',               owner: 'Project Manager' },
-    { num: 3,  name: 'Kickoff Meeting',             owner: 'Project Manager' },
-    { num: 4,  name: 'Safety Document Submission',  owner: 'Project Manager' },
-    { num: 5,  name: 'Drawing Submission',          owner: 'Drafter' },
-    { num: 6,  name: 'SIC Submission',              owner: 'Project Manager' },
-    { num: 7,  name: 'Fabrication',                 owner: 'Factory Manager' },
-    { num: 9,  name: 'Delivery',                    owner: 'Purchaser' },
-    { num: 10, name: 'Installation',                owner: 'Site Engineer' },
-    { num: 11, name: 'Handover / Inspection',       owner: 'Project Manager' },
-    { num: 12, name: 'Final Claim & Closure',       owner: 'QS' },
-  ].map(s => ({ ...s, status: 'Not Started', started: '', done: '', notes: '', statusChangedAt: null, refs: [] }));
+    { num: 1,  name: 'Quotation',                    owner: 'Sales' },
+    { num: 2,  name: 'Awarded',                      owner: 'Sales' },
+    { num: 3,  name: 'Contract Review',              owner: 'GM' },
+    { num: 4,  name: 'QS Breakdown',                 owner: 'QS' },
+    { num: 5,  name: 'Job Code Created',             owner: 'Accounts' },
+    { num: 6,  name: 'Kick-off Meeting',             owner: 'Project Manager' },
+    { num: 7,  name: 'Safety Document Submission',   owner: 'Project Manager/Site Engineer' },
+    { num: 8,  name: 'Drawing Submission',           owner: 'Drafter' },
+    { num: 9,  name: 'Drawing Approved',             owner: 'Drafter' },
+    { num: 10, name: 'SIC Submission',               owner: 'Project Manager' },
+    { num: 11, name: 'Assign to Factory',            owner: 'Project Manager' },
+    { num: 12, name: 'Factory Take-off',             owner: 'Factory Manager' },
+    { num: 13, name: 'PR to Purchaser',              owner: 'Factory Manager' },
+    { num: 14, name: 'PO Issued',                    owner: 'Purchaser' },
+    { num: 15, name: 'Production / Fabrication',     owner: 'Factory Manager' },
+    { num: 16, name: 'Shipping',                     owner: 'Purchaser' },
+    { num: 17, name: 'Delivered',                    owner: 'Purchaser' },
+    { num: 18, name: 'Site Ready',                   owner: 'Project Manager/Site Engineer' },
+    { num: 19, name: 'Installation',                 owner: 'Site Engineer' },
+    { num: 20, name: 'Handover',                     owner: 'Project Manager' },
+  ].map(s => ({ ...s, status: 'Not Started', started: '', done: '', notes: '', statusChangedAt: null, fileName: '', refs: [] }));
 
-  const documents = [
-    { name: 'Risk Assessment',       group: 'Safety Documents', allowMultiple: false },
-    { name: 'Method Statement',      group: 'Safety Documents', allowMultiple: true  },
-    { name: 'Safe Work Procedure',   group: 'Safety Documents', allowMultiple: false },
-    { name: 'Name List',             group: 'Safety Documents', allowMultiple: false },
-    { name: 'Permit to Work (PTW)',  group: 'Safety Documents', allowMultiple: true  },
-    { name: 'Letter of Appointment', group: 'Safety Documents', allowMultiple: true  },
-    { name: 'Lifting Plan',          group: 'Safety Documents', allowMultiple: false },
-    { name: 'Fall Prevention Plan',  group: 'Safety Documents', allowMultiple: false },
-    { name: 'Schedule Submission',   group: 'Submissions',      allowMultiple: false },
-    { name: 'SIC Submission',        group: 'Submissions',      allowMultiple: false },
-  ].map(d => ({ ...d, status: 'Not Submitted', submitted: '', approved: '', notes: '', files: [] }));
-
-  return {
+  // No default documents — users create their own folder structure per project.
+  const p = {
     id: data.id,
     jobCode: data.jobCode || '',
     projectName: data.projectName || '',
     product: data.product || '',
     contractValue: data.contractValue || 0,
-    voValue: data.voValue || 0,
+    voValue: 0,
     client: data.client || '',
     contact: data.contact || '',
     mainCon: data.mainCon || '',
@@ -2596,23 +2595,31 @@ function buildDefaultProject(data) {
     sales: data.sales || '',
     siteEngineer: data.siteEngineer || '',
     status: data.status || 'On Track',
-    currentStage: data.currentStage || '',
-    actionBy: data.actionBy || '',
-    fabPercent: data.fabPercent || 0,
-    installPercent: data.installPercent || 0,
-    paidAmount: data.paidAmount || 0,
-    latestNotes: data.latestNotes || '',
-    stages: data.stages || stages,
-    documents: data.documents || documents,
-    fabrication: data.fabrication || [],
-    installation: data.installation || [],
-    prpo: data.prpo || [],
-    paymentMilestones: data.paymentMilestones || [],
-    variationOrders: data.variationOrders || [],
-    defects: data.defects || [],
-    meetingNotes: data.meetingNotes || [],
-    drawings: data.drawings || [],
+    currentStage: '',
+    actionBy: '',
+    fabPercent: 0,
+    installPercent: 0,
+    paidAmount: 0,
+    latestNotes: '',
+    stages,
+    documents: [],
+    fabrication: [],
+    installation: [],
+    productScope: [],
+    prpo: [],
+    paymentMilestones: [],
+    variationOrders: [],
+    defects: [],
+    meetingNotes: [],
+    drawings: [],
+    drawingFolders: ['General'],
+    scopeNotes: '',
+    fabLeadTimeDays: 0,
   };
+
+  // Run deriveFields so currentStage/actionBy are computed immediately
+  deriveFields(p);
+  return p;
 }
 
 module.exports = { buildDefaultProject };

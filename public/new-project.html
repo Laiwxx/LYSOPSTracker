@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>New Project — LYS OPS</title>
-  <link rel="stylesheet" href="css/style.css?v=1776527483">
+  <link rel="stylesheet" href="css/style.css?v=1776614000">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <style>
-    /* ── New Project page ── */
     .np-layout {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -16,15 +15,12 @@
     @media (max-width: 720px) {
       .np-layout { grid-template-columns: 1fr; }
     }
-
     .np-section {
       background: var(--bg2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 18px 20px;
-      box-shadow: var(--shadow-sm);
     }
-
     .np-section-head {
       display: flex;
       align-items: center;
@@ -34,99 +30,60 @@
       border-bottom: 1px solid var(--border);
     }
     .np-step-num {
-      width: 22px;
-      height: 22px;
+      width: 22px; height: 22px;
       border-radius: 50%;
       background: var(--accent-soft);
       color: var(--accent);
-      font-size: 11px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
     .np-section-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.8px;
       color: var(--text-muted);
     }
-
     .np-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      display: flex; flex-direction: column; gap: 12px;
     }
     .np-fields .field { gap: 5px; }
     .np-fields .field label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px;
       color: var(--text-muted);
     }
     .np-fields .field input,
-    .np-fields .field select,
-    .np-fields .field textarea {
+    .np-fields .field select {
       background: var(--bg3);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text);
       padding: 8px 10px;
-      font-size: 13px;
-      font-family: inherit;
+      font-size: 13px; font-family: inherit;
       width: 100%;
       transition: border-color 0.15s;
     }
     .np-fields .field input:focus,
-    .np-fields .field select:focus,
-    .np-fields .field textarea:focus {
-      outline: none;
-      border-color: var(--accent);
+    .np-fields .field select:focus {
+      outline: none; border-color: var(--accent);
     }
-    .np-fields .field textarea { resize: vertical; min-height: 70px; }
     .np-fields .field select option { background: var(--bg2); }
-
     .np-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
     }
-    @media (max-width: 480px) {
-      .np-row { grid-template-columns: 1fr; }
-    }
-
-    /* Prefix buttons */
+    @media (max-width: 480px) { .np-row { grid-template-columns: 1fr; } }
     .input-prefix-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
+      display: flex; gap: 6px; align-items: center;
     }
     .input-prefix-row .prefix-btn {
-      padding: 8px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      flex-shrink: 0;
-      border-radius: var(--radius-sm);
-      line-height: 1;
+      padding: 8px 10px; font-size: 11px; font-weight: 700;
+      flex-shrink: 0; border-radius: var(--radius-sm); line-height: 1;
     }
     .input-prefix-row input { flex: 1; min-width: 0; }
-
-    .field-hint {
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    /* Actions bar */
+    .field-hint { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
     .np-actions {
       margin-top: 16px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: flex-end;
+      display: flex; gap: 10px; align-items: center; justify-content: flex-end;
     }
     .np-actions .btn-primary { padding: 10px 24px; font-size: 14px; }
   </style>
@@ -144,7 +101,7 @@
     <form id="new-project-form" novalidate>
       <div class="np-layout">
 
-        <!-- ── LEFT COLUMN ── -->
+        <!-- LEFT COLUMN -->
         <div style="display:flex;flex-direction:column;gap:16px;">
 
           <!-- Step 1: Identity -->
@@ -154,59 +111,70 @@
               <span class="np-section-title">Project Identity</span>
             </div>
             <div class="np-fields">
-
               <div class="field">
-                <label for="jobCode">Job Code <span class="required" style="color:var(--red)">*</span></label>
+                <label for="jobCode">Job Code <span style="color:var(--red)">*</span></label>
                 <div class="input-prefix-row">
                   <button type="button" class="btn btn-ghost prefix-btn" data-prefix="BD">BD</button>
                   <button type="button" class="btn btn-ghost prefix-btn" data-prefix="PJ">PJ</button>
-                  <button type="button" class="btn btn-ghost prefix-btn" data-prefix="DS">DS</button>
-                  <input type="text" id="jobCode" name="jobCode" placeholder="e.g. BD-2024-001" required>
+                  <input type="text" id="jobCode" name="jobCode" placeholder="e.g. 25526 - Client Name (Site)" required>
                 </div>
-                <span class="field-hint">BD = Bollard · PJ = Structural · DS = Direct Sales</span>
+                <span class="field-hint">BD = Bollard Division &middot; PJ = Project Job</span>
               </div>
-
               <div class="field">
-                <label for="projectName">Project Name <span class="required" style="color:var(--red)">*</span></label>
-                <input type="text" id="projectName" name="projectName" placeholder="e.g. Changi Airport T5 Security System" required>
+                <label for="projectName">Project Name <span style="color:var(--red)">*</span></label>
+                <input type="text" id="projectName" name="projectName" placeholder="e.g. Security Bollard System @ Changi T5" required>
               </div>
-
             </div>
           </div>
 
-          <!-- Step 2: Scope -->
+          <!-- Step 2: Client -->
           <div class="np-section">
             <div class="np-section-head">
               <div class="np-step-num">2</div>
-              <span class="np-section-title">Scope</span>
+              <span class="np-section-title">Client</span>
             </div>
             <div class="np-fields">
-
               <div class="field">
-                <label for="product">Product / Scope of Work</label>
-                <textarea id="product" name="product" rows="3" placeholder="Describe products and scope…"></textarea>
-              </div>
-
-              <div class="field">
-                <label for="client">Client</label>
+                <label for="client">Client / End User</label>
                 <input type="text" id="client" name="client" placeholder="e.g. Changi Airport Group">
               </div>
-
+              <div class="field">
+                <label for="mainCon">Main Contractor</label>
+                <input type="text" id="mainCon" name="mainCon" placeholder="e.g. Nakano Singapore">
+              </div>
+              <div class="np-row">
+                <div class="field">
+                  <label for="contact">Contact Person</label>
+                  <input type="text" id="contact" name="contact" placeholder="Name / phone">
+                </div>
+                <div class="field">
+                  <label for="consultant">Consultant</label>
+                  <input type="text" id="consultant" name="consultant" placeholder="e.g. Surbana Jurong">
+                </div>
+              </div>
             </div>
           </div>
 
-        </div>
-
-        <!-- ── RIGHT COLUMN ── -->
-        <div style="display:flex;flex-direction:column;gap:16px;">
-
-          <!-- Step 3: Dates -->
+          <!-- Step 3: Financials -->
           <div class="np-section">
             <div class="np-section-head">
               <div class="np-step-num">3</div>
-              <span class="np-section-title">Dates</span>
+              <span class="np-section-title">Contract</span>
             </div>
             <div class="np-fields">
+              <div class="np-row">
+                <div class="field">
+                  <label for="contractValue">Contract Value (SGD)</label>
+                  <input type="number" id="contractValue" name="contractValue" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <div class="field">
+                  <label for="status">Status</label>
+                  <select id="status" name="status">
+                    <option value="On Track" selected>On Track</option>
+                    <option value="On Hold">On Hold</option>
+                  </select>
+                </div>
+              </div>
               <div class="np-row">
                 <div class="field">
                   <label for="startDate">Start Date</label>
@@ -220,67 +188,51 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
           <!-- Step 4: Team -->
           <div class="np-section">
             <div class="np-section-head">
               <div class="np-step-num">4</div>
-              <span class="np-section-title">Team</span>
+              <span class="np-section-title">Team Assignment</span>
             </div>
             <div class="np-fields">
               <div class="np-row">
                 <div class="field">
                   <label for="projectManager">Project Manager</label>
-                  <select id="projectManager" name="projectManager"><option value="">— loading —</option></select>
+                  <select id="projectManager" name="projectManager"><option value="">Loading...</option></select>
                 </div>
                 <div class="field">
                   <label for="qs">QS</label>
-                  <select id="qs" name="qs"><option value="">— loading —</option></select>
+                  <select id="qs" name="qs"><option value="">Loading...</option></select>
                 </div>
+              </div>
+              <div class="np-row">
                 <div class="field">
                   <label for="factoryManager">Factory Manager</label>
-                  <select id="factoryManager" name="factoryManager"><option value="">— loading —</option></select>
+                  <select id="factoryManager" name="factoryManager"><option value="">Loading...</option></select>
                 </div>
                 <div class="field">
                   <label for="drafter">Drafter</label>
-                  <select id="drafter" name="drafter"><option value="">— loading —</option></select>
+                  <select id="drafter" name="drafter"><option value="">Loading...</option></select>
                 </div>
+              </div>
+              <div class="np-row">
                 <div class="field">
                   <label for="purchaser">Purchaser</label>
-                  <select id="purchaser" name="purchaser"><option value="">— loading —</option></select>
+                  <select id="purchaser" name="purchaser"><option value="">Loading...</option></select>
                 </div>
                 <div class="field">
                   <label for="sales">Sales</label>
-                  <select id="sales" name="sales"><option value="">— loading —</option></select>
-                </div>
-                <div class="field">
-                  <label for="siteEngineer">Site Engineer</label>
-                  <select id="siteEngineer" name="siteEngineer"><option value="">— loading —</option></select>
+                  <select id="sales" name="sales"><option value="">Loading...</option></select>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Step 5: Financials -->
-          <div class="np-section">
-            <div class="np-section-head">
-              <div class="np-step-num">5</div>
-              <span class="np-section-title">Financials &amp; Status</span>
-            </div>
-            <div class="np-fields">
-              <div class="np-row">
-                <div class="field">
-                  <label for="contractValue">Contract Value (SGD)</label>
-                  <input type="number" id="contractValue" name="contractValue" min="0" step="0.01" placeholder="0.00">
-                </div>
-                <div class="field">
-                  <label for="status">Status</label>
-                  <select id="status" name="status">
-                    <option value="On Track" selected>On Track</option>
-                    <option value="Delayed">Delayed</option>
-                    <option value="On Hold">On Hold</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
+              <div class="field">
+                <label for="siteEngineer">Site Engineer</label>
+                <select id="siteEngineer" name="siteEngineer"><option value="">Loading...</option></select>
               </div>
             </div>
           </div>
@@ -288,128 +240,105 @@
         </div>
       </div>
 
-      <!-- Actions -->
       <div class="np-actions">
         <a href="index.html" class="btn btn-ghost">Cancel</a>
         <button type="submit" class="btn btn-primary">Create Project</button>
       </div>
-
     </form>
   </div>
 
   <div class="toast" id="toast"></div>
 
-  <script src="js/utils.js?v=1776527483"></script>
+  <script src="js/utils.js?v=1776614000"></script>
   <script>
-    // -----------------------------------------------------------------------
-    // Default values per role
-    // -----------------------------------------------------------------------
-    var ROLE_DEFAULTS = {
-      projectManager: 'Lai Wei Xiang',
-      qs:             'Alex Mac',
-      factoryManager: 'Chris',
-      drafter:        'Senthil',
-      purchaser:      'Rena',
-      sales:          'Janessa',
-      siteEngineer:   ''
-    };
-
-    // -----------------------------------------------------------------------
-    // Load staff and populate all team dropdowns
-    // -----------------------------------------------------------------------
+    // Load staff and resolve role-based defaults
     async function loadStaff() {
-      var staffMap;
-      try {
-        staffMap = await api('GET', '/api/staff');
-      } catch (e) {
-        staffMap = {};
+      let staffMap = {};
+      try { staffMap = await api('GET', '/api/staff'); } catch(e) {}
+
+      // Resolve defaults from role aliases in staff.json
+      const roleDefaults = {};
+      const roleKeys = {
+        projectManager: 'Project Manager',
+        qs: 'QS',
+        factoryManager: 'Factory Manager',
+        drafter: 'Drafter',
+        purchaser: 'Purchaser',
+        sales: 'Sales',
+        siteEngineer: 'Site Engineer'
+      };
+      for (const [field, roleName] of Object.entries(roleKeys)) {
+        const entry = staffMap[roleName];
+        if (entry && entry.name) roleDefaults[field] = entry.name;
       }
+      // Boss is always default PM
+      if (!roleDefaults.projectManager) roleDefaults.projectManager = 'Lai Wei Xiang';
 
-      // Sort names alphabetically
-      var names = Object.keys(staffMap).sort();
+      const names = Object.values(staffMap)
+        .map(v => v.name || '')
+        .filter(n => n)
+        .sort();
+      const uniqueNames = [...new Set(names)];
 
-      var teamFields = ['projectManager', 'qs', 'factoryManager', 'drafter', 'purchaser', 'sales', 'siteEngineer'];
-
-      teamFields.forEach(function (fieldId) {
-        var sel = document.getElementById(fieldId);
+      const teamFields = ['projectManager','qs','factoryManager','drafter','purchaser','sales','siteEngineer'];
+      teamFields.forEach(fieldId => {
+        const sel = document.getElementById(fieldId);
         if (!sel) return;
-
-        sel.innerHTML = '';
-
-        // Blank option
-        var blank = document.createElement('option');
-        blank.value = '';
-        blank.textContent = '—';
-        sel.appendChild(blank);
-
-        names.forEach(function (name) {
-          var opt = document.createElement('option');
+        sel.innerHTML = '<option value="">—</option>';
+        uniqueNames.forEach(name => {
+          const opt = document.createElement('option');
           opt.value = name;
           opt.textContent = name;
           sel.appendChild(opt);
         });
-
-        // Set default if it exists in staff list
-        var def = ROLE_DEFAULTS[fieldId];
-        if (def && names.indexOf(def) !== -1) {
-          sel.value = def;
-        }
+        if (roleDefaults[fieldId]) sel.value = roleDefaults[fieldId];
       });
     }
-
     loadStaff();
 
-    // -----------------------------------------------------------------------
-    // Prefix buttons: BD / PJ
-    // -----------------------------------------------------------------------
-    document.querySelectorAll('.prefix-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var prefix  = btn.getAttribute('data-prefix');
-        var input   = document.getElementById('jobCode');
-        var stripped = input.value.replace(/^(BD|PJ)-?/i, '');
-        input.value = prefix + '-' + stripped;
+    // Prefix buttons
+    document.querySelectorAll('.prefix-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const prefix = btn.dataset.prefix;
+        const input = document.getElementById('jobCode');
+        const stripped = input.value.replace(/^(BD|PJ)\s*/i, '');
+        input.value = prefix + ' ' + stripped;
         input.focus();
-        input.dispatchEvent(new Event('input'));
       });
     });
 
-    // -----------------------------------------------------------------------
     // Form submission
-    // -----------------------------------------------------------------------
-    document.getElementById('new-project-form').addEventListener('submit', async function (e) {
+    document.getElementById('new-project-form').addEventListener('submit', async function(e) {
       e.preventDefault();
 
-      var jobCode     = document.getElementById('jobCode').value.trim();
-      var projectName = document.getElementById('projectName').value.trim();
+      const jobCode = document.getElementById('jobCode').value.trim();
+      const projectName = document.getElementById('projectName').value.trim();
 
-      if (!jobCode) {
-        showToast('Job Code is required.', 'error');
-        document.getElementById('jobCode').focus();
-        return;
-      }
-      if (!projectName) {
-        showToast('Project Name is required.', 'error');
-        document.getElementById('projectName').focus();
-        return;
-      }
+      if (!jobCode) { showToast('Job Code is required.', 'error'); document.getElementById('jobCode').focus(); return; }
+      if (!projectName) { showToast('Project Name is required.', 'error'); document.getElementById('projectName').focus(); return; }
 
-      var id = slugify(jobCode);
-      if (!id) {
-        showToast('Job Code could not be converted to a valid ID. Please use alphanumeric characters.', 'error');
+      // Validate endDate >= startDate if both set
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      if (startDate && endDate && startDate > endDate) {
+        showToast('End date cannot be before start date.', 'error');
         return;
       }
 
-      var contractValueRaw = document.getElementById('contractValue').value;
-      var contractValue    = contractValueRaw !== '' ? parseFloat(contractValueRaw) : 0;
+      const id = slugify(jobCode);
+      if (!id) { showToast('Job Code could not be converted to a valid ID.', 'error'); return; }
 
-      var project = {
-        id:             id,
-        jobCode:        jobCode,
-        projectName:    projectName,
-        product:        document.getElementById('product').value.trim(),
+      const cvRaw = document.getElementById('contractValue').value;
+      const project = {
+        id,
+        jobCode,
+        projectName,
         client:         document.getElementById('client').value.trim(),
-        startDate:      document.getElementById('startDate').value,
-        endDate:        document.getElementById('endDate').value,
+        contact:        document.getElementById('contact').value.trim(),
+        mainCon:        document.getElementById('mainCon').value.trim(),
+        consultant:     document.getElementById('consultant').value.trim(),
+        startDate,
+        endDate,
         projectManager: document.getElementById('projectManager').value,
         qs:             document.getElementById('qs').value,
         factoryManager: document.getElementById('factoryManager').value,
@@ -417,19 +346,18 @@
         purchaser:      document.getElementById('purchaser').value,
         sales:          document.getElementById('sales').value,
         siteEngineer:   document.getElementById('siteEngineer').value,
-        contractValue:  contractValue,
-        status:         document.getElementById('status').value
+        contractValue:  cvRaw !== '' ? parseFloat(cvRaw) : 0,
+        status:         document.getElementById('status').value,
       };
 
-      var submitBtn = document.querySelector('[type="submit"]');
+      const submitBtn = document.querySelector('[type="submit"]');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Creating…';
+      submitBtn.textContent = 'Creating...';
 
       try {
-        var result = await api('POST', '/api/projects', project);
-        var newId  = (result && result.id) ? result.id : id;
-        window.location.href = 'project.html?id=' + encodeURIComponent(newId);
-      } catch (err) {
+        const result = await api('POST', '/api/projects', project);
+        window.location.href = 'project.html?id=' + encodeURIComponent(result?.id || id);
+      } catch(err) {
         showToast(err.message || 'Failed to create project.', 'error');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Create Project';
