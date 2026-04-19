@@ -21,27 +21,6 @@
     "issueReason": null
   },
   {
-    "id": "mo5vdfwfuoaz",
-    "projectId": "",
-    "projectJobCode": "",
-    "projectName": "",
-    "item": "No project",
-    "quantity": 1,
-    "unit": "",
-    "neededByDate": "2026-05-01",
-    "fabIdx": null,
-    "requestedBy": "Test",
-    "notes": "",
-    "urgency": "Normal",
-    "status": "New",
-    "createdAt": "2026-04-19T14:36:52.287Z",
-    "acknowledgedAt": null,
-    "estimatedReadyDate": null,
-    "factoryNotes": null,
-    "deliveredAt": null,
-    "issueReason": null
-  },
-  {
     "id": "mo5vdfwhddcs",
     "projectId": "bd-19121-rbss-dnr",
     "projectJobCode": "",

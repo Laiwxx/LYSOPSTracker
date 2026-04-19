@@ -2072,6 +2072,7 @@ function buildSiteRequestCardReadonly(sr) {
       <span style="font-size:13px; font-weight:600; flex:1;">${escHtml(sr.item || '(no item)')}</span>
       <span style="font-size:11px; color:var(--text-muted);">${sr.quantity || sr.qtyRequested || '—'} ${escHtml(sr.unit || '')}</span>
       ${sr.neededByDate ? `<span style="font-size:11px; color:var(--text-muted);">Needed by ${fmtDate(sr.neededByDate)}</span>` : ''}
+      ${sr.urgency === 'Urgent' ? '<span style="background:#fee2e2; color:#991b1b; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px;">Urgent</span>' : ''}
       <span style="background:${bg}; color:${fg}; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px;">${status}</span>
     </div>
     <div style="margin-top:6px; font-size:11px; color:var(--text-muted);">
@@ -2541,13 +2542,17 @@ async function renderClaimsTab() {
           const d = prompt('Enter payment received date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
           if (d) patch.paymentReceivedDate = d;
           const ref = prompt('Payment reference (bank ref / cheque no):');
-          if (ref) patch.notes = (patch.notes || '') + ' Ref: ' + ref;
+          if (ref) patch._paymentRef = ref; // stored temporarily, merged with existing notes below
         }
         try {
-          // Get full claim first, merge patch
+          // Get full claim first, merge patch — preserve existing notes
           const all = await api('GET', `/api/claims?projectId=${projectId}`);
           const existing = all.find(x => x.id === id);
           if (!existing) return;
+          if (patch._paymentRef) {
+            patch.notes = (existing.notes || '') + (existing.notes ? ' | ' : '') + 'Ref: ' + patch._paymentRef;
+            delete patch._paymentRef;
+          }
           await api('PUT', `/api/claims/${id}`, { ...existing, ...patch });
           renderClaimsTab();
         } catch (e) {
@@ -2762,8 +2767,9 @@ async function renderHistoryTab() {
     return;
   }
 
-  // Badge colour per action prefix
+  // Badge colour per action/event prefix
   function badgeColor(action) {
+    if (!action) return 'var(--text-muted)';
     if (action.startsWith('project.field_changed')) return 'var(--amber)';
     if (action.startsWith('project.')) return 'var(--accent)';
     if (action.startsWith('fab.'))     return 'var(--green)';
@@ -2773,25 +2779,31 @@ async function renderHistoryTab() {
   }
 
   function formatDetails(log) {
+    // Server writes changes at top-level (new) or under details (legacy)
     const d = log.details || {};
+    const changes = Array.isArray(log.changes) ? log.changes : (Array.isArray(d.changes) ? d.changes : []);
     const parts = [];
-    if (d.changes && Array.isArray(d.changes) && d.changes.length > 0) {
-      parts.push(d.changes.map(c =>
+    if (changes.length > 0) {
+      parts.push(changes.map(c =>
         `<span style="color:var(--text-muted);">${escHtml(c.field)}:</span> ` +
         `<span style="color:var(--red); text-decoration:line-through;">${escHtml(String(c.from ?? '—'))}</span> ` +
         `→ <span style="color:var(--green);">${escHtml(String(c.to ?? '—'))}</span>`
       ).join(' &nbsp;|&nbsp; '));
     }
-    if (d.item) parts.push(`<span style="color:var(--text-muted);">item:</span> ${escHtml(d.item)}`);
-    if (d.jobCode && !parts.length) parts.push(`<span style="color:var(--text-muted);">job:</span> ${escHtml(d.jobCode)}`);
+    const item = log.item || d.item;
+    const jobCode = log.jobCode || d.jobCode;
+    if (item) parts.push(`<span style="color:var(--text-muted);">item:</span> ${escHtml(item)}`);
+    if (jobCode && !parts.length) parts.push(`<span style="color:var(--text-muted);">job:</span> ${escHtml(jobCode)}`);
     return parts.join(' &nbsp;·&nbsp; ');
   }
 
   const html = logs.map(log => {
-    const ts = new Date(log.timestamp);
+    // Handle both formats: new (event/ts) and legacy (action/timestamp)
+    const action = log.event || log.action || 'unknown';
+    const ts = new Date(log.ts || log.timestamp);
     const dateStr = ts.toLocaleDateString('en-SG', { day:'2-digit', month:'short', year:'numeric' });
     const timeStr = ts.toLocaleTimeString('en-SG', { hour:'2-digit', minute:'2-digit', hour12:false });
-    const color = badgeColor(log.action);
+    const color = badgeColor(action);
     const detail = formatDetails(log);
     return `
       <div style="display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); align-items:flex-start;">
@@ -2799,7 +2811,7 @@ async function renderHistoryTab() {
           ${dateStr}<br>${timeStr}
         </div>
         <div style="flex:1;">
-          <span style="display:inline-block; font-size:11px; font-weight:600; color:${color}; background:${color}22; border-radius:4px; padding:2px 7px; margin-bottom:4px;">${escHtml(log.action)}</span>
+          <span style="display:inline-block; font-size:11px; font-weight:600; color:${color}; background:${color}22; border-radius:4px; padding:2px 7px; margin-bottom:4px;">${escHtml(action)}</span>
           ${detail ? `<div style="font-size:12px; color:var(--text); margin-top:3px;">${detail}</div>` : ''}
         </div>
       </div>`;
