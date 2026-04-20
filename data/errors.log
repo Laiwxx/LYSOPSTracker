@@ -11,3 +11,4 @@
 {"ts":"2026-04-19T14:28:45.141Z","event":"calendar.create","error":"429 Too Many Requests","targetEmail":"laiwx@laiyewseng.com.sg","subject":"[TEST — would go to chris@laiyewseng.com.sg] [Task] Audit test task"}
 {"ts":"2026-04-19T14:34:14.508Z","event":"calendar.create","error":"429 Too Many Requests","targetEmail":"laiwx@laiyewseng.com.sg","subject":"[TEST — would go to chris@laiyewseng.com.sg] [Task] Audit test task"}
 {"ts":"2026-04-19T14:36:52.234Z","event":"calendar.create","error":"429 Too Many Requests","targetEmail":"laiwx@laiyewseng.com.sg","subject":"[TEST — would go to chris@laiyewseng.com.sg] [Task] Audit test task"}
+{"ts":"2026-04-20T00:45:00.015Z","event":"cron.daily-recurring","error":"people is not defined"}
