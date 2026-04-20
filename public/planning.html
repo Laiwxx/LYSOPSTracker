@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776527483">
+  <link rel="stylesheet" href="/css/style.css?v=1776677603">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -640,6 +640,7 @@
   </div>
 </div>
 
+<script src="/js/utils.js"></script>
 <script>
 // ── Constants ──────────────────────────────────────────
 const DAYS      = ['mon','tue','wed','thu','fri','sat'];
@@ -1185,7 +1186,10 @@ function addSupplyWorker() {
   });
 }
 
-function removeSupplyWorker(id) {
+async function removeSupplyWorker(id) {
+  const sw = supplyWorkers.find(w => w.id === id);
+  const result = await confirmDelete('Remove this supply worker?', sw ? sw.name : '');
+  if (!result) return;
   supplyWorkers = supplyWorkers.filter(w => w.id !== id);
   delete plan[id];
   render();

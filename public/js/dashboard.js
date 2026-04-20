@@ -1299,4 +1299,8 @@
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // Expose for inline onclick handlers
+  window.loadWeeklyBrief = loadWeeklyBrief;
+  window.loadTodayMCFromAttendance = loadTodayMCFromAttendance;
+
 })();

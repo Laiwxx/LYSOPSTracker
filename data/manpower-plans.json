@@ -55,5 +55,19 @@
       }
     ],
     "savedAt": "2026-04-18T15:18:41.534Z"
+  },
+  {
+    "weekStart": "2026-04-20",
+    "assignments": {},
+    "supplyWorkers": [
+      {
+        "id": "supply-1776523111944",
+        "name": "Batman",
+        "company": "Bin",
+        "role": "Worker",
+        "code": "EXT"
+      }
+    ],
+    "savedAt": "2026-04-20T09:18:09.719Z"
   }
 ]

@@ -72,3 +72,10 @@ OPEN QUESTIONS
 ```
 
 That's the target density. Factual, scoped, actionable.
+
+## This project
+
+- Node.js monolith (`server.js` ~5500 lines), 12 HTML pages in `public/`, JSON storage in `data/`, config in `config/`.
+- Server managed by systemd (`ops-tracker.service`). Logs at `/var/log/ops-tracker.log` and `.err.log`.
+- Memory files in `/home/ubuntu/.claude/projects/-home-ubuntu-ops-tracker/memory/` — always check MEMORY.md index first.
+- Key business rules: one-role-one-page, fab/delivery/install are concurrent tri-layer, every delete needs confirmDelete() with reason, email must use escHtml().

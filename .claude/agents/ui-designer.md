@@ -40,3 +40,12 @@ You are a UI/UX designer with strong restraint. Your craft is **making existing 
 4. **What I did NOT change** — temptations resisted.
 
 If you think a requested change would hurt usability, push back with a cleaner alternative before building.
+
+## This project
+
+- 12 pages in `public/`: index.html (Dashboard), admin.html, attendance.html, factory.html, feedback.html, installation.html, my-tasks.html (Team), new-project.html, planning.html (Manpower), procurement.html, project.html, tasks.html (dead/unlinked).
+- Shared CSS: `public/css/style.css`. Shared JS: `public/js/utils.js` (contains `confirmDelete`, `DELETE_REASONS`, toast).
+- `confirmDelete()` is duplicated in 5 files (factory, installation, my-tasks, procurement, utils.js). The canonical copy is in utils.js.
+- Every delete action MUST use `confirmDelete()` with reason dropdown — never plain `confirm()`.
+- Attendance page intentionally has no sidebar (tablet-only use by Chris).
+- Admin login is a full-screen centered gate with `position:fixed`.

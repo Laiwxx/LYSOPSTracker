@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776604000">
+  <link rel="stylesheet" href="/css/style.css?v=1776677603">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 960px; margin: 0 auto; padding: 16px; }
@@ -2105,7 +2105,8 @@ function renderFabItems(fp) {
 
 async function deleteUpload(pid, filename) {
   if (!filename) return;
-  if (!confirm('Delete this upload? This cannot be undone.')) return;
+  const delResult = await confirmDelete('Delete this upload?', filename);
+  if (!delResult) return;
   try {
     const res = await fetch('/api/projects/' + pid + '/upload/' + encodeURIComponent(filename), { method: 'DELETE' });
     if (!res.ok) {
@@ -2527,7 +2528,8 @@ function _formatTimeAgo(ms, now) {
 
 async function undoDelivery(id) {
   if (_srBusy.has(id)) return;
-  if (!confirm('Undo delivery? This will move the request back to Ready.')) return;
+  const delResult = await confirmDelete('Undo delivery?', 'This will move the request back to Ready.');
+  if (!delResult) return;
   await srUpdate(id, { status: 'Ready' });
   factoryToast('Delivery undone — moved back to Ready');
 }

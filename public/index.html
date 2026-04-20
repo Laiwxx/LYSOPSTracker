@@ -10,7 +10,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="LYS OPS">
   <link rel="manifest" href="/manifest.json">
-  <link rel="stylesheet" href="css/style.css?v=1776527483">
+  <link rel="stylesheet" href="css/style.css?v=1776677603">
+  <style>@media(max-width:640px){#kpi-grid{grid-template-columns:repeat(2,1fr)!important;}}</style>
   <script src="/js/chart.min.js"></script>
 </head>
 <body>
@@ -64,15 +65,15 @@
     <div class="dash-sections">
 
       <!-- 1. KPI Cards — Portfolio Summary -->
-      <div class="kpi-grid" style="margin-bottom:20px;grid-template-columns:repeat(4,1fr);gap:14px;">
+      <div class="kpi-grid" style="margin-bottom:20px;grid-template-columns:repeat(4,1fr);gap:14px;" id="kpi-grid">
         <div class="kpi-card" style="border-top:3px solid var(--green);padding:18px 20px;">
           <div class="kpi-label">Active Projects</div>
           <div class="kpi-value" id="hero-active" style="color:var(--green);font-size:26px;">—</div>
           <div class="kpi-sub" id="hero-active-sub"></div>
         </div>
-        <div class="kpi-card" style="border-top:3px solid var(--blue,#3366ff);padding:18px 20px;">
+        <div class="kpi-card" style="border-top:3px solid var(--accent);padding:18px 20px;">
           <div class="kpi-label">Fabrication</div>
-          <div class="kpi-value" id="hero-fab" style="color:var(--blue,#3366ff);font-size:26px;">—</div>
+          <div class="kpi-value" id="hero-fab" style="color:var(--accent);font-size:26px;">—</div>
           <div class="kpi-sub">portfolio avg</div>
         </div>
         <div class="kpi-card" style="border-top:3px solid var(--amber);padding:18px 20px;">
@@ -140,8 +141,8 @@
   </div><!-- /page -->
 
   <div class="toast" id="toast"></div>
-  <script src="js/utils.js?v=1776527483"></script>
-  <script src="js/dashboard.js?v=1776527483"></script>
+  <script src="js/utils.js?v=1776677603"></script>
+  <script src="js/dashboard.js?v=1776677603"></script>
   </div>
 </body>
 </html>

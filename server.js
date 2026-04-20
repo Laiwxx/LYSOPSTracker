@@ -6,6 +6,9 @@ const fetch = require('node-fetch');
 const msal = require('@azure/msal-node');
 const multer = require('multer');
 const cron = require('node-cron');
+const bcrypt = require('bcryptjs');
+const { AsyncLocalStorage } = require('async_hooks');
+const _authStore = new AsyncLocalStorage();
 
 // ── MSAL: single CCA instance + cached token ──────────────────────────────────
 let _msalCCA = null;
@@ -123,24 +126,37 @@ const uploadLogPhoto = multer({
   limits: { fileSize: 15 * 1024 * 1024 }
 });
 
-// ── Basic Auth gate (pre-launch testing) ──────────────────────────────────────
-// Single shared username/password stored in env. Remove these env vars to disable.
-if (process.env.BASIC_AUTH_USER && process.env.BASIC_AUTH_PASSWORD) {
-  const expectedUser = process.env.BASIC_AUTH_USER;
-  const expectedPass = process.env.BASIC_AUTH_PASSWORD;
-  app.use((req, res, next) => {
-    const hdr = req.headers.authorization || '';
-    if (hdr.startsWith('Basic ')) {
-      const decoded = Buffer.from(hdr.slice(6), 'base64').toString('utf8');
-      const idx = decoded.indexOf(':');
-      const user = idx >= 0 ? decoded.slice(0, idx) : decoded;
-      const pass = idx >= 0 ? decoded.slice(idx + 1) : '';
-      if (user === expectedUser && pass === expectedPass) return next();
-    }
-    res.setHeader('WWW-Authenticate', 'Basic realm="LYS Ops Tracker", charset="UTF-8"');
-    res.status(401).send('Authentication required');
-  });
+// ── Per-staff Basic Auth ─────────────────────────────────────────────────────
+// Each staff member has their own username/password in config/credentials.json.
+// The authenticated user is tracked via AsyncLocalStorage so logActivity() can
+// automatically attribute actions without changing 30+ call sites.
+const CREDS_FILE = path.join(__dirname, 'config', 'credentials.json');
+function readCredentials() {
+  try { return JSON.parse(fs.readFileSync(CREDS_FILE, 'utf8')); } catch { return {}; }
 }
+function getAuthUser() { return _authStore.getStore() || 'System'; }
+
+app.use((req, res, next) => {
+  const creds = readCredentials();
+  if (!Object.keys(creds).length) return next(); // No credentials file — open access
+
+  const hdr = req.headers.authorization || '';
+  if (hdr.startsWith('Basic ')) {
+    const decoded = Buffer.from(hdr.slice(6), 'base64').toString('utf8');
+    const idx = decoded.indexOf(':');
+    const user = idx >= 0 ? decoded.slice(0, idx) : '';
+    const pass = idx >= 0 ? decoded.slice(idx + 1) : '';
+    const entry = creds[user.toLowerCase()];
+    if (entry && bcrypt.compareSync(pass, entry.hash)) {
+      req.authUser = entry.name;
+      // Run the rest of the request inside AsyncLocalStorage so logActivity picks up the user
+      _authStore.run(entry.name, () => next());
+      return;
+    }
+  }
+  res.setHeader('WWW-Authenticate', 'Basic realm="LYS Ops Tracker", charset="UTF-8"');
+  res.status(401).send('Authentication required');
+});
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -494,7 +510,8 @@ function getStaffNames() {
 // ── Activity / Error logging helpers ─────────────────────────────────────────
 function logActivity(event, details = {}) {
   try {
-    const line = JSON.stringify({ ts: new Date().toISOString(), event, ...details }) + '\n';
+    const by = details.by || getAuthUser();
+    const line = JSON.stringify({ ts: new Date().toISOString(), event, by, ...details }) + '\n';
     fs.appendFileSync(ACTIVITY_LOG_FILE, line);
   } catch {}
 }
@@ -506,7 +523,24 @@ function logError(event, err, details = {}) {
 }
 // Strip BOM and parse JSON — use for all file reads
 function safeReadJSON(file) {
-  return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
+  } catch (err) {
+    // Primary file corrupt — try the .tmp backup left by safeWriteJSON
+    const tmp = file + '.tmp';
+    if (fs.existsSync(tmp)) {
+      try {
+        const data = JSON.parse(fs.readFileSync(tmp, 'utf8').replace(/^\uFEFF/, ''));
+        logError('safeReadJSON.recovered', new Error(`Corrupt ${path.basename(file)} — recovered from .tmp`));
+        // Restore the good copy
+        fs.copyFileSync(tmp, file);
+        return data;
+      } catch {}
+    }
+    // Both files bad — log and rethrow
+    logError('safeReadJSON.corrupt', new Error(`Cannot parse ${path.basename(file)}: ${err.message}`));
+    throw err;
+  }
 }
 
 function readTasks() {
@@ -514,9 +548,7 @@ function readTasks() {
   return safeReadJSON(TASKS_FILE);
 }
 function writeTasks(tasks) {
-  const tmp = TASKS_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(tasks, null, 2));
-  fs.renameSync(tmp, TASKS_FILE);
+  safeWriteJSON(TASKS_FILE, tasks);
 }
 function readEOD() {
   if (!fs.existsSync(EOD_FILE)) fs.writeFileSync(EOD_FILE, '[]');
@@ -551,24 +583,30 @@ function readProjects() {
   }
   return projects;
 }
+// ── Atomic write: tmp + rename prevents corruption on crash ──────────────────
+function safeWriteJSON(filePath, data) {
+  const json = JSON.stringify(data, null, 2);
+  const tmp = filePath + '.tmp';
+  fs.writeFileSync(tmp, json);
+  fs.renameSync(tmp, filePath);
+}
+
 function writeProjects(projects) {
-  const tmp = DATA_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(projects, null, 2));
-  fs.renameSync(tmp, DATA_FILE);
+  safeWriteJSON(DATA_FILE, projects);
 }
 function readStaff() {
   if (!fs.existsSync(STAFF_FILE)) return {};
   return safeReadJSON(STAFF_FILE);
 }
 function writeStaff(staff) {
-  fs.writeFileSync(STAFF_FILE, JSON.stringify(staff, null, 2));
+  safeWriteJSON(STAFF_FILE, staff);
 }
 function readAdmin() {
   if (!fs.existsSync(ADMIN_FILE)) return { pin: '' };
   return safeReadJSON(ADMIN_FILE);
 }
 function writeAdmin(data) {
-  fs.writeFileSync(ADMIN_FILE, JSON.stringify(data, null, 2));
+  safeWriteJSON(ADMIN_FILE, data);
 }
 
 function readTickets() {
@@ -576,36 +614,28 @@ function readTickets() {
   return safeReadJSON(TICKETS_FILE);
 }
 function writeTickets(tickets) {
-  const tmp = TICKETS_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(tickets, null, 2));
-  fs.renameSync(tmp, TICKETS_FILE);
+  safeWriteJSON(TICKETS_FILE, tickets);
 }
 function readWorkers() {
   if (!fs.existsSync(WORKERS_FILE)) fs.writeFileSync(WORKERS_FILE, '[]');
   return safeReadJSON(WORKERS_FILE);
 }
 function writeWorkers(workers) {
-  const tmp = WORKERS_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(workers, null, 2));
-  fs.renameSync(tmp, WORKERS_FILE);
+  safeWriteJSON(WORKERS_FILE, workers);
 }
 function readManpowerPlans() {
   if (!fs.existsSync(MANPOWER_FILE)) fs.writeFileSync(MANPOWER_FILE, '[]');
   return safeReadJSON(MANPOWER_FILE);
 }
 function writeManpowerPlans(plans) {
-  const tmp = MANPOWER_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(plans, null, 2));
-  fs.renameSync(tmp, MANPOWER_FILE);
+  safeWriteJSON(MANPOWER_FILE, plans);
 }
 function readTransport() {
   if (!fs.existsSync(TRANSPORT_FILE)) fs.writeFileSync(TRANSPORT_FILE, '[]');
   return safeReadJSON(TRANSPORT_FILE);
 }
 function writeTransport(plans) {
-  const tmp = TRANSPORT_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(plans, null, 2));
-  fs.renameSync(tmp, TRANSPORT_FILE);
+  safeWriteJSON(TRANSPORT_FILE, plans);
 }
 function readEODHistory() {
   if (!fs.existsSync(EOD_HISTORY_FILE)) fs.writeFileSync(EOD_HISTORY_FILE, '[]');
@@ -782,14 +812,23 @@ app.get('/api/staff', (req, res) => {
   } catch (e) { logError('route.get.staff', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
+// ── Reusable admin auth middleware ─────────────────────────────────────────────
+// Checks admin password from body.pin or x-admin-pin header.
+// Resolves true if auth passes (or no password set), sends 403 and resolves false otherwise.
+async function requireAdminAuth(req, res) {
+  const pin = req.body?.pin || req.headers['x-admin-pin'];
+  const adminData = readAdmin();
+  if (!adminData.pin) return true;  // no password set — allow
+  if (!pin) { res.status(403).json({ error: 'Admin password required' }); return false; }
+  const ok = await verifyAdminPassword(pin, adminData.pin);
+  if (!ok) { res.status(403).json({ error: 'Invalid password' }); return false; }
+  return true;
+}
+
 // POST /api/staff — add or update a staff member { name, email }
-app.post('/api/staff', (req, res) => {
+app.post('/api/staff', async (req, res) => {
   try {
-    const pin = req.body?.pin || req.headers["x-admin-pin"];
-    const adminData = readAdmin();
-    if (adminData.pin && pin !== adminData.pin) {
-      return res.status(403).json({ error: "Invalid PIN" });
-    }
+    if (!await requireAdminAuth(req, res)) return;
     const name  = sanitizeStr(req.body.name, 100);
     const email = sanitizeStr(req.body.email, 200);
     if (!name) return res.status(400).json({ error: 'name required' });
@@ -803,13 +842,9 @@ app.post('/api/staff', (req, res) => {
 });
 
 // DELETE /api/staff/:name — remove staff member and any role aliases pointing to them
-app.delete('/api/staff/:name', (req, res) => {
+app.delete('/api/staff/:name', async (req, res) => {
   try {
-    const pin = req.body?.pin || req.headers["x-admin-pin"];
-    const adminData = readAdmin();
-    if (adminData.pin && pin !== adminData.pin) {
-      return res.status(403).json({ error: "Invalid PIN" });
-    }
+    if (!await requireAdminAuth(req, res)) return;
     const staff = readStaff();
     const name = decodeURIComponent(req.params.name);
     if (!staff[name]) return res.status(404).json({ error: 'Not found' });
@@ -819,11 +854,12 @@ app.delete('/api/staff/:name', (req, res) => {
       if (staff[k].name === targetName) delete staff[k];
     });
     writeStaff(staff);
+    logActivity('staff.deleted', { name: targetName });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.staff', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// GET /api/admin/pin — returns whether a PIN has been set
+// GET /api/admin/pin — returns whether a password has been set
 app.get('/api/admin/pin', (req, res) => {
   try {
     const admin = readAdmin();
@@ -831,21 +867,207 @@ app.get('/api/admin/pin', (req, res) => {
   } catch (e) { logError('route.get.admin.pin', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// POST /api/admin/pin — action: 'set' or 'verify'
-app.post('/api/admin/pin', (req, res) => {
+// ── Auth: change own password ─────────────────────────────────────────────────
+app.post('/api/auth/change-password', (req, res) => {
   try {
-    const { action, pin } = req.body;
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) return res.status(400).json({ error: 'Both fields required' });
+    if (newPassword.length < 4) return res.status(400).json({ error: 'Password must be at least 4 characters' });
+    const creds = readCredentials();
+    // Find the current user's entry
+    const username = Object.keys(creds).find(k => creds[k].name === req.authUser);
+    if (!username) return res.status(403).json({ error: 'User not found' });
+    if (!bcrypt.compareSync(currentPassword, creds[username].hash)) {
+      return res.status(403).json({ error: 'Current password is incorrect' });
+    }
+    creds[username].hash = bcrypt.hashSync(newPassword, 10);
+    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+    logActivity('auth.password-changed', { user: req.authUser });
+    res.json({ ok: true });
+  } catch (e) { logError('route.post.auth.change-password', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// ── Auth: who am I ───────────────────────────────────────────────────────────
+app.get('/api/auth/me', (req, res) => {
+  res.json({ name: req.authUser || 'anonymous' });
+});
+
+// ── Auth: forgot password (self-service) ─────────────────────────────────────
+// No auth required — user can't log in, so this is outside the auth gate.
+// Rate-limited to prevent abuse.
+const _resetAttempts = {};
+app.post('/api/auth/forgot-password', (req, res) => {
+  try {
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ error: 'Username required' });
+    const key = username.toLowerCase();
+    // Rate limit: max 3 resets per username per hour
+    const now = Date.now();
+    if (!_resetAttempts[key]) _resetAttempts[key] = [];
+    _resetAttempts[key] = _resetAttempts[key].filter(t => now - t < 3600000);
+    if (_resetAttempts[key].length >= 3) return res.status(429).json({ error: 'Too many reset attempts. Try again in an hour.' });
+
+    const creds = readCredentials();
+    const entry = creds[key];
+    if (!entry) return res.json({ ok: true, message: 'If that username exists, a new password has been emailed.' }); // don't reveal valid usernames
+
+    // Find email from config/staff.json
+    const staff = readStaff();
+    const staffEntry = Object.values(staff).find(s => s.name === entry.name);
+    const email = staffEntry && staffEntry.email;
+    if (!email) return res.json({ ok: true, message: 'If that username exists, a new password has been emailed.' }); // no email on file
+
+    // Generate new password and save
+    const crypto = require('crypto');
+    const newPass = crypto.randomBytes(4).toString('hex');
+    creds[key].hash = bcrypt.hashSync(newPass, 10);
+    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+    _resetAttempts[key].push(now);
+
+    // Email the new password
+    const APP_URL_VAL = process.env.APP_URL || 'https://lys-ops.cloud';
+    sendEmail(email, entry.name,
+      'Your LYS Ops Tracker password has been reset',
+      `<div style="font-family:Arial,sans-serif;max-width:480px;">
+        <p>Hi ${escHtml(entry.name.split(' ')[0])},</p>
+        <p>Your password has been reset. Here are your new login details:</p>
+        <table style="border-collapse:collapse;margin:16px 0;">
+          <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Username</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(key)}</td></tr>
+          <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Password</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(newPass)}</td></tr>
+        </table>
+        <p><a href="${APP_URL_VAL}" style="background:#3366ff;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">Open LYS Ops →</a></p>
+        <p style="font-size:12px;color:#888;margin-top:20px;">If you didn't request this, contact your admin immediately.</p>
+      </div>`
+    ).catch(() => {});
+
+    logActivity('auth.password-reset', { by: 'System', user: entry.name });
+    res.json({ ok: true, message: 'If that username exists, a new password has been emailed.' });
+  } catch (e) { logError('route.post.auth.forgot-password', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// ── Auth: admin reset (requires admin PIN) ───────────────────────────────────
+app.post('/api/auth/admin-reset', async (req, res) => {
+  try {
+    if (!await requireAdminAuth(req, res)) return;
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ error: 'Username required' });
+    const key = username.toLowerCase();
+    const creds = readCredentials();
+    if (!creds[key]) return res.status(404).json({ error: 'Username not found' });
+
+    const crypto = require('crypto');
+    const newPass = crypto.randomBytes(4).toString('hex');
+    creds[key].hash = bcrypt.hashSync(newPass, 10);
+    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+
+    logActivity('auth.admin-reset', { user: creds[key].name, resetBy: req.authUser });
+    res.json({ ok: true, username: key, name: creds[key].name, newPassword: newPass });
+  } catch (e) { logError('route.post.auth.admin-reset', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// ── Auth: send welcome emails (one-time, admin-only) ─────────────────────────
+app.post('/api/auth/send-welcome-emails', async (req, res) => {
+  try {
+    if (!await requireAdminAuth(req, res)) return;
+    const creds = readCredentials();
+    const staff = readStaff();
+    const APP_URL_VAL = process.env.APP_URL || 'https://lys-ops.cloud';
+    const results = [];
+
+    for (const [username, entry] of Object.entries(creds)) {
+      const staffEntry = Object.values(staff).find(s => s.name === entry.name);
+      const email = staffEntry && staffEntry.email;
+      if (!email) { results.push({ name: entry.name, status: 'skipped', reason: 'no email' }); continue; }
+
+      // Read plaintext password from STAFF-PASSWORDS.txt (only available before deletion)
+      // For welcome emails we generate a fresh password so we have the plaintext
+      const crypto = require('crypto');
+      const newPass = crypto.randomBytes(4).toString('hex');
+      creds[username].hash = bcrypt.hashSync(newPass, 10);
+
+      try {
+        await sendEmail(email, entry.name,
+          'Welcome to LYS Ops Tracker — Your Login Details',
+          `<div style="font-family:Arial,sans-serif;max-width:480px;">
+            <p>Hi ${escHtml(entry.name.split(' ')[0])},</p>
+            <p>Your LYS Ops Tracker account is ready. Here are your login details:</p>
+            <table style="border-collapse:collapse;margin:16px 0;">
+              <tr><td style="padding:6px 16px 6px 0;font-weight:600;">URL</td><td style="padding:6px 0;"><a href="${APP_URL_VAL}">${APP_URL_VAL}</a></td></tr>
+              <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Username</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(username)}</td></tr>
+              <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Password</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(newPass)}</td></tr>
+            </table>
+            <p><a href="${APP_URL_VAL}" style="background:#3366ff;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">Open LYS Ops →</a></p>
+            <p style="font-size:12px;color:#888;margin-top:20px;">You can change your password anytime from the app.</p>
+          </div>`
+        );
+        results.push({ name: entry.name, status: 'sent', email });
+      } catch (e) {
+        results.push({ name: entry.name, status: 'failed', error: e.message });
+      }
+      // 2s gap between sends for Graph API throttle
+      await new Promise(r => setTimeout(r, 2000));
+    }
+
+    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+    logActivity('auth.welcome-emails-sent', { by: req.authUser, count: results.filter(r => r.status === 'sent').length });
+    res.json({ ok: true, results });
+  } catch (e) { logError('route.post.auth.send-welcome-emails', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// ── Rate limiter for admin password verify ────────────────────────────────────
+const _adminAttempts = [];        // timestamps of recent failed attempts
+const ADMIN_MAX_ATTEMPTS = 5;     // max failures per window
+const ADMIN_WINDOW_MS = 60000;    // 1-minute window
+
+function checkAdminRateLimit() {
+  const now = Date.now();
+  // Purge old entries
+  while (_adminAttempts.length && _adminAttempts[0] < now - ADMIN_WINDOW_MS) _adminAttempts.shift();
+  return _adminAttempts.length < ADMIN_MAX_ATTEMPTS;
+}
+function recordAdminFailure() { _adminAttempts.push(Date.now()); }
+
+// Verify a plaintext password against stored hash (or legacy plaintext)
+async function verifyAdminPassword(plain, stored) {
+  if (!stored) return false;
+  // bcrypt hashes start with $2
+  if (stored.startsWith('$2')) return bcrypt.compare(plain, stored);
+  // Legacy plaintext — compare directly (will be upgraded on next set)
+  return plain === stored;
+}
+
+// POST /api/admin/pin — action: 'set' or 'verify'
+app.post('/api/admin/pin', async (req, res) => {
+  try {
+    const { action, pin, oldPin } = req.body;
     const admin = readAdmin();
+
     if (action === 'set') {
-      if (!pin || !/^\d{4}$/.test(pin)) return res.status(400).json({ error: 'PIN must be 4 digits' });
-      admin.pin = pin;
+      if (!pin || typeof pin !== 'string' || pin.length < 4 || pin.length > 30) {
+        return res.status(400).json({ error: 'Password must be 4-30 characters' });
+      }
+      // If a password already exists, require the old one
+      if (admin.pin) {
+        if (!oldPin) return res.status(400).json({ error: 'Current password required' });
+        const ok = await verifyAdminPassword(oldPin, admin.pin);
+        if (!ok) return res.status(403).json({ error: 'Current password is incorrect' });
+      }
+      admin.pin = await bcrypt.hash(pin, 10);
       writeAdmin(admin);
+      logActivity('admin.password.changed', {});
       return res.json({ ok: true });
     }
+
     if (action === 'verify') {
       if (!admin.pin) return res.json({ ok: false, noPinSet: true });
-      return res.json({ ok: pin === admin.pin });
+      if (!checkAdminRateLimit()) {
+        return res.status(429).json({ error: 'Too many attempts. Wait 1 minute.' });
+      }
+      const ok = await verifyAdminPassword(pin, admin.pin);
+      if (!ok) { recordAdminFailure(); return res.json({ ok: false }); }
+      return res.json({ ok: true });
     }
+
     res.status(400).json({ error: 'action must be set or verify' });
   } catch (e) { logError('route.post.admin.pin', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -1365,13 +1587,9 @@ app.put('/api/projects/:id', async (req, res) => {
 });
 
 // --- API: Delete project ---
-app.delete('/api/projects/:id', (req, res) => {
+app.delete('/api/projects/:id', async (req, res) => {
   try {
-    const pin = req.body?.pin || req.headers["x-admin-pin"];
-    const adminData = readAdmin();
-    if (adminData.pin && pin !== adminData.pin) {
-      return res.status(403).json({ error: "Invalid PIN" });
-    }
+    if (!await requireAdminAuth(req, res)) return;
     const projects = readProjects();
     const idx = projects.findIndex(p => p.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Not found' });
@@ -2391,6 +2609,7 @@ app.delete('/api/projects/:id/documents/:docIndex/file', (req, res) => {
     // Delete from disk — handle both flat and per-project paths
     if (deletedFile) {
       let filePath = path.join(UPLOADS_DIR, deletedFile);
+      if (!path.resolve(filePath).startsWith(path.resolve(UPLOADS_DIR))) return res.status(400).json({ error: 'Invalid file path' });
       if (!fs.existsSync(filePath)) filePath = path.join(UPLOADS_DIR, path.basename(deletedFile));
       try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
       logActivity('document.file.deleted', { projectId: req.params.id, docIdx, fileName: deletedFile });
@@ -2412,6 +2631,7 @@ app.delete('/api/projects/:id/drawings/:drawingIndex/file', (req, res) => {
     if (drawing.file) {
       // Handle both flat and per-project paths
       let filePath = path.join(UPLOADS_DIR, drawing.file);
+      if (!path.resolve(filePath).startsWith(path.resolve(UPLOADS_DIR))) return res.status(400).json({ error: 'Invalid file path' });
       if (!fs.existsSync(filePath)) filePath = path.join(UPLOADS_DIR, path.basename(drawing.file));
       try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
       drawing.file = '';
@@ -2657,7 +2877,7 @@ function startupCheck() {
   // Check admin PIN is set
   try {
     const admin = safeReadJSON(ADMIN_FILE);
-    if (!admin.pin) issues.push('⚠️  Admin PIN not set — anyone can delete projects');
+    if (!admin.pin) issues.push('⚠️  Admin password not set — anyone can access admin');
   } catch {}
 
   if (issues.length) {
@@ -2739,16 +2959,16 @@ app.post('/api/tasks', postRateLimit, (req, res) => {
       const dueDateLabel = task.dueDate || null;
       const priorityLabel = task.priority && task.priority !== 'Normal' ? task.priority : null;
       const rows = [
-        `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Task</td><td style="padding:6px 0;">${task.title}</td></tr>`,
-        projectLabel  ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Project</td><td style="padding:6px 0;">${projectLabel}</td></tr>` : '',
-        dueDateLabel  ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Due Date</td><td style="padding:6px 0;">${dueDateLabel}</td></tr>` : '',
-        priorityLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Priority</td><td style="padding:6px 0;">${priorityLabel}</td></tr>` : '',
-        assignedBy    ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Assigned By</td><td style="padding:6px 0;">${assignedBy}</td></tr>` : '',
+        `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Task</td><td style="padding:6px 0;">${escHtml(task.title)}</td></tr>`,
+        projectLabel  ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Project</td><td style="padding:6px 0;">${escHtml(projectLabel)}</td></tr>` : '',
+        dueDateLabel  ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Due Date</td><td style="padding:6px 0;">${escHtml(dueDateLabel)}</td></tr>` : '',
+        priorityLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Priority</td><td style="padding:6px 0;">${escHtml(priorityLabel)}</td></tr>` : '',
+        assignedBy    ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Assigned By</td><td style="padding:6px 0;">${escHtml(assignedBy)}</td></tr>` : '',
       ].filter(Boolean).join('');
       sendEmail(assignEmail, task.assignedTo,
         `[New Task] ${task.title}`,
         `<div style="font-family:Arial,sans-serif;max-width:520px;">
-        <p style="margin:0 0 16px;">Hi ${task.assignedTo},</p>
+        <p style="margin:0 0 16px;">Hi ${escHtml(task.assignedTo)},</p>
         <p style="margin:0 0 16px;">You have been assigned a new task:</p>
         <table style="border-collapse:collapse;width:100%;margin-bottom:20px;">${rows}</table>
         <p style="margin:0;"><a href="${APP_URL}/my-tasks" style="background:#3366ff;color:#fff;padding:9px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">View My Tasks →</a></p>
@@ -2922,11 +3142,11 @@ app.post('/api/tasks/:id/acknowledge', (req, res) => {
       if (rbEmail) {
         sendEmail(rbEmail, task.requestedBy,
           `[Task Seen] ${task.title}`,
-          `<p>Hi ${task.requestedBy},</p>
-          <p><strong>${task.acknowledgedBy}</strong> has marked your request as seen.</p>
+          `<p>Hi ${escHtml(task.requestedBy)},</p>
+          <p><strong>${escHtml(task.acknowledgedBy)}</strong> has marked your request as seen.</p>
           <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-            <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Task</td><td>${task.title}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Assigned To</td><td>${task.assignedTo || '—'}</td></tr>
+            <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Task</td><td>${escHtml(task.title)}</td></tr>
+            <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Assigned To</td><td>${escHtml(task.assignedTo || '—')}</td></tr>
           </table>
           <p><a href="${APP_URL}/my-tasks">View Tasks →</a></p>`
         ).catch(() => {});
@@ -2967,6 +3187,7 @@ app.post('/api/tasks/:id/hours', (req, res) => {
       loggedBy: req.body.loggedBy || '',
       loggedAt: new Date().toISOString()
     };
+    if (!Array.isArray(tasks[idx].hoursLogged)) tasks[idx].hoursLogged = [];
     tasks[idx].hoursLogged.push(entry);
     writeTasks(tasks);
     logActivity('task.hours.logged', { id: req.params.id, hours: entry.hours });
@@ -3039,7 +3260,7 @@ app.post('/api/eod-log', postRateLimit, (req, res) => {
   } else {
     logs.push(log);
   }
-  fs.writeFileSync(EOD_FILE, JSON.stringify(logs, null, 2));
+  safeWriteJSON(EOD_FILE, logs);
 
   // Update tasks — log hours + mark done if flagged
   const tasks = readTasks();
@@ -3047,6 +3268,7 @@ app.post('/api/eod-log', postRateLimit, (req, res) => {
     const idx = tasks.findIndex(t => t.id === entry.taskId);
     if (idx === -1) return;
     if (entry.hours > 0) {
+      if (!Array.isArray(tasks[idx].hoursLogged)) tasks[idx].hoursLogged = [];
       tasks[idx].hoursLogged.push({
         date: log.date,
         hours: parseFloat(entry.hours) || 0,
@@ -3071,9 +3293,7 @@ function readClaims() {
   return safeReadJSON(CLAIMS_FILE);
 }
 function writeClaims(c) {
-  const tmp = CLAIMS_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(c, null, 2));
-  fs.renameSync(tmp, CLAIMS_FILE);
+  safeWriteJSON(CLAIMS_FILE, c);
 }
 
 // GET summary (before /:id so it matches first)
@@ -3243,13 +3463,9 @@ app.put('/api/claims/:id', (req, res) => {
 });
 
 // DELETE
-app.delete('/api/claims/:id', (req, res) => {
+app.delete('/api/claims/:id', async (req, res) => {
   try {
-    const pin = req.body?.pin || req.headers["x-admin-pin"];
-    const adminData = readAdmin();
-    if (adminData.pin && pin !== adminData.pin) {
-      return res.status(403).json({ error: "Invalid PIN" });
-    }
+    if (!await requireAdminAuth(req, res)) return;
     let claims = readClaims();
     claims = claims.filter(c => c.id !== req.params.id);
     writeClaims(claims);
@@ -3317,8 +3533,40 @@ app.get('/api/tasks/history', (req, res) => {
 
 // ── Cron jobs ─────────────────────────────────────────────────────────────────
 
+// Heartbeat: each cron writes its last-run timestamp so /health can flag stale ones
+const HEARTBEAT_FILE = path.join(__dirname, 'data', 'cron-heartbeat.json');
+function cronHeartbeat(name) {
+  try {
+    const hb = fs.existsSync(HEARTBEAT_FILE) ? safeReadJSON(HEARTBEAT_FILE) : {};
+    hb[name] = new Date().toISOString();
+    safeWriteJSON(HEARTBEAT_FILE, hb);
+  } catch {}
+}
+
+// Monthly log rotation — 1st of each month at midnight
+cron.schedule('0 0 1 * *', () => {
+  try {
+    const now = new Date();
+    const prev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const suffix = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}`; // previous month
+    const ACTIVITY_LOG_FILE_PATH = path.join(__dirname, 'data', 'activity.log');
+    const ERRORS_LOG_FILE_PATH   = path.join(__dirname, 'data', 'errors.log');
+    [ACTIVITY_LOG_FILE_PATH, ERRORS_LOG_FILE_PATH].forEach(logFile => {
+      if (!fs.existsSync(logFile)) return;
+      const stat = fs.statSync(logFile);
+      if (stat.size < 50000) return; // don't bother rotating tiny files
+      const archive = logFile.replace('.log', `-${suffix}.log`);
+      fs.copyFileSync(logFile, archive);
+      fs.writeFileSync(logFile, ''); // truncate
+      console.log(`[CRON] Rotated ${path.basename(logFile)} → ${path.basename(archive)} (${Math.round(stat.size/1024)}KB)`);
+    });
+    cronHeartbeat('log-rotation');
+  } catch (e) { logError('cron.log-rotation', e); }
+}, { timezone: 'Asia/Singapore' });
+
 // 9am weekdays — consolidated checks (sequential to prevent concurrent read/write to tasks.json)
 cron.schedule('0 9 * * 1-5', async () => {
+  cronHeartbeat('9am-checks');
   try {
   const today = new Date().toISOString().split('T')[0];
   const now = new Date();
@@ -3457,14 +3705,14 @@ cron.schedule('0 9 * * 1-5', async () => {
         ? `[FINAL FLAG] Still unacknowledged after 3 days: ${task.title}`
         : `[Reminder ${reminderNum}/${MAX_ACK_REMINDERS}] Please acknowledge: ${task.title}`;
       const htmlBody = isFinal
-        ? `<p>Hi ${task.assignedTo},</p>
+        ? `<p>Hi ${escHtml(task.assignedTo)},</p>
           <p>This task has been sitting unacknowledged for <strong>3 days</strong>. The boss has been CC'd on this reminder — please acknowledge or raise any blockers now.</p>
-          <p><strong>${task.title}</strong></p>
+          <p><strong>${escHtml(task.title)}</strong></p>
           <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>
           <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker — final reminder, no further nags will be sent.</p>`
-        : `<p>Hi ${task.assignedTo},</p>
+        : `<p>Hi ${escHtml(task.assignedTo)},</p>
           <p>You have an unacknowledged task assigned to you (reminder ${reminderNum} of ${MAX_ACK_REMINDERS}):</p>
-          <p><strong>${task.title}</strong></p>
+          <p><strong>${escHtml(task.title)}</strong></p>
           <p>Please acknowledge this task so the requester knows you have received it.</p>
           <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>
           <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>`;
@@ -3512,7 +3760,7 @@ cron.schedule('0 9 * * 1-5', async () => {
           }
           // Update history entry to reflect overnight submissions
           histEntry.stillMissingAt9am = stillMissing;
-          fs.writeFileSync(EOD_HISTORY_FILE, JSON.stringify(history, null, 2));
+          safeWriteJSON(EOD_HISTORY_FILE, history);
         } else {
           console.log('[CRON] 9am next-day EOD re-check: everyone caught up overnight');
         }
@@ -3589,6 +3837,7 @@ cron.schedule('0 9 * * 1-5', async () => {
 
 // Trigger 2: Noon weekdays — remind Factory Manager about unacknowledged site requests > 24hrs
 cron.schedule('0 12 * * 1-5', async () => {
+  cronHeartbeat('noon-sr-reminder');
   try {
     console.log('[CRON] Noon site-request reminder check...');
     const srs = readSiteRequests();
@@ -3620,6 +3869,7 @@ cron.schedule('0 12 * * 1-5', async () => {
 
 // 6pm weekdays — EOD reminder to staff who haven't submitted yet (with task status)
 cron.schedule('0 18 * * 1-5', async () => {
+  cronHeartbeat('6pm-eod-reminder');
   try {
   console.log('[CRON] 6pm EOD reminder running...');
   const today = new Date().toISOString().split('T')[0];
@@ -3684,13 +3934,13 @@ cron.schedule('30 18 * * 1-5', async () => {
   const staffNames = getStaffNames().filter(n => n !== getBossName());
   const missing = staffNames.filter(n => !submitted.includes(n));
   // Write current flags file (for live /api/eod-log endpoint)
-  fs.writeFileSync(FLAG_FILE, JSON.stringify({ date: today, missing }, null, 2));
+  safeWriteJSON(FLAG_FILE, { date: today, missing });
   // Append to cumulative history (permanent record)
   const history = readEODHistory();
   const existingIdx = history.findIndex(h => h.date === today);
   const histEntry = { date: today, submitted, missing, recordedAt: new Date().toISOString() };
   if (existingIdx !== -1) { history[existingIdx] = histEntry; } else { history.push(histEntry); }
-  fs.writeFileSync(EOD_HISTORY_FILE, JSON.stringify(history, null, 2));
+  safeWriteJSON(EOD_HISTORY_FILE, history);
   console.log(`[CRON] EOD missing: ${missing.join(', ') || 'none'}`);
 
   if (missing.length > 0) {
@@ -3908,8 +4158,9 @@ app.get('/api/workers', (req, res) => {
 });
 
 // POST /api/workers — add a new worker
-app.post('/api/workers', (req, res) => {
+app.post('/api/workers', async (req, res) => {
   try {
+  if (!await requireAdminAuth(req, res)) return;
   const workers = readWorkers();
   const worker = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
@@ -3931,12 +4182,13 @@ app.post('/api/workers', (req, res) => {
 });
 
 // PUT /api/workers/:id — update worker fields
-app.put('/api/workers/:id', (req, res) => {
+app.put('/api/workers/:id', async (req, res) => {
   try {
+    if (!await requireAdminAuth(req, res)) return;
     const workers = readWorkers();
     const idx = workers.findIndex(w => w.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Worker not found' });
-    const WORKER_WRITABLE = ['name','role','company','phone','wpNumber','wpExpiry','code','active','notes'];
+    const WORKER_WRITABLE = ['name','role','company','phone','wpNumber','wpExpiry','code','active','notes','nationality','startDate'];
     const clean = {};
     for (const k of WORKER_WRITABLE) { if (req.body[k] !== undefined) clean[k] = req.body[k]; }
     workers[idx] = { ...workers[idx], ...clean };
@@ -3947,8 +4199,9 @@ app.put('/api/workers/:id', (req, res) => {
 });
 
 // DELETE /api/workers/:id — remove worker
-app.delete('/api/workers/:id', (req, res) => {
+app.delete('/api/workers/:id', async (req, res) => {
   try {
+    if (!await requireAdminAuth(req, res)) return;
     const workers = readWorkers();
     const idx = workers.findIndex(w => w.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Worker not found' });
@@ -3968,9 +4221,7 @@ function readAttendance() {
 }
 
 function writeAttendance(records) {
-  const tmp = ATTENDANCE_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(records, null, 2));
-  fs.renameSync(tmp, ATTENDANCE_FILE);
+  safeWriteJSON(ATTENDANCE_FILE, records);
 }
 
 // GET /api/attendance/today — shortcut for today's date
@@ -4038,9 +4289,7 @@ function readSiteRequests() {
 }
 
 function writeSiteRequests(records) {
-  const tmp = SITE_REQUESTS_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(records, null, 2));
-  fs.renameSync(tmp, SITE_REQUESTS_FILE);
+  safeWriteJSON(SITE_REQUESTS_FILE, records);
 }
 
 // GET /api/system-map — returns the docs/PAGES.md file for the admin System Map panel
@@ -4397,9 +4646,7 @@ function readMondayFlags() {
 }
 
 function writeMondayFlags(flags) {
-  const tmp = MONDAY_FLAGS_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(flags, null, 2));
-  fs.renameSync(tmp, MONDAY_FLAGS_FILE);
+  safeWriteJSON(MONDAY_FLAGS_FILE, flags);
 }
 
 // GET /api/monday-flags — all flags (client filters by weekStart)
@@ -4720,7 +4967,7 @@ async function createDailyRecurringTasks() {
     const dateFmt = nowSGT.toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' });
     // Serialize sends — Graph throttles per-mailbox concurrency aggressively
     // (especially under EMAIL_TEST_OVERRIDE where every email lands in one inbox).
-    for (const person of people) {
+    for (const person of roles) {
       const personEmail = getStaffEmail(person);
       if (!personEmail) {
         console.warn(`[RECURRING] No email for ${person} — skipping daily task email`);
@@ -4788,15 +5035,15 @@ app.get('/procurement', (req, res) => res.sendFile(path.join(__dirname, 'public'
 
 // ── Procurement Helpers ───────────────────────────────────────────────────────
 function readSuppliers()    { try { if (!fs.existsSync(SUPPLIERS_FILE)) return []; return safeReadJSON(SUPPLIERS_FILE); } catch { return []; } }
-function writeSuppliers(d)  { const tmp = SUPPLIERS_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, SUPPLIERS_FILE); }
+function writeSuppliers(d)  { safeWriteJSON(SUPPLIERS_FILE, d); }
 function readPrices()       { try { if (!fs.existsSync(PRICES_FILE)) return []; return safeReadJSON(PRICES_FILE); } catch { return []; } }
-function writePrices(d)     { const tmp = PRICES_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PRICES_FILE); }
+function writePrices(d)     { safeWriteJSON(PRICES_FILE, d); }
 function readPOs()          { try { if (!fs.existsSync(PO_FILE)) return []; return safeReadJSON(PO_FILE); } catch { return []; } }
-function writePOs(d)        { const tmp = PO_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PO_FILE); }
+function writePOs(d)        { safeWriteJSON(PO_FILE, d); }
 function readPRs()          { try { if (!fs.existsSync(PR_FILE)) return []; return safeReadJSON(PR_FILE); } catch { return []; } }
-function writePRs(d)        { const tmp = PR_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, PR_FILE); }
+function writePRs(d)        { safeWriteJSON(PR_FILE, d); }
 function readDOs()           { try { if (!fs.existsSync(DO_FILE)) return []; return safeReadJSON(DO_FILE); } catch { return []; } }
-function writeDOs(d)         { const tmp = DO_FILE + '.tmp'; fs.writeFileSync(tmp, JSON.stringify(d, null, 2)); fs.renameSync(tmp, DO_FILE); }
+function writeDOs(d)         { safeWriteJSON(DO_FILE, d); }
 
 // Auto-flag Overdue: promisedDate < today and status !== Delivered
 function applyOverdueFlag(pos) {
@@ -5006,17 +5253,17 @@ app.put('/api/purchase-orders/:id', (req, res) => {
   } catch (e) { logError('route.put.purchase-orders', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-app.delete("/api/purchase-orders/:id", (req, res) => {
-  const pin = req.body?.pin || req.headers["x-admin-pin"];
-  const adminData = readAdmin();
-  if (adminData.pin && pin !== adminData.pin) return res.status(403).json({ error: "Invalid PIN" });
-  const orders = readPOs();
-  const idx = orders.findIndex(o => o.id === req.params.id);
-  if (idx === -1) return res.status(404).json({ error: "Not found" });
-  orders.splice(idx, 1);
-  writePOs(orders);
-  logActivity("purchase-order.deleted", { id: req.params.id });
-  res.json({ ok: true });
+app.delete("/api/purchase-orders/:id", async (req, res) => {
+  try {
+    if (!await requireAdminAuth(req, res)) return;
+    const orders = readPOs();
+    const idx = orders.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: "Not found" });
+    orders.splice(idx, 1);
+    writePOs(orders);
+    logActivity("purchase-order.deleted", { id: req.params.id });
+    res.json({ ok: true });
+  } catch (e) { logError('route.delete.purchase-orders', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // ── Historical PR Import ──────────────────────────────────────────────────────
@@ -5303,11 +5550,9 @@ app.put('/api/purchase-requisitions/:id', postRateLimit, async (req, res) => {
   } catch (e) { logError('route.put.purchase-requisitions', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
 
-app.delete('/api/purchase-requisitions/:id', (req, res) => {
+app.delete('/api/purchase-requisitions/:id', async (req, res) => {
   try {
-    const { pin } = req.body;
-    const admin = readAdmin();
-    if (admin.pin && pin !== admin.pin) return res.status(403).json({ error: 'Invalid PIN' });
+    if (!await requireAdminAuth(req, res)) return;
     const prs = readPRs();
     const idx = prs.findIndex(p => p.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'PR not found' });
@@ -5342,6 +5587,88 @@ try {
 } catch (e) {
   console.error('[LYS OPS] Could not read data counts on startup:', e.message);
 }
-app.listen(PORT, () => {
+// ── Graceful shutdown — systemctl stop/restart sends SIGTERM ───────────────────
+process.on('SIGTERM', () => {
+  console.log('[SHUTDOWN] SIGTERM received — exiting gracefully');
+  process.exit(0);
+});
+
+// ── Crash handlers — log + alert, then let process manager restart ────────────
+const _serverStartTime = Date.now();
+const CRASH_EMAIL_COOLDOWN = 5 * 60 * 1000; // 5 minutes between crash emails
+const CRASH_TS_FILE = path.join(__dirname, 'data', '.last-crash-email-ts');
+
+function _lastCrashEmailTs() {
+  try { return parseInt(fs.readFileSync(CRASH_TS_FILE, 'utf8'), 10) || 0; } catch { return 0; }
+}
+
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught exception:', err);
+  logError('uncaughtException', err);
+  // Rate-limited crash email — max one per 5 minutes, persisted to disk to survive restarts
+  const now = Date.now();
+  if (now - _lastCrashEmailTs() >= CRASH_EMAIL_COOLDOWN) {
+    try { fs.writeFileSync(CRASH_TS_FILE, String(now)); } catch {}
+    try {
+      const bossEmail = process.env.SENDER_EMAIL;
+      if (bossEmail) {
+        sendEmail(bossEmail, 'System', '[LYS OPS] Server Crashed — Restarting',
+          `<p><strong>Uncaught Exception</strong></p><pre>${String(err.stack || err.message).slice(0, 500)}</pre><p>Server will auto-restart if running under systemd.</p>`
+        ).catch(() => {});
+      }
+    } catch {}
+  }
+  // Give the email a moment to send, then exit so systemd restarts us
+  setTimeout(() => process.exit(1), 2000);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL] Unhandled rejection:', reason);
+  logError('unhandledRejection', reason instanceof Error ? reason : new Error(String(reason)));
+});
+
+// ── Health endpoint — uptime, data counts, last cron times ───────────────────
+app.get('/health', (req, res) => {
+  const uptimeSec = Math.floor((Date.now() - _serverStartTime) / 1000);
+  const h = Math.floor(uptimeSec / 3600);
+  const m = Math.floor((uptimeSec % 3600) / 60);
+  try {
+    const heartbeat = fs.existsSync(path.join(__dirname, 'data', 'cron-heartbeat.json'))
+      ? safeReadJSON(path.join(__dirname, 'data', 'cron-heartbeat.json'))
+      : {};
+    res.json({
+      status: 'ok',
+      uptime: `${h}h ${m}m`,
+      uptimeSec,
+      startedAt: new Date(_serverStartTime).toISOString(),
+      cronHeartbeat: heartbeat,
+      dataFiles: {
+        projects: fs.existsSync(DATA_FILE),
+        staff: fs.existsSync(STAFF_FILE),
+        workers: fs.existsSync(WORKERS_FILE),
+        tasks: fs.existsSync(TASKS_FILE)
+      }
+    });
+  } catch (e) {
+    res.status(500).json({ status: 'error', error: e.message });
+  }
+});
+
+// ── Express error-handling middleware (catch-all for route errors) ────────────
+app.use((err, req, res, _next) => {
+  logError('express.unhandled', err);
+  if (!res.headersSent) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+const _server = app.listen(PORT, () => {
   console.log(`LYS OPS Tracker running at http://localhost:${PORT}`);
+});
+_server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[FATAL] Port ${PORT} is already in use. Is another instance running?`);
+    console.error('[HINT] Use: sudo systemctl restart ops-tracker');
+    process.exit(1); // Clean exit — no crash email
+  }
 });

@@ -10,7 +10,7 @@
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
 - [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. 15/17 projects missing endDate + siteEngineer.
 - [Pre-launch test gates](test_gates.md) — EMAIL_TEST_OVERRIDE + CALENDAR_TEST_OVERRIDE env vars route everything to boss during testing.
-- [Page-by-page sweep status](project_page_sweep_status.md) — All 10 project tabs + new project done; Dashboard/Admin pending.
+- [Page-by-page sweep status](project_page_sweep_status.md) — All pages audited. Dashboard + Admin done 2026-04-20.
 - [Tri-layer workflow: fab → site-request → install](project_tri_layer_workflow.md) — critical domain model. Fab, delivery, and install run concurrently.
 - [Factory daily-log model](project_factory_daily_log_model.md) — every build event is a log entry with mandatory photo; qtyDone derived from sum of deltas.
 - [Feedback: notifications must be role-based](feedback_role_based_notifications.md) — never hardcode person names in email routing; use staff.json role aliases with boss fallback.
@@ -23,3 +23,5 @@
 - [1000-scenario audit results](audit_1000_scenario_results.md) — 977 scenarios, 945 pass, 5 bugs fixed. Data integrity clean across all 17 projects.
 - [Delete actions require reason](feedback_delete_reason.md) — every user-facing delete uses confirmDelete() with reason dropdown, not plain confirm().
 - [New project template](project_new_project_template.md) — 20-stage lifecycle, role-based team defaults, blank documents/drawings, deriveFields on create.
+- [Full codebase audit Apr 20](project_full_audit_apr20.md) — 4-agent audit: 6 server bugs, 9 delete violations, crash email flood, systemd hardening, admin login redesign.
+- [Server management via systemctl](feedback_systemctl_workflow.md) — never run node server.js manually; use systemctl restart/stop/status.

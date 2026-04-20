@@ -208,7 +208,7 @@ function bindHeaderEvents() {
     // Check if PIN is configured
     const pinStatus = await api('GET', '/api/admin/pin');
     if (!pinStatus.pinSet) {
-      alert('Admin PIN not configured. Please set one in Admin Settings (⚙) before deleting projects.');
+      alert('Admin password not configured. Please set one in Admin Settings before deleting projects.');
       return;
     }
     showPinModal(async (pin) => {
@@ -238,14 +238,14 @@ function showPinModal(onConfirm) {
 
   const doConfirm = async () => {
     const pin = input.value.trim();
-    if (!/^\d{4}$/.test(pin)) { errDiv.textContent = 'Enter a 4-digit PIN.'; errDiv.style.display = 'block'; return; }
+    if (!pin) { errDiv.textContent = 'Enter admin password.'; errDiv.style.display = 'block'; return; }
     confirm.disabled = true;
     confirm.textContent = '…';
     try {
       const ok = await onConfirm(pin);
-      if (ok === false) { errDiv.textContent = 'Incorrect PIN.'; errDiv.style.display = 'block'; confirm.disabled = false; confirm.textContent = 'Delete Project'; }
+      if (ok === false) { errDiv.textContent = 'Incorrect password.'; errDiv.style.display = 'block'; confirm.disabled = false; confirm.textContent = 'Delete Project'; }
       else { cleanup(); }
-    } catch (err) { errDiv.textContent = 'Error. Try again.'; errDiv.style.display = 'block'; confirm.disabled = false; confirm.textContent = 'Delete Project'; }
+    } catch (err) { errDiv.textContent = err.message || 'Error. Try again.'; errDiv.style.display = 'block'; confirm.disabled = false; confirm.textContent = 'Delete Project'; }
   };
   const doCancel = () => cleanup();
 
@@ -1094,7 +1094,8 @@ function buildDocRow(doc, idx) {
 
   row.querySelectorAll('.doc-remove-file').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Remove this file?')) return;
+      const delResult = await confirmDelete('Remove this file?', btn.dataset.filename || 'Uploaded file');
+      if (!delResult) return;
       const fi = parseInt(btn.dataset.fi);
       // Server deletes file from disk + splices from files array
       await fetch('/api/projects/' + projectId + '/documents/' + idx + '/file?fi=' + fi, { method: 'DELETE' });
@@ -1389,7 +1390,8 @@ function buildDrawingRow(drawing, idx) {
   const removeBtn = row.querySelector('.drw-remove-file');
   if (removeBtn) {
     removeBtn.addEventListener('click', async () => {
-      if (!confirm('Remove this file?')) return;
+      const delResult = await confirmDelete('Remove this file?', 'Drawing file');
+      if (!delResult) return;
       try { await fetch('/api/projects/' + projectId + '/drawings/' + idx + '/file', { method: 'DELETE' }); } catch {}
       project.drawings[idx].file = '';
       await saveProject();
@@ -1607,7 +1609,8 @@ function renderProductScope() {
       });
       if (lostRows.length > 0) {
         const names = lostRows.map(r => r.item).join(', ');
-        if (!confirm(`Warning: ${lostRows.length} fab item(s) with progress will be removed:\n${names}\n\nContinue?`)) return;
+        const syncResult = await confirmDelete(`${lostRows.length} fab item(s) with progress will be removed`, names);
+        if (!syncResult) return;
       }
 
       // Rebuild FAB — handles both Fixed items and Mechanical items with parts

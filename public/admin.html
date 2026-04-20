@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Admin Settings — LYS OPS</title>
-  <link rel="stylesheet" href="css/style.css?v=1776527483">
+  <link rel="stylesheet" href="css/style.css?v=1776677603">
   <style>
+    #gate-pin-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
     .staff-inline-input {
       background: var(--bg2);
       border: 1px solid var(--accent);
@@ -24,9 +25,8 @@
     .log-table td { padding:7px 10px; font-size:12px; border-bottom:1px solid var(--border); vertical-align:top; }
     .log-table tr:last-child td { border-bottom:none; }
     .log-action-badge { display:inline-block; padding:2px 7px; border-radius:10px; font-size:10px; font-weight:700; background:rgba(51,102,255,0.12); color:var(--accent); white-space:nowrap; }
-    .log-action-badge.error-badge { background:rgba(220,38,38,0.1); color:var(--red); }
     .log-action-badge.success-badge { background:rgba(0,200,117,0.12); color:var(--green); }
-    .log-error-row td { background:rgba(220,38,38,0.04); }
+    .log-action-badge.warn-badge { background:rgba(220,38,38,0.1); color:var(--red); }
   </style>
 </head>
 <body>
@@ -73,25 +73,28 @@
 
   <div class="page" style="overflow-y:auto;">
 
-    <!-- PIN Access Gate -->
-    <div id="pin-gate" style="display:none;">
-      <div class="card" style="max-width:360px; margin:60px auto; text-align:center;">
-        <div class="section-label" style="margin-bottom:12px;">Enter Admin PIN</div>
-        <input type="password" id="gate-pin-input" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric" style="margin:0 auto 10px;">
-        <div id="gate-pin-error" class="pin-error" style="display:none;"></div>
-        <button class="btn btn-primary" id="gate-pin-btn" style="width:100%;">Unlock</button>
+    <!-- Password Access Gate -->
+    <div id="pin-gate" style="display:none;position:fixed;inset:0;z-index:100;background:var(--bg);display:none;align-items:center;justify-content:center;">
+      <div style="max-width:360px;width:100%;padding:0 20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">⚙️</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;">Admin Settings</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Enter your password to continue</div>
+        <input type="password" id="gate-pin-input" maxlength="30" placeholder="Password" style="display:block;width:100%;padding:12px 16px;font-size:14px;letter-spacing:normal;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:8px;">
+        <div id="gate-pin-error" class="pin-error" style="display:none;margin-bottom:8px;"></div>
+        <button class="btn btn-primary" id="gate-pin-btn" style="width:100%;padding:12px;font-size:14px;">Unlock</button>
+        <a href="/" style="display:inline-block;margin-top:16px;font-size:12px;color:var(--text-muted);text-decoration:none;">← Back to Dashboard</a>
       </div>
     </div>
 
     <!-- Admin Content (hidden until unlocked) -->
     <div id="admin-content" style="display:none;">
 
-      <!-- PIN not set warning -->
+      <!-- Password not set warning -->
       <div id="pin-not-set-warning" style="display:none;background:rgba(226,68,92,0.12);border:1px solid var(--red);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;align-items:flex-start;gap:12px;">
         <span style="font-size:22px;flex-shrink:0;">⚠️</span>
         <div>
-          <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:4px;">Admin PIN Not Set</div>
-          <div style="font-size:13px;color:var(--text-muted);">Anyone can delete projects until a PIN is configured. Scroll down to <strong style="color:var(--text);">Admin PIN</strong> to set one now.</div>
+          <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:4px;">Admin Password Not Set</div>
+          <div style="font-size:13px;color:var(--text-muted);">Anyone can access admin settings until a password is configured. Scroll down to <strong style="color:var(--text);">Admin Password</strong> to set one now.</div>
         </div>
       </div>
 
@@ -118,22 +121,26 @@
         </div>
       </div>
 
-      <!-- Admin PIN -->
+      <!-- Admin Password -->
       <div class="admin-section">
-        <div class="admin-section-title">Admin PIN</div>
+        <div class="admin-section-title">Admin Password</div>
         <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
-          This 4-digit PIN is required to delete projects. Set or change it below.
+          This password protects admin settings and delete actions. 4-30 characters.
         </p>
         <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-          <div class="field" style="margin:0; flex:0 0 auto;">
-            <label>New PIN (4 digits)</label>
-            <input type="password" id="new-pin-input" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric" style="width:100px;">
+          <div class="field" id="old-pin-field" style="margin:0; flex:0 0 auto; display:none;">
+            <label>Current Password</label>
+            <input type="password" id="old-pin-input" class="pin-input" maxlength="30" placeholder="Current" style="width:140px;letter-spacing:normal;">
           </div>
           <div class="field" style="margin:0; flex:0 0 auto;">
-            <label>Confirm PIN</label>
-            <input type="password" id="confirm-pin-input" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric" style="width:100px;">
+            <label>New Password</label>
+            <input type="password" id="new-pin-input" class="pin-input" maxlength="30" placeholder="New" style="width:140px;letter-spacing:normal;">
           </div>
-          <button class="btn btn-primary" id="save-pin-btn">Save PIN</button>
+          <div class="field" style="margin:0; flex:0 0 auto;">
+            <label>Confirm</label>
+            <input type="password" id="confirm-pin-input" class="pin-input" maxlength="30" placeholder="Confirm" style="width:140px;letter-spacing:normal;">
+          </div>
+          <button class="btn btn-primary" id="save-pin-btn">Save Password</button>
         </div>
         <div id="pin-save-msg" style="margin-top:10px; font-size:13px; display:none;"></div>
       </div>
@@ -163,31 +170,14 @@
         </div>
       </div>
 
-      <!-- System Map (collapsed reference of every page + automation) -->
-      <div class="admin-section" id="system-map-section">
-        <div class="admin-section-title" id="sysmap-toggle" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:10px;">
-          <span id="sysmap-chevron" style="font-size:13px;color:var(--text-muted);">▸</span>
-          <span>System Map</span>
-          <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:8px;">What each page does — reference only, click to expand</span>
-          <span id="sysmap-mtime" style="font-size:10px;color:var(--text-muted);font-weight:400;margin-left:auto;"></span>
-        </div>
-        <div id="sysmap-body" style="display:none;padding-top:14px;">
-          <div id="sysmap-content" style="font-size:13px;line-height:1.55;color:var(--text);">
-            <div style="color:var(--text-muted);padding:12px 0;">Loading…</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Activity Logs -->
+      <!-- Activity Feed (ops-relevant events only) -->
       <div class="admin-section" id="logs-section">
-        <div class="admin-section-title">System Logs</div>
-        <div style="display:flex;gap:8px;margin-bottom:14px;">
-          <button class="btn btn-primary btn-sm" id="log-tab-activity" onclick="switchLogTab('activity')">Activity</button>
-          <button class="btn btn-ghost btn-sm" id="log-tab-errors" onclick="switchLogTab('errors')">Errors</button>
-          <button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="loadLogs()">↻ Refresh</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:14px;">
+          <div class="admin-section-title" style="border:none;padding:0;margin:0;">Recent Activity</div>
+          <button class="btn btn-ghost btn-sm" id="log-refresh-btn">↻ Refresh</button>
         </div>
         <div id="log-content" style="font-size:12px;overflow-x:auto;">
-          <div style="color:var(--text-muted);padding:12px 0;">Loading logs…</div>
+          <div style="color:var(--text-muted);padding:12px 0;">Loading...</div>
         </div>
       </div>
 
@@ -198,10 +188,19 @@
   </div><!-- /tasks-layout -->
 
   <div class="toast" id="toast"></div>
-  <script src="js/utils.js?v=1776527483"></script>
+  <script src="js/utils.js?v=1776677603"></script>
   <script>
     // ── Helpers ──────────────────────────────────────────────────────────────
-    let adminPin = '';
+    let adminPassword = '';
+    let passwordIsSet = false;
+
+    function escHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
 
     async function api(method, url, body) {
       const opts = { method, headers: { 'Content-Type': 'application/json' } };
@@ -211,27 +210,36 @@
       return res.json();
     }
 
-    // ── PIN Gate ──────────────────────────────────────────────────────────────
+    // Attach admin password to any mutating request body
+    function withAuth(body) {
+      return { ...body, pin: adminPassword };
+    }
+
+    // ── Password Gate ─────────────────────────────────────────────────────────
     async function init() {
       const { pinSet } = await api('GET', '/api/admin/pin');
+      passwordIsSet = pinSet;
       if (!pinSet) {
-        // No PIN configured — allow straight in, but warn
         showAdminContent(true);
       } else {
-        document.getElementById('pin-gate').style.display = '';
+        document.getElementById('pin-gate').style.display = 'flex';
         const gateBtn = document.getElementById('gate-pin-btn');
         const gateInput = document.getElementById('gate-pin-input');
         const gateErr = document.getElementById('gate-pin-error');
 
         const tryUnlock = async () => {
-          const pin = gateInput.value.trim();
-          if (!/^\d{4}$/.test(pin)) { gateErr.textContent = 'Enter a 4-digit PIN.'; gateErr.style.display = 'block'; return; }
+          const pw = gateInput.value.trim();
+          if (!pw) { gateErr.textContent = 'Enter admin password.'; gateErr.style.display = 'block'; return; }
           gateBtn.disabled = true;
           try {
-            const { ok } = await api('POST', '/api/admin/pin', { action: 'verify', pin });
-            if (ok) { adminPin = pin; showAdminContent(); }
-            else { gateErr.textContent = 'Incorrect PIN.'; gateErr.style.display = 'block'; gateBtn.disabled = false; }
-          } catch { gateErr.textContent = 'Error. Try again.'; gateErr.style.display = 'block'; gateBtn.disabled = false; }
+            const result = await api('POST', '/api/admin/pin', { action: 'verify', pin: pw });
+            if (result.ok) { adminPassword = pw; showAdminContent(); }
+            else { gateErr.textContent = 'Incorrect password.'; gateErr.style.display = 'block'; gateBtn.disabled = false; }
+          } catch (err) {
+            gateErr.textContent = err.message || 'Error. Try again.';
+            gateErr.style.display = 'block';
+            gateBtn.disabled = false;
+          }
         };
 
         gateBtn.addEventListener('click', tryUnlock);
@@ -245,6 +253,9 @@
       document.getElementById('admin-content').style.display = '';
       const warn = document.getElementById('pin-not-set-warning');
       if (warn) warn.style.display = pinMissing ? 'flex' : 'none';
+      // Show/hide "Current Password" field based on whether one is set
+      const oldField = document.getElementById('old-pin-field');
+      if (oldField) oldField.style.display = passwordIsSet ? '' : 'none';
       loadStaff();
       loadWorkers();
       loadLogs();
@@ -263,19 +274,16 @@
     function renderStaffTable() {
       const tbody = document.getElementById('staff-tbody');
       tbody.innerHTML = '';
-
       const seen = new Set();
       const entries = [];
       Object.values(staffMap).forEach(v => {
         if (v.name && !seen.has(v.name)) { seen.add(v.name); entries.push(v); }
       });
       entries.sort((a, b) => a.name.localeCompare(b.name));
-
-      if (entries.length === 0) {
+      if (!entries.length) {
         tbody.innerHTML = '<tr><td colspan="3" style="padding:16px 12px; color:var(--text-muted); font-size:13px; text-align:center;">No staff added yet.</td></tr>';
         return;
       }
-
       entries.forEach(({ name, email }) => appendViewRow(tbody, name, email || ''));
     }
 
@@ -293,9 +301,10 @@
       `;
       tr.querySelector('[data-action="edit"]').addEventListener('click', () => enterEditMode(tr, name, email, false));
       tr.querySelector('[data-action="delete"]').addEventListener('click', async () => {
-        if (!confirm(`Remove "${name}" from staff list?`)) return;
+        const reason = await confirmDelete(`Remove "${name}" from staff list?`);
+        if (!reason) return;
         try {
-          await api('DELETE', `/api/staff/${encodeURIComponent(name)}`, { pin: adminPin });
+          await api('DELETE', `/api/staff/${encodeURIComponent(name)}`, withAuth({ reason }));
           showToast(`${name} removed.`, 'success');
           await loadStaff();
         } catch (err) { showToast(err.message, 'error'); }
@@ -304,7 +313,6 @@
     }
 
     function enterEditMode(tr, name, email, isNew) {
-      // Remove empty-state row if present
       const emptyRow = tr.parentElement.querySelector('td[colspan]');
       if (emptyRow) emptyRow.closest('tr').remove();
 
@@ -325,20 +333,28 @@
       const emailInput = tr.querySelector('input[type="email"]');
       nameInput.focus();
 
+      let saving = false;
       const doSave = async () => {
+        if (saving) return;
         const newName  = nameInput.value.trim();
         const newEmail = emailInput.value.trim();
         if (!newName) { showToast('Name is required.', 'error'); nameInput.focus(); return; }
+        saving = true;
+        tr.querySelector('[data-action="save"]').disabled = true;
         try {
-          await api('POST', '/api/staff', { name: newName, email: newEmail });
+          await api('POST', '/api/staff', withAuth({ name: newName, email: newEmail }));
           showToast(`${newName} saved.`, 'success');
           await loadStaff();
-        } catch (err) { showToast(err.message, 'error'); }
+        } catch (err) {
+          showToast(err.message, 'error');
+          saving = false;
+          tr.querySelector('[data-action="save"]').disabled = false;
+        }
       };
 
       const doCancel = () => {
         if (isNew) { tr.remove(); checkEmptyState(); }
-        else { appendViewRowReplace(tr, name, email); }
+        else { loadStaff(); }  // re-render from data — clean and simple
       };
 
       tr.querySelector('[data-action="save"]').addEventListener('click', doSave);
@@ -347,16 +363,6 @@
         if (e.key === 'Enter') doSave();
         if (e.key === 'Escape') doCancel();
       }));
-    }
-
-    function appendViewRowReplace(tr, name, email) {
-      const newTr = document.createElement('tr');
-      tr.parentElement.insertBefore(newTr, tr);
-      appendViewRow(tr.parentElement, name, email);
-      // The above appended to end — instead replace in place
-      const last = tr.parentElement.lastElementChild;
-      tr.parentElement.insertBefore(last, tr);
-      tr.remove();
     }
 
     function checkEmptyState() {
@@ -368,10 +374,8 @@
 
     document.getElementById('staff-add-btn').addEventListener('click', () => {
       const tbody = document.getElementById('staff-tbody');
-      // Remove empty-state row if present
       const emptyRow = tbody.querySelector('td[colspan]');
       if (emptyRow) emptyRow.closest('tr').remove();
-
       const tr = document.createElement('tr');
       tbody.insertBefore(tr, tbody.firstChild);
       enterEditMode(tr, '', '', true);
@@ -416,9 +420,10 @@
       `;
       tr.querySelector('[data-action="edit-worker"]').addEventListener('click', () => enterWorkerEditMode(tr, w, false));
       tr.querySelector('[data-action="delete-worker"]').addEventListener('click', async () => {
-        if (!confirm(`Remove worker "${w.name}"?`)) return;
+        const reason = await confirmDelete(`Remove worker "${w.name}"?`);
+        if (!reason) return;
         try {
-          await api('DELETE', `/api/workers/${encodeURIComponent(w.id)}`);
+          await api('DELETE', `/api/workers/${encodeURIComponent(w.id)}`, withAuth({ reason }));
           showToast(`${w.name} removed.`, 'success');
           await loadWorkers();
         } catch (err) { showToast(err.message, 'error'); }
@@ -450,25 +455,30 @@
       const nameInput = tr.querySelector('[data-f="name"]');
       nameInput.focus();
 
+      let saving = false;
       const doSave = async () => {
+        if (saving) return;
         const name = tr.querySelector('[data-f="name"]').value.trim();
         if (!name) { showToast('Name is required.', 'error'); tr.querySelector('[data-f="name"]').focus(); return; }
-        const body = {
+        saving = true;
+        tr.querySelector('[data-action="save-worker"]').disabled = true;
+        const body = withAuth({
           name,
           code:        tr.querySelector('[data-f="code"]').value.trim(),
           nationality: tr.querySelector('[data-f="nationality"]').value.trim(),
           role:        tr.querySelector('[data-f="role"]').value.trim(),
           active:      tr.querySelector('[data-f="active"]').value !== 'false'
-        };
+        });
         try {
-          if (isNew) {
-            await api('POST', '/api/workers', body);
-          } else {
-            await api('PUT', `/api/workers/${encodeURIComponent(w.id)}`, body);
-          }
+          if (isNew) { await api('POST', '/api/workers', body); }
+          else       { await api('PUT', `/api/workers/${encodeURIComponent(w.id)}`, body); }
           showToast(`${name} saved.`, 'success');
           await loadWorkers();
-        } catch (err) { showToast(err.message, 'error'); }
+        } catch (err) {
+          showToast(err.message, 'error');
+          saving = false;
+          tr.querySelector('[data-action="save-worker"]').disabled = false;
+        }
       };
 
       tr.querySelector('[data-action="save-worker"]').addEventListener('click', doSave);
@@ -488,20 +498,27 @@
       enterWorkerEditMode(tr, { name: '', code: '', nationality: '', role: '', active: true }, true);
     });
 
-    // ── Admin PIN change ──────────────────────────────────────────────────────
+    // ── Admin Password change ─────────────────────────────────────────────────
     document.getElementById('save-pin-btn').addEventListener('click', async () => {
-      const pin1 = document.getElementById('new-pin-input').value.trim();
-      const pin2 = document.getElementById('confirm-pin-input').value.trim();
-      const msg  = document.getElementById('pin-save-msg');
+      const oldPw = document.getElementById('old-pin-input').value.trim();
+      const pin1  = document.getElementById('new-pin-input').value.trim();
+      const pin2  = document.getElementById('confirm-pin-input').value.trim();
 
-      if (!/^\d{4}$/.test(pin1)) { showPinMsg('PIN must be exactly 4 digits.', 'error'); return; }
-      if (pin1 !== pin2) { showPinMsg('PINs do not match.', 'error'); return; }
+      if (passwordIsSet && !oldPw) { showPinMsg('Current password is required.', 'error'); return; }
+      if (!pin1 || pin1.length < 4 || pin1.length > 30) { showPinMsg('Password must be 4-30 characters.', 'error'); return; }
+      if (pin1 !== pin2) { showPinMsg('Passwords do not match.', 'error'); return; }
 
       try {
-        await api('POST', '/api/admin/pin', { action: 'set', pin: pin1 });
+        const body = { action: 'set', pin: pin1 };
+        if (passwordIsSet) body.oldPin = oldPw;
+        await api('POST', '/api/admin/pin', body);
+        document.getElementById('old-pin-input').value = '';
         document.getElementById('new-pin-input').value = '';
         document.getElementById('confirm-pin-input').value = '';
-        showPinMsg('PIN saved successfully.', 'success');
+        adminPassword = pin1;
+        passwordIsSet = true;
+        document.getElementById('old-pin-field').style.display = '';
+        showPinMsg('Password saved successfully.', 'success');
         const warn = document.getElementById('pin-not-set-warning');
         if (warn) warn.style.display = 'none';
       } catch (err) { showPinMsg(err.message, 'error'); }
@@ -512,177 +529,85 @@
       el.textContent = text;
       el.style.color = type === 'error' ? 'var(--red)' : 'var(--green)';
       el.style.display = 'block';
-      setTimeout(() => el.style.display = 'none', 3000);
+      setTimeout(() => el.style.display = 'none', 4000);
     }
 
-    function escHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    // ── Logs ──────────────────────────────────────────────────────────────────
-    let currentLogTab = 'activity';
+    // ── Activity Feed (ops-relevant only) ───────────────────────────────────
     let logRefreshTimer = null;
 
-    function switchLogTab(tab) {
-      currentLogTab = tab;
-      document.getElementById('log-tab-activity').className = tab === 'activity' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
-      document.getElementById('log-tab-errors').className   = tab === 'errors'   ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
-      loadLogs();
-    }
+    // Only show events the boss cares about — people, emails, project lifecycle, deletes
+    const OPS_ACTIONS = new Set([
+      'staff.updated', 'staff.deleted',
+      'worker.created', 'worker.updated', 'worker.deleted',
+      'email.sent', 'email.failed',
+      'project.created', 'project.updated', 'project.deleted',
+      'admin.password.changed',
+      'purchase-order.deleted', 'pr.deleted',
+      'attendance.saved', 'manpower-plan.saved',
+      'task.created', 'task.deleted',
+      'calendar.created', 'calendar.failed'
+    ]);
+
+    document.getElementById('log-refresh-btn').addEventListener('click', () => loadLogs());
 
     async function loadLogs() {
       const container = document.getElementById('log-content');
-      const limit = currentLogTab === 'errors' ? 20 : 50;
       try {
-        const data = await api('GET', `/api/logs?type=${currentLogTab}&limit=${limit}`);
-        if (!data.length) {
-          container.innerHTML = '<div style="color:var(--text-muted);padding:12px 0;">No ' + currentLogTab + ' logs yet.</div>';
+        const data = await api('GET', '/api/logs?type=activity&limit=100');
+        // Filter to ops-relevant actions
+        // Log format: { ts, event, ...details } — details are spread flat, not nested
+        const opsData = data.filter(row => {
+          const action = row.event || '';
+          return OPS_ACTIONS.has(action) || action.includes('deleted') || action.includes('email');
+        }).slice(0, 40);
+        if (!opsData.length) {
+          container.innerHTML = '<div style="color:var(--text-muted);padding:12px 0;">No recent activity.</div>';
           return;
         }
-        if (currentLogTab === 'activity') {
-          const badgeClass = (action) => {
-            if (action && action.includes('email.sent')) return 'log-action-badge success-badge';
-            if (action && (action.includes('failed') || action.includes('error'))) return 'log-action-badge error-badge';
-            return 'log-action-badge';
-          };
-          container.innerHTML = '<table class="log-table"><thead><tr><th>Time</th><th>Action</th><th>Details</th></tr></thead><tbody>' +
-            data.map(row => `<tr>
-              <td style="white-space:nowrap;color:var(--text-muted);">${row.timestamp ? row.timestamp.replace('T',' ').slice(0,19) : '—'}</td>
-              <td><span class="${badgeClass(row.action)}">${escHtml(row.action || '')}</span></td>
-              <td style="color:var(--text-muted);max-width:340px;word-break:break-all;">${escHtml(JSON.stringify(row.details || {}))}</td>
-            </tr>`).join('') +
-            '</tbody></table>';
-        } else {
-          container.innerHTML = '<table class="log-table"><thead><tr><th>Time</th><th>Context</th><th>Message</th></tr></thead><tbody>' +
-            data.map(row => `<tr class="log-error-row">
-              <td style="white-space:nowrap;color:var(--text-muted);">${row.timestamp ? row.timestamp.replace('T',' ').slice(0,19) : '—'}</td>
-              <td><span class="log-action-badge error-badge">${escHtml(row.context || '')}</span></td>
-              <td style="color:var(--red);max-width:400px;word-break:break-all;">${escHtml(row.message || '')}${row.stack ? '<br><span style="color:var(--text-muted);font-size:10px;">' + escHtml(row.stack) + '</span>' : ''}</td>
-            </tr>`).join('') +
-            '</tbody></table>';
-        }
+        const badgeClass = (action) => {
+          if (action && action.includes('email.sent')) return 'log-action-badge success-badge';
+          if (action && (action.includes('created') || action.includes('saved'))) return 'log-action-badge success-badge';
+          if (action && action.includes('deleted')) return 'log-action-badge warn-badge';
+          if (action && (action.includes('failed') || action.includes('error'))) return 'log-action-badge warn-badge';
+          return 'log-action-badge';
+        };
+        const friendlyAction = (action) => {
+          if (!action) return '—';
+          return action.replace(/\./g, ' ').replace(/^(\w)/, m => m.toUpperCase());
+        };
+        const friendlyDetails = (row) => {
+          // Details are flat fields on the row (not nested under row.details)
+          const parts = [];
+          if (row.name) parts.push(row.name);
+          if (row.to) parts.push('to: ' + row.to);
+          if (row.subject) parts.push(row.subject);
+          if (row.projectId) parts.push(row.projectId);
+          if (row.jobCode) parts.push(row.jobCode);
+          if (row.reason) parts.push('Reason: ' + row.reason);
+          if (row.count != null) parts.push('Count: ' + row.count);
+          if (row.date) parts.push(row.date);
+          if (row.id && !row.projectId) parts.push(row.id);
+          return parts.length ? escHtml(parts.join(' — ')) : '<span style="opacity:0.4;">—</span>';
+        };
+        const formatTime = (ts) => {
+          if (!ts) return '—';
+          try {
+            const d = new Date(ts);
+            return d.toLocaleString('en-SG', { timeZone:'Asia/Singapore', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12:false });
+          } catch { return ts.replace('T',' ').slice(0,16); }
+        };
+        container.innerHTML = '<table class="log-table"><thead><tr><th>Time</th><th>User</th><th>Event</th><th>Details</th></tr></thead><tbody>' +
+          opsData.map(row => `<tr>
+            <td style="white-space:nowrap;color:var(--text-muted);">${formatTime(row.ts)}</td>
+            <td style="white-space:nowrap;font-weight:500;">${escHtml(row.by || '—')}</td>
+            <td><span class="${badgeClass(row.event)}">${friendlyAction(row.event)}</span></td>
+            <td style="color:var(--text-muted);max-width:350px;word-break:break-all;">${friendlyDetails(row)}</td>
+          </tr>`).join('') +
+          '</tbody></table>';
       } catch (err) {
-        container.innerHTML = '<div style="color:var(--red);padding:12px 0;">Failed to load logs: ' + escHtml(err.message) + '</div>';
+        container.innerHTML = '<div style="color:var(--red);padding:12px 0;">Failed to load activity: ' + escHtml(err.message) + '</div>';
       }
     }
-
-    // ── System Map (collapsible — renders docs/PAGES.md via /api/system-map) ──
-    (function() {
-      var loaded = false;
-
-      function esc(s) {
-        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      }
-
-      // Minimal markdown → HTML renderer. Handles:
-      //   # / ## / ### headers, **bold**, `code`, unordered lists (- / *),
-      //   pipe tables, horizontal rules (---), paragraphs, and blank lines.
-      // Intentionally not a full markdown parser — keep it small so the
-      // admin page stays dependency-free.
-      function renderMarkdown(md) {
-        var lines = md.split(/\r?\n/);
-        var out = [];
-        var i = 0;
-        function inline(s) {
-          s = esc(s);
-          s = s.replace(/`([^`]+)`/g, '<code style="background:var(--bg2);padding:1px 5px;border-radius:3px;font-size:12px;">$1</code>');
-          s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-          return s;
-        }
-        while (i < lines.length) {
-          var line = lines[i];
-          if (!line.trim()) { i++; continue; }
-          // Horizontal rule
-          if (/^---+\s*$/.test(line)) { out.push('<hr style="border:none;border-top:1px solid var(--border);margin:18px 0;">'); i++; continue; }
-          // Headers
-          var h = line.match(/^(#{1,6})\s+(.*)$/);
-          if (h) {
-            var level = h[1].length;
-            var size = level === 1 ? '20px' : level === 2 ? '16px' : '14px';
-            var margin = level === 1 ? '24px 0 10px' : level === 2 ? '20px 0 8px' : '14px 0 6px';
-            var color = level === 1 ? 'var(--accent)' : 'var(--text)';
-            out.push('<div style="font-size:' + size + ';font-weight:700;color:' + color + ';margin:' + margin + ';">' + inline(h[2]) + '</div>');
-            i++; continue;
-          }
-          // Table (pipe syntax): header row followed by --- separator
-          if (line.indexOf('|') !== -1 && i + 1 < lines.length && /^\s*\|?[\s|:-]+\|[\s|:-]*$/.test(lines[i + 1])) {
-            var headers = line.split('|').map(function(c) { return c.trim(); }).filter(function(c) { return c; });
-            i += 2;
-            var rows = [];
-            while (i < lines.length && lines[i].indexOf('|') !== -1) {
-              rows.push(lines[i].split('|').map(function(c) { return c.trim(); }).filter(function(c) { return c; }));
-              i++;
-            }
-            var thead = '<thead><tr>' + headers.map(function(h) {
-              return '<th style="text-align:left;padding:6px 10px;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);">' + inline(h) + '</th>';
-            }).join('') + '</tr></thead>';
-            var tbody = '<tbody>' + rows.map(function(r) {
-              return '<tr>' + r.map(function(c) {
-                return '<td style="padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:top;">' + inline(c) + '</td>';
-              }).join('') + '</tr>';
-            }).join('') + '</tbody>';
-            out.push('<table style="border-collapse:collapse;width:100%;margin:10px 0;font-size:12px;">' + thead + tbody + '</table>');
-            continue;
-          }
-          // Unordered list
-          if (/^\s*[-*]\s+/.test(line)) {
-            var items = [];
-            while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
-              items.push(lines[i].replace(/^\s*[-*]\s+/, ''));
-              i++;
-            }
-            out.push('<ul style="margin:6px 0 12px 22px;padding:0;">' + items.map(function(it) {
-              return '<li style="margin:3px 0;">' + inline(it) + '</li>';
-            }).join('') + '</ul>');
-            continue;
-          }
-          // Paragraph — gather consecutive non-blank, non-header lines
-          var para = [line];
-          i++;
-          while (i < lines.length && lines[i].trim() && !/^(#{1,6})\s/.test(lines[i]) && !/^\s*[-*]\s+/.test(lines[i]) && !/^---+\s*$/.test(lines[i])) {
-            para.push(lines[i]);
-            i++;
-          }
-          out.push('<p style="margin:8px 0;">' + inline(para.join(' ')) + '</p>');
-        }
-        return out.join('');
-      }
-
-      async function loadSystemMap() {
-        if (loaded) return;
-        var content = document.getElementById('sysmap-content');
-        try {
-          var res = await fetch('/api/system-map');
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          var data = await res.json();
-          content.innerHTML = renderMarkdown(data.markdown || '');
-          var mtimeEl = document.getElementById('sysmap-mtime');
-          if (mtimeEl && data.mtime) {
-            var d = new Date(data.mtime);
-            mtimeEl.textContent = 'updated ' + d.toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' });
-          }
-          loaded = true;
-        } catch (err) {
-          content.innerHTML = '<div style="color:var(--red);padding:12px 0;">Failed to load system map: ' + esc(err.message) + '</div>';
-        }
-      }
-
-      var toggle = document.getElementById('sysmap-toggle');
-      if (toggle) {
-        toggle.addEventListener('click', function() {
-          var body = document.getElementById('sysmap-body');
-          var chevron = document.getElementById('sysmap-chevron');
-          var isOpen = body.style.display !== 'none';
-          body.style.display = isOpen ? 'none' : '';
-          chevron.textContent = isOpen ? '▸' : '▾';
-          if (!isOpen) loadSystemMap();
-        });
-      }
-    })();
 
     init();
   </script>

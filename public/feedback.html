@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feedback — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776527483">
+  <link rel="stylesheet" href="/css/style.css?v=1776677603">
   <style>
     .fb-form {
       background: var(--bg2);
@@ -278,6 +278,7 @@
 
 <div id="fb-toast"></div>
 
+<script src="/js/utils.js"></script>
 <script>
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -409,8 +410,13 @@ function renderTickets(tickets) {
   // Delete
   el.querySelectorAll('.del-ticket-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Delete this ticket?')) return;
-      await fetch('/api/tickets/' + btn.dataset.id, { method: 'DELETE' });
+      const result = await confirmDelete('Delete this ticket?', btn.closest('.ticket-card')?.querySelector('.ticket-title')?.textContent || '');
+      if (!result) return;
+      await fetch('/api/tickets/' + btn.dataset.id, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: result.reason })
+      });
       showToast('Ticket deleted', 'var(--red)');
       loadTickets();
     });

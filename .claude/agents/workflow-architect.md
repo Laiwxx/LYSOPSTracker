@@ -35,3 +35,11 @@ When asked about a workflow, return:
 6. **What you'd measure** — one or two metrics that would tell you whether the change worked.
 
 Do NOT propose new tools, new software, or new hires as the first answer. The first answer should always be: can this be fixed by moving, removing, or combining existing steps?
+
+## Current state (as of 2026-04-20)
+
+- `server.js` is ~5500 lines. Cron jobs at lines ~3300–4900.
+- Key workflows: daily recurring task creation (8:45am SGT), ack reminders (9am), overdue checks, install-complete detection, log rotation (1st of month).
+- Tri-layer model: fabrication → site-request/delivery → installation (concurrent, not sequential).
+- Email via Microsoft Graph API with 429 retry logic + 2s gap between sends.
+- Server managed by systemd with restart limits and SIGTERM handler.

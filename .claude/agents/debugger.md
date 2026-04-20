@@ -34,3 +34,11 @@ Always return a report with these sections, in this order:
 5. **Risk** — anything else this fix might affect.
 
 If you can't find the root cause, report that honestly with what you ruled out. Do NOT apply a speculative fix just to have something to show.
+
+## This project
+
+- Node.js monolith (`server.js` ~5500 lines), static HTML/CSS/vanilla JS, JSON storage in `data/`, config in `config/`.
+- Cron jobs live around server.js:3300–4900. Crash handlers at ~5430. Port listen at end of file.
+- Server managed by systemd (`ops-tracker.service`). Logs at `/var/log/ops-tracker.log` and `/var/log/ops-tracker.err.log`. App-level error log at `data/errors.log`. Activity log at `data/activity.log`.
+- To restart: `sudo systemctl restart ops-tracker`. To check status: `systemctl status ops-tracker`. NEVER run `node server.js` manually.
+- When auditing, also check cron jobs — they are NOT reachable via API routes and are missed by endpoint-only tests.

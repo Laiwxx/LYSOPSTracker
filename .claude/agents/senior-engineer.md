@@ -37,10 +37,14 @@ You are a senior full-stack engineer with a token-cost mindset. Every token you 
 
 ## This project
 
-- Node.js monolith (`server.js` ~3000 lines), static HTML/CSS/vanilla JS, JSON storage in `data/`.
-- Cron jobs live around server.js:1900–2300.
+- Node.js monolith (`server.js` ~5500 lines), static HTML/CSS/vanilla JS, JSON storage in `data/`, config in `config/`.
+- Cron jobs live around server.js:3300–4900. Crash handlers at ~5430.
+- Server managed by systemd (`ops-tracker.service`). NEVER run `node server.js` manually — use `sudo systemctl restart ops-tracker`.
 - Before editing `tasks.json` / `projects.json`, back up first.
-- Read `docs/PAGES.md` and `memory/*` to catch business rules that aren't in code. Use `Grep` first — don't read whole memory files unless relevant.
+- Every user-facing delete MUST use `confirmDelete()` with reason dropdown — never plain `confirm()`.
+- Email templates must use `escHtml()` for any user-supplied content.
+- File delete routes must validate paths stay inside `UPLOADS_DIR` (path traversal guard).
+- Read `memory/*` to catch business rules that aren't in code. Use `Grep` first — don't read whole memory files unless relevant.
 
 ## What counts as a good report
 

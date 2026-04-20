@@ -1,8 +1,8 @@
 ---
 name: Page-by-page sweep status
-description: Which pages have been audited and fixed — updated 2026-04-19
+description: Which pages have been audited and fixed — updated 2026-04-20
 type: project
-originSessionId: dc1ba73a-2f84-41fa-8970-3c7921fe2ab5
+originSessionId: afbc3daa-39c7-4fe3-8fb0-04c02f1b5d12
 ---
 ## All Project Tabs — DONE (2026-04-19)
 1. Summary — stages auto-derived from live data
@@ -22,11 +22,18 @@ originSessionId: dc1ba73a-2f84-41fa-8970-3c7921fe2ab5
 ## Ops Pages — stable (2026-04-18)
 - Factory, Installation, Procurement, Manpower, Team, Feedback, Attendance
 
-## Cross-cutting (2026-04-19)
-- 1000-scenario audit: 945/977 pass, 5 validation bugs fixed
-- Delete reason modal on all user-facing deletes (confirmDelete in utils.js)
-- Per-project upload directories (public/uploads/projects/<id>/)
+## Dashboard — AUDITED (2026-04-20)
+- Refresh button fix (IIFE scope → global exposure)
+- KPI grid mobile breakpoint (2×2 at ≤640px)
+- `var(--blue)` → `var(--accent)` token fix
 
-## Pending
-- Dashboard — not audited
-- Admin — not audited
+## Admin — AUDITED (2026-04-20)
+- Login gate redesigned (full-screen centered, proper hierarchy)
+- Staff/Workers/Activity sections not changed (clean)
+
+## Cross-cutting (2026-04-20)
+- Full 4-agent audit: backend, frontend, data, UI/UX
+- 6 server bugs fixed, 9 delete policy violations fixed
+- Crash email rate limit + SIGTERM handler + systemd hardening
+- Port collision safety net (`_server.on('error')`)
+- confirmDelete now on all delete actions across all pages
