@@ -1263,3 +1263,74 @@
 {"ts":"2026-04-20T09:18:09.720Z","event":"manpower-plan.saved","weekStart":"2026-04-20","type":"weekly"}
 {"ts":"2026-04-20T14:48:09.499Z","event":"auth.password-changed","by":"Chris","user":"Chris"}
 {"ts":"2026-04-20T14:53:15.567Z","event":"admin.password.changed","by":"Lai Wei Xiang"}
+{"ts":"2026-04-20T15:01:54.508Z","event":"auth.password-reset","by":"System","user":"Lai Wei Xiang"}
+{"ts":"2026-04-20T15:03:13.743Z","event":"auth.admin-reset","by":"Lai Wei Xiang","user":"Senthil","resetBy":"Lai Wei Xiang"}
+{"ts":"2026-04-20T15:03:57.313Z","event":"auth.welcome-emails-sent","by":"Lai Wei Xiang","count":8}
+{"ts":"2026-04-20T15:15:41.400Z","event":"site-request.deleted","by":"Jun Jie","id":"mo5vdfwcilmj","actor":"Jun Jie","previousStatus":"New","projectId":"bd-19121-rbss-dnr","projectJobCode":"","item":"Bollard SP30","quantity":1,"requestedBy":"Jun Jie"}
+{"ts":"2026-04-20T15:39:43.673Z","event":"auth.password-reset","by":"System","user":"Lai Wei Xiang"}
+{"ts":"2026-04-20T16:09:17.623Z","event":"auth.password-reset","by":"System","user":"Lai Wei Xiang"}
+{"ts":"2026-04-21T00:45:00.012Z","event":"recurring-tasks.created","by":"System","date":"2026-04-21","count":24,"roles":["Lai Wei Xiang","Chris","Rena","Alex Mac","Alex Chew","Teo Meei Haw"]}
+{"ts":"2026-04-21T01:09:21.067Z","event":"auth.password-reset","by":"System","user":"Chris"}
+{"ts":"2026-04-21T01:09:23.899Z","event":"auth.password-reset","by":"System","user":"Chris"}
+{"ts":"2026-04-21T01:44:31.937Z","event":"site-request.deleted","by":"Lai Wei Xiang","id":"mo5vdfwhddcs","actor":"Chris","previousStatus":"New","projectId":"bd-19121-rbss-dnr","projectJobCode":"","item":"Test","quantity":1,"requestedBy":"Test"}
+{"ts":"2026-04-21T01:55:16.282Z","event":"auth.password-reset","by":"System","user":"Lai Wei Xiang"}
+{"ts":"2026-04-21T02:02:28.309Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:02:38.573Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:02:47.872Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:04:27.767Z","event":"project.created","by":"Lai Wei Xiang","id":"fff","jobCode":"fff"}
+{"ts":"2026-04-21T02:18:55.798Z","event":"auth.password-reset","by":"System","user":"Lai Wei Xiang"}
+{"ts":"2026-04-21T02:21:54.352Z","event":"fab.log.photo.uploaded","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"logId":"log_mo7zzyzed6tm","originalSize":69832,"originalMime":"image/jpeg"}
+{"ts":"2026-04-21T02:21:54.377Z","event":"fab.log.created","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo7zzyzed6tm","delta":100,"newTotal":100}
+{"ts":"2026-04-21T02:22:39.209Z","event":"fab.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"fabDeadline","to":"2026-04-29"}]}
+{"ts":"2026-04-21T02:22:43.255Z","event":"fab.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":0,"item":"SP30 Fixed Bollard","changes":[{"field":"fabDeadline","from":"2026-04-29","to":null}]}
+{"ts":"2026-04-21T02:23:18.254Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:23:35.651Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:24:52.288Z","event":"site-request.created","by":"Lai Wei Xiang","id":"mo803scg3cah","item":"Block S - Auto Bollard Cova","requestedBy":"Jun Jie","fabIdx":1}
+{"ts":"2026-04-21T02:26:30.557Z","event":"pr.created","by":"Lai Wei Xiang","id":"PR26-001","prNumber":"PR26-001","projectCode":"BD 21222 - QA (ICA Kallang)"}
+{"ts":"2026-04-21T02:26:54.287Z","event":"pr.updated","by":"Lai Wei Xiang","id":"PR26-001","status":"Ordered"}
+{"ts":"2026-04-21T02:29:11.244Z","event":"do.uploaded","by":"Lai Wei Xiang","id":"do_mo809c5n4ptc","prId":"PR26-001","prNumber":"PR26-001","filename":"delivery-orders/1776738551241-Screenshot_2026-04-16_005408.png"}
+{"ts":"2026-04-21T02:29:11.272Z","event":"pr.updated","by":"Lai Wei Xiang","id":"PR26-001","status":"Delivered"}
+{"ts":"2026-04-21T02:30:17.026Z","event":"pr.deleted","by":"Lai Wei Xiang","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-21T02:32:31.398Z","event":"pr.created","by":"Lai Wei Xiang","id":"PR26-001","prNumber":"PR26-001","projectCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:32:38.407Z","event":"pr.updated","by":"Lai Wei Xiang","id":"PR26-001","status":"Pending"}
+{"ts":"2026-04-21T02:33:00.048Z","event":"po.doc.uploaded","by":"System","prId":"PR26-001","filename":"1776738780045-HORIBA_MIRA_Memorandum_of_Performance_ISO22343-1_2023_Test_E009.pdf"}
+{"ts":"2026-04-21T02:33:00.071Z","event":"pr.updated","by":"Lai Wei Xiang","id":"PR26-001","status":"Pending"}
+{"ts":"2026-04-21T02:33:04.594Z","event":"pr.updated","by":"Lai Wei Xiang","id":"PR26-001","status":"Pending"}
+{"ts":"2026-04-21T02:33:10.592Z","event":"pr.updated","by":"Lai Wei Xiang","id":"PR26-001","status":"Ordered"}
+{"ts":"2026-04-21T02:33:27.150Z","event":"pr.deleted","by":"Lai Wei Xiang","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-21T02:36:33.497Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:36:34.533Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:38:09.184Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:38:11.771Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:38:25.629Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:38:30.199Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:38:56.176Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:38:57.046Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T02:39:22.791Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:39:23.527Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:39:24.011Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:39:31.829Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:39:33.008Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:39:35.001Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:39:36.802Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:40:20.165Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T02:41:19.482Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T03:23:04.694Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-21T03:23:19.218Z","event":"task.updated","by":"Lai Wei Xiang","id":"mo7wjco9211","title":"Review cash position — check what landed, what's overdue","status":"Done"}
+{"ts":"2026-04-21T03:26:31.503Z","event":"site-request.deleted","by":"Lai Wei Xiang","id":"mo803scg3cah","actor":"Chris","previousStatus":"New","projectId":"bd-19121-rbss-dnr","projectJobCode":"BD 19121- RBSS (DNR)","item":"Block S - Auto Bollard Cova","quantity":6,"requestedBy":"Jun Jie"}
+{"ts":"2026-04-21T03:26:34.881Z","event":"do.deleted","by":"Lai Wei Xiang","id":"do_mo809c5n4ptc","filename":"delivery-orders/1776738551241-Screenshot_2026-04-16_005408.png"}
+{"ts":"2026-04-21T04:26:58.409Z","event":"task.acknowledged","by":"Lai Wei Xiang","id":"mo7wjcoa3c0","title":"Approve/reject pending decisions — POs, scope changes, OT"}
+{"ts":"2026-04-21T04:27:00.286Z","event":"task.updated","by":"Lai Wei Xiang","id":"mo7wjcoa3c0","title":"Approve/reject pending decisions — POs, scope changes, OT","status":"Done"}
+{"ts":"2026-04-21T04:28:06.070Z","event":"auth.password-reset","by":"System","user":"Rena"}
+{"ts":"2026-04-21T04:32:39.089Z","event":"auth.password-reset","by":"System","user":"Chris"}
+{"ts":"2026-04-21T04:33:22.608Z","event":"export.projects","by":"Chris","count":18}
+{"ts":"2026-04-21T04:51:29.936Z","event":"auth.password-reset","by":"System","user":"Jun Jie"}
+{"ts":"2026-04-21T04:54:46.364Z","event":"price.deleted","by":"Lai Wei Xiang","id":"mo80egu9wfz6","material":"4mm Thick"}
+{"ts":"2026-04-21T05:14:24.192Z","event":"auth.password-reset","by":"System","user":"Lai Wei Xiang"}
+{"ts":"2026-04-21T05:15:33.435Z","event":"email.sent","by":"Lai Wei Xiang","to":"Chris","subject":"New Task: Can You Update all the fabrication Status for projects"}
+{"ts":"2026-04-21T05:17:03.460Z","event":"email.sent","by":"Lai Wei Xiang","to":"Salve","subject":"New Task: Please Update All Project Information of Products"}
+{"ts":"2026-04-21T05:17:29.930Z","event":"email.sent","by":"Lai Wei Xiang","to":"Alex Mac","subject":"New Task: Please Update All Project Information of Products - In your Own List"}
+{"ts":"2026-04-21T05:32:20.429Z","event":"auth.password-reset","by":"System","user":"Salve"}
+{"ts":"2026-04-21T05:33:42.071Z","event":"email.sent","by":"Lai Wei Xiang","to":"Janessa","subject":"New Task: Testing Phone"}
+{"ts":"2026-04-21T05:34:15.610Z","event":"task.deleted","by":"Lai Wei Xiang","id":"mo86umgm","title":"Testing Phone"}
+{"ts":"2026-04-21T05:42:14.595Z","event":"auth.password-reset","by":"System","user":"Jun Jie"}

@@ -176,10 +176,10 @@
         "name": "PR to Purchaser",
         "owner": "Factory Manager",
         "status": "Not Started",
-        "started": "",
+        "started": "2026-04-21",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-21T02:33:27.216Z",
         "refs": [],
         "fileName": ""
       },
@@ -268,7 +268,18 @@
         "fileName": ""
       }
     ],
-    "documents": [],
+    "documents": [
+      {
+        "name": "New Document",
+        "group": "Other",
+        "allowMultiple": false,
+        "status": "Not Submitted",
+        "submitted": "",
+        "approved": "",
+        "notes": "",
+        "files": []
+      }
+    ],
     "fabrication": [
       {
         "item": "Block S - City Scape Gate - 4.4 Meters",
@@ -428,20 +439,7 @@
       }
     ],
     "prpo": [],
-    "paymentMilestones": [
-      {
-        "milestone": "",
-        "type": "Contract",
-        "basis": "",
-        "pct": 0,
-        "qty": 0,
-        "unitRate": 0,
-        "amount": 0,
-        "status": "Not Due",
-        "date": "",
-        "ref": ""
-      }
-    ],
+    "paymentMilestones": [],
     "variationOrders": [],
     "defects": [],
     "meetingNotes": [
@@ -486,8 +484,8 @@
         "unit": "units",
         "zoneLabel": "",
         "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": true,
+        "itemType": "Mechanical",
+        "partsRequired": false,
         "parts": []
       },
       {
@@ -3145,7 +3143,7 @@
     "status": "On Track",
     "currentStage": "Delivered",
     "actionBy": "Purchaser",
-    "fabPercent": 0,
+    "fabPercent": 65,
     "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
@@ -3397,7 +3395,7 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 127,
         "unit": "units",
-        "qtyDone": 0,
+        "qtyDone": 100,
         "qtySent": 0,
         "status": "Ready for Delivery",
         "started": "",
@@ -3405,8 +3403,21 @@
         "fab_completed_at": "2026-04-15T15:49:02.385Z",
         "fab_started_at": "2026-04-15T16:41:24.955Z",
         "cycle_days": 0,
-        "logs": [],
-        "doneQty": 0
+        "logs": [
+          {
+            "id": "log_mo7zzyzed6tm",
+            "loggedAt": "2026-04-21T02:21:54.376Z",
+            "loggedBy": "Chris",
+            "delta": 100,
+            "photoPath": "/uploads/fab-logs/bd-25225-nakano-st-eng-dc/log_mo7zzyzed6tm.jpg",
+            "note": "",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ],
+        "doneQty": 100,
+        "fabDeadline": null
       },
       {
         "item": "Cova Sliding Gate - 6 Meters + HPU",
@@ -5745,5 +5756,290 @@
       }
     ],
     "scopeNotes": ""
+  },
+  {
+    "id": "fff",
+    "jobCode": "fff",
+    "projectName": "ff",
+    "product": "",
+    "contractValue": 0,
+    "voValue": 0,
+    "client": "",
+    "contact": "",
+    "mainCon": "",
+    "consultant": "",
+    "startDate": "",
+    "endDate": "",
+    "projectManager": "Lai Wei Xiang",
+    "qs": "Alex Mac",
+    "factoryManager": "Chris",
+    "drafter": "",
+    "purchaser": "Rena",
+    "sales": "",
+    "siteEngineer": "Teo Meei Haw",
+    "status": "On Track",
+    "currentStage": "Awarded",
+    "actionBy": "Sales",
+    "fabPercent": 0,
+    "installPercent": 0,
+    "paidAmount": 0,
+    "latestNotes": "",
+    "stages": [
+      {
+        "num": 1,
+        "name": "Quotation",
+        "owner": "Sales",
+        "status": "Completed",
+        "started": "2026-04-21",
+        "done": "2026-04-21",
+        "notes": "",
+        "statusChangedAt": "2026-04-21T02:04:27.765Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 2,
+        "name": "Awarded",
+        "owner": "Sales",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 3,
+        "name": "Contract Review",
+        "owner": "GM",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 4,
+        "name": "QS Breakdown",
+        "owner": "QS",
+        "status": "Completed",
+        "started": "2026-04-21",
+        "done": "2026-04-21",
+        "notes": "",
+        "statusChangedAt": "2026-04-21T02:04:27.765Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 5,
+        "name": "Job Code Created",
+        "owner": "Accounts",
+        "status": "Completed",
+        "started": "2026-04-21",
+        "done": "2026-04-21",
+        "notes": "",
+        "statusChangedAt": "2026-04-21T02:04:27.765Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 6,
+        "name": "Kick-off Meeting",
+        "owner": "Project Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 7,
+        "name": "Safety Document Submission",
+        "owner": "Project Manager/Site Engineer",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 8,
+        "name": "Drawing Submission",
+        "owner": "Drafter",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 9,
+        "name": "Drawing Approved",
+        "owner": "Drafter",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 10,
+        "name": "SIC Submission",
+        "owner": "Project Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 11,
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 12,
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 13,
+        "name": "PR to Purchaser",
+        "owner": "Factory Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 14,
+        "name": "PO Issued",
+        "owner": "Purchaser",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 15,
+        "name": "Production / Fabrication",
+        "owner": "Factory Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 16,
+        "name": "Shipping",
+        "owner": "Purchaser",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 17,
+        "name": "Delivered",
+        "owner": "Purchaser",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 18,
+        "name": "Site Ready",
+        "owner": "Project Manager/Site Engineer",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 19,
+        "name": "Installation",
+        "owner": "Site Engineer",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 20,
+        "name": "Handover",
+        "owner": "Project Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      }
+    ],
+    "documents": [],
+    "fabrication": [],
+    "installation": [],
+    "productScope": [],
+    "prpo": [],
+    "paymentMilestones": [],
+    "variationOrders": [],
+    "defects": [],
+    "meetingNotes": [],
+    "drawings": [],
+    "drawingFolders": [
+      "General"
+    ],
+    "scopeNotes": "",
+    "fabLeadTimeDays": 0
   }
 ]
