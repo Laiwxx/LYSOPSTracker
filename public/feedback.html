@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feedback — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776677603">
+  <link rel="stylesheet" href="/css/style.css?v=1776776803">
   <style>
     .fb-form {
       background: var(--bg2);
@@ -278,7 +278,7 @@
 
 <div id="fb-toast"></div>
 
-<script src="/js/utils.js"></script>
+<script src="/js/utils.js?v=1776776803"></script>
 <script>
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -379,11 +379,12 @@ function renderTickets(tickets) {
   // Status change
   el.querySelectorAll('.status-select').forEach(sel => {
     sel.addEventListener('change', async () => {
-      await fetch('/api/tickets/' + sel.dataset.id, {
+      const res = await fetch('/api/tickets/' + sel.dataset.id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: sel.value })
       });
+      if (!res.ok) { showToast('Update failed'); return; }
       // update badge inline
       const badge = el.querySelector('.status-badge[data-id="' + sel.dataset.id + '"]');
       if (badge) {
@@ -398,11 +399,12 @@ function renderTickets(tickets) {
   // Priority change
   el.querySelectorAll('.priority-select').forEach(sel => {
     sel.addEventListener('change', async () => {
-      await fetch('/api/tickets/' + sel.dataset.id, {
+      const res = await fetch('/api/tickets/' + sel.dataset.id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ priority: sel.value })
       });
+      if (!res.ok) { showToast('Update failed'); return; }
       showToast('Priority updated');
     });
   });
@@ -412,11 +414,12 @@ function renderTickets(tickets) {
     btn.addEventListener('click', async () => {
       const result = await confirmDelete('Delete this ticket?', btn.closest('.ticket-card')?.querySelector('.ticket-title')?.textContent || '');
       if (!result) return;
-      await fetch('/api/tickets/' + btn.dataset.id, {
+      const res = await fetch('/api/tickets/' + btn.dataset.id, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason: result.reason })
       });
+      if (!res.ok) { showToast('Delete failed'); return; }
       showToast('Ticket deleted', 'var(--red)');
       loadTickets();
     });
@@ -471,5 +474,6 @@ document.getElementById('fb-submit').addEventListener('click', async () => {
 loadStaff();
 loadTickets();
 </script>
+<script src="/js/nav.js"></script>
 </body>
 </html>

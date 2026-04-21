@@ -1867,6 +1867,18 @@ tr.clickable:hover td { background: var(--bg3); }
 
 /* ── Responsive Breakpoints ──────────────────────────────── */
 
+/* DESKTOP (>768px) — sidebar always visible, hamburger hidden */
+@media (min-width: 769px) {
+  .nav-hamburger { display: none !important; }
+  .sidebar-overlay { display: none !important; }
+  .tasks-sidebar {
+    position: static !important;
+    transform: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+  }
+}
+
 /* LAPTOP (≤1199px) */
 @media (max-width: 1199px) {
   .tasks-layout { grid-template-columns: 220px 1fr; }
@@ -2045,89 +2057,101 @@ tr.clickable:hover td { background: var(--bg3); }
 }
 
 /* MOBILE (≤599px) */
-@media (max-width: 599px) {
-  /* Topbar */
-  .topbar { padding: 0 12px; height: 48px; }
-  .topbar-title { font-size: 13px; }
+/* ── Hamburger toggle (mobile only) ── */
+.nav-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 8px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.nav-hamburger:active { background: rgba(255,255,255,0.1); }
+.nav-hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 1px;
+  position: relative;
+}
+.nav-hamburger span::before,
+.nav-hamburger span::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 1px;
+  left: 0;
+}
+.nav-hamburger span::before { top: -6px; }
+.nav-hamburger span::after { top: 6px; }
+
+/* Sidebar overlay backdrop */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 299;
+}
+.sidebar-overlay.active { display: block; }
+
+@media (max-width: 768px) {
+  /* Show hamburger */
+  .nav-hamburger { display: flex; }
+
+  /* Topbar compact */
+  .topbar { padding: 0 12px; }
   .topbar-sub { display: none; }
+
+  /* Sidebar → slide-over drawer */
+  .tasks-layout {
+    grid-template-columns: 1fr;
+    height: calc(100vh - 52px);
+  }
+  .tasks-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    padding-top: 16px;
+    box-shadow: var(--shadow-lg);
+  }
+  .tasks-sidebar.open {
+    transform: translateX(0);
+  }
+  .tasks-main { overflow-y: auto; min-height: 0; padding: 16px; }
+
+  /* Cards need breathing room */
+  .card { margin-bottom: 12px; }
+}
+
+@media (max-width: 599px) {
+  /* Topbar — tighter on small phones */
+  .topbar { padding: 0 8px; height: 48px; }
+  .topbar-title { font-size: 13px; }
   .topbar .btn { padding: 5px 8px; font-size: 11px; }
+
+  /* Layout height adjusts to smaller topbar */
+  .tasks-layout { height: calc(100vh - 48px); }
 
   /* Page */
   .page { padding: 10px; }
-
-  /* Sidebar → bottom tab bar */
-  .tasks-layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
-    height: calc(100vh - 48px);
-  }
-  .tasks-sidebar {
-    order: 2;
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    height: auto;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    min-height: 56px;
-    padding: 4px 8px;
-    padding-bottom: max(6px, env(safe-area-inset-bottom));
-    border-right: none;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    gap: 2px;
-  }
-  .tasks-sidebar::-webkit-scrollbar { display: none; }
-  .tasks-main { order: 1; overflow-y: auto; min-height: 0; }
-  .tasks-sidebar-label { display: none; }
-  #sidebar-projects { display: none; }
-  #staff-nav-list { display: flex; flex-direction: row; gap: 2px; }
-  .staff-nav-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 64px;
-    max-width: 64px;
-    padding: 6px 4px;
-    flex-shrink: 0;
-    min-height: 48px;
-    width: auto;
-    font-size: 10px;
-    gap: 2px;
-    border-radius: var(--radius-sm);
-    justify-content: center;
-    margin-bottom: 0;
-    white-space: normal;
-  }
-  /* ↓ Icon: 24×24 in bottom nav */
-  .tasks-sidebar .staff-nav-btn .staff-initial {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    margin: 0 auto;
-  }
-  /* ↓ Labels: 10px, ellipsis truncation */
-  .tasks-sidebar .staff-nav-btn > span:not(.staff-initial):not([id]) {
-    font-size: 10px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 60px;
-  }
-  .staff-nav-btn .nav-label { display: block !important; font-size: 10px; white-space: nowrap; }
-  .staff-initial { width: 24px; height: 24px; font-size: 14px; margin: 0 auto; }
-  .tasks-sidebar [style*="margin-top:auto"] { display: none; }
-  /* "New Project" button — compact in bottom nav */
-  .tasks-sidebar a[href*="new-project"] {
-    background: rgba(51,102,255,0.25) !important;
-    margin-top: 0 !important;
-    border-radius: var(--radius-sm) !important;
-  }
-  /* Pad content above the nav bar */
-  .tasks-main { padding-bottom: 70px; }
+  .tasks-main { padding: 12px; }
 
   /* KPI Grid */
   .kpi-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -2211,8 +2235,8 @@ tr.clickable:hover td { background: var(--bg3); }
   .doc-row-summary { padding: 8px 10px; }
   .tl-row { flex-direction: column; gap: 8px; }
 
-  /* Toast moves up on mobile (above tab bar) */
-  .toast { bottom: 80px; right: 12px; left: 12px; }
+  /* Toast on mobile */
+  .toast { bottom: 20px; right: 12px; left: 12px; }
 }
 
 /* ── Project Page Layout ─────────────────────────────── */

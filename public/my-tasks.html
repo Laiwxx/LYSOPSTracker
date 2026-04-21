@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Team Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776677603">
+  <link rel="stylesheet" href="/css/style.css?v=1776776803">
   <style>
     /* ── Type-grouped sections (Mandatory / Requests / Personal) ── */
     .mc-type-group {
@@ -1117,10 +1117,11 @@ function buildCompactRow(task, opts) {
     ackBtn.addEventListener('click', async e => {
       e.stopPropagation();
       try {
-        await fetch('/api/tasks/' + task.id + '/acknowledge', {
+        const res = await fetch('/api/tasks/' + task.id + '/acknowledge', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: task.assignedTo || 'Team' })
         });
+        if (!res.ok) { toast('Acknowledge failed', false); return; }
       } catch (err) { console.error('[ACK] error:', err); }
       reloadAndRender();
     });
@@ -1135,10 +1136,11 @@ function buildCompactRow(task, opts) {
     e.stopPropagation();
     const result = await confirmDelete('Delete task?', task.title);
     if (!result) return;
-    await fetch('/api/tasks/' + task.id, {
+    const res = await fetch('/api/tasks/' + task.id, {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ deletedBy: 'Team View', reason: result.reason })
     });
+    if (!res.ok) { toast('Delete failed', false); return; }
     reloadAndRender();
   });
   actionsDiv.appendChild(delBtn);
@@ -1154,10 +1156,11 @@ function buildCompactRow(task, opts) {
     panel.appendChild(ackInfo);
     ackInfo.querySelector('.unack-inline-btn').addEventListener('click', async e => {
       e.stopPropagation();
-      await fetch('/api/tasks/' + task.id, {
+      const res = await fetch('/api/tasks/' + task.id, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ acknowledgedAt: null, acknowledgedBy: null })
       });
+      if (!res.ok) { toast('Undo failed', false); return; }
       reloadAndRender();
     });
   }
@@ -1198,10 +1201,11 @@ function buildCompactRow(task, opts) {
 }
 
 async function updateTaskStatus(taskId, status) {
-  await fetch('/api/tasks/' + taskId, {
+  const res = await fetch('/api/tasks/' + taskId, {
     method: 'PUT', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status })
   });
+  if (!res.ok) { toast('Update failed', false); return; }
   reloadAndRender();
 }
 
@@ -1745,6 +1749,6 @@ init();
 <button id="eod-fixed-btn" class="eod-fixed-btn" onclick="openEodModal(this.dataset.name, null)">
   📋 Submit EOD →
 </button>
-
+<script src="/js/nav.js"></script>
 </body>
 </html>

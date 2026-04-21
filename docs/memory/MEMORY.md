@@ -25,3 +25,10 @@
 - [New project template](project_new_project_template.md) — 20-stage lifecycle, role-based team defaults, blank documents/drawings, deriveFields on create.
 - [Full codebase audit Apr 20](project_full_audit_apr20.md) — 4-agent audit: 6 server bugs, 9 delete violations, crash email flood, systemd hardening, admin login redesign.
 - [Server management via systemctl](feedback_systemctl_workflow.md) — never run node server.js manually; use systemctl restart/stop/status.
+- [Per-staff session auth](project_auth_system.md) — session-based login, 11 users, forgot-password, admin-reset, welcome emails, activity attribution.
+- [Mobile responsive nav](project_mobile_nav.md) — sidebar hidden ≤768px, hamburger toggle, slide-over drawer via nav.js.
+- [Recurring tasks v2](project_recurring_tasks_v2.md) — revised task defs: removed EOD/theatre, added GM + Finance roles, ops-reviewed daily counts.
+
+- [Bug patterns to prevent](feedback_bug_patterns.md) — 8 recurring patterns: _busy locks, safeWriteJSON, race conditions, path traversal, sendEmail, auth paths, email case, ID collision.
+- [Feedback: Put In PDF & Picture for Procurement](feedback_mo80btmd7hod.md) — Feature Request by Lai Wei Xiang, Medium priority
+- [Feedback: Manpower not reflecting MC Status](feedback_mo8g7j8jwkvl.md) — Bug by Lai Wei Xiang, Medium priority

@@ -33,7 +33,7 @@
   },
   "Salve": {
     "name": "Salve",
-    "email": "Salve@laiyewseng.com.sg"
+    "email": "salve@laiyewseng.com.sg"
   },
   "Alex Mac": {
     "name": "Alex Mac",
@@ -41,15 +41,15 @@
   },
   "Site Engineer": {
     "name": "Teo Meei Haw",
-    "email": "MeeiHaw@laiyewseng.com.sg"
+    "email": "meeihaw@laiyewseng.com.sg"
   },
   "Teo Meei Haw": {
     "name": "Teo Meei Haw",
-    "email": "MeeiHaw@laiyewseng.com.sg"
+    "email": "meeihaw@laiyewseng.com.sg"
   },
   "Jun Jie": {
     "name": "Jun Jie",
-    "email": "Junjie@laiyewseng.com.sg"
+    "email": "junjie@laiyewseng.com.sg"
   },
   "Project Manager/Site Engineer": {
     "name": "Lai Wei Xiang",
@@ -74,5 +74,13 @@
   "Alex Chew": {
     "name": "Alex Chew",
     "email": "alexchew@laiyewseng.com.sg"
+  },
+  "Accounts": {
+    "name": "Alex Chew",
+    "email": "alexchew@laiyewseng.com.sg"
+  },
+  "Drafter": {
+    "name": "Murugan",
+    "email": ""
   }
 }

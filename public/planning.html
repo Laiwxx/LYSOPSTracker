@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776677603">
+  <link rel="stylesheet" href="/css/style.css?v=1776776803">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -510,6 +510,7 @@
     <button class="week-nav-btn" id="next-week">›</button>
   </div>
   <div class="wp-spacer"></div>
+  <button class="wp-btn" id="quick-assign-btn">⚡ Quick Assign</button>
   <button class="wp-btn" id="transport-save-btn" style="display:none;">💾 Save Transport</button>
   <button class="wp-btn primary" id="save-btn">💾 Save Week</button>
 </div>
@@ -640,7 +641,50 @@
   </div>
 </div>
 
-<script src="/js/utils.js"></script>
+<!-- Quick Assign modal -->
+<div class="popup-overlay" id="qa-overlay">
+  <div class="popup-box" style="max-width:400px;">
+    <div class="popup-head">Quick Assign<span>Fill multiple days at once</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+      <div>
+        <div class="pop-label">Worker</div>
+        <select class="pop-input" id="qa-worker"><option value="">Select worker…</option></select>
+      </div>
+      <div>
+        <div class="pop-label">Type</div>
+        <select class="pop-input" id="qa-type">
+          <option value="Fabrication">🏭 Fabrication</option>
+          <option value="Installation">🔧 Installation</option>
+          <option value="Driver">🚚 Driver</option>
+          <option value="MC">🤒 MC</option>
+          <option value="Off">🏠 Off</option>
+        </select>
+      </div>
+      <div id="qa-proj-wrap">
+        <div class="pop-label">Project</div>
+        <select class="pop-input" id="qa-project"><option value="">Select project…</option></select>
+      </div>
+      <div id="qa-notes-wrap">
+        <div class="pop-label">Notes / Location</div>
+        <input class="pop-input" type="text" id="qa-notes" placeholder="e.g. Site B2">
+      </div>
+      <div>
+        <div class="pop-label">Days</div>
+        <div id="qa-days" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+      <div id="qa-ot-wrap" style="display:none;">
+        <div class="pop-label">OT Hours (per day)</div>
+        <input class="pop-input" type="number" id="qa-ot" min="0" max="12" step="0.5" value="0">
+      </div>
+    </div>
+    <div class="popup-actions">
+      <button class="pop-cancel" id="qa-cancel">Cancel</button>
+      <button class="pop-save" id="qa-apply">Apply</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/utils.js?v=1776776803"></script>
 <script>
 // ── Constants ──────────────────────────────────────────
 const DAYS      = ['mon','tue','wed','thu','fri','sat'];
@@ -737,11 +781,15 @@ async function init() {
 
 // ── Week navigation ────────────────────────────────────
 document.getElementById('prev-week').addEventListener('click', () => {
-  weekStart.setDate(weekStart.getDate() - 7);
+  const prev = new Date(weekStart);
+  prev.setDate(prev.getDate() - 7);
+  weekStart = prev;
   loadWeek();
 });
 document.getElementById('next-week').addEventListener('click', () => {
-  weekStart.setDate(weekStart.getDate() + 7);
+  const next = new Date(weekStart);
+  next.setDate(next.getDate() + 7);
+  weekStart = next;
   loadWeek();
 });
 
@@ -805,7 +853,8 @@ async function loadWeek() {
     }
   } catch { plan = {}; supplyWorkers = []; }
 
-  // MC/Off is now set directly in the manpower plan — no auto-apply from attendance
+  // Auto-apply MC/Off/Leave from attendance into manpower plan display
+  await applyAttendanceOverrides();
 
   // Compute monthly OT from all weeks in the current month
   await loadMonthlyOT();
@@ -849,6 +898,25 @@ async function loadMonthlyOT() {
             if (isCurrentWeek) monthlyOTCurrentWeek[wid] = (monthlyOTCurrentWeek[wid] || 0) + ot;
           }
         });
+      });
+    });
+  } catch {}
+}
+
+async function applyAttendanceOverrides() {
+  try {
+    const ws = toStr(weekStart);
+    const r = await fetch('/api/attendance/week?weekStart=' + ws);
+    if (!r.ok) return;
+    const attWeek = await r.json(); // { workerId: { mon: {status,notes}, ... } }
+    const statusMap = { 'MC': 'MC', 'Off': 'Off', 'On Leave': 'Off', 'Absent': 'Off' };
+    Object.entries(attWeek).forEach(([wid, days]) => {
+      Object.entries(days).forEach(([day, info]) => {
+        const existing = (plan[wid] || {})[day];
+        // Only override if worker has no manual assignment for this day
+        if (existing && existing.type && !existing._auto) return;
+        if (!plan[wid]) plan[wid] = {};
+        plan[wid][day] = { type: statusMap[info.status] || 'Off', notes: info.notes || info.status, _auto: true };
       });
     });
   } catch {}
@@ -999,13 +1067,13 @@ function buildChip(data, workerId, day) {
   else if (t === 'Off') cls += 'chip-off';
   div.className = cls;
   const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Driver:'🚚 Driver', MC:'🤒 MC', Off:'🏠 Off' }[t] || t;
-  const sub = data.projectName || data.location || data.notes || '';
+  const sub = data._auto ? 'from attendance' : (data.projectName || data.location || data.notes || '');
   const otBadge = data.otHours ? `<span class="chip-ot">+${data.otHours}h OT</span>` : '';
   div.innerHTML =
     `<span class="chip-title">${label}</span>` +
     (sub ? `<span class="chip-sub" title="${esc(sub)}">${esc(sub)}</span>` : '') +
     otBadge +
-    `<button class="chip-x" data-wid="${esc(workerId)}" data-day="${esc(day)}" title="Clear">&times;</button>`;
+    (data._auto ? '' : `<button class="chip-x" data-wid="${esc(workerId)}" data-day="${esc(day)}" title="Clear">&times;</button>`);
   return div;
 }
 
@@ -1263,6 +1331,143 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Quick Assign ──────────────────────────────────────
+(function() {
+  const overlay  = document.getElementById('qa-overlay');
+  const selW     = document.getElementById('qa-worker');
+  const selType  = document.getElementById('qa-type');
+  const selProj  = document.getElementById('qa-project');
+  const notesIn  = document.getElementById('qa-notes');
+  const otIn     = document.getElementById('qa-ot');
+  const daysDiv  = document.getElementById('qa-days');
+  const projWrap = document.getElementById('qa-proj-wrap');
+  const notesWrap= document.getElementById('qa-notes-wrap');
+  const otWrap   = document.getElementById('qa-ot-wrap');
+  let qaDays     = {}; // { mon: true, tue: false, ... }
+
+  function renderDayButtons() {
+    daysDiv.innerHTML = '';
+    DAYS.forEach((day, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = DAY_NAMES[i];
+      btn.style.cssText = 'padding:6px 12px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:inherit;';
+      if (qaDays[day]) {
+        btn.style.background = 'var(--accent)';
+        btn.style.color = '#fff';
+        btn.style.borderColor = 'var(--accent)';
+      }
+      btn.addEventListener('click', () => { qaDays[day] = !qaDays[day]; renderDayButtons(); });
+      daysDiv.appendChild(btn);
+    });
+    // "All weekdays" shortcut
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.textContent = 'Mon–Fri';
+    allBtn.style.cssText = 'padding:6px 10px;border-radius:var(--radius);font-size:11px;font-weight:600;cursor:pointer;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-family:inherit;';
+    allBtn.addEventListener('click', () => {
+      const allOn = ['mon','tue','wed','thu','fri'].every(d => qaDays[d]);
+      ['mon','tue','wed','thu','fri'].forEach(d => qaDays[d] = !allOn);
+      renderDayButtons();
+    });
+    daysDiv.appendChild(allBtn);
+    // "Full week" shortcut
+    const fullBtn = document.createElement('button');
+    fullBtn.type = 'button';
+    fullBtn.textContent = 'Mon–Sat';
+    fullBtn.style.cssText = 'padding:6px 10px;border-radius:var(--radius);font-size:11px;font-weight:600;cursor:pointer;border:1px dashed var(--border);background:transparent;color:var(--text-muted);font-family:inherit;';
+    fullBtn.addEventListener('click', () => {
+      const allOn = DAYS.every(d => qaDays[d]);
+      DAYS.forEach(d => qaDays[d] = !allOn);
+      renderDayButtons();
+    });
+    daysDiv.appendChild(fullBtn);
+  }
+
+  function updateFieldVisibility() {
+    const t = selType.value;
+    const needsProj = (t === 'Fabrication' || t === 'Installation' || t === 'Driver');
+    projWrap.style.display = needsProj ? '' : 'none';
+    notesWrap.style.display = (t === 'MC' || t === 'Off') ? 'none' : '';
+    otWrap.style.display = (t === 'MC' || t === 'Off') ? 'none' : '';
+  }
+
+  selType.addEventListener('change', updateFieldVisibility);
+
+  document.getElementById('quick-assign-btn').addEventListener('click', () => {
+    // Populate worker dropdown
+    selW.innerHTML = '<option value="">Select worker…</option>';
+    workers.forEach(w => {
+      const o = document.createElement('option');
+      o.value = w.id; o.textContent = w.name;
+      selW.appendChild(o);
+    });
+    supplyWorkers.forEach(w => {
+      const o = document.createElement('option');
+      o.value = w.id; o.textContent = w.name + ' (Supply)';
+      selW.appendChild(o);
+    });
+
+    // Populate project dropdown
+    selProj.innerHTML = '<option value="">Select project…</option>';
+    projects.forEach(p => {
+      const o = document.createElement('option');
+      o.value = p.id;
+      o.textContent = (p.jobCode ? p.jobCode + ' — ' : '') + (p.projectName || p.name || '');
+      selProj.appendChild(o);
+    });
+
+    // Reset state
+    qaDays = {};
+    DAYS.forEach(d => qaDays[d] = false);
+    notesIn.value = '';
+    otIn.value = '0';
+    updateFieldVisibility();
+    renderDayButtons();
+    overlay.classList.add('open');
+  });
+
+  document.getElementById('qa-cancel').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+  document.getElementById('qa-apply').addEventListener('click', () => {
+    const wid = selW.value;
+    if (!wid) { selW.focus(); return; }
+    const type = selType.value;
+    const selectedDays = DAYS.filter(d => qaDays[d]);
+    if (!selectedDays.length) return;
+
+    const proj = projects.find(p => p.id === selProj.value);
+    const notes = notesIn.value.trim();
+    const otHours = parseFloat(otIn.value) || 0;
+
+    if (!plan[wid]) plan[wid] = {};
+    selectedDays.forEach(day => {
+      if (type === 'MC') {
+        plan[wid][day] = { type: 'MC', notes: 'MC' };
+      } else if (type === 'Off') {
+        plan[wid][day] = { type: 'Off', notes: 'Off' };
+      } else {
+        const keepsProject = (type === 'Fabrication' || type === 'Installation' || type === 'Driver');
+        let dayOT = otHours;
+        if (day === 'sat' && dayOT === 0) dayOT = 8;
+        plan[wid][day] = {
+          type,
+          projectId:   keepsProject ? selProj.value : '',
+          projectName: keepsProject && proj ? (proj.projectName || proj.name || '') : '',
+          location:    type === 'Installation' ? notes : '',
+          notes:       type === 'Installation' ? '' : notes,
+          otHours:     dayOT > 0 ? dayOT : undefined
+        };
+      }
+    });
+
+    overlay.classList.remove('open');
+    render();
+    setTimeout(() => document.getElementById('save-btn') && document.getElementById('save-btn').click(), 100);
+  });
+})();
+
 // ══════════════════════════════════════════════════════
 // TRANSPORT PLAN
 // ══════════════════════════════════════════════════════
@@ -1374,7 +1579,7 @@ function createTripFromSuggestion(idx) {
     departureTime: '07:30',
     destination: s.destination || s.projectName || '',
     projectId: s.projectId || '',
-    workers: s.workers.map(w => ({ workerId: w.workerId, name: w.name })),
+    workers: s.workers.map(w => ({ workerId: w.workerId, workerName: w.name || w.workerName || w.workerId })),
     notes: ''
   });
   renderTransport();
@@ -1618,6 +1823,7 @@ document.querySelectorAll('.page-tab').forEach(tab => {
     document.getElementById('weekly-plan-section').style.display  = isWeekly ? 'flex' : 'none';
     document.getElementById('week-nav-ctrl').style.display         = isWeekly ? '' : 'none';
     document.getElementById('save-btn').style.display              = isWeekly ? '' : 'none';
+    document.getElementById('quick-assign-btn').style.display      = isWeekly ? '' : 'none';
 
     const ts = document.getElementById('transport-section');
     ts.style.display = isWeekly ? 'none' : 'flex';
@@ -1631,5 +1837,6 @@ window.addEventListener('resize', render);
 
 init();
 </script>
+<script src="/js/nav.js"></script>
 </body>
 </html>

@@ -6,6 +6,17 @@
     "description": "",
     "submittedBy": "Lai Wei Xiang",
     "submittedAt": "2026-04-21T02:31:07.189Z",
+    "status": "Done",
+    "priority": "Medium",
+    "notes": ""
+  },
+  {
+    "id": "mo8g7j8jwkvl",
+    "title": "Manpower not reflecting MC Status",
+    "type": "Bug",
+    "description": "",
+    "submittedBy": "Lai Wei Xiang",
+    "submittedAt": "2026-04-21T09:55:40.963Z",
     "status": "New",
     "priority": "Medium",
     "notes": ""

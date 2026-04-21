@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LYS OPS · Procurement</title>
   <meta name="theme-color" content="#1a1d2e">
-  <link rel="stylesheet" href="css/style.css?v=1776677603">
+  <link rel="stylesheet" href="css/style.css?v=1776776803">
   <style>
     /* ── Tabs ──────────────────────────────────────────────────────────────── */
     .proc-tabs {
@@ -1029,8 +1029,8 @@ function confirmDelete(title, itemName) {
       if (desc || qty) items.push({ description: desc, qty, unit, requiredDate: date || null });
     });
 
-    if (!items.length) { toast('Add at least one item', false); return; }
-    if (!submittedBy)  { toast('Please enter your name', false); return; }
+    if (!items.length) { toast('Add at least one item', false); _busy = false; return; }
+    if (!submittedBy)  { toast('Please enter your name', false); _busy = false; return; }
 
     try {
       const res = await fetch('/api/purchase-requisitions', {
@@ -1082,7 +1082,7 @@ function confirmDelete(title, itemName) {
   async function submitDelivery() {
     if (_busy) return; _busy = true;
     const pr = allPRs.find(p => p.id === deliveryPRId);
-    if (!pr) return;
+    if (!pr) { _busy = false; return; }
     const items = (pr.items || []).map((item, i) => {
       const qtyEl  = document.querySelector(`.delivery-qty-arrived[data-idx="${i}"]`);
       const dateEl = document.querySelector(`.delivery-arrive-date[data-idx="${i}"]`);
@@ -1200,9 +1200,9 @@ function confirmDelete(title, itemName) {
 
   async function saveViewPR() {
     if (_busy) return; _busy = true;
-    if (!viewingPRId) return;
+    if (!viewingPRId) { _busy = false; return; }
     const pr = allPRs.find(p => p.id === viewingPRId);
-    if (!pr) return;
+    if (!pr) { _busy = false; return; }
     const supplier = (document.getElementById('vpr-supplier') || {}).value || '';
     const poNumber = (document.getElementById('vpr-po') || {}).value || '';
     const eta      = (document.getElementById('vpr-eta') || {}).value || '';
@@ -1252,9 +1252,9 @@ function confirmDelete(title, itemName) {
 
   async function deletePR() {
     if (_busy) return; _busy = true;
-    if (!viewingPRId) return;
+    if (!viewingPRId) { _busy = false; return; }
     const pr = allPRs.find(p => p.id === viewingPRId);
-    if (!pr) return;
+    if (!pr) { _busy = false; return; }
     const delResult = await confirmDelete('Delete this PR?', pr.prNumber);
     if (!delResult) { _busy = false; return; }
     const pin = prompt('Enter admin password:');
@@ -1351,8 +1351,8 @@ function confirmDelete(title, itemName) {
     const leadTime  = parseInt(document.getElementById('price-lead-time').value) || 0;
     const notes     = document.getElementById('price-notes').value.trim();
 
-    if (!material)  { toast('Material description required', false); return; }
-    if (!unitPrice) { toast('Unit price required', false); return; }
+    if (!material)  { toast('Material description required', false); _busy = false; return; }
+    if (!unitPrice) { toast('Unit price required', false); _busy = false; return; }
 
     const body = { material, supplierName: supplier, grade, unitPrice, unit, date, leadTimeDays: leadTime, notes };
     const id   = document.getElementById('price-edit-id').value;
@@ -1377,8 +1377,9 @@ function confirmDelete(title, itemName) {
   }
 
   async function deletePrice(id) {
+    if (_busy) return; _busy = true;
     const result = await confirmDelete('Delete this price entry?');
-    if (!result) return;
+    if (!result) { _busy = false; return; }
     try {
       const res = await fetch(`/api/prices/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed');
@@ -1446,7 +1447,7 @@ function confirmDelete(title, itemName) {
   async function saveSupplier() {
     if (_busy) return; _busy = true;
     const name = document.getElementById('supp-name').value.trim();
-    if (!name) { toast('Supplier name required', false); return; }
+    if (!name) { toast('Supplier name required', false); _busy = false; return; }
     const materialsRaw = document.getElementById('supp-materials').value.trim();
     const materialTypes = materialsRaw ? materialsRaw.split(',').map(m => m.trim()).filter(Boolean) : [];
     const body = {
@@ -1483,8 +1484,9 @@ function confirmDelete(title, itemName) {
   }
 
   async function deleteSupplier(id) {
+    if (_busy) return; _busy = true;
     const result = await confirmDelete('Delete this supplier?');
-    if (!result) return;
+    if (!result) { _busy = false; return; }
     try {
       const res = await fetch(`/api/suppliers/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed');
@@ -1586,5 +1588,6 @@ function confirmDelete(title, itemName) {
   }
   init();
   </script>
+  <script src="/js/nav.js"></script>
 </body>
 </html>

@@ -22,11 +22,7 @@ const debouncedSave = debounce(saveProject, 300);
 // ── Staff map (for email lookup) ────────────────────────────────────────────
 let staffMap = {};
 
-function lookupEmail(ownerName) {
-  if (!ownerName) return null;
-  const entry = staffMap[ownerName];
-  return entry ? entry.email : null;
-}
+
 
 function populateStaffDatalist(map) {
   // Build unique staff name list
@@ -80,7 +76,7 @@ async function init() {
       <div style="padding:40px; text-align:center; color:var(--red);">
         <div style="font-size:24px; margin-bottom:12px;">⚠️</div>
         <div style="font-size:16px; font-weight:600; margin-bottom:8px;">Failed to load project</div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">${err.message}</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">${escHtml(err.message)}</div>
         <a href="index.html" class="btn btn-primary">← Back to Dashboard</a>
       </div>
     `;
@@ -746,12 +742,7 @@ async function _renderSummaryTabInner(container) {
 
 
 // ── Helper: days since a date string ────────────────────────────────────────
-function daysSince(dateStr) {
-  if (!dateStr) return 0;
-  const d = new Date(dateStr);
-  if (isNaN(d)) return 0;
-  return Math.floor((Date.now() - d.getTime()) / 86400000);
-}
+
 
 
 // ── TAB: Documents — Nested Folder View ─────────────────────────────────────
@@ -1081,6 +1072,7 @@ function buildDocRow(doc, idx) {
     formData.append('file', file);
     try {
       const res = await fetch('/api/projects/' + projectId + '/upload', { method: 'POST', body: formData });
+      if (!res.ok) { showToast('Upload failed: ' + (await res.json().catch(() => ({}))).error, 'error'); return; }
       const data = await res.json();
       if (data.filename) {
         if (!Array.isArray(project.documents[idx].files)) project.documents[idx].files = [];
@@ -1592,7 +1584,7 @@ function renderProductScope() {
   // Sync button
   const syncBtn = document.getElementById('btn-sync-scope');
   if (syncBtn) {
-    syncBtn.onclick = () => {
+    syncBtn.onclick = async () => {
       if (!Array.isArray(project.fabrication)) project.fabrication = [];
       if (!Array.isArray(project.installation)) project.installation = [];
 

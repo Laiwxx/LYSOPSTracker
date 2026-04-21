@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776677603">
+  <link rel="stylesheet" href="/css/style.css?v=1776776803">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 960px; margin: 0 auto; padding: 16px; }
@@ -2288,7 +2288,8 @@ async function updateFabItemStage(pid, idx, direction) {
       chipEl.textContent = finalStage;
       chipEl.className = 'stage-chip s-' + finalStage.toLowerCase().replace(/\s+/g, '-');
     }
-    if (backEl) backEl.disabled = FAB_STAGES.indexOf(finalStage) === 0;
+    const stageList = localRow.isMechanicalParent ? PARENT_STAGES : FAB_STAGES;
+    if (backEl) backEl.disabled = stageList.indexOf(finalStage) === 0;
   } catch (e) {
     console.error('updateFabItemStage error:', e);
     if (chipEl) {
@@ -2719,7 +2720,7 @@ function onDOPRChange() {
   container.innerHTML = pr.items.map((item, i) => {
     const outstanding = item.outstanding != null ? item.outstanding : item.qty;
     return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;">
-      <span style="flex:1;min-width:0;">${escHtml(item.description || 'Item ' + (i+1))} <span style="color:var(--text-muted);">(${item.qty || 0}${item.unit ? ' ' + item.unit : ''}, ${outstanding} outstanding)</span></span>
+      <span style="flex:1;min-width:0;">${escHtml(item.description || 'Item ' + (i+1))} <span style="color:var(--text-muted);">(${item.qty || 0}${item.unit ? ' ' + escHtml(item.unit) : ''}, ${outstanding} outstanding)</span></span>
       <input type="number" class="do-arrival-qty" data-idx="${i}" min="0" value="${outstanding}" style="width:70px;padding:5px 6px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:12px;">
     </div>`;
   }).join('');
@@ -3579,6 +3580,6 @@ init();
     </div>
   </div>
 </div>
-
+<script src="/js/nav.js"></script>
 </body>
 </html>

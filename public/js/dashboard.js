@@ -405,15 +405,7 @@
       function fmtYMD(dt) {
         return dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
       }
-      function hasAssignments(a) {
-        if (!a) return false;
-        var keys = Object.keys(a);
-        for (var i = 0; i < keys.length; i++) {
-          var row = a[keys[i]];
-          if (row && ['mon','tue','wed','thu','fri','sat'].some(function(d){ return row[d] && row[d].type; })) return true;
-        }
-        return false;
-      }
+
 
       // Fetch data — try current week, fall back to previous week if empty
       var plan        = await api('GET', '/api/manpower-plan?weekStart=' + weekStart);

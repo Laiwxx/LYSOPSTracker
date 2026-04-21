@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776677603">
+  <link rel="stylesheet" href="/css/style.css?v=1776776803">
   <style>
     /* ── Command Center ──────────────────────────────── */
     .cc-section {
@@ -181,7 +181,9 @@
 
 <div class="topbar">
   <div class="topbar-title"><span>LYS</span> OPS · Tasks</div>
-  <div style="display:flex;gap:8px;align-items:center;"></div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button id="archive-btn" style="padding:5px 12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius);color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📦 Archive Done</button>
+  </div>
 </div>
 
 <div class="tasks-layout">
@@ -378,8 +380,10 @@ async function init() {
   projectsList = projects;
 
   buildSidebarProjects(projectsList);
+  buildSidebarNav();
   renderCommandCenter();
   setupNewTask();
+  setupArchive();
 }
 
 // ── Sidebar Projects ───────────────────────────────────
@@ -485,32 +489,6 @@ function renderPendingAck() {
 }
 
 // Section 2: Team Workload
-function renderTeamWorkload() {
-  const today = new Date().toISOString().split('T')[0];
-  const el = document.getElementById('workload-list');
-
-  const rows = STAFF.map(name => {
-    const d = kanbanData[name] || { pending: [], inProgress: [], done: [] };
-    const total   = d.pending.length + d.inProgress.length + d.done.length;
-    const overdue = d.pending.filter(t => t.dueDate && t.dueDate < today).length
-                  + d.inProgress.filter(t => t.dueDate && t.dueDate < today).length;
-    const inProg  = d.inProgress.length;
-    return { name, total, overdue, inProg };
-  }).sort((a, b) => b.overdue - a.overdue || b.total - a.total);
-
-  el.innerHTML = rows.map(r => `
-    <div class="wl-row" onclick="location.href='/my-tasks'">
-      <span class="staff-initial" style="flex-shrink:0;">${initials(r.name)}</span>
-      <span class="wl-name">${esc(r.name)}</span>
-      <div class="wl-stats">
-        <span class="wl-stat">${r.total} task${r.total !== 1 ? 's' : ''}</span>
-        ${r.inProg  > 0 ? `<span class="wl-stat blue">${r.inProg} in progress</span>` : ''}
-        ${r.overdue > 0 ? `<span class="wl-stat red">${r.overdue} overdue</span>` : ''}
-      </div>
-    </div>
-  `).join('');
-}
-
 // Section 3: EOD Not Submitted Today
 function renderEODMissing() {
   const missing = (eodStatus.missing || []).filter(n => n !== DIRECTOR_NAME && n !== 'Lai Weixiang');
@@ -622,19 +600,14 @@ function buildKanbanCard(task) {
 
   card.querySelector('.del-task-btn').addEventListener('click', async (e) => {
     e.stopPropagation();
-    if (!confirm('Delete "' + task.title + '"? This cannot be undone.')) return;
-    const isDirector = currentStaff === DIRECTOR_NAME;
-    let reason = '';
-    if (!isDirector) {
-      reason = prompt('Why are you deleting this task? (required)');
-      if (reason === null) return;
-      if (!reason.trim()) { alert('A reason is required to delete a task.'); return; }
-    }
-    await fetch('/api/tasks/' + task.id, {
+    const result = await confirmDelete('Delete task?', task.title);
+    if (!result) return;
+    const res = await fetch('/api/tasks/' + task.id, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deletedBy: currentStaff || 'Unknown', reason: reason.trim() })
+      body: JSON.stringify({ deletedBy: currentStaff || 'Unknown', reason: result.reason })
     });
+    if (!res.ok) { toast('Delete failed', false); return; }
     kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
     loadKanban(currentStaff);
   });
@@ -653,19 +626,22 @@ async function onDrop(event, newStatus) {
   event.currentTarget.classList.remove('drag-over');
   document.querySelectorAll('.kanban-col-body').forEach(c => c.classList.remove('drag-over'));
   if (!draggedTaskId) return;
-  await fetch('/api/tasks/' + draggedTaskId, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status: newStatus })
-  });
-  draggedTaskId = null;
-  [ALL_TASKS, kanbanData] = await Promise.all([
-    fetch('/api/tasks').then(r => r.json()),
-    fetch('/api/tasks/kanban').then(r => r.json())
-  ]);
-  loadKanban(currentStaff);
-  renderPendingAck();
-  buildSidebarNav();
+  try {
+    const res = await fetch('/api/tasks/' + draggedTaskId, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (!res.ok) { toast('Status update failed', false); draggedTaskId = null; return; }
+    draggedTaskId = null;
+    [ALL_TASKS, kanbanData] = await Promise.all([
+      fetch('/api/tasks').then(r => r.json()),
+      fetch('/api/tasks/kanban').then(r => r.json())
+    ]);
+    loadKanban(currentStaff);
+    renderPendingAck();
+    buildSidebarNav();
+  } catch (e) { toast('Network error', false); draggedTaskId = null; }
 }
 
 async function loadHistory(staffName, period) {
@@ -739,7 +715,7 @@ function setupNewTask() {
     if (!title) { document.getElementById('nt-title').focus(); return; }
     const pid  = document.getElementById('nt-project').value;
     const proj = projectsList.find(p => p.id === pid);
-    await fetch('/api/tasks', {
+    const res = await fetch('/api/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -756,6 +732,7 @@ function setupNewTask() {
         createdBy:      document.getElementById('nt-requested-by').value
       })
     });
+    if (!res.ok) { toast('Failed to create task', false); return; }
     closeModal();
     ALL_TASKS  = await fetch('/api/tasks').then(r => r.json());
     kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
@@ -768,9 +745,12 @@ function setupNewTask() {
 // ── Archive ────────────────────────────────────────────
 function setupArchive() {
   document.getElementById('archive-btn').onclick = async () => {
-    if (!confirm('Archive all Done tasks from previous weeks?')) return;
-    const res = await fetch('/api/tasks/archive-week', { method: 'POST' }).then(r => r.json());
-    alert('Archived ' + res.archived + ' tasks.');
+    const result = await confirmDelete('Archive all Done tasks from previous weeks?', 'Bulk archive');
+    if (!result) return;
+    const res = await fetch('/api/tasks/archive-week', { method: 'POST' });
+    if (!res.ok) { toast('Archive failed', false); return; }
+    const data = await res.json();
+    toast('Archived ' + data.archived + ' tasks');
     ALL_TASKS  = await fetch('/api/tasks').then(r => r.json());
     kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
     buildSidebarNav();
@@ -781,5 +761,6 @@ function setupArchive() {
 
 init();
 </script>
+<script src="/js/nav.js"></script>
 </body>
 </html>

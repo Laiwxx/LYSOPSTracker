@@ -196,5 +196,26 @@
         "hours": 0.5
       }
     ]
+  },
+  {
+    "id": "mo8joevu",
+    "staffName": "Alex Chew",
+    "date": "2026-04-21",
+    "submittedAt": "2026-04-21T11:32:47.322Z",
+    "totalHours": 2,
+    "hours": 2,
+    "notes": "Issue invoices for any certified claims within 24 hours of QS confirmation, Flag any invoice unpaid past 30 days to QS + boss",
+    "summary": "Issue invoices for any certified claims within 24 hours of QS confirmation, Flag any invoice unpaid past 30 days to QS + boss",
+    "issues": "N/A",
+    "taskEntries": [
+      {
+        "taskId": "mo7wjcobixo",
+        "hours": 1
+      },
+      {
+        "taskId": "mo7wjcobkom",
+        "hours": 1
+      }
+    ]
   }
 ]

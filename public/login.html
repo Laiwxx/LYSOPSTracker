@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Login — LYS OPS</title>
+  <meta name="theme-color" content="#1a1d2e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1d2e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .login-wrap {
+      max-width: 360px;
+      width: 100%;
+      padding: 0 24px;
+      text-align: center;
+    }
+    .login-logo {
+      font-size: 32px;
+      font-weight: 800;
+      color: #f0f0f5;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+    .login-logo span { color: #3366ff; }
+    .login-sub {
+      font-size: 13px;
+      color: #8888a0;
+      margin-bottom: 32px;
+    }
+    .login-field {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .login-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #8888a0;
+      margin-bottom: 4px;
+    }
+    .login-field input {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 16px;
+      min-height: 44px;
+      background: #252836;
+      border: 1px solid #3a3d4e;
+      border-radius: 6px;
+      color: #f0f0f5;
+      font-family: inherit;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .login-field input:focus {
+      border-color: #3366ff;
+      box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.2);
+    }
+    .login-field input::placeholder { color: #5a5d70; }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      min-height: 44px;
+      background: #3366ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 4px;
+      font-family: inherit;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: opacity 0.15s;
+    }
+    .login-btn:hover { opacity: 0.9; }
+    .login-btn:active { opacity: 0.8; }
+    .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-error {
+      font-size: 13px;
+      color: #ff5c5c;
+      margin-top: 10px;
+      display: none;
+    }
+    .login-forgot {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 12px;
+      color: #8888a0;
+      cursor: pointer;
+      text-decoration: underline;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .login-forgot:hover { color: #3366ff; }
+    .forgot-form {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #3a3d4e;
+      text-align: left;
+    }
+    .forgot-btn-secondary {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      min-height: 44px;
+      background: #252836;
+      color: #f0f0f5;
+      border: 1px solid #3a3d4e;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.15s;
+    }
+    .forgot-btn-secondary:hover { border-color: #3366ff; }
+    .forgot-msg {
+      font-size: 12px;
+      margin-top: 8px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-logo"><span>LYS</span> OPS</div>
+    <div class="login-sub">Operations Tracker</div>
+
+    <form id="login-form" autocomplete="on">
+      <div class="login-field">
+        <label for="login-user">Email</label>
+        <input type="email" id="login-user" name="username" autocomplete="email" placeholder="e.g. chris@laiyewseng.com.sg" required>
+      </div>
+      <div class="login-field">
+        <label for="login-pass">Password</label>
+        <input type="password" id="login-pass" name="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="login-btn" id="login-btn">Sign In</button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+
+    <span class="login-forgot" id="forgot-toggle">Forgot password?</span>
+
+    <div class="forgot-form" id="forgot-form">
+      <div class="login-field">
+        <label for="forgot-user">Your email</label>
+        <input type="email" id="forgot-user" placeholder="e.g. chris@laiyewseng.com.sg">
+      </div>
+      <button type="button" class="forgot-btn-secondary" id="forgot-btn">Reset Password</button>
+      <div class="forgot-msg" id="forgot-msg"></div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    var form = document.getElementById('login-form');
+    var userInput = document.getElementById('login-user');
+    var passInput = document.getElementById('login-pass');
+    var btn = document.getElementById('login-btn');
+    var errEl = document.getElementById('login-error');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      errEl.style.display = 'none';
+      var username = userInput.value.trim().toLowerCase();
+      var password = passInput.value;
+      if (!username || !password) { showErr('Enter email and password'); return; }
+
+      btn.disabled = true;
+      btn.textContent = 'Signing in\u2026';
+
+      fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password })
+      }).then(function(res) {
+        if (res.ok) {
+          window.location.href = '/';
+        } else {
+          return res.json().catch(function() { return {}; }).then(function(data) {
+            showErr(data.error || 'Invalid credentials');
+            btn.disabled = false;
+            btn.textContent = 'Sign In';
+          });
+        }
+      }).catch(function() {
+        showErr('Connection error \u2014 try again');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      });
+    });
+
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    }
+
+    document.getElementById('forgot-toggle').addEventListener('click', function() {
+      var f = document.getElementById('forgot-form');
+      f.style.display = f.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.getElementById('forgot-btn').addEventListener('click', function() {
+      var username = document.getElementById('forgot-user').value.trim().toLowerCase();
+      var msgEl = document.getElementById('forgot-msg');
+      if (!username) { msgEl.textContent = 'Enter your email'; msgEl.style.color = '#ff5c5c'; msgEl.style.display = 'block'; return; }
+
+      fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username })
+      }).then(function(res) { return res.json(); }).then(function(data) {
+        msgEl.textContent = data.message || 'Check your email for the new password.';
+        msgEl.style.color = '#4caf50';
+        msgEl.style.display = 'block';
+      }).catch(function() {
+        msgEl.textContent = 'Error \u2014 try again';
+        msgEl.style.color = '#ff5c5c';
+        msgEl.style.display = 'block';
+      });
+    });
+
+    userInput.focus();
+  })();
+  </script>
+</body>
+</html>

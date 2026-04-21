@@ -44,8 +44,10 @@ If you think a requested change would hurt usability, push back with a cleaner a
 ## This project
 
 - 12 pages in `public/`: index.html (Dashboard), admin.html, attendance.html, factory.html, feedback.html, installation.html, my-tasks.html (Team), new-project.html, planning.html (Manpower), procurement.html, project.html, tasks.html (dead/unlinked).
-- Shared CSS: `public/css/style.css`. Shared JS: `public/js/utils.js` (contains `confirmDelete`, `DELETE_REASONS`, toast).
+- Shared CSS: `public/css/style.css`. Shared JS: `public/js/utils.js` (confirmDelete, DELETE_REASONS, toast), `public/js/nav.js` (hamburger toggle for mobile sidebar).
 - `confirmDelete()` is duplicated in 5 files (factory, installation, my-tasks, procurement, utils.js). The canonical copy is in utils.js.
 - Every delete action MUST use `confirmDelete()` with reason dropdown — never plain `confirm()`.
+- Mobile (≤768px): sidebar is a slide-over drawer toggled by hamburger. Content takes full width. nav.js auto-injects hamburger into `.topbar`.
 - Attendance page intentionally has no sidebar (tablet-only use by Chris).
-- Admin login is a full-screen centered gate with `position:fixed`.
+- Login page (`public/login.html`) is fully self-contained — inline CSS, zero external deps, 16px inputs to prevent iOS zoom, 44px touch targets.
+- Admin login gate is a full-screen centered overlay with `position:fixed`.

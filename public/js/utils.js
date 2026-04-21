@@ -32,13 +32,7 @@ function fmtCurrency(n) {
   return '$' + Math.round(n).toLocaleString('en-SG');
 }
 
-function fmtCurrencyShort(n) {
-  if (n === null || n === undefined || isNaN(n)) return '$0';
-  const abs = Math.abs(n);
-  if (abs >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
-  if (abs >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K';
-  return '$' + Math.round(n);
-}
+
 
 function fmtPct(n) {
   if (n === null || n === undefined || isNaN(n)) return '0.0%';

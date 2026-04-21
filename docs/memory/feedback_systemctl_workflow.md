@@ -1,11 +1,11 @@
 ---
 name: Server management via systemctl
-description: Always use systemctl to manage the server — never run node server.js manually
+description: Always use systemctl to manage the server — never run node server.js manually, never use pm2
 type: feedback
-originSessionId: afbc3daa-39c7-4fe3-8fb0-04c02f1b5d12
+originSessionId: 26683c22-6d5e-4b2b-837d-733ec9501be3
 ---
-Always use `sudo systemctl restart ops-tracker` to restart the server, never `node server.js` directly.
+Always use `sudo systemctl restart ops-tracker` to restart the server. Never `node server.js` directly. Never use pm2 (start/restart/ecosystem).
 
-**Why:** A manual `node server.js` creates an orphan process outside systemd's control. When systemd tries to restart, it collides on port 3000, crash-loops, and floods the boss's inbox with crash emails (22,000+ in one incident on 2026-04-20).
+**Why:** Running node manually or via pm2 creates a process outside systemd's control. When systemd tries to restart, it collides on port 3000, crash-loops, and floods the boss's inbox with crash emails. On 2026-04-21 pm2 had 9,478 restarts fighting systemd for the port.
 
-**How to apply:** After any server.js edit, run `sudo systemctl restart ops-tracker`. To check status: `systemctl status ops-tracker`. To tail logs: `journalctl -u ops-tracker -f`. Error logs at `/var/log/ops-tracker.err.log`, stdout at `/var/log/ops-tracker.log`.
+**How to apply:** Systemd is the ONLY process manager. After any server.js edit, run `sudo systemctl restart ops-tracker`. If port 3000 is occupied, check `pm2 list` and `sudo lsof -i :3000` — kill the rogue process, then restart via systemd. Never install pm2 startup hooks.

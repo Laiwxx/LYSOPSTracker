@@ -13,10 +13,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.009Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-21T14:12:51.477Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -457,10 +457,18 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.011Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
-    "hoursLogged": [],
-    "completedAt": null,
+    "hoursLogged": [
+      {
+        "date": "2026-04-21",
+        "hours": 1,
+        "note": "Issue invoices for any certified claims within 24 hours of QS confirmation, Flag any invoice unpaid past 30 days to QS + boss",
+        "loggedBy": "Alex Chew",
+        "loggedAt": "2026-04-21T11:32:47.322Z"
+      }
+    ],
+    "completedAt": "2026-04-21T11:32:14.113Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -493,7 +501,9 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "acknowledgedAt": "2026-04-21T11:32:19.209Z",
+    "acknowledgedBy": "Alex Chew"
   },
   {
     "id": "mo7wjcobkom",
@@ -509,10 +519,18 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.011Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
-    "hoursLogged": [],
-    "completedAt": null,
+    "hoursLogged": [
+      {
+        "date": "2026-04-21",
+        "hours": 1,
+        "note": "Issue invoices for any certified claims within 24 hours of QS confirmation, Flag any invoice unpaid past 30 days to QS + boss",
+        "loggedBy": "Alex Chew",
+        "loggedAt": "2026-04-21T11:32:47.322Z"
+      }
+    ],
+    "completedAt": "2026-04-21T11:32:15.354Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"

@@ -7,6 +7,7 @@ const msal = require('@azure/msal-node');
 const multer = require('multer');
 const cron = require('node-cron');
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
 const { AsyncLocalStorage } = require('async_hooks');
 const _authStore = new AsyncLocalStorage();
 
@@ -80,7 +81,9 @@ const uploadStorage = multer.diskStorage({
     // Route project uploads into per-project subdirectories
     const projectId = req.params.id;
     if (projectId) {
-      const projectDir = path.join(UPLOADS_DIR, 'projects', projectId);
+      const safeId = path.basename(projectId); // prevent path traversal
+      const projectDir = path.join(UPLOADS_DIR, 'projects', safeId);
+      if (!projectDir.startsWith(path.resolve(UPLOADS_DIR))) return cb(new Error('Invalid project ID'));
       if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
       return cb(null, projectDir);
     }
@@ -126,41 +129,115 @@ const uploadLogPhoto = multer({
   limits: { fileSize: 15 * 1024 * 1024 }
 });
 
-// ── Per-staff Basic Auth ─────────────────────────────────────────────────────
+app.use(express.json());
+
+// ── Graceful shutdown — must be registered early so SIGTERM works during startup
+process.on('SIGTERM', () => { console.log('[SHUTDOWN] SIGTERM received'); process.exit(0); });
+process.on('SIGINT', () => { console.log('[SHUTDOWN] SIGINT received'); process.exit(0); });
+
+// ── Per-staff Session Auth ───────────────────────────────────────────────────
 // Each staff member has their own username/password in config/credentials.json.
-// The authenticated user is tracked via AsyncLocalStorage so logActivity() can
-// automatically attribute actions without changing 30+ call sites.
+// Sessions are cookie-based — works cleanly on mobile (no Basic Auth popup).
 const CREDS_FILE = path.join(__dirname, 'config', 'credentials.json');
+let _credsCache = null;
+let _credsMtime = 0;
 function readCredentials() {
-  try { return JSON.parse(fs.readFileSync(CREDS_FILE, 'utf8')); } catch { return {}; }
+  try {
+    const stat = fs.statSync(CREDS_FILE);
+    if (_credsCache && stat.mtimeMs === _credsMtime) return _credsCache;
+    _credsCache = JSON.parse(fs.readFileSync(CREDS_FILE, 'utf8'));
+    _credsMtime = stat.mtimeMs;
+    return _credsCache;
+  } catch { return {}; }
 }
 function getAuthUser() { return _authStore.getStore() || 'System'; }
 
-app.use((req, res, next) => {
-  const creds = readCredentials();
-  if (!Object.keys(creds).length) return next(); // No credentials file — open access
+const crypto = require('crypto');
+// Persistent session secret: read from env, or generate once and cache to disk
+const SESSION_SECRET_FILE = path.join(__dirname, 'config', '.session-secret');
+function getSessionSecret() {
+  if (process.env.SESSION_SECRET) return process.env.SESSION_SECRET;
+  try { return fs.readFileSync(SESSION_SECRET_FILE, 'utf8').trim(); } catch {}
+  const s = crypto.randomBytes(32).toString('hex');
+  try { fs.writeFileSync(SESSION_SECRET_FILE, s); } catch {}
+  return s;
+}
+app.set('trust proxy', 1); // Trust nginx reverse proxy
+app.use(session({
+  secret: getSessionSecret(),
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax', secure: 'auto' } // 30 days
+}));
 
+// Public paths that don't require auth
+const PUBLIC_PATHS = new Set(['/login', '/login.html', '/api/auth/login', '/api/auth/forgot-password']);
+
+app.use((req, res, next) => {
+  // Allow public paths
+  if (PUBLIC_PATHS.has(req.path)) return next();
+  // Allow static assets for login page
+  if (req.path.startsWith('/css/') || req.path === '/js/utils.js' || req.path === '/js/nav.js' || req.path === '/manifest.json') return next();
+
+  // Check session first — fastest path, no file I/O
+  if (req.session && req.session.user) {
+    req.authUser = req.session.user;
+    _authStore.run(req.session.user, () => next());
+    return;
+  }
+
+  // Also accept Basic Auth (for API/curl usage) — use email:password
   const hdr = req.headers.authorization || '';
   if (hdr.startsWith('Basic ')) {
+    const creds = readCredentials();
     const decoded = Buffer.from(hdr.slice(6), 'base64').toString('utf8');
     const idx = decoded.indexOf(':');
-    const user = idx >= 0 ? decoded.slice(0, idx) : '';
+    const user = idx >= 0 ? decoded.slice(0, idx).toLowerCase().trim() : '';
     const pass = idx >= 0 ? decoded.slice(idx + 1) : '';
-    const entry = creds[user.toLowerCase()];
+    const entry = creds[user];
     if (entry && bcrypt.compareSync(pass, entry.hash)) {
       req.authUser = entry.name;
-      // Run the rest of the request inside AsyncLocalStorage so logActivity picks up the user
       _authStore.run(entry.name, () => next());
       return;
     }
   }
-  res.setHeader('WWW-Authenticate', 'Basic realm="LYS Ops Tracker", charset="UTF-8"');
-  res.status(401).send('Authentication required');
+
+  // Not authenticated
+  if (req.path.startsWith('/api/')) {
+    res.status(401).json({ error: 'Authentication required' });
+  } else {
+    res.redirect('/login');
+  }
 });
 
-app.use(express.json());
+// ── Login / Logout endpoints ─────────────────────────────────────────────────
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ error: 'Email and password required' });
+  const creds = readCredentials();
+  const key = username.toLowerCase().trim();
+  const entry = creds[key];
+  if (entry && bcrypt.compareSync(password, entry.hash)) {
+    req.session.user = entry.name;
+    req.session.username = key;
+    res.json({ ok: true, name: entry.name });
+  } else {
+    res.status(401).json({ error: 'Invalid email or password' });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.clearCookie('connect.sid');
+    res.json({ ok: true });
+  });
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(UPLOADS_DIR));
+
+// Login page (served without auth)
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 
 // Clean URL routes for SPA-style pages
 app.get('/tasks',    (req, res) => res.sendFile(path.join(__dirname, 'public', 'tasks.html')));
@@ -247,20 +324,19 @@ app.post('/api/delivery-orders', uploadDO.single('file'), (req, res) => {
     const prLabel = entry.prNumber ? `linked to ${entry.prNumber}` : 'no PR linked';
     const projLabel = entry.projectCode || 'General';
     const doUrl = `${APP_URL}/uploads/${entry.filename}`;
-    const emailBody =
-      `<p>A Delivery Order has been uploaded.</p>
-      <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">File</td><td>${escHtml(entry.originalName)}</td></tr>
-        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PR</td><td>${escHtml(prLabel)}</td></tr>
-        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(projLabel)}</td></tr>
-        <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Uploaded by</td><td>${escHtml(entry.uploadedBy || '—')}</td></tr>
-        ${entry.notes ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${escHtml(entry.notes)}</td></tr>` : ''}
-      </table>
-      <p><a href="${doUrl}">View DO</a> · <a href="${APP_URL}/procurement">Open Procurement</a></p>`;
+    const emailBody = `<p style="margin:0 0 16px;">A Delivery Order has been uploaded.</p>` +
+      emailTable([
+        ['File', escHtml(entry.originalName)],
+        ['PR', escHtml(prLabel)],
+        ['Project', escHtml(projLabel)],
+        ['Uploaded by', escHtml(entry.uploadedBy || '—')],
+        entry.notes ? ['Notes', escHtml(entry.notes)] : null
+      ]) +
+      `<p style="margin:0;"><a href="${doUrl}">View DO</a> · <a href="${APP_URL}/procurement">Open Procurement</a></p>`;
     if (purchaserEmail) {
       sendEmail(purchaserEmail, purchaserName,
         `[DO] Delivery Order received — ${escHtml(projLabel)}${entry.prNumber ? ' · ' + entry.prNumber : ''}`,
-        `<p>Hi ${escHtml(purchaserName)},</p>${emailBody}`,
+        emailWrap(`Hi ${escHtml(purchaserName)},`, emailBody, null, null),
         financeEmail ? [financeEmail] : []
       ).catch(err => console.error('[EMAIL] DO notify failed:', err.message));
     }
@@ -305,6 +381,40 @@ const PRICES_FILE        = path.join(__dirname, 'data', 'prices.json');
 const PO_FILE            = path.join(__dirname, 'data', 'purchase-orders.json');
 const PR_FILE            = path.join(__dirname, 'data', 'purchase-requisitions.json');
 const DO_FILE            = path.join(__dirname, 'data', 'delivery-orders.json');
+
+// ── Email template helpers ───────────────────────────────────────────────────
+// Consistent wrapper for all outgoing HTML emails.
+// greeting: optional string like "Hi John," (pass null/empty to skip)
+// bodyHtml: the unique content — tables, paragraphs, etc.
+// ctaLabel/ctaUrl: optional call-to-action button (pass null to skip)
+function emailWrap(greeting, bodyHtml, ctaLabel, ctaUrl) {
+  const greetHtml = greeting ? `<p style="margin:0 0 16px;">${greeting}</p>` : '';
+  const ctaHtml = ctaLabel && ctaUrl
+    ? `<p style="margin:20px 0 0;"><a href="${ctaUrl}" style="background:#2563eb;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;display:inline-block;">${ctaLabel} →</a></p>`
+    : '';
+  return `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;color:#1a1a1a;line-height:1.5;">${greetHtml}${bodyHtml}${ctaHtml}<p style="margin:24px 0 0;font-size:11px;color:#999;">LYS Operations Tracker</p></div>`;
+}
+
+// Build a consistent label→value table from an array of [label, value] pairs.
+// Falsy pairs are automatically filtered out.
+function emailTable(rows) {
+  const filtered = rows.filter(r => r && r[0] && r[1] !== undefined && r[1] !== null && r[1] !== '');
+  if (!filtered.length) return '';
+  const trs = filtered.map(([label, value]) =>
+    `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;vertical-align:top;">${label}</td><td style="padding:6px 0;">${value}</td></tr>`
+  ).join('');
+  return `<table style="border-collapse:collapse;width:100%;margin:12px 0 16px;">${trs}</table>`;
+}
+
+// Warning/info box (amber)
+function emailWarnBox(text) {
+  return `<p style="margin:16px 0 0;padding:10px 14px;background:#fef3c7;border-left:3px solid #f59e0b;border-radius:4px;font-size:12px;color:#92400e;">${text}</p>`;
+}
+
+// Urgent/red box
+function emailUrgentBox(text) {
+  return `<p style="margin:16px 0 0;padding:10px 14px;background:#fef2f2;border-left:3px solid #ef4444;border-radius:4px;font-size:12px;color:#991b1b;">${text}</p>`;
+}
 
 // ── Email helper ──────────────────────────────────────────────────────────────
 // cc may be a string, an array of strings, or omitted.
@@ -387,12 +497,12 @@ async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
 
 function _taskEventBody(task, assignedByName) {
   const lines = [];
-  lines.push(`<p><strong>${task.title}</strong></p>`);
-  if (task.description) lines.push(`<p>${task.description}</p>`);
+  lines.push(`<p><strong>${escHtml(task.title)}</strong></p>`);
+  if (task.description) lines.push(`<p>${escHtml(task.description)}</p>`);
   if (task.projectJobCode || task.projectName) {
-    lines.push(`<p><em>Project:</em> ${task.projectJobCode || ''} ${task.projectName || ''}</p>`);
+    lines.push(`<p><em>Project:</em> ${escHtml(task.projectJobCode || '')} ${escHtml(task.projectName || '')}</p>`);
   }
-  if (assignedByName) lines.push(`<p><em>Assigned by:</em> ${assignedByName}</p>`);
+  if (assignedByName) lines.push(`<p><em>Assigned by:</em> ${escHtml(assignedByName)}</p>`);
   lines.push(`<p><a href="${APP_URL}/my-tasks">Open in LYS Ops Tracker →</a></p>`);
   return lines.join('');
 }
@@ -488,13 +598,22 @@ function getStaffEmail(name) {
 }
 
 // Role-based email lookup. Resolves a role alias (e.g. "Factory Manager")
-// via staff.json and falls back to the boss so notifications never silently
-// break if the role holder leaves and hasn't been reassigned yet.
+// via staff.json key first, then falls back to name search, then boss.
 function getRoleEmail(role) {
-  const direct = getStaffEmail(role);
-  if (direct) return direct;
-  // Fallback chain: Project Manager role → personal name → env var
-  return getStaffEmail('Project Manager') || getStaffEmail('Lai Wei Xiang') || process.env.ADMIN_EMAIL || null;
+  try {
+    const staff = safeReadJSON(STAFF_FILE);
+    // Direct key lookup (role aliases like "Factory Manager", "Purchaser")
+    if (staff[role] && staff[role].email) return staff[role].email;
+  } catch {}
+  // Fallback: maybe `role` is a person's name
+  const byName = getStaffEmail(role);
+  if (byName) return byName;
+  // Final fallback: boss
+  try {
+    const staff = safeReadJSON(STAFF_FILE);
+    if (staff['Project Manager'] && staff['Project Manager'].email) return staff['Project Manager'].email;
+  } catch {}
+  return process.env.ADMIN_EMAIL || null;
 }
 
 // Staff loaded dynamically from STAFF_FILE — no hardcoded list
@@ -555,12 +674,17 @@ function readEOD() {
   return safeReadJSON(EOD_FILE);
 }
 
-function getWeekStart(date = new Date()) {
-  const d = new Date(date);
+function todaySGT() {
+  const sgt = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+  return sgt.getFullYear() + '-' + String(sgt.getMonth() + 1).padStart(2, '0') + '-' + String(sgt.getDate()).padStart(2, '0');
+}
+function getWeekStart(date) {
+  // Use SGT-aware date to determine the correct Monday
+  const d = date ? new Date(date) : new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
   d.setDate(diff);
-  return d.toISOString().split('T')[0];
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
 function readProjects() {
@@ -749,15 +873,16 @@ app.post('/api/tickets', postRateLimit, (req, res) => {
     if (laiEmail) {
       sendEmail(laiEmail, getBossName(),
         `[New Feedback] ${ticket.title} — ${ticket.type}`,
-        `<p>A new feedback ticket has been submitted:</p>
-        <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Title</td><td>${escHtml(ticket.title)}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Type</td><td>${escHtml(ticket.type)}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Submitted By</td><td>${escHtml(ticket.submittedBy)}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Priority</td><td>${escHtml(ticket.priority)}</td></tr>
-          ${ticket.description ? `<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Description</td><td>${escHtml(ticket.description)}</td></tr>` : ''}
-        </table>
-        <p><a href="${APP_URL}/feedback">View Feedback →</a></p>`
+        emailWrap(null,
+          `<p style="margin:0 0 16px;">A new feedback ticket has been submitted:</p>` +
+          emailTable([
+            ['Title', escHtml(ticket.title)],
+            ['Type', escHtml(ticket.type)],
+            ['Submitted By', escHtml(ticket.submittedBy)],
+            ['Priority', escHtml(ticket.priority)],
+            ticket.description ? ['Description', escHtml(ticket.description)] : null
+          ]),
+          'View Feedback', `${APP_URL}/feedback`)
       ).catch(() => {});
     } else {
       console.warn('[EMAIL SKIP] No email for: Lai Wei Xiang (new ticket notification)');
@@ -783,7 +908,7 @@ app.put('/api/tickets/:id', (req, res) => {
     res.json(tickets[idx]);
 
     // Clean up Claude memory file when ticket is resolved
-    if (status === 'Resolved' || status === 'Closed') {
+    if (status === 'Done') {
       try {
         const memDir = path.join(__dirname, '..', '.claude', 'projects', '-home-ubuntu-ops-tracker', 'memory');
         const memFile = path.join(memDir, `feedback_${req.params.id}.md`);
@@ -826,6 +951,7 @@ async function requireAdminAuth(req, res) {
 }
 
 // POST /api/staff — add or update a staff member { name, email }
+// If a new staff member has an email and no credentials yet, auto-create login and send welcome email.
 app.post('/api/staff', async (req, res) => {
   try {
     if (!await requireAdminAuth(req, res)) return;
@@ -833,15 +959,50 @@ app.post('/api/staff', async (req, res) => {
     const email = sanitizeStr(req.body.email, 200);
     if (!name) return res.status(400).json({ error: 'name required' });
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Invalid email format' });
+    // Prevent overwriting role aliases (e.g. "Factory Manager", "Purchaser", "QS")
+    const ROLE_ALIASES = ['Factory Manager','Purchaser','QS','QS2','Site Engineer','Project Manager','GM','Finance','Accounts','Drafter','Project Manager/Site Engineer'];
+    if (ROLE_ALIASES.includes(name)) return res.status(400).json({ error: `"${name}" is a reserved role alias — use the person's real name` });
     const staff = readStaff();
+    const isNew = !staff[name];
     staff[name] = { name, email };
     writeStaff(staff);
     logActivity('staff.updated', { name, email });
-    res.json(staff[name]);
+
+    // Auto-create login credentials for new staff with email
+    let welcomeSent = false;
+    if (isNew && email) {
+      const creds = readCredentials();
+      const emailKey = email.toLowerCase().trim();
+      if (!creds[emailKey]) {
+        const newPass = crypto.randomBytes(4).toString('hex');
+        creds[emailKey] = { name, hash: bcrypt.hashSync(newPass, 10) };
+        safeWriteJSON(CREDS_FILE, creds);
+        _credsCache = null; _credsMtime = 0; // bust cache
+        logActivity('auth.auto-created', { user: name, email: emailKey });
+
+        // Send welcome email with login details
+        const APP_URL_VAL = process.env.APP_URL || 'https://lys-ops.cloud';
+        sendEmail(email, name,
+          'Welcome to LYS Ops Tracker — Your Login Details',
+          emailWrap(`Hi ${escHtml(name.split(' ')[0])},`,
+            `<p style="margin:0 0 16px;">Your LYS Ops Tracker account is ready. Here are your login details:</p>` +
+            emailTable([
+              ['URL', `<a href="${APP_URL_VAL}">${APP_URL_VAL}</a>`],
+              ['Email', `<span style="font-family:monospace;font-size:15px;">${escHtml(emailKey)}</span>`],
+              ['Password', `<span style="font-family:monospace;font-size:15px;">${escHtml(newPass)}</span>`]
+            ]) +
+            `<p style="margin:16px 0 0;font-size:12px;color:#888;">You can change your password anytime from the app.</p>`,
+            'Open LYS Ops', APP_URL_VAL)
+        ).catch(err => console.error('[EMAIL] Welcome email failed for', name, err.message));
+        welcomeSent = true;
+      }
+    }
+
+    res.json({ ...staff[name], welcomeSent });
   } catch (e) { logError('route.post.staff', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// DELETE /api/staff/:name — remove staff member and any role aliases pointing to them
+// DELETE /api/staff/:name — remove staff member, role aliases, and login credentials
 app.delete('/api/staff/:name', async (req, res) => {
   try {
     if (!await requireAdminAuth(req, res)) return;
@@ -849,11 +1010,27 @@ app.delete('/api/staff/:name', async (req, res) => {
     const name = decodeURIComponent(req.params.name);
     if (!staff[name]) return res.status(404).json({ error: 'Not found' });
     const targetName = staff[name].name;
-    // Remove name key and any role-alias keys that resolve to the same person
+    // Collect emails before removing so we can clean up credentials
+    const emails = new Set();
     Object.keys(staff).forEach(k => {
-      if (staff[k].name === targetName) delete staff[k];
+      if (staff[k].name === targetName) {
+        if (staff[k].email) emails.add(staff[k].email.toLowerCase().trim());
+        delete staff[k];
+      }
     });
     writeStaff(staff);
+    // Remove login credentials for this person
+    if (emails.size) {
+      const creds = readCredentials();
+      let changed = false;
+      for (const em of emails) {
+        if (creds[em]) { delete creds[em]; changed = true; }
+      }
+      if (changed) {
+        safeWriteJSON(CREDS_FILE, creds);
+        _credsCache = null; _credsMtime = 0;
+      }
+    }
     logActivity('staff.deleted', { name: targetName });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.staff', e); res.status(500).json({ error: 'Internal server error' }); }
@@ -881,7 +1058,8 @@ app.post('/api/auth/change-password', (req, res) => {
       return res.status(403).json({ error: 'Current password is incorrect' });
     }
     creds[username].hash = bcrypt.hashSync(newPassword, 10);
-    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+    safeWriteJSON(CREDS_FILE, creds);
+    _credsCache = null; _credsMtime = 0;
     logActivity('auth.password-changed', { user: req.authUser });
     res.json({ ok: true });
   } catch (e) { logError('route.post.auth.change-password', e); res.status(500).json({ error: 'Internal server error' }); }
@@ -894,14 +1072,14 @@ app.get('/api/auth/me', (req, res) => {
 
 // ── Auth: forgot password (self-service) ─────────────────────────────────────
 // No auth required — user can't log in, so this is outside the auth gate.
-// Rate-limited to prevent abuse.
+// Rate-limited to prevent abuse. Accepts { username: "email@..." } for backwards compat with login form field name.
 const _resetAttempts = {};
 app.post('/api/auth/forgot-password', (req, res) => {
   try {
     const { username } = req.body;
-    if (!username) return res.status(400).json({ error: 'Username required' });
-    const key = username.toLowerCase();
-    // Rate limit: max 3 resets per username per hour
+    if (!username) return res.status(400).json({ error: 'Email required' });
+    const key = username.toLowerCase().trim();
+    // Rate limit: max 3 resets per email per hour
     const now = Date.now();
     if (!_resetAttempts[key]) _resetAttempts[key] = [];
     _resetAttempts[key] = _resetAttempts[key].filter(t => now - t < 3600000);
@@ -909,39 +1087,31 @@ app.post('/api/auth/forgot-password', (req, res) => {
 
     const creds = readCredentials();
     const entry = creds[key];
-    if (!entry) return res.json({ ok: true, message: 'If that username exists, a new password has been emailed.' }); // don't reveal valid usernames
-
-    // Find email from config/staff.json
-    const staff = readStaff();
-    const staffEntry = Object.values(staff).find(s => s.name === entry.name);
-    const email = staffEntry && staffEntry.email;
-    if (!email) return res.json({ ok: true, message: 'If that username exists, a new password has been emailed.' }); // no email on file
+    if (!entry) return res.json({ ok: true, message: 'If that email is registered, a new password has been sent.' });
 
     // Generate new password and save
-    const crypto = require('crypto');
     const newPass = crypto.randomBytes(4).toString('hex');
     creds[key].hash = bcrypt.hashSync(newPass, 10);
-    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+    safeWriteJSON(CREDS_FILE, creds);
+    _credsCache = null; _credsMtime = 0;
     _resetAttempts[key].push(now);
 
     // Email the new password
     const APP_URL_VAL = process.env.APP_URL || 'https://lys-ops.cloud';
-    sendEmail(email, entry.name,
+    sendEmail(key, entry.name,
       'Your LYS Ops Tracker password has been reset',
-      `<div style="font-family:Arial,sans-serif;max-width:480px;">
-        <p>Hi ${escHtml(entry.name.split(' ')[0])},</p>
-        <p>Your password has been reset. Here are your new login details:</p>
-        <table style="border-collapse:collapse;margin:16px 0;">
-          <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Username</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(key)}</td></tr>
-          <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Password</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(newPass)}</td></tr>
-        </table>
-        <p><a href="${APP_URL_VAL}" style="background:#3366ff;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">Open LYS Ops →</a></p>
-        <p style="font-size:12px;color:#888;margin-top:20px;">If you didn't request this, contact your admin immediately.</p>
-      </div>`
+      emailWrap(`Hi ${escHtml(entry.name.split(' ')[0])},`,
+        `<p style="margin:0 0 16px;">Your password has been reset. Here are your new login details:</p>` +
+        emailTable([
+          ['Email', `<span style="font-family:monospace;font-size:15px;">${escHtml(key)}</span>`],
+          ['Password', `<span style="font-family:monospace;font-size:15px;">${escHtml(newPass)}</span>`]
+        ]) +
+        emailWarnBox('If you didn\'t request this, contact your admin immediately.'),
+        'Open LYS Ops', APP_URL_VAL)
     ).catch(() => {});
 
     logActivity('auth.password-reset', { by: 'System', user: entry.name });
-    res.json({ ok: true, message: 'If that username exists, a new password has been emailed.' });
+    res.json({ ok: true, message: 'If that email is registered, a new password has been sent.' });
   } catch (e) { logError('route.post.auth.forgot-password', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -949,16 +1119,16 @@ app.post('/api/auth/forgot-password', (req, res) => {
 app.post('/api/auth/admin-reset', async (req, res) => {
   try {
     if (!await requireAdminAuth(req, res)) return;
-    const { username } = req.body;
-    if (!username) return res.status(400).json({ error: 'Username required' });
-    const key = username.toLowerCase();
+    const { username } = req.body; // "username" field = email address
+    if (!username) return res.status(400).json({ error: 'Email required' });
+    const key = username.toLowerCase().trim();
     const creds = readCredentials();
-    if (!creds[key]) return res.status(404).json({ error: 'Username not found' });
+    if (!creds[key]) return res.status(404).json({ error: 'Email not found' });
 
-    const crypto = require('crypto');
     const newPass = crypto.randomBytes(4).toString('hex');
     creds[key].hash = bcrypt.hashSync(newPass, 10);
-    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+    safeWriteJSON(CREDS_FILE, creds);
+    _credsCache = null; _credsMtime = 0;
 
     logActivity('auth.admin-reset', { user: creds[key].name, resetBy: req.authUser });
     res.json({ ok: true, username: key, name: creds[key].name, newPassword: newPass });
@@ -970,35 +1140,29 @@ app.post('/api/auth/send-welcome-emails', async (req, res) => {
   try {
     if (!await requireAdminAuth(req, res)) return;
     const creds = readCredentials();
-    const staff = readStaff();
     const APP_URL_VAL = process.env.APP_URL || 'https://lys-ops.cloud';
     const results = [];
 
-    for (const [username, entry] of Object.entries(creds)) {
-      const staffEntry = Object.values(staff).find(s => s.name === entry.name);
-      const email = staffEntry && staffEntry.email;
+    for (const [emailKey, entry] of Object.entries(creds)) {
+      const email = emailKey; // credentials are now keyed by email
       if (!email) { results.push({ name: entry.name, status: 'skipped', reason: 'no email' }); continue; }
 
-      // Read plaintext password from STAFF-PASSWORDS.txt (only available before deletion)
       // For welcome emails we generate a fresh password so we have the plaintext
-      const crypto = require('crypto');
       const newPass = crypto.randomBytes(4).toString('hex');
-      creds[username].hash = bcrypt.hashSync(newPass, 10);
+      creds[emailKey].hash = bcrypt.hashSync(newPass, 10);
 
       try {
         await sendEmail(email, entry.name,
           'Welcome to LYS Ops Tracker — Your Login Details',
-          `<div style="font-family:Arial,sans-serif;max-width:480px;">
-            <p>Hi ${escHtml(entry.name.split(' ')[0])},</p>
-            <p>Your LYS Ops Tracker account is ready. Here are your login details:</p>
-            <table style="border-collapse:collapse;margin:16px 0;">
-              <tr><td style="padding:6px 16px 6px 0;font-weight:600;">URL</td><td style="padding:6px 0;"><a href="${APP_URL_VAL}">${APP_URL_VAL}</a></td></tr>
-              <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Username</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(username)}</td></tr>
-              <tr><td style="padding:6px 16px 6px 0;font-weight:600;">Password</td><td style="padding:6px 0;font-family:monospace;font-size:15px;">${escHtml(newPass)}</td></tr>
-            </table>
-            <p><a href="${APP_URL_VAL}" style="background:#3366ff;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">Open LYS Ops →</a></p>
-            <p style="font-size:12px;color:#888;margin-top:20px;">You can change your password anytime from the app.</p>
-          </div>`
+          emailWrap(`Hi ${escHtml(entry.name.split(' ')[0])},`,
+            `<p style="margin:0 0 16px;">Your LYS Ops Tracker account is ready. Here are your login details:</p>` +
+            emailTable([
+              ['URL', `<a href="${APP_URL_VAL}">${APP_URL_VAL}</a>`],
+              ['Email', `<span style="font-family:monospace;font-size:15px;">${escHtml(emailKey)}</span>`],
+              ['Password', `<span style="font-family:monospace;font-size:15px;">${escHtml(newPass)}</span>`]
+            ]) +
+            `<p style="margin:16px 0 0;font-size:12px;color:#888;">You can change your password anytime from the app.</p>`,
+            'Open LYS Ops', APP_URL_VAL)
         );
         results.push({ name: entry.name, status: 'sent', email });
       } catch (e) {
@@ -1008,7 +1172,7 @@ app.post('/api/auth/send-welcome-emails', async (req, res) => {
       await new Promise(r => setTimeout(r, 2000));
     }
 
-    fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+    safeWriteJSON(CREDS_FILE, creds);
     logActivity('auth.welcome-emails-sent', { by: req.authUser, count: results.filter(r => r.status === 'sent').length });
     res.json({ ok: true, results });
   } catch (e) { logError('route.post.auth.send-welcome-emails', e); res.status(500).json({ error: 'Internal server error' }); }
@@ -1077,14 +1241,17 @@ app.post('/api/admin/pin', async (req, res) => {
 app.delete('/api/projects/:id/upload/:filename(*)', (req, res) => {
   try {
     const { id, filename } = req.params;
-    // Security: prevent path traversal
+    // Security: prevent path traversal — sanitize both id and filename
+    const safeId = path.basename(id);
     const normalized = path.normalize(filename).replace(/^(\.\.(\/|\\|$))+/, '');
     if (normalized.includes('..')) return res.status(400).json({ error: 'Invalid filename' });
 
     // Try project-specific path first, then flat uploads root
-    let diskPath = path.join(UPLOADS_DIR, normalized);
+    let diskPath = path.resolve(UPLOADS_DIR, normalized);
+    if (!diskPath.startsWith(path.resolve(UPLOADS_DIR))) return res.status(400).json({ error: 'Invalid path' });
     if (!fs.existsSync(diskPath)) {
-      diskPath = path.join(UPLOADS_DIR, 'projects', id, path.basename(normalized));
+      diskPath = path.resolve(UPLOADS_DIR, 'projects', safeId, path.basename(normalized));
+      if (!diskPath.startsWith(path.resolve(UPLOADS_DIR))) return res.status(400).json({ error: 'Invalid path' });
     }
     if (!fs.existsSync(diskPath)) {
       // File already gone — treat as success
@@ -1370,11 +1537,11 @@ function deriveStages(p) {
 
       // Set date fields on advance
       if (derived === 'In Progress' && !stage.started) {
-        stage.started = new Date().toISOString().split('T')[0];
+        stage.started = todaySGT();
       }
       if (derived === 'Completed') {
-        if (!stage.started) stage.started = new Date().toISOString().split('T')[0];
-        if (!stage.done) stage.done = new Date().toISOString().split('T')[0];
+        if (!stage.started) stage.started = todaySGT();
+        if (!stage.done) stage.done = todaySGT();
       }
       // Clear done date on regress
       if (derived !== 'Completed') {
@@ -1487,8 +1654,9 @@ function deriveFields(p) {
 }
 
 // --- API: Migrate — recalculate derived fields for all projects ---
-app.post('/api/admin/recalc', (req, res) => {
+app.post('/api/admin/recalc', async (req, res) => {
   try {
+    if (!await requireAdminAuth(req, res)) return;
     const projects = readProjects();
     projects.forEach(p => deriveFields(p));
     writeProjects(projects);
@@ -1539,10 +1707,10 @@ app.put('/api/projects/:id', async (req, res) => {
     if (pmEmail) {
       sendEmail(pmEmail, pmName,
         `[Project Delayed] ${oldProject.jobCode} — ${oldProject.projectName}`,
-        `<p>Hi ${escHtml(pmName)},</p>
-        <p>Project <strong>${escHtml(oldProject.jobCode)} — ${escHtml(oldProject.projectName)}</strong> has been marked as <strong>Delayed</strong>.</p>
-        <p>Please update the latest notes and advise on the revised timeline.</p>
-        <p><a href="${APP_URL}/project.html?id=${oldProject.id}">Open Project →</a></p>`
+        emailWrap(`Hi ${escHtml(pmName)},`,
+          `<p style="margin:0 0 16px;">Project <strong>${escHtml(oldProject.jobCode)} — ${escHtml(oldProject.projectName)}</strong> has been marked as <strong>Delayed</strong>.</p>` +
+          `<p style="margin:0;">Please update the latest notes and advise on the revised timeline.</p>`,
+          'Open Project', `${APP_URL}/project.html?id=${oldProject.id}`)
       ).catch(() => {});
     } else {
       console.warn('[EMAIL SKIP] No email for:', pmName, '(project delayed notification)');
@@ -1590,11 +1758,39 @@ app.put('/api/projects/:id', async (req, res) => {
 app.delete('/api/projects/:id', async (req, res) => {
   try {
     if (!await requireAdminAuth(req, res)) return;
+    const pid = req.params.id;
     const projects = readProjects();
-    const idx = projects.findIndex(p => p.id === req.params.id);
+    const idx = projects.findIndex(p => p.id === pid);
     if (idx === -1) return res.status(404).json({ error: 'Not found' });
-    projects.splice(idx, 1);
+    const deleted = projects.splice(idx, 1)[0];
     writeProjects(projects);
+
+    // Cascade cleanup: remove orphaned records referencing this project
+    try {
+      // Site requests
+      const srs = readSiteRequests();
+      const filteredSRs = srs.filter(sr => sr.projectId !== pid);
+      if (filteredSRs.length < srs.length) writeSiteRequests(filteredSRs);
+
+      // Tasks
+      const tasks = readTasks();
+      const filteredTasks = tasks.filter(t => t.projectId !== pid);
+      if (filteredTasks.length < tasks.length) writeTasks(filteredTasks);
+
+      // Upload files on disk
+      const projUploadDir = path.join(UPLOADS_DIR, 'projects', path.basename(pid));
+      if (fs.existsSync(projUploadDir) && projUploadDir.startsWith(path.resolve(UPLOADS_DIR))) {
+        fs.rmSync(projUploadDir, { recursive: true, force: true });
+      }
+
+      logActivity('project.deleted.cascade', {
+        projectId: pid,
+        jobCode: deleted.jobCode || '',
+        removedSRs: srs.length - filteredSRs.length,
+        removedTasks: tasks.length - filteredTasks.length
+      });
+    } catch (cascadeErr) { logError('project.delete.cascade', cascadeErr); }
+
     res.json({ ok: true });
   } catch (e) { logError('route.delete.projects', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -2448,19 +2644,19 @@ app.post('/api/projects/:id/installation/:idx/logs', postRateLimit, (req, res) =
         const stepLabel = step ? ` (${step})` : '';
         sendEmail(qsEmail, qsName,
           `[Install] ${escHtml(project.jobCode || '')} — ${escHtml(itemName)}${stepLabel}: +${delta} (${pct}%)`,
-          `<p>Hi ${escHtml(qsName)},</p>
-          <p><strong>${escHtml(loggedBy)}</strong> logged installation progress:</p>
-          <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(project.jobCode || '')} — ${escHtml(project.projectName || '')}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Item</td><td>${escHtml(itemName)}</td></tr>
-            ${step ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Step</td><td>${escHtml(step)}</td></tr>` : ''}
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Qty installed</td><td>+${delta}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Progress</td><td>${row.qtyDone} / ${totalQty} (${pct}%)</td></tr>
-            ${location ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Location</td><td>${escHtml(location)}</td></tr>` : ''}
-            ${note ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${escHtml(note)}</td></tr>` : ''}
-          </table>
-          ${entry.photoPath ? `<p><a href="${APP_URL}${entry.photoPath}">View photo</a></p>` : ''}
-          <p><a href="${APP_URL}/installation">Open Installation →</a></p>`
+          emailWrap(`Hi ${escHtml(qsName)},`,
+            `<p style="margin:0 0 16px;"><strong>${escHtml(loggedBy)}</strong> logged installation progress:</p>` +
+            emailTable([
+              ['Project', `${escHtml(project.jobCode || '')} — ${escHtml(project.projectName || '')}`],
+              ['Item', escHtml(itemName)],
+              step ? ['Step', escHtml(step)] : null,
+              ['Qty installed', `+${delta}`],
+              ['Progress', `${row.qtyDone} / ${totalQty} (${pct}%)`],
+              location ? ['Location', escHtml(location)] : null,
+              note ? ['Notes', escHtml(note)] : null
+            ]) +
+            (entry.photoPath ? `<p style="margin:0;"><a href="${APP_URL}${escHtml(entry.photoPath)}">View photo</a></p>` : ''),
+            'Open Installation', `${APP_URL}/installation`)
         ).catch(err => console.error('[EMAIL] Install log notify failed:', err.message));
       }
     }
@@ -2542,15 +2738,15 @@ app.post('/api/notify/delivery-acknowledged', async (req, res) => {
       const fmName = getFactoryManagerName();
       sendEmail(requestorEmail, requestedBy,
         `[Delivery Acknowledged] ${item || 'Your delivery request'}${projectJobCode ? ' — ' + projectJobCode : ''}`,
-        `<p>Hi ${escHtml(requestedBy)},</p>
-        <p>${escHtml(fmName)} has acknowledged your delivery request.</p>
-        <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${escHtml(item || '—')}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${escHtml(projectJobCode || '—')}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Expected Timeline</td><td>${escHtml(timeline || 'To be confirmed')}</td></tr>
-        </table>
-        <p>${escHtml(fmName)} will keep you updated on the delivery progress.</p>
-        <p><a href="${APP_URL}/factory">Open Factory View →</a></p>`
+        emailWrap(`Hi ${escHtml(requestedBy)},`,
+          `<p style="margin:0 0 16px;">${escHtml(fmName)} has acknowledged your delivery request.</p>` +
+          emailTable([
+            ['Item', escHtml(item || '—')],
+            ['Project', escHtml(projectJobCode || '—')],
+            ['Expected Timeline', escHtml(timeline || 'To be confirmed')]
+          ]) +
+          `<p style="margin:0;">${escHtml(fmName)} will keep you updated on the delivery progress.</p>`,
+          'Open Factory View', `${APP_URL}/factory`)
       ).catch(() => {});
     }
     logActivity('notify.delivery-acknowledged', { requestedBy, item, projectJobCode });
@@ -2566,14 +2762,14 @@ app.post('/api/notify/delivery-ready', async (req, res) => {
       const fmName = getFactoryManagerName();
       await sendEmail(requestorEmail, requestedBy,
         `[Ready for Delivery] ${item || 'Your item'}${projectJobCode ? ' — ' + projectJobCode : ''}`,
-        `<p>Hi ${escHtml(requestedBy)},</p>
-        <p>Your requested item is ready for delivery:</p>
-        <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${escHtml(item || '—')}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${escHtml(projectJobCode || '—')}</td></tr>
-        </table>
-        <p>Please coordinate delivery timing with ${escHtml(fmName)}.</p>
-        <p><a href="${APP_URL}/factory">Open Factory View →</a></p>`
+        emailWrap(`Hi ${escHtml(requestedBy)},`,
+          `<p style="margin:0 0 16px;">Your requested item is ready for delivery:</p>` +
+          emailTable([
+            ['Item', escHtml(item || '—')],
+            ['Project', escHtml(projectJobCode || '—')]
+          ]) +
+          `<p style="margin:0;">Please coordinate delivery timing with ${escHtml(fmName)}.</p>`,
+          'Open Factory View', `${APP_URL}/factory`)
       ).catch(() => {});
     }
     logActivity('notify.delivery-ready', { requestedBy, item, projectJobCode });
@@ -2587,7 +2783,7 @@ app.delete('/api/projects/:id/documents/:docIndex/file', (req, res) => {
     const projects = readProjects();
     const project = projects.find(p => p.id === req.params.id);
     if (!project) return res.status(404).json({ error: 'Not found' });
-    const docIdx = parseInt(req.params.docIndex);
+    const docIdx = parseInt(req.params.docIndex, 10);
     const doc = (project.documents || [])[docIdx];
     if (!doc) return res.status(404).json({ error: 'Document not found' });
 
@@ -2626,7 +2822,7 @@ app.delete('/api/projects/:id/drawings/:drawingIndex/file', (req, res) => {
     const projects = readProjects();
     const project = projects.find(p => p.id === req.params.id);
     if (!project) return res.status(404).json({ error: 'Not found' });
-    const drawing = (project.drawings || [])[parseInt(req.params.drawingIndex)];
+    const drawing = (project.drawings || [])[parseInt(req.params.drawingIndex, 10)];
     if (!drawing) return res.status(404).json({ error: 'Drawing not found' });
     if (drawing.file) {
       // Handle both flat and per-project paths
@@ -2721,7 +2917,7 @@ app.delete('/api/projects/:id/stages/:stageIdx/file', (req, res) => {
     const projects = readProjects();
     const project = projects.find(p => p.id === req.params.id);
     if (!project) return res.status(404).json({ error: 'Not found' });
-    const stage = (project.stages || [])[parseInt(req.params.stageIdx)];
+    const stage = (project.stages || [])[parseInt(req.params.stageIdx, 10)];
     if (!stage) return res.status(404).json({ error: 'Stage not found' });
     if (stage.fileName) {
       const filePath = path.join(UPLOADS_DIR, path.basename(stage.fileName));
@@ -2745,18 +2941,15 @@ app.post('/api/remind', async (req, res) => {
 
   try {
     const subject = `[Action Required] ${stageName} – ${projectName}`;
-    const htmlBody = `
-<p>Hi ${escHtml(ownerName || ownerEmail)},</p>
-<p>This is a reminder that the following project stage requires your attention:</p>
-<table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${escHtml(projectName)}</td></tr>
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Job Code</td><td>${escHtml(jobCode)}</td></tr>
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Stage</td><td>${escHtml(stageName)}</td></tr>
-  <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Days Pending</td><td>${escHtml(String(daysInStatus))} day(s)</td></tr>
-</table>
-<p>Please update the status at: <a href="${APP_URL}/project.html?id=${projectId}">LYS OPS Tracker</a></p>
-<p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>
-`.trim();
+    const htmlBody = emailWrap(`Hi ${escHtml(ownerName || ownerEmail)},`,
+      `<p style="margin:0 0 16px;">This is a reminder that the following project stage requires your attention:</p>` +
+      emailTable([
+        ['Project', escHtml(projectName)],
+        ['Job Code', escHtml(jobCode)],
+        ['Stage', escHtml(stageName)],
+        ['Days Pending', `${escHtml(String(daysInStatus))} day(s)`]
+      ]),
+      'Open Project', `${APP_URL}/project.html?id=${projectId}`);
 
     await sendEmail(ownerEmail, ownerName, subject, htmlBody);
     res.json({ ok: true, sentTo: ownerEmail });
@@ -2870,7 +3063,7 @@ function startupCheck() {
 
   // Check admin.json exists, create if not
   if (!fs.existsSync(ADMIN_FILE)) {
-    fs.writeFileSync(ADMIN_FILE, JSON.stringify({ pin: '' }, null, 2));
+    safeWriteJSON(ADMIN_FILE, { pin: '' });
     issues.push('Created missing admin.json');
   }
 
@@ -2891,20 +3084,7 @@ function startupCheck() {
 // ── Task Routes ──────────────────────────────────────────────────────────────
 
 // GET tasks/summary must come before /api/tasks/:id
-app.get('/api/tasks/summary', (req, res) => {
-  try {
-    const tasks = readTasks();
-    const today = new Date().toISOString().split('T')[0];
-    res.json({
-      total: tasks.length,
-      pending: tasks.filter(t => t.status === 'Pending').length,
-      inProgress: tasks.filter(t => t.status === 'In Progress').length,
-      done: tasks.filter(t => t.status === 'Done').length,
-      blocked: tasks.filter(t => t.status === 'Blocked').length,
-      overdue: tasks.filter(t => t.dueDate && t.dueDate < today && t.status !== 'Done').length
-    });
-  } catch (e) { logError('route.get.tasks.summary', e); res.status(500).json({ error: 'Internal server error' }); }
-});
+// /api/tasks/summary removed — dead route, no frontend caller
 
 app.get('/api/tasks', (req, res) => {
   try {
@@ -2924,7 +3104,7 @@ app.post('/api/tasks', postRateLimit, (req, res) => {
   if (dueDate && !isValidDate(dueDate)) return res.status(400).json({ error: 'Invalid dueDate (YYYY-MM-DD expected)' });
   const tasks = readTasks();
   const task = {
-    id: Date.now().toString(36),
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     projectId:      sanitizeStr(req.body.projectId, 100),
     projectJobCode: sanitizeStr(req.body.projectJobCode, 50),
     projectName:    sanitizeStr(req.body.projectName, 300),
@@ -2958,22 +3138,18 @@ app.post('/api/tasks', postRateLimit, (req, res) => {
       const projectLabel = task.projectJobCode || task.projectName || null;
       const dueDateLabel = task.dueDate || null;
       const priorityLabel = task.priority && task.priority !== 'Normal' ? task.priority : null;
-      const rows = [
-        `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Task</td><td style="padding:6px 0;">${escHtml(task.title)}</td></tr>`,
-        projectLabel  ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Project</td><td style="padding:6px 0;">${escHtml(projectLabel)}</td></tr>` : '',
-        dueDateLabel  ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Due Date</td><td style="padding:6px 0;">${escHtml(dueDateLabel)}</td></tr>` : '',
-        priorityLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Priority</td><td style="padding:6px 0;">${escHtml(priorityLabel)}</td></tr>` : '',
-        assignedBy    ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Assigned By</td><td style="padding:6px 0;">${escHtml(assignedBy)}</td></tr>` : '',
-      ].filter(Boolean).join('');
       sendEmail(assignEmail, task.assignedTo,
         `[New Task] ${task.title}`,
-        `<div style="font-family:Arial,sans-serif;max-width:520px;">
-        <p style="margin:0 0 16px;">Hi ${escHtml(task.assignedTo)},</p>
-        <p style="margin:0 0 16px;">You have been assigned a new task:</p>
-        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;">${rows}</table>
-        <p style="margin:0;"><a href="${APP_URL}/my-tasks" style="background:#3366ff;color:#fff;padding:9px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">View My Tasks →</a></p>
-        <p style="margin:20px 0 0;font-size:11px;color:#aaa;">LYS Operations Tracker</p>
-        </div>`
+        emailWrap(`Hi ${escHtml(task.assignedTo)},`,
+          `<p style="margin:0 0 16px;">You have been assigned a new task:</p>` +
+          emailTable([
+            ['Task', escHtml(task.title)],
+            projectLabel  ? ['Project', escHtml(projectLabel)] : null,
+            dueDateLabel  ? ['Due Date', escHtml(dueDateLabel)] : null,
+            priorityLabel ? ['Priority', escHtml(priorityLabel)] : null,
+            assignedBy    ? ['Assigned By', escHtml(assignedBy)] : null
+          ]),
+          'View My Tasks', `${APP_URL}/my-tasks`)
       ).catch(() => {});
       logActivity('email.sent', { to: task.assignedTo, subject: 'New Task: ' + task.title });
 
@@ -2982,13 +3158,16 @@ app.post('/api/tasks', postRateLimit, (req, res) => {
         createTaskCalendarEvent(task, assignEmail, assignedBy)
           .then(result => {
             if (result && result.eventId) {
-              const latest = readTasks();
-              const i = latest.findIndex(t => t.id === task.id);
-              if (i !== -1) {
-                latest[i].calendarEventId = result.eventId;
-                latest[i].calendarEventOwner = result.ownerEmail;
-                writeTasks(latest);
-              }
+              // Atomic read-modify-write to avoid race with concurrent saves
+              try {
+                const latest = readTasks();
+                const i = latest.findIndex(t => t.id === task.id);
+                if (i !== -1) {
+                  latest[i].calendarEventId = result.eventId;
+                  latest[i].calendarEventOwner = result.ownerEmail;
+                  writeTasks(latest);
+                }
+              } catch (e) { logError('calendar.task-create-update', e); }
             }
           }).catch(() => {});
       }
@@ -3018,7 +3197,7 @@ app.put('/api/tasks/:id', (req, res) => {
     updates.completedAt = new Date().toISOString();
   }
   // Reset overdueEmailSent if dueDate is updated to a future date
-  if (updates.dueDate && updates.dueDate >= new Date().toISOString().split('T')[0]) {
+  if (updates.dueDate && updates.dueDate >= todaySGT()) {
     updates.overdueEmailSent = false;
   }
   tasks[idx] = { ...tasks[idx], ...updates };
@@ -3037,13 +3216,16 @@ app.put('/api/tasks/:id', (req, res) => {
   // If done → delete the event (no need for a future reminder)
   if (markedDone && oldEventId && oldEventOwner) {
     deleteTaskCalendarEvent(oldEventOwner, oldEventId).catch(() => {});
-    const refresh = readTasks();
-    const j = refresh.findIndex(t => t.id === req.params.id);
-    if (j !== -1) {
-      refresh[j].calendarEventId = null;
-      refresh[j].calendarEventOwner = null;
-      writeTasks(refresh);
-    }
+    // Clear event fields atomically
+    try {
+      const refresh = readTasks();
+      const j = refresh.findIndex(t => t.id === req.params.id);
+      if (j !== -1) {
+        refresh[j].calendarEventId = null;
+        refresh[j].calendarEventOwner = null;
+        writeTasks(refresh);
+      }
+    } catch (e) { logError('calendar.task-done-clear', e); }
   } else if ((assigneeChanged || dueDateChanged) && !markedDone) {
     // Delete old event (if any) and create a new one for the (possibly new) assignee.
     if (oldEventId && oldEventOwner) {
@@ -3056,13 +3238,15 @@ app.put('/api/tasks/:id', (req, res) => {
         createTaskCalendarEvent(tasks[idx], assigneeEmail, assignedByName)
           .then(result => {
             if (result && result.eventId) {
-              const refresh = readTasks();
-              const j = refresh.findIndex(t => t.id === req.params.id);
-              if (j !== -1) {
-                refresh[j].calendarEventId = result.eventId;
-                refresh[j].calendarEventOwner = result.ownerEmail;
-                writeTasks(refresh);
-              }
+              try {
+                const refresh = readTasks();
+                const j = refresh.findIndex(t => t.id === req.params.id);
+                if (j !== -1) {
+                  refresh[j].calendarEventId = result.eventId;
+                  refresh[j].calendarEventOwner = result.ownerEmail;
+                  writeTasks(refresh);
+                }
+              } catch (e) { logError('calendar.task-update-event', e); }
             }
           }).catch(() => {});
       }
@@ -3077,21 +3261,17 @@ app.put('/api/tasks/:id', (req, res) => {
       const assignedBy   = newTask.createdBy && newTask.createdBy !== updates.assignedTo ? newTask.createdBy : null;
       const projectLabel = newTask.projectJobCode || newTask.projectName || null;
       const dueDateLabel = newTask.dueDate || null;
-      const rows = [
-        `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Task</td><td style="padding:6px 0;">${escHtml(newTask.title)}</td></tr>`,
-        projectLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Project</td><td style="padding:6px 0;">${escHtml(projectLabel)}</td></tr>` : '',
-        dueDateLabel ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Due Date</td><td style="padding:6px 0;">${escHtml(dueDateLabel)}</td></tr>` : '',
-        assignedBy   ? `<tr><td style="padding:6px 16px 6px 0;font-weight:600;color:#555;white-space:nowrap;">Assigned By</td><td style="padding:6px 0;">${escHtml(assignedBy)}</td></tr>` : '',
-      ].filter(Boolean).join('');
       sendEmail(assignEmail, updates.assignedTo,
         `[New Task] ${newTask.title}`,
-        `<div style="font-family:Arial,sans-serif;max-width:520px;">
-        <p style="margin:0 0 16px;">Hi ${escHtml(updates.assignedTo)},</p>
-        <p style="margin:0 0 16px;">You have been assigned a task:</p>
-        <table style="border-collapse:collapse;width:100%;margin-bottom:20px;">${rows}</table>
-        <p style="margin:0;"><a href="${APP_URL}/my-tasks" style="background:#3366ff;color:#fff;padding:9px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">View My Tasks →</a></p>
-        <p style="margin:20px 0 0;font-size:11px;color:#aaa;">LYS Operations Tracker</p>
-        </div>`
+        emailWrap(`Hi ${escHtml(updates.assignedTo)},`,
+          `<p style="margin:0 0 16px;">You have been assigned a task:</p>` +
+          emailTable([
+            ['Task', escHtml(newTask.title)],
+            projectLabel ? ['Project', escHtml(projectLabel)] : null,
+            dueDateLabel ? ['Due Date', escHtml(dueDateLabel)] : null,
+            assignedBy   ? ['Assigned By', escHtml(assignedBy)] : null
+          ]),
+          'View My Tasks', `${APP_URL}/my-tasks`)
       ).catch(() => {});
     } else {
       console.warn('[EMAIL SKIP] No email for:', updates.assignedTo);
@@ -3104,14 +3284,14 @@ app.put('/api/tasks/:id', (req, res) => {
     if (rbEmail) {
       sendEmail(rbEmail, changedTask.requestedBy,
         `[Task Update] ${changedTask.title} — ${updates.status}`,
-        `<p>Hi ${escHtml(changedTask.requestedBy)},</p>
-        <p>A task you requested has been updated:</p>
-        <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Task</td><td>${escHtml(changedTask.title)}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">New Status</td><td>${escHtml(updates.status)}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Assigned To</td><td>${escHtml(changedTask.assignedTo || '—')}</td></tr>
-        </table>
-        <p><a href="${APP_URL}/my-tasks">View Tasks →</a></p>`
+        emailWrap(`Hi ${escHtml(changedTask.requestedBy)},`,
+          `<p style="margin:0 0 16px;">A task you requested has been updated:</p>` +
+          emailTable([
+            ['Task', escHtml(changedTask.title)],
+            ['New Status', escHtml(updates.status)],
+            ['Assigned To', escHtml(changedTask.assignedTo || '—')]
+          ]),
+          'View Tasks', `${APP_URL}/my-tasks`)
       ).catch(() => {});
     } else {
       console.warn('[EMAIL SKIP] No email for:', changedTask.requestedBy);
@@ -3142,13 +3322,13 @@ app.post('/api/tasks/:id/acknowledge', (req, res) => {
       if (rbEmail) {
         sendEmail(rbEmail, task.requestedBy,
           `[Task Seen] ${task.title}`,
-          `<p>Hi ${escHtml(task.requestedBy)},</p>
-          <p><strong>${escHtml(task.acknowledgedBy)}</strong> has marked your request as seen.</p>
-          <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-            <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Task</td><td>${escHtml(task.title)}</td></tr>
-            <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Assigned To</td><td>${escHtml(task.assignedTo || '—')}</td></tr>
-          </table>
-          <p><a href="${APP_URL}/my-tasks">View Tasks →</a></p>`
+          emailWrap(`Hi ${escHtml(task.requestedBy)},`,
+            `<p style="margin:0 0 16px;"><strong>${escHtml(task.acknowledgedBy)}</strong> has marked your request as seen.</p>` +
+            emailTable([
+              ['Task', escHtml(task.title)],
+              ['Assigned To', escHtml(task.assignedTo || '—')]
+            ]),
+            'View Tasks', `${APP_URL}/my-tasks`)
         ).catch(() => {});
       } else {
         console.warn('[EMAIL SKIP] No email for:', task.requestedBy);
@@ -3166,10 +3346,9 @@ app.post('/api/remind-eod', async (req, res) => {
     if (!email) return res.status(404).json({ error: 'Staff email not found' });
     await sendEmail(email, staffName,
       '[Reminder] Please submit your EOD log',
-      `<p>Hi ${staffName},</p>
-      <p>This is a reminder to submit your end-of-day log.</p>
-      <p><a href="${APP_URL}">Submit EOD Log →</a></p>
-      <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>`
+      emailWrap(`Hi ${escHtml(staffName)},`,
+        `<p style="margin:0;">This is a reminder to submit your end-of-day log.</p>`,
+        'Submit EOD Log', APP_URL)
     );
     res.json({ ok: true });
   } catch (e) { logError('route.post.remind-eod', e); res.status(500).json({ error: 'Internal server error' }); }
@@ -3181,7 +3360,7 @@ app.post('/api/tasks/:id/hours', (req, res) => {
     const idx = tasks.findIndex(t => t.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Task not found' });
     const entry = {
-      date: req.body.date || new Date().toISOString().split('T')[0],
+      date: req.body.date || todaySGT(),
       hours: parseFloat(req.body.hours) || 0,
       note: req.body.note || '',
       loggedBy: req.body.loggedBy || '',
@@ -3240,9 +3419,9 @@ app.post('/api/eod-log', postRateLimit, (req, res) => {
   const taskEntries = Array.isArray(req.body.taskEntries) ? req.body.taskEntries : [];
   if (date && !isValidDate(date)) return res.status(400).json({ error: 'Invalid date (YYYY-MM-DD expected)' });
   const logs = readEOD();
-  const logDate = date || new Date().toISOString().split('T')[0];
+  const logDate = date || todaySGT();
   const log = {
-    id: Date.now().toString(36),
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     staffName,
     date: logDate,
     submittedAt: new Date().toISOString(),
@@ -3272,7 +3451,7 @@ app.post('/api/eod-log', postRateLimit, (req, res) => {
       tasks[idx].hoursLogged.push({
         date: log.date,
         hours: parseFloat(entry.hours) || 0,
-        note: notes || '',
+        note: sanitizeStr(entry.note || '', 500) || notes || '',
         loggedBy: staffName,
         loggedAt: log.submittedAt
       });
@@ -3300,7 +3479,7 @@ function writeClaims(c) {
 app.get('/api/claims/summary', (req, res) => {
   try {
     const claims = readClaims();
-    const today = new Date().toISOString().split('T')[0];
+    const today = todaySGT();
     const outstanding = claims
       .filter(c => c.status !== 'Paid')
       .reduce((s, c) => s + (c.certifiedAmount || c.claimAmount || 0), 0);
@@ -3399,17 +3578,18 @@ app.post('/api/claims', (req, res) => {
   try {
     const claims = readClaims();
     const b = req.body;
-    const submitted = new Date(b.submittedDate || new Date());
+    const submittedStr = b.submittedDate && isValidDate(b.submittedDate) ? b.submittedDate : todaySGT();
+    const submitted = new Date(submittedStr + 'T00:00:00');
     const certDue = new Date(submitted); certDue.setDate(certDue.getDate() + 21);
     const claim = {
-      id: Date.now().toString(36),
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       projectId:            b.projectId || '',
       projectJobCode:       b.projectJobCode || '',
       projectName:          b.projectName || '',
       claimNumber:          b.claimNumber || 'PC#1',
       description:          b.description || '',
       claimAmount:          parseFloat(b.claimAmount) || 0,
-      submittedDate:        b.submittedDate || new Date().toISOString().split('T')[0],
+      submittedDate:        b.submittedDate || todaySGT(),
       submittedBy:          b.submittedBy || '',
       certificationDue:     certDue.toISOString().split('T')[0],
       certifiedDate:        null,
@@ -3476,7 +3656,7 @@ app.delete('/api/claims/:id', async (req, res) => {
 app.get('/api/eod-log', (req, res) => {
   try {
   const logs = readEOD();
-  const date = req.query.date || new Date().toISOString().split('T')[0];
+  const date = req.query.date || todaySGT();
   // When staffName is provided, return just that person's logs for that date as an array
   if (req.query.staffName) {
     const staffName = sanitizeStr(req.query.staffName, 100);
@@ -3514,9 +3694,10 @@ app.get('/api/tasks/history', (req, res) => {
     const { staffName, period } = req.query;
     const tasks = readTasks().filter(t => t.status === 'Done');
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    const today = todaySGT();
     const weekStart  = getWeekStart();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+    const sgtNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+    const monthStart = sgtNow.getFullYear() + '-' + String(sgtNow.getMonth() + 1).padStart(2, '0') + '-01';
 
     let filtered = staffName ? tasks.filter(t => t.assignedTo === staffName) : tasks;
     if (period === 'today')
@@ -3568,7 +3749,7 @@ cron.schedule('0 0 1 * *', () => {
 cron.schedule('0 9 * * 1-5', async () => {
   cronHeartbeat('9am-checks');
   try {
-  const today = new Date().toISOString().split('T')[0];
+  const today = todaySGT();
   const now = new Date();
 
   // ── Check 1: Overdue task emails ───────────────────────────────────────────
@@ -3582,10 +3763,14 @@ cron.schedule('0 9 * * 1-5', async () => {
     if (assigneeEmail) {
       await sendEmail(assigneeEmail, task.assignedTo,
         `[Overdue] ${task.title} — ${task.projectJobCode || 'General Task'}`,
-        `<p>Hi ${task.assignedTo},</p>
-        <p>You have an overdue task:</p>
-        <p><strong>${task.title}</strong><br>Due: ${task.dueDate}<br>Project: ${task.projectJobCode || 'N/A'}</p>
-        <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>`
+        emailWrap(`Hi ${escHtml(task.assignedTo)},`,
+          `<p style="margin:0 0 16px;">You have an overdue task:</p>` +
+          emailTable([
+            ['Task', escHtml(task.title)],
+            ['Due Date', escHtml(task.dueDate)],
+            ['Project', escHtml(task.projectJobCode || 'N/A')]
+          ]),
+          'View My Tasks', `${APP_URL}/my-tasks`)
       );
       task.overdueEmailSent = true;
       await new Promise(r => setTimeout(r, 2000));
@@ -3626,11 +3811,11 @@ cron.schedule('0 9 * * 1-5', async () => {
     if (claim.certificationDue === in7days && !claim.cert7DayEmailSent) {
       await sendEmail(qsEmail, qsName,
         `[SOP Alert] Certification due in 1 week — ${projLabel}`,
-        `<p>Hi ${qsName},</p>
-        <p>Progress claim <strong>${claim.claimNumber}</strong> for <strong>${claim.projectJobCode || ''}</strong> is due for certification in 1 week (${claim.certificationDue}).</p>
-        <p>Amount: ${money}</p>
-        <p>Please check with the client and chase early if needed.</p>
-        <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`,
+        emailWrap(`Hi ${escHtml(qsName)},`,
+          `<p style="margin:0 0 16px;">Progress claim <strong>${escHtml(claim.claimNumber)}</strong> for <strong>${escHtml(claim.projectJobCode || '')}</strong> is due for certification in 1 week (${escHtml(claim.certificationDue)}).</p>` +
+          emailTable([['Amount', money]]) +
+          emailWarnBox('Please check with the client and chase early if needed.'),
+          'Open OPS Tracker', APP_URL),
         qsCc
       );
       claim.cert7DayEmailSent = true;
@@ -3641,11 +3826,11 @@ cron.schedule('0 9 * * 1-5', async () => {
     if (claim.certificationDue === in3days && !claim.cert3DayEmailSent) {
       await sendEmail(qsEmail, qsName,
         `[SOP Alert] Certification due in 3 days — ${projLabel}`,
-        `<p>Hi ${qsName},</p>
-        <p>Progress claim <strong>${claim.claimNumber}</strong> for <strong>${claim.projectJobCode || ''}</strong> certification is due in 3 days (${claim.certificationDue}).</p>
-        <p>If client has not responded, please chase now.</p>
-        <p>Amount: ${money}</p>
-        <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`,
+        emailWrap(`Hi ${escHtml(qsName)},`,
+          `<p style="margin:0 0 16px;">Progress claim <strong>${escHtml(claim.claimNumber)}</strong> for <strong>${escHtml(claim.projectJobCode || '')}</strong> certification is due in 3 days (${escHtml(claim.certificationDue)}).</p>` +
+          emailTable([['Amount', money]]) +
+          emailWarnBox('If client has not responded, please chase now.'),
+          'Open OPS Tracker', APP_URL),
         qsCc
       );
       claim.cert3DayEmailSent = true;
@@ -3656,11 +3841,11 @@ cron.schedule('0 9 * * 1-5', async () => {
     if (claim.certificationDue < today && !claim.certOverdueEmailSent) {
       await sendEmail(qsEmail, qsName,
         `[URGENT] SOP Deadline Passed — ${projLabel}`,
-        `<p>Hi ${qsName},</p>
-        <p>The SOP Act certification deadline has passed for <strong>${claim.claimNumber}</strong> on ${claim.projectJobCode || ''}.</p>
-        <p>Amount at risk: ${money}</p>
-        <p>Consider issuing a Payment Response Notice under SOP Act.</p>
-        <p><a href="${APP_URL}">Open OPS Tracker →</a></p>`,
+        emailWrap(`Hi ${escHtml(qsName)},`,
+          `<p style="margin:0 0 16px;">The SOP Act certification deadline has passed for <strong>${escHtml(claim.claimNumber)}</strong> on ${escHtml(claim.projectJobCode || '')}.</p>` +
+          emailTable([['Amount at risk', money]]) +
+          emailUrgentBox('Consider issuing a Payment Response Notice under SOP Act.'),
+          'Open OPS Tracker', APP_URL),
         qsCc
       );
       claim.certOverdueEmailSent = true;
@@ -3705,17 +3890,16 @@ cron.schedule('0 9 * * 1-5', async () => {
         ? `[FINAL FLAG] Still unacknowledged after 3 days: ${task.title}`
         : `[Reminder ${reminderNum}/${MAX_ACK_REMINDERS}] Please acknowledge: ${task.title}`;
       const htmlBody = isFinal
-        ? `<p>Hi ${escHtml(task.assignedTo)},</p>
-          <p>This task has been sitting unacknowledged for <strong>3 days</strong>. The boss has been CC'd on this reminder — please acknowledge or raise any blockers now.</p>
-          <p><strong>${escHtml(task.title)}</strong></p>
-          <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>
-          <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker — final reminder, no further nags will be sent.</p>`
-        : `<p>Hi ${escHtml(task.assignedTo)},</p>
-          <p>You have an unacknowledged task assigned to you (reminder ${reminderNum} of ${MAX_ACK_REMINDERS}):</p>
-          <p><strong>${escHtml(task.title)}</strong></p>
-          <p>Please acknowledge this task so the requester knows you have received it.</p>
-          <p><a href="${APP_URL}/my-tasks">View My Tasks →</a></p>
-          <p style="color:#888;font-size:12px;">Sent from LYS Operations Tracker</p>`;
+        ? emailWrap(`Hi ${escHtml(task.assignedTo)},`,
+          emailUrgentBox(`This task has been sitting unacknowledged for <strong>3 days</strong>. The boss has been CC'd — please acknowledge or raise any blockers now.`) +
+          emailTable([['Task', escHtml(task.title)]]) +
+          `<p style="margin:8px 0 0;font-size:12px;color:#888;">Final reminder — no further nags will be sent.</p>`,
+          'View My Tasks', `${APP_URL}/my-tasks`)
+        : emailWrap(`Hi ${escHtml(task.assignedTo)},`,
+          `<p style="margin:0 0 16px;">You have an unacknowledged task assigned to you (reminder ${reminderNum} of ${MAX_ACK_REMINDERS}):</p>` +
+          emailTable([['Task', escHtml(task.title)]]) +
+          `<p style="margin:0;">Please acknowledge this task so the requester knows you have received it.</p>`,
+          'View My Tasks', `${APP_URL}/my-tasks`);
       await sendEmail(assigneeEmail, task.assignedTo, subject, htmlBody, ccEmails);
       console.log(`[CRON] Ack reminder ${reminderNum}/${MAX_ACK_REMINDERS}${isFinal ? ' (BOSS FLAG)' : ''} → ${assigneeEmail} for task: ${task.title}`);
       task.ackReminderSentAt = now.toISOString();
@@ -3751,10 +3935,11 @@ cron.schedule('0 9 * * 1-5', async () => {
           if (laiEmail) {
             await sendEmail(laiEmail, getBossName(),
               `[EOD Alert] Still missing from yesterday (${yesterday}): ${stillMissing.length} staff`,
-              `<p>The following staff have <strong>still not submitted</strong> their EOD log for yesterday (${yesterday}):</p>
-              <ul>${stillMissing.map(n => `<li><strong>${n}</strong></li>`).join('')}</ul>
-              <p>6:30pm flag was sent yesterday. They have not caught up overnight.</p>
-              <p><a href="${APP_URL}/tasks">View Tasks Dashboard →</a></p>`
+              emailWrap(null,
+                `<p style="margin:0 0 16px;">The following staff have <strong>still not submitted</strong> their EOD log for yesterday (${yesterday}):</p>` +
+                `<ul style="margin:0 0 16px;padding-left:20px;">${stillMissing.map(n => `<li><strong>${escHtml(n)}</strong></li>`).join('')}</ul>` +
+                emailWarnBox('6:30pm flag was sent yesterday. They have not caught up overnight.'),
+                'View Tasks Dashboard', `${APP_URL}/tasks`)
             );
             console.log(`[CRON] 9am next-day EOD re-alert sent to boss: ${stillMissing.join(', ')}`);
           }
@@ -3813,18 +3998,21 @@ cron.schedule('0 9 * * 1-5', async () => {
         archivedAt:     null,
       });
       createdNotes++;
-      // Flag on the master project record so we never double-create
-      const masterList = readProjects();
-      const mi = masterList.findIndex(x => x.id === p.id);
-      if (mi !== -1) {
-        masterList[mi].installCompleteTaskCreated = true;
-        masterList[mi].installCompleteTaskAt = new Date().toISOString();
-        writeProjects(masterList);
-        projectsChanged = true;
-      }
     }
     if (createdNotes > 0) {
       writeTasks(noteTasks);
+      // Flag projects in a single read-write pass (not inside the loop)
+      const masterList = readProjects();
+      for (const p of projectsForNotes) {
+        if ((p.installPercent || 0) >= 100 && !p.installCompleteTaskCreated) {
+          const mi = masterList.findIndex(x => x.id === p.id);
+          if (mi !== -1) {
+            masterList[mi].installCompleteTaskCreated = true;
+            masterList[mi].installCompleteTaskAt = new Date().toISOString();
+          }
+        }
+      }
+      writeProjects(masterList);
       console.log(`[CRON] Created ${createdNotes} install-complete note task(s) for QS`);
       logActivity('install-complete-notes.created', { count: createdNotes });
     } else {
@@ -3858,10 +4046,10 @@ cron.schedule('0 12 * * 1-5', async () => {
       const label = group.jobCode || group.projectName || '(no project)';
       await sendEmail(factoryEmail, factoryName,
         `[Reminder] Unacknowledged Site Request — ${label}`,
-        `<p>Hi ${factoryName.split(' ')[0]},</p>
-        <p>A site request for <strong>${label}</strong> has been waiting for your acknowledgement for over 24 hours.</p>
-        <p>Items: ${group.items.map(r => `${r.item} (${r.quantity || r.qtyRequested || ''} ${r.unit || ''})`).join(', ')}</p>
-        <p><a href="${APP_URL}/factory">Open Factory dashboard →</a></p>`
+        emailWrap(`Hi ${escHtml(factoryName.split(' ')[0])},`,
+          `<p style="margin:0 0 16px;">A site request for <strong>${escHtml(label)}</strong> has been waiting for your acknowledgement for over 24 hours.</p>` +
+          emailTable([['Items', group.items.map(r => `${escHtml(r.item)} (${r.quantity || r.qtyRequested || ''} ${escHtml(r.unit || '')})`).join(', ')]]),
+          'Open Factory Dashboard', `${APP_URL}/factory`)
       );
     }
   } catch (e) { logError('cron.noon-sr', e); }
@@ -3872,7 +4060,7 @@ cron.schedule('0 18 * * 1-5', async () => {
   cronHeartbeat('6pm-eod-reminder');
   try {
   console.log('[CRON] 6pm EOD reminder running...');
-  const today = new Date().toISOString().split('T')[0];
+  const today = todaySGT();
   const logs = readEOD();
   const submitted = logs.filter(l => l.date === today).map(l => l.staffName);
   const staffToRemind = getStaffNames().filter(n => n !== getBossName() && !submitted.includes(n));
@@ -3897,24 +4085,17 @@ cron.schedule('0 18 * * 1-5', async () => {
           const color = t.status === 'Done' ? '#00c875' : '#fdab3d';
           const strike = t.status === 'Done' ? 'text-decoration:line-through;' : '';
           return `<li style="padding:5px 0;border-bottom:1px solid #eee;list-style:none;font-size:13px;">`+
-            `${icon} <span style="color:${color};${strike}">${t.title}</span>` +
-            (t.category ? ` <span style="color:#aaa;font-size:11px;">[${t.category}]</span>` : '') +
+            `${icon} <span style="color:${color};${strike}">${escHtml(t.title)}</span>` +
+            (t.category ? ` <span style="color:#aaa;font-size:11px;">[${escHtml(t.category)}]</span>` : '') +
             `</li>`;
         }).join('')
       : `<li style="padding:5px 0;list-style:none;font-size:13px;color:#888;">No tasks assigned today.</li>`;
 
-    const htmlBody =
-      `<div style="font-family:Arial,sans-serif;max-width:520px;color:#222;">` +
-      `<p style="margin:0 0 12px;">Hi ${firstName},</p>` +
+    const htmlBody = emailWrap(`Hi ${escHtml(firstName)},`,
       `<p style="margin:0 0 16px;">This is a reminder to submit your <strong>EOD report</strong> for today.</p>` +
       `<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin-bottom:8px;">Today's Tasks</div>` +
-      `<ul style="padding:0;margin:0 0 20px;">${taskRowsHtml}</ul>` +
-      `<p style="margin:0 0 20px;">` +
-        `<a href="${APP_URL}/my-tasks#${firstName.toLowerCase()}" ` +
-        `style="background:#3366ff;color:#fff;padding:9px 20px;border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;">` +
-        `Submit EOD Report →</a></p>` +
-      `<p style="margin:0;font-size:11px;color:#aaa;">LYS Ops Tracker</p>` +
-      `</div>`;
+      `<ul style="padding:0;margin:0 0 20px;">${taskRowsHtml}</ul>`,
+      'Submit EOD Report', `${APP_URL}/my-tasks#${firstName.toLowerCase()}`);
 
     await sendEmail(email, name, 'EOD Reminder — Please submit your report for today', htmlBody);
     sent++;
@@ -3928,7 +4109,7 @@ cron.schedule('0 18 * * 1-5', async () => {
 cron.schedule('30 18 * * 1-5', async () => {
   try {
   console.log('[CRON] 6:30pm EOD check running...');
-  const today = new Date().toISOString().split('T')[0];
+  const today = todaySGT();
   const logs = readEOD();
   const submitted = logs.filter(l => l.date === today).map(l => l.staffName);
   const staffNames = getStaffNames().filter(n => n !== getBossName());
@@ -3948,9 +4129,10 @@ cron.schedule('30 18 * * 1-5', async () => {
     if (laiEmail) {
       await sendEmail(laiEmail, getBossName(),
         `[EOD Alert] ${missing.length} staff haven't submitted end-of-day log`,
-        `<p>The following staff have not submitted their EOD log today (${today}):</p>
-        <ul>${missing.map(n => `<li><strong>${n}</strong></li>`).join('')}</ul>
-        <p><a href="${APP_URL}/tasks">View Tasks Dashboard →</a></p>`
+        emailWrap(null,
+          `<p style="margin:0 0 16px;">The following staff have not submitted their EOD log today (${today}):</p>` +
+          `<ul style="margin:0 0 16px;padding-left:20px;">${missing.map(n => `<li><strong>${escHtml(n)}</strong></li>`).join('')}</ul>`,
+          'View Tasks Dashboard', `${APP_URL}/tasks`)
       );
     }
   }
@@ -4135,7 +4317,7 @@ app.get('/api/export/projects', (req, res) => {
     xlsx.utils.book_append_sheet(wb, ws, 'Projects');
 
     const buf = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
-    const filename = `LYS-Projects-${new Date().toISOString().split('T')[0]}.xlsx`;
+    const filename = `LYS-Projects-${todaySGT()}.xlsx`;
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.send(buf);
@@ -4224,10 +4406,41 @@ function writeAttendance(records) {
   safeWriteJSON(ATTENDANCE_FILE, records);
 }
 
+// GET /api/attendance/week?weekStart=YYYY-MM-DD — returns MC/Off/Leave statuses for the week (Mon-Sat)
+app.get('/api/attendance/week', (req, res) => {
+  try {
+    const ws = req.query.weekStart;
+    if (!ws || !isValidDate(ws)) return res.status(400).json({ error: 'weekStart required (YYYY-MM-DD)' });
+    const wsDate = new Date(ws + 'T00:00:00');
+    // Build list of 6 dates (Mon-Sat)
+    const dayKeys = ['mon','tue','wed','thu','fri','sat'];
+    const dates = dayKeys.map((_, i) => {
+      const d = new Date(wsDate);
+      d.setDate(d.getDate() + i);
+      return d.toISOString().split('T')[0];
+    });
+    const all = readAttendance();
+    // Build { workerId: { mon: status, tue: status, ... } } for non-working statuses only
+    const result = {};
+    const absenceStatuses = ['MC', 'Off', 'On Leave', 'Absent'];
+    dates.forEach((dateStr, i) => {
+      const rec = all.find(r => r.date === dateStr);
+      if (!rec || !rec.records) return;
+      rec.records.forEach(r => {
+        if (absenceStatuses.includes(r.status)) {
+          if (!result[r.workerId]) result[r.workerId] = {};
+          result[r.workerId][dayKeys[i]] = { status: r.status, notes: r.notes || '' };
+        }
+      });
+    });
+    res.json(result);
+  } catch (e) { logError('route.get.attendance.week', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
 // GET /api/attendance/today — shortcut for today's date
 app.get('/api/attendance/today', (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = todaySGT();
     const all = readAttendance();
     const rec = all.find(r => r.date === today) || null;
     res.json(rec);
@@ -4292,16 +4505,7 @@ function writeSiteRequests(records) {
   safeWriteJSON(SITE_REQUESTS_FILE, records);
 }
 
-// GET /api/system-map — returns the docs/PAGES.md file for the admin System Map panel
-app.get('/api/system-map', (req, res) => {
-  try {
-    const mdPath = path.join(__dirname, 'docs', 'PAGES.md');
-    if (!fs.existsSync(mdPath)) return res.status(404).json({ error: 'System map not found' });
-    const md = fs.readFileSync(mdPath, 'utf8');
-    const stat = fs.statSync(mdPath);
-    res.json({ markdown: md, mtime: stat.mtime.toISOString() });
-  } catch (e) { logError('route.get.system-map', e); res.status(500).json({ error: 'Internal server error' }); }
-});
+// /api/system-map removed — dead route, no frontend caller
 
 const VALID_SR_STATUSES = ['New', 'Acknowledged', 'In Fabrication', 'Ready', 'Delivered', 'Received', 'Issue'];
 
@@ -4388,18 +4592,18 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
   if (factoryEmail) {
     sendEmail(factoryEmail, factoryName,
       `[New Site Request] ${item} — ${projectJobCode || projectName}`,
-      `<p>Hi ${factoryName.split(' ')[0]},</p>
-      <p>A new factory request has been submitted.</p>
-      <table style="border-collapse:collapse;font-family:Arial,sans-serif;margin:10px 0;">
-        <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Item</td><td>${item}</td></tr>
-        <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Qty</td><td>${quantity} ${unit}</td></tr>
-        <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Project</td><td>${projectJobCode || ''} ${projectName || ''}</td></tr>
-        <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Needed By</td><td>${neededByDate}</td></tr>
-        <tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Requested By</td><td>${requestedBy}</td></tr>
-        ${notes ? `<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Notes</td><td>${notes}</td></tr>` : ''}
-      </table>
-      <p>View in the <a href="${APP_URL}/factory">Factory dashboard</a> → Site Requests tab.</p>`
-    );
+      emailWrap(`Hi ${escHtml(factoryName.split(' ')[0])},`,
+        `<p style="margin:0 0 16px;">A new factory request has been submitted.</p>` +
+        emailTable([
+          ['Item', escHtml(item)],
+          ['Qty', `${escHtml(String(quantity))} ${escHtml(unit)}`],
+          ['Project', `${escHtml(projectJobCode || '')} ${escHtml(projectName || '')}`],
+          ['Needed By', escHtml(neededByDate)],
+          ['Requested By', escHtml(requestedBy)],
+          notes ? ['Notes', escHtml(notes)] : null
+        ]),
+        'Open Factory Dashboard', `${APP_URL}/factory`)
+    ).catch(() => {});
   }
 
   res.json(record);
@@ -4496,12 +4700,14 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
     if (engEmail) {
       sendEmail(engEmail, record.requestedBy,
         `[Ready] ${record.item} is ready for delivery`,
-        `<p>Hi ${escHtml(record.requestedBy)},</p>
-        <p>Your factory request for <strong>${escHtml(record.item)}</strong> (${escHtml(String(record.quantity))} ${escHtml(record.unit)}) is ready.</p>
-        ${record.estimatedReadyDate ? `<p>Estimated delivery: ${escHtml(record.estimatedReadyDate)}</p>` : ''}
-        ${record.factoryNotes ? `<p>Notes from factory: ${escHtml(record.factoryNotes)}</p>` : ''}
-        <p>View status in <a href="${APP_URL}/installation">Installation tracker</a> → My Requests.</p>`
-      );
+        emailWrap(`Hi ${escHtml(record.requestedBy)},`,
+          `<p style="margin:0 0 16px;">Your factory request for <strong>${escHtml(record.item)}</strong> (${escHtml(String(record.quantity))} ${escHtml(record.unit)}) is ready.</p>` +
+          emailTable([
+            record.estimatedReadyDate ? ['Estimated Delivery', escHtml(record.estimatedReadyDate)] : null,
+            record.factoryNotes ? ['Factory Notes', escHtml(record.factoryNotes)] : null
+          ]),
+          'Open Installation', `${APP_URL}/installation`)
+      ).catch(() => {});
     }
   }
 
@@ -4511,10 +4717,13 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
     if (engEmail) {
       sendEmail(engEmail, record.requestedBy,
         `[Delivered] ${record.item} has been delivered`,
-        `<p>Hi ${escHtml(record.requestedBy)},</p>
-        <p><strong>${escHtml(record.item)}</strong> (${escHtml(String(record.quantity))} ${escHtml(record.unit)}) has been delivered to site.</p>
-        <p>Project: ${escHtml(record.projectJobCode || '')} ${escHtml(record.projectName || '')}</p>`
-      );
+        emailWrap(`Hi ${escHtml(record.requestedBy)},`,
+          `<p style="margin:0 0 16px;"><strong>${escHtml(record.item)}</strong> (${escHtml(String(record.quantity))} ${escHtml(record.unit)}) has been delivered to site.</p>` +
+          emailTable([
+            ['Project', `${escHtml(record.projectJobCode || '')} ${escHtml(record.projectName || '')}`]
+          ]),
+          null, null)
+      ).catch(() => {});
     }
   }
 
@@ -4525,11 +4734,12 @@ app.put('/api/site-requests/:id', postRateLimit, (req, res) => {
       const fmName = getFactoryManagerName();
       sendEmail(engEmail, record.requestedBy,
         `[Issue] Factory cannot fulfil request: ${record.item}`,
-        `<p>Hi ${escHtml(record.requestedBy)},</p>
-        <p>There is an issue with your request for <strong>${escHtml(record.item)}</strong>.</p>
-        ${record.issueReason ? `<p>Reason: ${escHtml(record.issueReason)}</p>` : ''}
-        <p>Please follow up with ${escHtml(fmName)} directly.</p>`
-      );
+        emailWrap(`Hi ${escHtml(record.requestedBy)},`,
+          `<p style="margin:0 0 16px;">There is an issue with your request for <strong>${escHtml(record.item)}</strong>.</p>` +
+          (record.issueReason ? emailUrgentBox(`Reason: ${escHtml(record.issueReason)}`) : '') +
+          `<p style="margin:16px 0 0;">Please follow up with ${escHtml(fmName)} directly.</p>`,
+          null, null)
+      ).catch(() => {});
     }
   }
 
@@ -4767,42 +4977,49 @@ app.get('/api/logs', (req, res) => {
 // to the person's name via readStaff(). If a role isn't in staff.json, those
 // tasks are silently skipped — no code change needed when staff changes.
 const RECURRING_ROLE_DEFS = {
+  'GM': {
+    daily: [
+      { title: 'Review EOD flags — action any gaps from yesterday',                  category: 'People'     },
+      { title: 'Review cash position — check what landed, what\'s overdue',          category: 'Finance'    },
+      { title: 'Approve/reject pending decisions — POs, scope changes, OT',          category: 'Operations' },
+    ],
+    monday: [
+      { title: 'Weekly P&L check — margin vs forecast on active projects',           category: 'Finance'    },
+    ],
+  },
   'Factory Manager': {
     daily: [
       { title: 'Take attendance — mark MC/absent workers',                           category: 'People'     },
       { title: 'Review today\'s fabrication priorities across all projects',          category: 'Operations' },
-      { title: 'Safety walkthrough — check machines, tools, fire exits',             category: 'Safety'     },
       { title: 'Check site requests inbox — acknowledge within 2 hours',             category: 'Operations' },
       { title: 'Assign workers to projects and plan transport',                      category: 'People'     },
       { title: 'Update FAB progress on all active items',                            category: 'Reporting'  },
       { title: 'Confirm next-day material and delivery readiness',                   category: 'Operations' },
-      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
     ],
     monday: [
       { title: 'Weekly fab planning — align with site engineer priorities',           category: 'Operations' },
       { title: 'Check stock levels — flag low materials to purchaser',               category: 'Operations' },
+      { title: 'Safety walkthrough with photo evidence — machines, tools, fire exits', category: 'Safety'   },
     ],
   },
   'Purchaser': {
     daily: [
+      { title: 'Review and action all new PRs raised since yesterday',               category: 'Operations'  },
       { title: 'Check all pending POs — confirm delivery dates with suppliers',      category: 'Operations'  },
       { title: 'Follow up on overdue supplier deliveries',                           category: 'Operations'  },
-      { title: 'Source 1 new supplier contact today — log in Procurement',           category: 'Development' },
       { title: 'Update material ETA for all active projects',                        category: 'Reporting'   },
-      { title: 'Submit EOD log',                                                     category: 'Reporting'   },
     ],
     monday: [
-      { title: 'Weekly supplier review — compare prices, flag unreliable suppliers', category: 'Operations' },
+      { title: 'Weekly supplier review — compare prices, flag unreliable suppliers', category: 'Operations'  },
+      { title: 'Get 1 competitive quote on top-3 spend items this month',            category: 'Development' },
     ],
   },
   'QS': {
-    // Both QSs get the same generic checklist. The role 'QS' in staff.json
-    // maps to one person; the second QS should have a 'QS2' role alias.
     daily: [
       { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
-      { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
+      { title: 'Chase outstanding payment responses past SOP deadline — escalate if >3 days', category: 'Operations' },
       { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
-      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+      { title: 'Prepare next progress claim for any project within 5 working days of claim date', category: 'Operations' },
     ],
     monday: [
       { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
@@ -4811,9 +5028,9 @@ const RECURRING_ROLE_DEFS = {
   'QS2': {
     daily: [
       { title: 'Review SOP Act deadlines — flag anything due within 7 days',         category: 'Reporting'  },
-      { title: 'Chase outstanding payment responses from clients',                   category: 'Operations' },
+      { title: 'Chase outstanding payment responses past SOP deadline — escalate if >3 days', category: 'Operations' },
       { title: 'Update claims status for all active projects',                       category: 'Reporting'  },
-      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
+      { title: 'Prepare next progress claim for any project within 5 working days of claim date', category: 'Operations' },
     ],
     monday: [
       { title: 'Weekly claims review — total outstanding, overdue, upcoming',        category: 'Reporting'  },
@@ -4824,11 +5041,19 @@ const RECURRING_ROLE_DEFS = {
       { title: 'Follow up on outstanding quotations with clients',                   category: 'Operations'  },
       { title: 'Check for new enquiries / tender invitations',                       category: 'Operations'  },
       { title: 'Update sales pipeline — Tendering / Quotation stage projects',       category: 'Reporting'   },
-      { title: 'Chase newly Awarded projects — ensure clean handover to PM + drafter', category: 'Operations' },
-      { title: 'Submit EOD log',                                                     category: 'Reporting'   },
     ],
     monday: [
       { title: 'Weekly sales pipeline review — total quoted, pending decisions, lost jobs', category: 'Reporting' },
+    ],
+  },
+  'Finance': {
+    daily: [
+      { title: 'Issue invoices for any certified claims within 24 hours of QS confirmation', category: 'Operations' },
+      { title: 'Update payment received — match to bank statement',                  category: 'Reporting'  },
+      { title: 'Flag any invoice unpaid past 30 days to QS + boss',                  category: 'Operations' },
+    ],
+    monday: [
+      { title: 'Weekly AR aging report — outstanding by project and age bucket',     category: 'Reporting'  },
     ],
   },
   'Site Engineer': {
@@ -4837,7 +5062,6 @@ const RECURRING_ROLE_DEFS = {
       { title: 'Check factory readiness for items needed this week',                 category: 'Operations' },
       { title: 'Update installation progress on active projects',                    category: 'Reporting'  },
       { title: 'Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other', category: 'Reporting' },
-      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
     ],
     monday: [
       { title: 'Weekly site planning — align with factory on delivery schedule',     category: 'Operations' },
@@ -4849,7 +5073,6 @@ const RECURRING_ROLE_DEFS = {
       { title: 'Check factory readiness for items needed this week',                 category: 'Operations' },
       { title: 'Update installation progress on active projects',                    category: 'Reporting'  },
       { title: 'Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other', category: 'Reporting' },
-      { title: 'Submit EOD log',                                                     category: 'Reporting'  },
     ],
     monday: [
       { title: 'Weekly site planning — align with factory on delivery schedule',     category: 'Operations' },
@@ -4916,12 +5139,12 @@ async function createDailyRecurringTasks() {
     const allDefs = daily.concat(monday);
 
     for (const def of allDefs) {
-      // Dedup: skip if same assignedTo + title already created today
-      const todaySGT = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"})).toISOString().slice(0,10);
+      // Dedup: skip if same assignedTo + title already exists for today (use dueDate which is SGT-stamped)
+      const todaySGTStr = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"})).toISOString().slice(0,10);
       const exists = tasks.some(t =>
         t.assignedTo === person &&
         t.title === def.title &&
-        (t.createdAt || t.dueDate || "").slice(0,10) === todaySGT
+        (t.dueDate || t.createdAt || "").slice(0,10) === todaySGTStr
       );
       if (exists) continue;
 
@@ -4978,25 +5201,18 @@ async function createDailyRecurringTasks() {
       const taskListHtml = personTasks.map((t, i) =>
         `<li style="padding:7px 0;border-bottom:1px solid #eee;list-style:none;display:flex;align-items:flex-start;gap:8px;">` +
         `<span style="color:#3366ff;font-size:13px;font-weight:700;flex-shrink:0;min-width:20px;">${i + 1}.</span>` +
-        `<div><span style="font-size:13px;">${t.title}</span> ` +
-        `<span style="display:inline-block;font-size:10px;font-weight:700;color:#fff;background:#3366ff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">${t.category}</span></div>` +
+        `<div><span style="font-size:13px;">${escHtml(t.title)}</span> ` +
+        `<span style="display:inline-block;font-size:10px;font-weight:700;color:#fff;background:#3366ff;border-radius:4px;padding:1px 6px;margin-left:4px;vertical-align:middle;">${escHtml(t.category)}</span></div>` +
         `</li>`
       ).join('');
       const firstName = person.split(' ')[0];
-      const htmlBody =
-        `<div style="font-family:Arial,sans-serif;max-width:520px;color:#222;">` +
-        `<p style="margin:0 0 4px;font-size:15px;font-weight:700;">Good morning ${firstName} 👋</p>` +
+      const htmlBody = emailWrap(null,
+        `<p style="margin:0 0 4px;font-size:15px;font-weight:700;">Good morning ${escHtml(firstName)}</p>` +
         `<p style="margin:0 0 16px;font-size:12px;color:#888;">${dayName}, ${dateFmt}</p>` +
         `<p style="margin:0 0 10px;font-size:13px;">Here are your <strong>${personTasks.length} task${personTasks.length !== 1 ? 's' : ''}</strong> for today:</p>` +
         `<ul style="padding:0;margin:0 0 20px;">${taskListHtml}</ul>` +
-        `<p style="margin:0 0 20px;">` +
-        `<a href="${APP_URL}/my-tasks#${firstName.toLowerCase()}" ` +
-        `style="background:#3366ff;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px;display:inline-block;">` +
-        `Open My Tasks →</a></p>` +
-        `<p style="margin:0 0 0;padding:12px 16px;background:#fff8e6;border-left:3px solid #fdab3d;border-radius:4px;font-size:12px;color:#b45309;">` +
-        `📋 Remember to submit your EOD report by 6pm</p>` +
-        `<p style="margin:12px 0 0;font-size:11px;color:#aaa;">LYS Ops Tracker</p>` +
-        `</div>`;
+        emailWarnBox('Remember to submit your EOD report by 6pm'),
+        'Open My Tasks', `${APP_URL}/my-tasks#${firstName.toLowerCase()}`);
       try {
         await sendEmail(personEmail, person, `Good morning ${firstName} — Your tasks for ${dayName}, ${dateFmt}`, htmlBody);
       } catch (e) {
@@ -5020,6 +5236,7 @@ console.log('[RECURRING] Daily task cron scheduled: 8:45am SGT, Mon–Fri');
 // the 8:45am cron calls. Idempotent — dedups by assignedTo+title+today.
 app.post('/api/admin/seed-recurring-tasks', async (req, res) => {
   try {
+    if (!await requireAdminAuth(req, res)) return;
     const before = readTasks().length;
     await createDailyRecurringTasks();
     const after  = readTasks().length;
@@ -5047,7 +5264,7 @@ function writeDOs(d)         { safeWriteJSON(DO_FILE, d); }
 
 // Auto-flag Overdue: promisedDate < today and status !== Delivered
 function applyOverdueFlag(pos) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = todaySGT();
   return pos.map(po => {
     if (po.status !== 'Delivered' && po.promisedDate && po.promisedDate < today) {
       return Object.assign({}, po, { status: 'Overdue' });
@@ -5181,7 +5398,7 @@ app.post('/api/prices', postRateLimit, (req, res) => {
       unit:         String(b.unit         || '').trim().slice(0, 30),
       supplierId:   String(b.supplierId   || '').trim(),
       supplierName: String(b.supplierName || '').trim().slice(0, 200),
-      date:         String(b.date || new Date().toISOString().split('T')[0]).trim().slice(0, 10),
+      date:         String(b.date || todaySGT()).trim().slice(0, 10),
       notes:        String(b.notes        || '').trim().slice(0, 500),
       createdAt:    new Date().toISOString()
     };
@@ -5194,77 +5411,7 @@ app.post('/api/prices', postRateLimit, (req, res) => {
   } catch (e) { logError('route.post.prices', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// ── Purchase Orders API ───────────────────────────────────────────────────────
-app.get('/api/purchase-orders', (req, res) => {
-  try {
-    const pos = applyOverdueFlag(readPOs());
-    if (req.query.projectId) return res.json(pos.filter(po => po.projectId === req.query.projectId));
-    res.json(pos);
-  } catch (e) { logError('route.get.purchase-orders', e); res.status(500).json({ error: 'Internal server error' }); }
-});
-
-app.post('/api/purchase-orders', postRateLimit, (req, res) => {
-  try {
-    const b = req.body;
-    const qty = parseFloat(b.quantity) || 0;
-    const up  = parseFloat(b.unitPrice) || 0;
-    const po = {
-      id:             'PO-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase(),
-      projectId:      String(b.projectId      || '').trim(),
-      projectJobCode: String(b.projectJobCode || '').trim().slice(0, 50),
-      material:       String(b.material       || '').trim().slice(0, 200),
-      quantity:       qty,
-      unit:           String(b.unit           || '').trim().slice(0, 30),
-      supplierId:     String(b.supplierId     || '').trim(),
-      supplierName:   String(b.supplierName   || '').trim().slice(0, 200),
-      unitPrice:      up,
-      totalAmount:    parseFloat(b.totalAmount) || (qty * up),
-      orderedDate:    String(b.orderedDate  || new Date().toISOString().split('T')[0]).trim().slice(0, 10),
-      promisedDate:   String(b.promisedDate || '').trim().slice(0, 10),
-      actualDate:     String(b.actualDate   || '').trim().slice(0, 10),
-      status:         ['Ordered', 'In Transit', 'Delivered', 'Overdue'].includes(b.status) ? b.status : 'Ordered',
-      notes:          String(b.notes        || '').trim().slice(0, 500),
-      createdAt:      new Date().toISOString()
-    };
-    if (!po.material) return res.status(400).json({ error: 'material required' });
-    const pos = readPOs();
-    pos.push(po);
-    writePOs(pos);
-    logActivity('po.created', { id: po.id, material: po.material, supplierName: po.supplierName });
-    res.status(201).json(po);
-  } catch (e) { logError('route.post.purchase-orders', e); res.status(500).json({ error: 'Internal server error' }); }
-});
-
-app.put('/api/purchase-orders/:id', (req, res) => {
-  try {
-    const pos = readPOs();
-    const idx = pos.findIndex(p => p.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Purchase order not found' });
-    const b = req.body;
-    const PO_WRITABLE = ['poNumber', 'supplier', 'eta', 'status', 'notes', 'items', 'projectCode', 'site'];
-    const clean = {};
-    for (const k of PO_WRITABLE) { if (b[k] !== undefined) clean[k] = b[k]; }
-    Object.assign(pos[idx], clean);
-    pos[idx].updatedAt = new Date().toISOString();
-    if (!['Ordered', 'In Transit', 'Delivered', 'Overdue'].includes(pos[idx].status)) pos[idx].status = 'Ordered';
-    writePOs(pos);
-    logActivity('po.updated', { id: pos[idx].id, status: pos[idx].status });
-    res.json(applyOverdueFlag([pos[idx]])[0]);
-  } catch (e) { logError('route.put.purchase-orders', e); res.status(500).json({ error: 'Internal server error' }); }
-});
-
-app.delete("/api/purchase-orders/:id", async (req, res) => {
-  try {
-    if (!await requireAdminAuth(req, res)) return;
-    const orders = readPOs();
-    const idx = orders.findIndex(o => o.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: "Not found" });
-    orders.splice(idx, 1);
-    writePOs(orders);
-    logActivity("purchase-order.deleted", { id: req.params.id });
-    res.json({ ok: true });
-  } catch (e) { logError('route.delete.purchase-orders', e); res.status(500).json({ error: 'Internal server error' }); }
-});
+// /api/purchase-orders CRUD removed — dead routes, no frontend caller, no data file
 
 // ── Historical PR Import ──────────────────────────────────────────────────────
 function importPRHistory() {
@@ -5322,7 +5469,7 @@ function importPRHistory() {
 app.get('/api/purchase-requisitions', (req, res) => {
   try {
     let prs = readPRs();
-    const today = new Date().toISOString().split('T')[0];
+    const today = todaySGT();
     prs = prs.map(pr => {
       if (pr.status !== 'Delivered' && pr.eta && pr.eta < today) {
         const hasOutstanding = (pr.items || []).some(i => (i.outstanding || 0) > 0);
@@ -5356,7 +5503,7 @@ app.post('/api/purchase-requisitions', postRateLimit, async (req, res) => {
     })) : [];
     const pr = {
       id: prNumber, prNumber, poNumber: null,
-      requestDate:  new Date().toISOString().split('T')[0],
+      requestDate:  todaySGT(),
       projectCode:  String(b.projectCode || '').trim().slice(0, 100),
       site:         String(b.site || '').trim().slice(0, 200),
       items, status: 'Pending', supplier: null, eta: null,
@@ -5377,35 +5524,22 @@ app.post('/api/purchase-requisitions', postRateLimit, async (req, res) => {
     const bossEmail      = getRoleEmail('Project Manager');
     const bossName       = getBossName();
     const itemsSummary = pr.items.map(i => `${i.description || '—'} (${i.qty} ${i.unit})`).join('; ') || '—';
-    try {
-      const accessToken = await getAccessToken();
-      if (accessToken && process.env.SENDER_EMAIL) {
-        const toAddr = process.env.EMAIL_TEST_OVERRIDE || purchaserEmail;
-        const ccAddr = process.env.EMAIL_TEST_OVERRIDE || bossEmail;
-        await fetch(`https://graph.microsoft.com/v1.0/users/${process.env.SENDER_EMAIL}/sendMail`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: {
-            subject: `New PR: ${prNumber} — ${pr.projectCode || 'General'}`,
-            body: { contentType: 'HTML', content:
-              `<p>Hi ${escHtml(purchaserName)},</p><p>A new Purchase Requisition has been submitted.</p>
-              <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PR Number</td><td>${escHtml(prNumber)}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(pr.projectCode || '—')}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Site</td><td>${escHtml(pr.site || '—')}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Urgency</td><td>${escHtml(pr.urgency)}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Items</td><td>${escHtml(itemsSummary)}</td></tr>
-                <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Submitted By</td><td>${escHtml(pr.submittedBy || '—')}</td></tr>
-                ${pr.notes ? `<tr><td style="padding:4px 14px 4px 0;font-weight:600;">Notes</td><td>${escHtml(pr.notes)}</td></tr>` : ''}
-              </table>
-              <p><a href="${APP_URL}/procurement">Open Procurement →</a></p>` },
-            toRecipients: [{ emailAddress: { address: toAddr, name: purchaserName } }],
-            ccRecipients: [{ emailAddress: { address: ccAddr, name: bossName } }]
-          }})
-        });
-        console.log(`[EMAIL] New PR notification → ${purchaserName} (CC: ${bossName})`);
-      }
-    } catch (mailErr) { console.error('[EMAIL] PR notify failed:', mailErr.message); }
+    sendEmail(purchaserEmail, purchaserName,
+      `New PR: ${prNumber} — ${pr.projectCode || 'General'}`,
+      emailWrap(`Hi ${escHtml(purchaserName.split(' ')[0])},`,
+        `<p style="margin:0 0 16px;">A new Purchase Requisition has been submitted.</p>` +
+        emailTable([
+          ['PR Number', escHtml(prNumber)],
+          ['Project', escHtml(pr.projectCode || '—')],
+          ['Site', escHtml(pr.site || '—')],
+          ['Urgency', escHtml(pr.urgency)],
+          ['Items', escHtml(itemsSummary)],
+          ['Submitted By', escHtml(pr.submittedBy || '—')],
+          pr.notes ? ['Notes', escHtml(pr.notes)] : null
+        ].filter(Boolean)),
+        'Open Procurement', `${APP_URL}/procurement`),
+      bossEmail
+    ).catch(mailErr => console.error('[EMAIL] PR notify failed:', mailErr.message));
   } catch (e) { logError('route.post.purchase-requisitions', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -5441,12 +5575,12 @@ app.put('/api/purchase-requisitions/:id', postRateLimit, async (req, res) => {
         if (upd.unitPrice  !== undefined) pr.items[i].unitPrice  = parseFloat(upd.unitPrice) || null;
         if (upd.qtyArrived !== undefined) {
           pr.items[i].qtyArrived = parseFloat(upd.qtyArrived) || 0;
-          pr.items[i].arriveDate = upd.arriveDate ? String(upd.arriveDate).trim().slice(0, 10) : (pr.items[i].arriveDate || new Date().toISOString().split('T')[0]);
+          pr.items[i].arriveDate = upd.arriveDate ? String(upd.arriveDate).trim().slice(0, 10) : (pr.items[i].arriveDate || todaySGT());
           pr.items[i].outstanding = Math.max(0, (pr.items[i].qty || 0) - pr.items[i].qtyArrived);
         }
       });
     }
-    const today2 = new Date().toISOString().split('T')[0];
+    const today2 = todaySGT();
     const totalArrived     = pr.items.reduce((s, i) => s + (i.qtyArrived || 0), 0);
     const totalOutstanding = pr.items.reduce((s, i) => s + (i.outstanding != null ? i.outstanding : (i.qty || 0)), 0);
     if      (totalArrived > 0 && totalOutstanding === 0) pr.status = 'Delivered';
@@ -5468,15 +5602,16 @@ app.put('/api/purchase-requisitions/:id', postRateLimit, async (req, res) => {
       if (fmEmail) {
         sendEmail(fmEmail, fmName,
           `PO Created for ${pr.prNumber}: ${pr.supplier || 'Supplier TBC'}, ETA: ${pr.eta || 'TBC'}, PO#: ${pr.poNumber}`,
-          `<p>Hi ${escHtml(fmName)},</p><p>A Purchase Order has been created for <strong>${escHtml(pr.prNumber)}</strong>.</p>
-          <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(pr.projectCode || '—')}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">PO Number</td><td>${escHtml(pr.poNumber)}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${escHtml(pr.supplier || '—')}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">ETA</td><td>${escHtml(pr.eta || 'TBC')}</td></tr>
-          </table>
-          ${pr.poDocPath ? `<p><a href="${APP_URL}${pr.poDocPath}">📄 View PO Document</a></p>` : ''}
-          <p><a href="${APP_URL}/procurement">Open Procurement →</a></p>`
+          emailWrap(`Hi ${escHtml(fmName)},`,
+            `<p style="margin:0 0 16px;">A Purchase Order has been created for <strong>${escHtml(pr.prNumber)}</strong>.</p>` +
+            emailTable([
+              ['Project', escHtml(pr.projectCode || '—')],
+              ['PO Number', escHtml(pr.poNumber)],
+              ['Supplier', escHtml(pr.supplier || '—')],
+              ['ETA', escHtml(pr.eta || 'TBC')]
+            ]) +
+            (pr.poDocPath ? `<p style="margin:0;"><a href="${APP_URL}${pr.poDocPath}">View PO Document</a></p>` : ''),
+            'Open Procurement', `${APP_URL}/procurement`)
         ).catch(() => {});
       }
       // Auto-update price book when Rena enters unit prices at processing time
@@ -5516,13 +5651,15 @@ app.put('/api/purchase-requisitions/:id', postRateLimit, async (req, res) => {
         const itemsList = pr.items.map(i => `${escHtml(i.description || '—')} (${i.qtyArrived || 0} ${escHtml(i.unit || '')})`).join(', ');
         sendEmail(purchEmail2, purchName2,
           `Materials Delivered: ${pr.prNumber} — ${pr.projectCode || ''}`,
-          `<p>Hi ${escHtml(purchName2)},</p><p>Materials for <strong>${escHtml(pr.prNumber)}</strong> have been fully delivered.</p>
-          <table style="border-collapse:collapse;font-family:Arial,sans-serif;">
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Project</td><td>${escHtml(pr.projectCode || '—')}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Supplier</td><td>${escHtml(pr.supplier || '—')}</td></tr>
-            <tr><td style="padding:4px 14px 4px 0;font-weight:600;">Items</td><td>${itemsList}</td></tr>
-          </table>
-          <p>Materials have been received at factory.</p><p><a href="${APP_URL}/procurement">Open Procurement →</a></p>`,
+          emailWrap(`Hi ${escHtml(purchName2)},`,
+            `<p style="margin:0 0 16px;">Materials for <strong>${escHtml(pr.prNumber)}</strong> have been fully delivered.</p>` +
+            emailTable([
+              ['Project', escHtml(pr.projectCode || '—')],
+              ['Supplier', escHtml(pr.supplier || '—')],
+              ['Items', itemsList]
+            ]) +
+            `<p style="margin:0;">Materials have been received at factory.</p>`,
+            'Open Procurement', `${APP_URL}/procurement`),
           finEmail2 ? [finEmail2] : []
         ).catch(() => {});
       }
@@ -5588,10 +5725,7 @@ try {
   console.error('[LYS OPS] Could not read data counts on startup:', e.message);
 }
 // ── Graceful shutdown — systemctl stop/restart sends SIGTERM ───────────────────
-process.on('SIGTERM', () => {
-  console.log('[SHUTDOWN] SIGTERM received — exiting gracefully');
-  process.exit(0);
-});
+// SIGTERM handler already registered at startup (line 135)
 
 // ── Crash handlers — log + alert, then let process manager restart ────────────
 const _serverStartTime = Date.now();
@@ -5613,7 +5747,11 @@ process.on('uncaughtException', (err) => {
       const bossEmail = process.env.SENDER_EMAIL;
       if (bossEmail) {
         sendEmail(bossEmail, 'System', '[LYS OPS] Server Crashed — Restarting',
-          `<p><strong>Uncaught Exception</strong></p><pre>${String(err.stack || err.message).slice(0, 500)}</pre><p>Server will auto-restart if running under systemd.</p>`
+          emailWrap(null,
+            emailUrgentBox('<strong>Uncaught Exception</strong>') +
+            `<pre style="margin:12px 0;padding:10px;background:#f5f5f5;border-radius:4px;font-size:12px;overflow-x:auto;">${escHtml(String(err.stack || err.message).slice(0, 500))}</pre>` +
+            `<p style="margin:0;font-size:13px;">Server will auto-restart if running under systemd.</p>`,
+            null, null)
         ).catch(() => {});
       }
     } catch {}

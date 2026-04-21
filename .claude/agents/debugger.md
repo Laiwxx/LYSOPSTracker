@@ -37,8 +37,10 @@ If you can't find the root cause, report that honestly with what you ruled out. 
 
 ## This project
 
-- Node.js monolith (`server.js` ~5500 lines), static HTML/CSS/vanilla JS, JSON storage in `data/`, config in `config/`.
-- Cron jobs live around server.js:3300–4900. Crash handlers at ~5430. Port listen at end of file.
+- Node.js monolith (`server.js` ~5700 lines), static HTML/CSS/vanilla JS, JSON storage in `data/`, config in `config/`.
+- Auth: session-based (express-session) at ~line 142. Credentials in `config/credentials.json`. SIGTERM handler at ~line 132.
+- Cron jobs live around server.js:3300–4900. Crash handlers at ~5670. Port listen at end of file.
 - Server managed by systemd (`ops-tracker.service`). Logs at `/var/log/ops-tracker.log` and `/var/log/ops-tracker.err.log`. App-level error log at `data/errors.log`. Activity log at `data/activity.log`.
 - To restart: `sudo systemctl restart ops-tracker`. To check status: `systemctl status ops-tracker`. NEVER run `node server.js` manually.
+- Known issue: orphan processes can hold port 3000 if SIGTERM doesn't fire. Fix: `lsof -ti :3000 | xargs kill -9` then restart.
 - When auditing, also check cron jobs — they are NOT reachable via API routes and are missed by endpoint-only tests.
