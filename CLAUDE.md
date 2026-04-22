@@ -102,5 +102,20 @@ ops-tracker/
 - Each page averages ~1,050 lines; the 4 ops pages average ~2,100 lines each
 
 ## Testing
+- **Scenario tests are mandatory** after any server.js or API change: `node tests/scenario-test.js`
+- All tests must pass (0 failures) before work is considered done
+- Test file self-bootstraps: creates temp credentials + admin pin, runs 22+ scenarios, cleans up
+- When adding new API features, add corresponding test scenarios to `tests/scenario-test.js`
 - `EMAIL_TEST_OVERRIDE` and `CALENDAR_TEST_OVERRIDE` env vars route all emails/calendar events to boss during testing
 - App is pre-launch — most data in `data/*.json` is test data from Excel migration
+
+## Code safety rules
+- Always use `todaySGT()` for date stamps — never `new Date().toISOString().split('T')[0]` (UTC)
+- Always use `safeWriteJSON()` for writing JSON files — never raw `fs.writeFileSync()`
+- Every `fetch()` in frontend must check `res.ok` and show error feedback on failure
+- Every `_busy` guard must reset on ALL early return paths before `finally`
+- Every ID must include random suffix: `Date.now().toString(36) + Math.random().toString(36).slice(2,6)`
+- Admin-only endpoints must call `requireAdminAuth(req, res)` as first check
+- `getRoleEmail()` does key lookup on staff.json — never search by name field
+- Delete cascades: when deleting a parent record, clean up child records in other data files
+- `sendEmail()` is the only way to send email — never raw fetch to Graph API

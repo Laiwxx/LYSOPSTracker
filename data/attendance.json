@@ -234,5 +234,23 @@
       }
     ],
     "savedAt": "2026-04-19T14:42:51.644Z"
+  },
+  {
+    "date": "2026-06-03",
+    "records": [
+      {
+        "workerId": "wi-test-1",
+        "workerName": "Test Worker",
+        "status": "MC",
+        "notes": "Flu"
+      },
+      {
+        "workerId": "wi-test-2",
+        "workerName": "Test Worker 2",
+        "status": "Present",
+        "notes": ""
+      }
+    ],
+    "savedAt": "2026-04-21T15:22:45.956Z"
   }
 ]

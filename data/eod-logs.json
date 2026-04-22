@@ -217,5 +217,29 @@
         "hours": 1
       }
     ]
+  },
+  {
+    "id": "mo9l0b660fu8",
+    "staffName": "Scenario Tester",
+    "date": "2026-04-21",
+    "submittedAt": "2026-04-22T04:57:48.174Z",
+    "totalHours": 1,
+    "hours": 1,
+    "notes": "Test",
+    "summary": "Test",
+    "issues": "",
+    "taskEntries": []
+  },
+  {
+    "id": "mo9celjru49e",
+    "staffName": "Salve",
+    "date": "2026-04-22",
+    "submittedAt": "2026-04-22T00:56:58.263Z",
+    "totalHours": 0,
+    "hours": 0,
+    "notes": "",
+    "summary": "",
+    "issues": "",
+    "taskEntries": []
   }
 ]

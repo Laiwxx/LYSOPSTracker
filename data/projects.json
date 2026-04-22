@@ -3,7 +3,7 @@
     "id": "bd-19121-rbss-dnr",
     "jobCode": "BD 19121- RBSS (DNR)",
     "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
-    "product": "2x Block S - Auto Bollard Cova, 3x Block S - Auto Bollard Cova, 7x Block S - Auto Bollard Cova, 2x Block S - Cova Road Blocker, 1x Block S - Cova Road Blocker",
+    "product": "2x Block S - Auto Bollard Cova, 3x Block S - Auto Bollard Cova, 7x Block S - Auto Bollard Cova, 2x Block S - Cova Road Blocker, 1x Block S - Cova Road Blocker, 1x CityScape Gate",
     "contractValue": 1595650,
     "voValue": 0,
     "client": "Police Force",
@@ -155,7 +155,7 @@
         "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-19T14:36:52.217Z",
+        "statusChangedAt": "2026-04-22T04:31:56.437Z",
         "refs": [],
         "fileName": ""
       },
@@ -167,7 +167,7 @@
         "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-19T14:36:52.217Z",
+        "statusChangedAt": "2026-04-22T04:31:56.437Z",
         "refs": [],
         "fileName": ""
       },
@@ -203,7 +203,7 @@
         "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-19T14:36:52.217Z",
+        "statusChangedAt": "2026-04-22T04:31:56.437Z",
         "refs": [],
         "fileName": ""
       },
@@ -215,7 +215,7 @@
         "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-19T14:36:52.217Z",
+        "statusChangedAt": "2026-04-22T04:26:32.194Z",
         "refs": [],
         "fileName": ""
       },
@@ -227,7 +227,7 @@
         "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-19T14:36:52.217Z",
+        "statusChangedAt": "2026-04-22T04:26:30.156Z",
         "refs": [],
         "fileName": ""
       },
@@ -281,24 +281,6 @@
       }
     ],
     "fabrication": [
-      {
-        "item": "Block S - City Scape Gate - 4.4 Meters",
-        "totalQty": 1,
-        "unit": "units",
-        "qtyDone": 0,
-        "qtySent": 0,
-        "status": "Not Started",
-        "started": "2026-04-01",
-        "done": "2026-04-10",
-        "readyForDelivery": true,
-        "readyAt": "2026-04-10T13:07:04.852Z",
-        "process": "Packing",
-        "targetDeliveryDate": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null,
-        "doneQty": 0
-      },
       {
         "item": "Block S - Auto Bollard Cova",
         "totalQty": 2,
@@ -380,26 +362,31 @@
         "fab_started_at": null,
         "fab_completed_at": null,
         "doneQty": 0
+      },
+      {
+        "item": "CityScape Gate",
+        "totalQty": 1,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
-      {
-        "item": "Block S - City Scape Gate - 4.4 Meters",
-        "totalQty": 1,
-        "unit": "sets",
-        "doneQty": 0,
-        "notes": "",
-        "status": "Not Started",
-        "qtyDone": 0
-      },
       {
         "item": "Block S - Auto Bollard Cova",
         "totalQty": 2,
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started",
-        "qtyDone": 0
+        "qtyDone": 0,
+        "status": "Not Started"
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -425,8 +412,8 @@
         "unit": "set-of-1",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started",
-        "qtyDone": 0
+        "qtyDone": 0,
+        "status": "Not Started"
       },
       {
         "item": "Block S - Cova Road Blocker",
@@ -436,6 +423,15 @@
         "notes": "",
         "status": "Not Started",
         "qtyDone": 0
+      },
+      {
+        "item": "CityScape Gate",
+        "totalQty": 1,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -526,6 +522,15 @@
         "type": "Local Fabrication",
         "itemType": "Fixed",
         "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "CityScape Gate",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Mechanical",
+        "partsRequired": true,
         "parts": []
       }
     ],
@@ -838,9 +843,10 @@
         "qty": 1,
         "unit": "sets",
         "zoneLabel": "",
-        "type": "Local Fabrication",
+        "type": "Overseas Order",
         "itemType": "Fixed",
-        "partsRequired": true
+        "partsRequired": true,
+        "parts": []
       },
       {
         "item": "SP30 Fixed Bollard",
@@ -849,7 +855,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "SPTT Bollard",
@@ -858,7 +865,8 @@
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "drawings": [
@@ -1149,9 +1157,9 @@
     "sales": "Janessa",
     "siteEngineer": "",
     "status": "On Track",
-    "currentStage": "Assign to Factory",
-    "actionBy": "Project Manager",
-    "fabPercent": 0,
+    "currentStage": "Production / Fabrication",
+    "actionBy": "Factory Manager",
+    "fabPercent": 1,
     "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "Site Co-ordination Meeting, Wei Xiang attending on 19th Jan 2026 1:15pm",
@@ -1280,11 +1288,11 @@
         "num": 11,
         "name": "Assign to Factory",
         "owner": "Project Manager",
-        "status": "In Progress",
+        "status": "Completed",
         "started": "2026-04-19",
-        "done": "",
+        "done": "2026-04-22",
         "notes": "",
-        "statusChangedAt": "2026-04-19T10:58:49.620Z",
+        "statusChangedAt": "2026-04-22T10:17:21.566Z",
         "refs": [],
         "fileName": ""
       },
@@ -1292,11 +1300,11 @@
         "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
-        "status": "In Progress",
+        "status": "Completed",
         "started": "2026-04-19",
-        "done": "",
+        "done": "2026-04-22",
         "notes": "",
-        "statusChangedAt": "2026-04-19T10:58:49.620Z",
+        "statusChangedAt": "2026-04-22T10:17:21.567Z",
         "refs": [],
         "fileName": ""
       },
@@ -1328,11 +1336,11 @@
         "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-22",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T10:17:21.567Z",
         "refs": [],
         "fileName": ""
       },
@@ -1402,19 +1410,31 @@
       {
         "item": "SP30 Fixed Bollard",
         "totalQty": 730,
-        "qtyDone": 0,
+        "qtyDone": 6,
         "qtySent": 0,
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "",
         "done": "",
         "readyForDelivery": false,
         "targetDeliveryDate": "",
         "readyAt": null,
         "process": "",
-        "logs": [],
-        "fab_started_at": null,
+        "logs": [
+          {
+            "id": "log_mo9wfa8czxb1",
+            "loggedAt": "2026-04-22T10:17:21.566Z",
+            "loggedBy": "Chris",
+            "delta": 6,
+            "photoPath": "/uploads/fab-logs/bd-22724-poc-t232-woodland/log_mo9wfa8czxb1.jpg",
+            "note": "Auto bollard base",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ],
+        "fab_started_at": "2026-04-22T10:17:21.566Z",
         "fab_completed_at": null,
-        "doneQty": 0
+        "doneQty": 6
       }
     ],
     "installation": [
@@ -3144,7 +3164,7 @@
     "currentStage": "Delivered",
     "actionBy": "Purchaser",
     "fabPercent": 65,
-    "installPercent": 0,
+    "installPercent": 6,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
     "stages": [
@@ -3356,11 +3376,11 @@
         "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-21T09:56:04.248Z",
+        "statusChangedAt": "2026-04-22T01:36:06.686Z",
         "fileName": "",
         "refs": []
       },
@@ -3368,11 +3388,11 @@
         "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "2026-04-19",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-21T09:56:04.248Z",
+        "statusChangedAt": "2026-04-22T01:36:06.686Z",
         "fileName": "",
         "refs": []
       },
@@ -3452,7 +3472,7 @@
           }
         ],
         "partsProgress": {
-          "done": 0,
+          "done": 1,
           "total": 5
         },
         "doneQty": 0
@@ -3463,7 +3483,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "In Progress",
+        "status": "QC Check",
         "started": "",
         "done": "",
         "isPartRow": true,
@@ -3497,7 +3517,7 @@
         "unit": "set-of-1",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "Ready for Delivery",
+        "status": "Delivered",
         "started": "",
         "done": "",
         "logs": [],
@@ -3526,11 +3546,21 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 127,
         "unit": "units",
-        "doneQty": 0,
+        "doneQty": 4,
         "notes": "",
-        "status": "Not Started",
-        "logs": [],
-        "qtyDone": 0,
+        "status": "In Progress",
+        "logs": [
+          {
+            "id": "log_mo9whui1i8x1",
+            "delta": 4,
+            "photoPath": "/uploads/install-logs/bd-25225-nakano-st-eng-dc/log_mo9whui1i8x1.jpg",
+            "note": "4 nos of SP30 Bollards",
+            "location": "Corporation Road",
+            "loggedBy": "Teo Meei Haw",
+            "loggedAt": "2026-04-22T10:19:21.220Z"
+          }
+        ],
+        "qtyDone": 4,
         "installSteps": [
           "Rebar Installation"
         ]
@@ -3548,10 +3578,22 @@
         "item": "Cova Road Blocker 3 Meters",
         "totalQty": 3,
         "unit": "set-of-1",
-        "doneQty": 0,
+        "doneQty": 3,
         "notes": "",
-        "status": "Not Started",
-        "qtyDone": 0
+        "status": "Installed",
+        "qtyDone": 3,
+        "logs": [
+          {
+            "id": "log_mo9dxraigc5t",
+            "delta": 3,
+            "photoPath": "/uploads/install-logs/bd-25225-nakano-st-eng-dc/log_mo9dxraigc5t.jpg",
+            "note": "",
+            "location": "Gate 1",
+            "step": "Installation",
+            "loggedBy": "Teo Meei Haw",
+            "loggedAt": "2026-04-22T01:39:52.256Z"
+          }
+        ]
       },
       {
         "item": "SP400 Fixed Bollard Shallow Mounted",
@@ -3566,11 +3608,22 @@
         "item": "Cometa Man Trap",
         "totalQty": 2,
         "unit": "units",
-        "doneQty": 0,
+        "doneQty": 2,
         "notes": "",
-        "status": "Not Started",
-        "logs": [],
-        "qtyDone": 0
+        "status": "Installed",
+        "logs": [
+          {
+            "id": "log_mo9dsx5b9r0l",
+            "delta": 2,
+            "photoPath": "/uploads/install-logs/bd-25225-nakano-st-eng-dc/log_mo9dsx5b9r0l.jpg",
+            "note": "",
+            "location": "Ground Level",
+            "step": "Mantrap installation",
+            "loggedBy": "Teo Meei Haw",
+            "loggedAt": "2026-04-22T01:36:06.686Z"
+          }
+        ],
+        "qtyDone": 2
       }
     ],
     "prpo": [],
@@ -4203,7 +4256,7 @@
     "id": "bd-25526-parry-ave",
     "jobCode": "BD 25526 - (Parry Ave)",
     "projectName": "Nursing Home & Bed @ Parry Avenue",
-    "product": "43x PE Bollard - Engineered, 1x PE Bollard with sleeve - 5 No's",
+    "product": "6x PE Bollard - Engineered, 6x PE Bollard with sleeve - 6 No's, 2x Removable Bollard, 20x Fixed Bollard",
     "contractValue": 23743,
     "voValue": 0,
     "client": "",
@@ -4223,7 +4276,7 @@
     "currentStage": "Assign to Factory",
     "actionBy": "Project Manager",
     "fabPercent": 0,
-    "installPercent": 0,
+    "installPercent": 6,
     "paidAmount": 0,
     "latestNotes": "WX will send the drawing for Engineering Bollard to chris",
     "stages": [
@@ -4435,11 +4488,11 @@
         "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-22",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T09:53:17.723Z",
         "fileName": "",
         "refs": []
       },
@@ -4447,11 +4500,11 @@
         "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-22",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T09:53:17.724Z",
         "fileName": "",
         "refs": []
       },
@@ -4472,7 +4525,7 @@
     "fabrication": [
       {
         "item": "PE Bollard - Engineered",
-        "totalQty": 43,
+        "totalQty": 6,
         "unit": "pcs",
         "qtyDone": 0,
         "qtySent": 0,
@@ -4485,9 +4538,9 @@
         "doneQty": 0
       },
       {
-        "item": "PE Bollard with sleeve - 5 No's",
-        "totalQty": 1,
-        "unit": "pcs",
+        "item": "Removable Bollard",
+        "totalQty": 2,
+        "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
         "status": "Not Started",
@@ -4497,12 +4550,22 @@
         "fab_started_at": null,
         "fab_completed_at": null,
         "doneQty": 0
+      },
+      {
+        "item": "Fixed Bollard",
+        "totalQty": 20,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": ""
       }
     ],
     "installation": [
       {
         "item": "PE Bollard - Engineered",
-        "totalQty": 43,
+        "totalQty": 6,
         "unit": "pcs",
         "doneQty": 0,
         "notes": "",
@@ -4510,13 +4573,43 @@
         "qtyDone": 0
       },
       {
-        "item": "PE Bollard with sleeve - 5 No's",
-        "totalQty": 1,
+        "item": "PE Bollard with sleeve - 6 No's",
+        "totalQty": 6,
         "unit": "pcs",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started",
-        "qtyDone": 0
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Removable Bollard",
+        "totalQty": 2,
+        "unit": "units",
+        "doneQty": 2,
+        "notes": "",
+        "qtyDone": 2,
+        "status": "Installed",
+        "logs": [
+          {
+            "id": "log_mo9vkbeal6j8",
+            "delta": 2,
+            "photoPath": "/uploads/install-logs/bd-25526-parry-ave/log_mo9vkbeal6j8.jpg",
+            "note": "Installed 16/04/2026",
+            "location": "Level 1 Fire engine access",
+            "step": "removable bollards installed",
+            "loggedBy": "Jun Jie",
+            "loggedAt": "2026-04-22T09:53:17.723Z"
+          }
+        ]
+      },
+      {
+        "item": "Fixed Bollard",
+        "totalQty": 20,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -4528,21 +4621,41 @@
     "productScope": [
       {
         "item": "PE Bollard - Engineered",
-        "qty": 43,
+        "qty": 6,
         "unit": "pcs",
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
       },
       {
-        "item": "PE Bollard with sleeve - 5 No's",
-        "qty": 1,
+        "item": "PE Bollard with sleeve - 6 No's",
+        "qty": 6,
         "unit": "pcs",
         "zoneLabel": "",
+        "type": "Overseas Order",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Removable Bollard",
+        "qty": 2,
+        "unit": "units",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Fixed Bollard",
+        "qty": 20,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "scopeNotes": "",
@@ -5758,29 +5871,29 @@
     "scopeNotes": ""
   },
   {
-    "id": "fff",
-    "jobCode": "fff",
-    "projectName": "ff",
-    "product": "",
-    "contractValue": 0,
-    "voValue": 0,
-    "client": "",
+    "id": "bd-25626",
+    "jobCode": "BD 25626",
+    "projectName": "China Con - Project Legend",
+    "product": "79x Engineering Bollard, 40x LTA Bollard, 10x Cova Auto Bollards, 6x Bus Stop LTA Bollard",
+    "contractValue": 129510,
+    "voValue": 73000,
+    "client": "LandLease",
     "contact": "",
-    "mainCon": "",
+    "mainCon": "China Contractors",
     "consultant": "",
-    "startDate": "",
-    "endDate": "",
+    "startDate": "2025-11-21",
+    "endDate": "2026-06-12",
     "projectManager": "Lai Wei Xiang",
     "qs": "Alex Mac",
     "factoryManager": "Chris",
-    "drafter": "",
+    "drafter": "Murugan",
     "purchaser": "Rena",
-    "sales": "",
-    "siteEngineer": "Teo Meei Haw",
+    "sales": "Janessa",
+    "siteEngineer": "Jun Jie",
     "status": "On Track",
-    "currentStage": "Awarded",
-    "actionBy": "Sales",
-    "fabPercent": 0,
+    "currentStage": "Production / Fabrication",
+    "actionBy": "Factory Manager",
+    "fabPercent": 29,
     "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "",
@@ -5793,7 +5906,7 @@
         "started": "2026-04-21",
         "done": "2026-04-21",
         "notes": "",
-        "statusChangedAt": "2026-04-21T02:04:27.765Z",
+        "statusChangedAt": "2026-04-21T15:46:34.263Z",
         "fileName": "",
         "refs": []
       },
@@ -5801,11 +5914,11 @@
         "num": 2,
         "name": "Awarded",
         "owner": "Sales",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-21",
+        "done": "2026-04-21",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-21T15:50:37.082Z",
         "fileName": "",
         "refs": []
       },
@@ -5813,11 +5926,11 @@
         "num": 3,
         "name": "Contract Review",
         "owner": "GM",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-21",
+        "done": "2026-04-21",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-21T15:50:37.082Z",
         "fileName": "",
         "refs": []
       },
@@ -5829,7 +5942,7 @@
         "started": "2026-04-21",
         "done": "2026-04-21",
         "notes": "",
-        "statusChangedAt": "2026-04-21T02:04:27.765Z",
+        "statusChangedAt": "2026-04-21T15:46:34.263Z",
         "fileName": "",
         "refs": []
       },
@@ -5841,7 +5954,7 @@
         "started": "2026-04-21",
         "done": "2026-04-21",
         "notes": "",
-        "statusChangedAt": "2026-04-21T02:04:27.765Z",
+        "statusChangedAt": "2026-04-21T15:46:34.263Z",
         "fileName": "",
         "refs": []
       },
@@ -5909,11 +6022,11 @@
         "num": 11,
         "name": "Assign to Factory",
         "owner": "Project Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-21",
+        "done": "2026-04-22",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T04:20:59.154Z",
         "fileName": "",
         "refs": []
       },
@@ -5921,11 +6034,11 @@
         "num": 12,
         "name": "Factory Take-off",
         "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
-        "done": "",
+        "status": "Completed",
+        "started": "2026-04-21",
+        "done": "2026-04-22",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T04:20:59.154Z",
         "fileName": "",
         "refs": []
       },
@@ -5957,11 +6070,11 @@
         "num": 15,
         "name": "Production / Fabrication",
         "owner": "Factory Manager",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-22",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T04:20:59.154Z",
         "fileName": "",
         "refs": []
       },
@@ -5993,11 +6106,11 @@
         "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-21",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T09:48:50.493Z",
         "fileName": "",
         "refs": []
       },
@@ -6005,11 +6118,11 @@
         "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
-        "status": "Not Started",
-        "started": "",
+        "status": "In Progress",
+        "started": "2026-04-21",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-22T09:48:50.493Z",
         "fileName": "",
         "refs": []
       },
@@ -6027,9 +6140,521 @@
       }
     ],
     "documents": [],
-    "fabrication": [],
-    "installation": [],
-    "productScope": [],
+    "fabrication": [
+      {
+        "item": "Engineering Bollard",
+        "totalQty": 79,
+        "unit": "units",
+        "qtyDone": 36,
+        "qtySent": 0,
+        "status": "In Progress",
+        "started": "",
+        "done": "",
+        "logs": [
+          {
+            "id": "log_mo9joxaba5n8",
+            "loggedAt": "2026-04-22T04:20:59.154Z",
+            "loggedBy": "Chris",
+            "delta": 9,
+            "photoPath": "/uploads/fab-logs/bd-25626/log_mo9joxaba5n8.jpg",
+            "note": "",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          },
+          {
+            "id": "log_mo9jppfduatw",
+            "loggedAt": "2026-04-22T04:21:40.176Z",
+            "loggedBy": "Chris",
+            "delta": 12,
+            "photoPath": "/uploads/fab-logs/bd-25626/log_mo9jppfduatw.jpg",
+            "note": "",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          },
+          {
+            "id": "log_mo9jqk4fhfje",
+            "loggedAt": "2026-04-22T04:22:19.425Z",
+            "loggedBy": "Chris",
+            "delta": 7,
+            "photoPath": "/uploads/fab-logs/bd-25626/log_mo9jqk4fhfje.jpg",
+            "note": "",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          },
+          {
+            "id": "log_mo9js6kaul9z",
+            "loggedAt": "2026-04-22T04:23:34.895Z",
+            "loggedBy": "Chris",
+            "delta": 8,
+            "photoPath": "/uploads/fab-logs/bd-25626/log_mo9js6kaul9z.jpg",
+            "note": "",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ],
+        "fab_started_at": "2026-04-22T04:20:59.154Z",
+        "fab_completed_at": null,
+        "doneQty": 36,
+        "fabDeadline": "2026-05-01"
+      },
+      {
+        "item": "LTA Bollard",
+        "totalQty": 40,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0,
+        "fabDeadline": "2026-04-28"
+      },
+      {
+        "item": "Cova Auto Bollards",
+        "totalQty": 10,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "isMechanicalParent": true,
+        "orderParts": [
+          {
+            "name": "HPU",
+            "qty": 1,
+            "status": "Pending"
+          }
+        ],
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "partsProgress": {
+          "done": 0,
+          "total": 1
+        },
+        "doneQty": 0
+      },
+      {
+        "item": "Bus Stop LTA Bollard",
+        "totalQty": 6,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0
+      }
+    ],
+    "installation": [
+      {
+        "item": "Engineering Bollard",
+        "totalQty": 79,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "In Progress"
+      },
+      {
+        "item": "LTA Bollard",
+        "totalQty": 40,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Cova Auto Bollards",
+        "totalQty": 10,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Bus Stop LTA Bollard",
+        "totalQty": 6,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      }
+    ],
+    "productScope": [
+      {
+        "item": "Engineering Bollard",
+        "qty": 79,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "LTA Bollard",
+        "qty": 40,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollards",
+        "qty": 10,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Mechanical",
+        "partsRequired": true,
+        "parts": [
+          {
+            "name": "HPU",
+            "qty": 1,
+            "source": "Order"
+          }
+        ]
+      },
+      {
+        "item": "Bus Stop LTA Bollard",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      }
+    ],
+    "prpo": [],
+    "paymentMilestones": [],
+    "variationOrders": [],
+    "defects": [],
+    "meetingNotes": [],
+    "drawings": [],
+    "drawingFolders": [
+      "General"
+    ],
+    "scopeNotes": "",
+    "fabLeadTimeDays": 180
+  },
+  {
+    "id": "bd-25726",
+    "jobCode": "BD 25726",
+    "projectName": "SHAW TOWER",
+    "product": "43x Engineered bollard",
+    "contractValue": 0,
+    "voValue": 0,
+    "client": "LENDLEASE",
+    "contact": "",
+    "mainCon": "HYUNDAI",
+    "consultant": "",
+    "startDate": "2026-03-01",
+    "endDate": "2026-05-30",
+    "projectManager": "Lai Wei Xiang",
+    "qs": "Alex Mac",
+    "factoryManager": "Chris",
+    "drafter": "Murugan",
+    "purchaser": "Rena",
+    "sales": "Janessa",
+    "siteEngineer": "Jun Jie",
+    "status": "On Track",
+    "currentStage": "Site Ready",
+    "actionBy": "Project Manager/Site Engineer",
+    "fabPercent": 0,
+    "installPercent": 0,
+    "paidAmount": 0,
+    "latestNotes": "",
+    "stages": [
+      {
+        "num": 1,
+        "name": "Quotation",
+        "owner": "Sales",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T09:59:42.654Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 2,
+        "name": "Awarded",
+        "owner": "Sales",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 3,
+        "name": "Contract Review",
+        "owner": "GM",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 4,
+        "name": "QS Breakdown",
+        "owner": "QS",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T09:59:42.654Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 5,
+        "name": "Job Code Created",
+        "owner": "Accounts",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T09:59:42.654Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 6,
+        "name": "Kick-off Meeting",
+        "owner": "Project Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 7,
+        "name": "Safety Document Submission",
+        "owner": "Project Manager/Site Engineer",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 8,
+        "name": "Drawing Submission",
+        "owner": "Drafter",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 9,
+        "name": "Drawing Approved",
+        "owner": "Drafter",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 10,
+        "name": "SIC Submission",
+        "owner": "Project Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 11,
+        "name": "Assign to Factory",
+        "owner": "Project Manager",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:00:28.700Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 12,
+        "name": "Factory Take-off",
+        "owner": "Factory Manager",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:00:28.700Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 13,
+        "name": "PR to Purchaser",
+        "owner": "Factory Manager",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 14,
+        "name": "PO Issued",
+        "owner": "Purchaser",
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": null,
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 15,
+        "name": "Production / Fabrication",
+        "owner": "Factory Manager",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:00:29.781Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 16,
+        "name": "Shipping",
+        "owner": "Purchaser",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:00:32.066Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 17,
+        "name": "Delivered",
+        "owner": "Purchaser",
+        "status": "Completed",
+        "started": "2026-04-22",
+        "done": "2026-04-22",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:00:32.066Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 18,
+        "name": "Site Ready",
+        "owner": "Project Manager/Site Engineer",
+        "status": "In Progress",
+        "started": "2026-04-22",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:01:47.311Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 19,
+        "name": "Installation",
+        "owner": "Site Engineer",
+        "status": "In Progress",
+        "started": "2026-04-22",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:01:49.470Z",
+        "fileName": "",
+        "refs": []
+      },
+      {
+        "num": 20,
+        "name": "Handover",
+        "owner": "Project Manager",
+        "status": "Not Started",
+        "started": "2026-04-22",
+        "done": "",
+        "notes": "",
+        "statusChangedAt": "2026-04-22T10:01:49.470Z",
+        "fileName": "",
+        "refs": []
+      }
+    ],
+    "documents": [],
+    "fabrication": [
+      {
+        "item": "Engineered bollard",
+        "totalQty": 43,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Delivered",
+        "started": "",
+        "done": ""
+      }
+    ],
+    "installation": [
+      {
+        "item": "Engineered bollard",
+        "totalQty": 43,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "In Progress"
+      }
+    ],
+    "productScope": [
+      {
+        "item": "Engineered bollard",
+        "qty": 43,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      }
+    ],
     "prpo": [],
     "paymentMilestones": [],
     "variationOrders": [],

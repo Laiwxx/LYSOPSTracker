@@ -17,7 +17,29 @@
     "description": "",
     "submittedBy": "Lai Wei Xiang",
     "submittedAt": "2026-04-21T09:55:40.963Z",
-    "status": "New",
+    "status": "Done",
+    "priority": "Medium",
+    "notes": ""
+  },
+  {
+    "id": "mo9cothqexv8",
+    "title": "EOD",
+    "type": "Feature Request",
+    "description": "Edit feature for EOD.",
+    "submittedBy": "Salve",
+    "submittedAt": "2026-04-22T01:04:55.118Z",
+    "status": "In Review",
+    "priority": "Medium",
+    "notes": ""
+  },
+  {
+    "id": "mo9wjimdzwpc",
+    "title": "LOG Photos",
+    "type": "UI Feedback",
+    "description": "Inserting multiple photos in log activities instead of inserting 1 at a time",
+    "submittedBy": "Jun Jie",
+    "submittedAt": "2026-04-22T10:20:40.069Z",
+    "status": "In Review",
     "priority": "Medium",
     "notes": ""
   }

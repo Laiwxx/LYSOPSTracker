@@ -90,3 +90,15 @@ Creating a staff member with a name like "Factory Manager" overwrites the role a
 If code checks for status values that aren't in the valid enum, the check is dead code. Memory cleanup checked for "Resolved"/"Closed" but valid statuses were only "New"/"In Review"/"Done".
 
 **How to apply:** When referencing status values in conditionals, verify they exist in the VALID_*_STATUSES array.
+
+## 15. Static file bypass — locked pages need middleware block
+`express.static` serves `public/*.html` to any logged-in user. A route check on `/sales` does NOT block `/sales.html`. Must add middleware before `express.static` to block direct `.html` access for locked pages.
+
+**Why:** Sales page was accessible to all logged-in staff via `/sales.html` despite route lock on `/sales`.
+**How to apply:** For every locked page, add a middleware check for `/<page>.html` before the `express.static` call.
+
+## 16. Test accounts must not trigger side effects
+`sendEmail()` and `createTaskCalendarEvent()` must check `getAuthUser() === 'Scenario Tester'` and bail. Otherwise test runs email real staff.
+
+**Why:** App went live but scenario tests kept firing real emails because EMAIL_TEST_OVERRIDE was never set.
+**How to apply:** Any new notification channel (SMS, Slack, etc.) must add the same Scenario Tester guard.

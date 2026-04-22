@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "id": "mo8rjwzxjp69",
+    "projectId": "x",
+    "projectJobCode": "",
+    "projectName": "",
+    "claimNumber": "TEST-CLM",
+    "description": "",
+    "claimAmount": 100,
+    "submittedDate": "not-a-date",
+    "submittedBy": "",
+    "certificationDue": "2026-05-12",
+    "certifiedDate": null,
+    "certifiedAmount": null,
+    "invoiceNumber": null,
+    "invoiceRaisedDate": null,
+    "paymentDue": null,
+    "paymentReceivedDate": null,
+    "paymentReceivedAmount": null,
+    "status": "Awaiting Certification",
+    "notes": "",
+    "installLogIds": [],
+    "claimItems": [],
+    "createdAt": "2026-04-21T15:13:14.445Z"
+  }
+]

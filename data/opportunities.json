@@ -1,0 +1,69 @@
+[
+  {
+    "id": "opp-mo9k8kl01nzk",
+    "clientName": "Testing",
+    "contactPerson": "jyjy",
+    "phone": "858585",
+    "email": "gegeg@gmail.com",
+    "siteAddress": "fwfwegwgwgw",
+    "productType": "Bollards",
+    "estimatedValue": 50000,
+    "quotationNo": "",
+    "quoteDate": null,
+    "quoteExpiryDate": null,
+    "source": "Cold Call",
+    "stage": "Enquiry",
+    "stageChangedAt": "2026-04-22T04:52:31.764Z",
+    "followUpDate": null,
+    "assignedTo": "Janessa",
+    "notes": "",
+    "winLossReason": "",
+    "competitorInfo": "",
+    "convertedProjectId": null,
+    "activity": [
+      {
+        "ts": "2026-04-22T04:36:14.004Z",
+        "type": "created",
+        "note": "Opportunity created by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-22T04:52:04.793Z",
+        "type": "stage-change",
+        "note": "Enquiry → Site Visit by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-22T04:52:05.900Z",
+        "type": "stage-change",
+        "note": "Site Visit → Enquiry by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-22T04:52:28.940Z",
+        "type": "stage-change",
+        "note": "Enquiry → Site Visit by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-22T04:52:29.585Z",
+        "type": "stage-change",
+        "note": "Site Visit → Quotation Sent by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-22T04:52:30.341Z",
+        "type": "stage-change",
+        "note": "Quotation Sent → Negotiation by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-22T04:52:30.942Z",
+        "type": "stage-change",
+        "note": "Negotiation → Won by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-22T04:52:31.764Z",
+        "type": "stage-change",
+        "note": "Won → Enquiry by Lai Wei Xiang"
+      }
+    ],
+    "createdBy": "Lai Wei Xiang",
+    "createdAt": "2026-04-22T04:36:14.004Z",
+    "updatedAt": "2026-04-22T04:58:52.383Z"
+  }
+]

@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Sales Pipeline — LYS OPS</title>
+  <link rel="stylesheet" href="/css/style.css?v=1776830235">
+  <style>
+    /* ── Salesforce-style KPI Bar ─────────────────────── */
+    .kpi-bar {
+      display: flex; gap: 1px; background: var(--border); border-radius: var(--radius);
+      overflow: hidden; margin-bottom: 16px; box-shadow: var(--shadow-sm);
+    }
+    .kpi-item {
+      flex: 1; background: var(--bg2); padding: 14px 18px; min-width: 0;
+    }
+    .kpi-item:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .kpi-item:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+    .kpi-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-muted); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .kpi-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .kpi-value.blue   { color: var(--accent); }
+    .kpi-value.green  { color: var(--green); }
+    .kpi-value.amber  { color: var(--amber); }
+    .kpi-value.red    { color: var(--red); }
+    .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Toolbar ──────────────────────────────────────── */
+    .sf-toolbar {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .sf-view-toggle {
+      display: inline-flex; background: var(--bg3); border-radius: 6px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .sf-view-toggle button {
+      padding: 6px 16px; font-size: 12px; font-weight: 600; border: none;
+      background: transparent; color: var(--text-muted); cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+    }
+    .sf-view-toggle button.active { background: var(--accent); color: #fff; }
+    .sf-spacer { flex: 1; }
+    .sf-filter {
+      padding: 6px 10px; font-size: 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg2); color: var(--text); font-family: inherit;
+      min-width: 120px;
+    }
+    .sf-search {
+      padding: 6px 10px 6px 30px; font-size: 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%236b7294' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E") 8px center no-repeat;
+      color: var(--text); font-family: inherit; width: 180px;
+    }
+    .btn-new-opp {
+      padding: 7px 16px; font-size: 12px; font-weight: 600; border: none;
+      border-radius: 6px; background: var(--accent); color: #fff;
+      cursor: pointer; font-family: inherit; white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(51,102,255,0.3);
+    }
+    .btn-new-opp:hover { filter: brightness(1.08); }
+
+    /* ── Kanban Board ─────────────────────────────────── */
+    .sf-board {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+      align-items: start; min-height: calc(100vh - 280px);
+    }
+    .sf-col {
+      background: var(--bg3); border-radius: 8px; min-height: 200px;
+      display: flex; flex-direction: column; border-top: 3px solid var(--accent);
+    }
+    .sf-col[data-stage="Enquiry"]        { border-top-color: var(--accent); }
+    .sf-col[data-stage="Site Visit"]     { border-top-color: var(--purple); }
+    .sf-col[data-stage="Quotation Sent"] { border-top-color: var(--amber); }
+    .sf-col[data-stage="Negotiation"]    { border-top-color: #ea580c; }
+    .sf-col[data-stage="Won"]           { border-top-color: var(--green); }
+    .sf-col[data-stage="Lost"]          { border-top-color: #9ca3af; }
+    .sf-col-hdr {
+      padding: 10px 12px; display: flex; align-items: center; gap: 6px;
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .sf-col-name {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+    .sf-col-count {
+      font-size: 10px; font-weight: 700; background: var(--bg2); color: var(--text);
+      border-radius: var(--radius-pill); padding: 1px 7px; border: 1px solid var(--border);
+    }
+    .sf-col-val {
+      margin-left: auto; font-size: 11px; font-weight: 600; color: var(--text-muted);
+    }
+    .sf-col-body {
+      padding: 6px; flex: 1; min-height: 80px; overflow-y: auto;
+    }
+    .sf-col-body.drag-over {
+      background: var(--accent-soft); border-radius: 0 0 8px 8px;
+    }
+
+    /* ── Opportunity Cards ────────────────────────────── */
+    .sf-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
+      padding: 10px 12px; margin-bottom: 6px; cursor: grab;
+      transition: box-shadow 0.15s, transform 0.1s;
+      position: relative;
+    }
+    .sf-card:hover {
+      box-shadow: var(--shadow-md); transform: translateY(-1px); border-color: var(--accent);
+    }
+    .sf-card.dragging { opacity: 0.4; transform: rotate(2deg); }
+    .sf-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .sf-avatar {
+      width: 26px; height: 26px; border-radius: 50%; font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      color: #fff; text-transform: uppercase;
+    }
+    .sf-card-client {
+      font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; flex: 1; color: var(--text);
+    }
+    .sf-card-value {
+      font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px;
+    }
+    .sf-card-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .sf-badge {
+      font-size: 10px; font-weight: 600; border-radius: var(--radius-sm); padding: 1px 6px;
+      background: var(--accent-soft); color: var(--accent); white-space: nowrap;
+    }
+    .sf-days {
+      font-size: 10px; font-weight: 600; color: var(--text-muted); background: var(--bg3);
+      border-radius: var(--radius-sm); padding: 1px 6px;
+    }
+    .sf-days.stale { color: var(--red); background: var(--red-soft); }
+    .sf-card-followup {
+      font-size: 11px; color: var(--amber); margin-top: 4px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .sf-card-owner {
+      font-size: 10px; color: var(--text-muted); margin-left: auto;
+    }
+    .sf-empty { text-align: center; padding: 32px 12px; color: var(--text-muted); font-size: 12px; }
+
+    /* ── Table View ───────────────────────────────────── */
+    .sf-table-wrap { display: none; overflow-x: auto; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+    .sf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .sf-table th {
+      text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+      border-bottom: 2px solid var(--border); cursor: pointer; white-space: nowrap;
+      background: var(--bg3); user-select: none; position: sticky; top: 0;
+    }
+    .sf-table th:hover { color: var(--text); }
+    .sf-table th .sort-arrow { font-size: 10px; margin-left: 2px; opacity: 0.4; }
+    .sf-table th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+    .sf-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .sf-table tr.clickable { cursor: pointer; }
+    .sf-table tr.clickable:hover td { background: var(--accent-soft); }
+    .sf-stage-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; border-radius: var(--radius-pill);
+      padding: 3px 10px; white-space: nowrap;
+    }
+    .sf-stage-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .sf-stage-pill.Enquiry         { background: var(--accent-soft); color: var(--accent); }
+    .sf-stage-pill.Enquiry .dot    { background: var(--accent); }
+    .sf-stage-pill.Site-Visit      { background: var(--purple-soft); color: var(--purple); }
+    .sf-stage-pill.Site-Visit .dot { background: var(--purple); }
+    .sf-stage-pill.Quotation-Sent  { background: var(--amber-soft); color: #b45309; }
+    .sf-stage-pill.Quotation-Sent .dot { background: var(--amber); }
+    .sf-stage-pill.Negotiation     { background: var(--orange-soft); color: #c2410c; }
+    .sf-stage-pill.Negotiation .dot { background: #ea580c; }
+    .sf-stage-pill.Won             { background: var(--green-soft); color: #15803d; }
+    .sf-stage-pill.Won .dot        { background: var(--green); }
+    .sf-stage-pill.Lost            { background: rgba(156,163,175,0.12); color: #6b7280; }
+    .sf-stage-pill.Lost .dot       { background: #9ca3af; }
+    .sf-stage-pill.No-Bid          { background: rgba(156,163,175,0.12); color: #6b7280; }
+    .sf-stage-pill.No-Bid .dot     { background: #9ca3af; }
+
+    /* ── Detail Side Panel (Salesforce record panel) ─── */
+    .sf-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 300; }
+    .sf-overlay.open { display: block; }
+    .sf-panel {
+      position: fixed; top: 0; right: -520px; bottom: 0; width: 500px; max-width: 95vw;
+      background: var(--bg); border-left: 1px solid var(--border);
+      box-shadow: -8px 0 32px rgba(0,0,0,0.12); z-index: 301;
+      display: flex; flex-direction: column; transition: right 0.25s ease;
+    }
+    .sf-panel.open { right: 0; }
+
+    /* Panel header */
+    .sf-panel-hdr {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 20px; background: var(--bg2);
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .sf-panel-avatar {
+      width: 36px; height: 36px; border-radius: 50%; font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; color: #fff;
+      flex-shrink: 0; text-transform: uppercase;
+    }
+    .sf-panel-hdr-info { flex: 1; min-width: 0; }
+    .sf-panel-hdr-info h3 {
+      font-size: 16px; font-weight: 700; margin: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .sf-panel-hdr-sub { font-size: 12px; color: var(--text-muted); }
+    .sf-panel-close {
+      width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg2); font-size: 18px; cursor: pointer; color: var(--text-muted);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    }
+    .sf-panel-close:hover { background: var(--bg3); }
+
+    /* Stage path (Salesforce path component) */
+    .sf-path {
+      display: flex; margin: 0; padding: 12px 20px; background: var(--bg2);
+      border-bottom: 1px solid var(--border); gap: 0; flex-shrink: 0; overflow-x: auto;
+    }
+    .sf-path-step {
+      flex: 1; text-align: center; padding: 6px 4px; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+      background: var(--bg3); border: 1px solid var(--border);
+      position: relative; cursor: default; white-space: nowrap;
+      min-width: 0; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sf-path-step:first-child { border-radius: var(--radius-pill) 0 0 var(--radius-pill); }
+    .sf-path-step:last-child  { border-radius: 0 var(--radius-pill) var(--radius-pill) 0; }
+    .sf-path-step:not(:first-child) { border-left: none; }
+    .sf-path-step.completed {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .sf-path-step.current {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-dim);
+    }
+    .sf-path-step.won { background: var(--green); color: #fff; border-color: var(--green); }
+    .sf-path-step.lost { background: #9ca3af; color: #fff; border-color: #9ca3af; }
+
+    /* Panel body */
+    .sf-panel-body { flex: 1; overflow-y: auto; }
+
+    /* Highlight panel (Salesforce-style key fields) */
+    .sf-highlight {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      background: var(--bg2); margin: 12px 16px; border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+    }
+    .sf-hl-item {
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+    }
+    .sf-hl-item:nth-child(odd) { border-right: 1px solid var(--border); }
+    .sf-hl-item:nth-last-child(-n+2) { border-bottom: none; }
+    .sf-hl-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-muted); margin-bottom: 2px;
+    }
+    .sf-hl-val { font-size: 13px; font-weight: 600; color: var(--text); }
+    .sf-hl-val.green { color: var(--green); }
+
+    /* Detail sections */
+    .sf-section {
+      margin: 0 16px 12px; background: var(--bg2); border-radius: var(--radius);
+      border: 1px solid var(--border); overflow: hidden;
+    }
+    .sf-section-hdr {
+      padding: 10px 14px; font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--text-muted); background: var(--bg3);
+      border-bottom: 1px solid var(--border); cursor: pointer; user-select: none;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .sf-section-hdr .chevron {
+      font-size: 10px; transition: transform 0.15s; display: inline-block;
+    }
+    .sf-section-hdr.collapsed .chevron { transform: rotate(-90deg); }
+    .sf-section-body { padding: 14px; }
+    .sf-section-body.hidden { display: none; }
+
+    /* Form fields in detail */
+    .sf-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+    .sf-field { margin-bottom: 12px; }
+    .sf-field.full { grid-column: 1 / -1; }
+    .sf-field label {
+      display: block; font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 3px;
+    }
+    .sf-field input, .sf-field select, .sf-field textarea {
+      width: 100%; padding: 7px 10px; font-size: 13px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg); color: var(--text);
+      font-family: inherit; box-sizing: border-box; transition: border-color 0.15s;
+    }
+    .sf-field input:focus, .sf-field select:focus, .sf-field textarea:focus {
+      outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .sf-field input:disabled, .sf-field select:disabled, .sf-field textarea:disabled {
+      background: var(--bg3); color: var(--text-muted); cursor: not-allowed;
+    }
+    .sf-field textarea { resize: vertical; min-height: 56px; }
+
+    /* Activity timeline */
+    .sf-timeline { padding: 14px; }
+    .sf-tl-composer {
+      display: flex; gap: 8px; margin-bottom: 14px; align-items: flex-start;
+    }
+    .sf-tl-input {
+      flex: 1; padding: 8px 12px; font-size: 13px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg); color: var(--text); font-family: inherit;
+      resize: none; min-height: 36px;
+    }
+    .sf-tl-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .sf-tl-item {
+      display: flex; gap: 10px; margin-bottom: 12px; position: relative;
+      padding-left: 20px;
+    }
+    .sf-tl-item::before {
+      content: ''; position: absolute; left: 5px; top: 18px; bottom: -12px;
+      width: 1px; background: var(--border);
+    }
+    .sf-tl-item:last-child::before { display: none; }
+    .sf-tl-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+      margin-top: 3px; position: absolute; left: 0;
+    }
+    .sf-tl-dot.created      { background: var(--accent); }
+    .sf-tl-dot.stage-change { background: var(--purple); }
+    .sf-tl-dot.note         { background: var(--green); }
+    .sf-tl-dot.converted    { background: var(--amber); }
+    .sf-tl-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+    .sf-tl-ts { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+    /* Convert banner */
+    .sf-convert-banner {
+      margin: 12px 16px; padding: 12px 16px; background: var(--green-soft);
+      border: 1px solid var(--green); border-radius: var(--radius);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sf-convert-banner .msg { flex: 1; font-size: 13px; font-weight: 600; color: #15803d; }
+    .sf-convert-btn {
+      padding: 7px 16px; background: var(--green); color: #fff; border: none;
+      border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;
+      font-family: inherit; white-space: nowrap;
+    }
+    .sf-convert-btn:hover { filter: brightness(1.1); }
+    .sf-convert-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .sf-converted-link {
+      margin: 12px 16px; padding: 10px 14px; background: var(--green-soft);
+      border-radius: var(--radius); font-size: 12px; font-weight: 600; color: #15803d;
+    }
+    .sf-converted-link a { color: #15803d; text-decoration: underline; }
+
+    /* Panel footer */
+    .sf-panel-footer {
+      padding: 12px 20px; border-top: 1px solid var(--border); background: var(--bg2);
+      display: flex; gap: 8px; justify-content: flex-end; flex-shrink: 0;
+    }
+    .btn-sf-save {
+      padding: 8px 20px; font-size: 13px; font-weight: 600; border: none;
+      border-radius: 6px; background: var(--accent); color: #fff; cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-sf-save:hover { filter: brightness(1.08); }
+    .btn-sf-cancel {
+      padding: 8px 20px; font-size: 13px; font-weight: 600;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg2); color: var(--text); cursor: pointer; font-family: inherit;
+    }
+    .btn-sf-del {
+      padding: 8px 14px; font-size: 12px; font-weight: 600; border: none;
+      border-radius: 6px; background: var(--red); color: #fff; cursor: pointer;
+      font-family: inherit; margin-right: auto;
+    }
+    .btn-sf-del:hover { filter: brightness(1.08); }
+
+    /* ── New Opportunity Modal ────────────────────────── */
+    .sf-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+      z-index: 400; justify-content: center; align-items: flex-start; padding-top: 60px;
+    }
+    .sf-modal-overlay.open { display: flex; }
+    .sf-modal {
+      background: var(--bg2); border-radius: 12px; box-shadow: var(--shadow-lg);
+      width: 540px; max-width: 95vw; max-height: calc(100vh - 100px); overflow-y: auto;
+    }
+    .sf-modal-hdr {
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sf-modal-hdr h2 { font-size: 16px; font-weight: 700; margin: 0; }
+    .sf-modal-body { padding: 20px 24px; }
+    .sf-modal-footer {
+      padding: 14px 24px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px; justify-content: flex-end;
+    }
+
+    /* ── Empty state ──────────────────────────────────── */
+    .sf-empty-state {
+      text-align: center; padding: 60px 24px;
+    }
+    .sf-empty-state .icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+    .sf-empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .sf-empty-state p { font-size: 13px; color: var(--text-muted); max-width: 360px; margin: 0 auto; }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 1200px) {
+      .sf-board { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .kpi-bar { flex-wrap: wrap; }
+      .kpi-item { min-width: 48%; }
+      .sf-board { grid-template-columns: 1fr 1fr; }
+      .sf-fields { grid-template-columns: 1fr; }
+      .sf-highlight { grid-template-columns: 1fr; }
+      .sf-highlight .sf-hl-item { border-right: none !important; }
+      .sf-path-step { font-size: 9px; padding: 5px 2px; }
+      .sf-search { width: 140px; }
+    }
+    @media (max-width: 480px) {
+      .sf-board { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title"><span>LYS</span> OPS . Sales Pipeline</div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn-new-opp" id="btn-new" style="display:none;">+ New Opportunity</button>
+  </div>
+</div>
+
+<div class="tasks-layout">
+  <!-- Sidebar -->
+  <div class="tasks-sidebar">
+    <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">D</span><span>Dashboard</span>
+    </a>
+    <div class="tasks-sidebar-label">Operations</div>
+    <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">T</span><span>Team</span>
+    </a>
+    <a href="/factory" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">F</span><span>Factory</span>
+    </a>
+    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">I</span><span>Installation</span>
+    </a>
+    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">P</span><span>Procurement</span>
+    </a>
+    <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">M</span><span>Manpower</span>
+    </a>
+    <div class="tasks-sidebar-label">Sales</div>
+    <a href="/sales" class="staff-nav-btn active" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">S</span><span>Pipeline</span>
+    </a>
+    <div class="tasks-sidebar-label">Other</div>
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">?</span><span>Feedback</span>
+    </a>
+  </div>
+
+  <!-- Main -->
+  <div class="tasks-main" id="sales-main">
+    <!-- PIN Gate -->
+    <div id="pin-gate" style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 52px);">
+      <div style="max-width:360px;width:100%;padding:0 20px;text-align:center;">
+        <div style="font-size:28px;font-weight:700;margin-bottom:8px;color:var(--accent);">S</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px;">Sales Pipeline</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">Enter your password to continue</div>
+        <input type="password" id="gate-pin-input" maxlength="30" placeholder="Password" style="display:block;width:100%;padding:12px 16px;font-size:14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;margin-bottom:8px;">
+        <div id="gate-pin-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:8px;"></div>
+        <button class="btn-sf-save" id="gate-pin-btn" style="width:100%;padding:12px;font-size:14px;">Unlock</button>
+        <a href="/" style="display:inline-block;margin-top:16px;font-size:12px;color:var(--text-muted);text-decoration:none;">&larr; Back to Dashboard</a>
+      </div>
+    </div>
+
+    <div id="access-denied" style="display:none;text-align:center;padding:60px 20px;">
+      <div style="font-size:36px;margin-bottom:12px;opacity:0.4;">S</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Access Restricted</div>
+      <div style="font-size:13px;color:var(--text-muted);">Sales pipeline is only accessible to authorised personnel.</div>
+    </div>
+    <div id="sales-content" style="display:none;">
+      <!-- KPI Bar -->
+      <div class="kpi-bar" id="kpi-bar"></div>
+
+      <!-- Toolbar -->
+      <div class="sf-toolbar">
+        <div class="sf-view-toggle">
+          <button class="active" id="view-board">Board</button>
+          <button id="view-list">List</button>
+        </div>
+        <input class="sf-search" id="search-input" type="text" placeholder="Search opportunities...">
+        <div class="sf-spacer"></div>
+        <select class="sf-filter" id="filter-product"><option value="">All Products</option></select>
+        <select class="sf-filter" id="filter-owner"><option value="">All Owners</option></select>
+        <select class="sf-filter" id="filter-stage"><option value="">All Stages</option></select>
+      </div>
+
+      <!-- Board -->
+      <div class="sf-board" id="sf-board"></div>
+
+      <!-- Table -->
+      <div class="sf-table-wrap" id="sf-table-wrap">
+        <table class="sf-table">
+          <thead>
+            <tr>
+              <th data-sort="clientName">Client <span class="sort-arrow">&#9650;</span></th>
+              <th data-sort="estimatedValue">Value <span class="sort-arrow">&#9650;</span></th>
+              <th data-sort="productType">Product <span class="sort-arrow">&#9650;</span></th>
+              <th data-sort="stage">Stage <span class="sort-arrow">&#9650;</span></th>
+              <th data-sort="daysInStage">Days <span class="sort-arrow">&#9650;</span></th>
+              <th data-sort="followUpDate">Follow-up <span class="sort-arrow">&#9650;</span></th>
+              <th data-sort="assignedTo">Owner <span class="sort-arrow">&#9650;</span></th>
+              <th data-sort="createdAt">Created <span class="sort-arrow">&#9650;</span></th>
+            </tr>
+          </thead>
+          <tbody id="sf-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Empty state -->
+      <div class="sf-empty-state" id="sf-empty" style="display:none;">
+        <div class="icon">S</div>
+        <h3>No opportunities yet</h3>
+        <p>Start building your pipeline by adding your first opportunity.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Side Panel -->
+<div class="sf-overlay" id="sf-overlay"></div>
+<div class="sf-panel" id="sf-panel">
+  <div class="sf-panel-hdr">
+    <div class="sf-panel-avatar" id="panel-avatar">LC</div>
+    <div class="sf-panel-hdr-info">
+      <h3 id="panel-title">Opportunity</h3>
+      <div class="sf-panel-hdr-sub" id="panel-sub"></div>
+    </div>
+    <button class="sf-panel-close" id="panel-close">&times;</button>
+  </div>
+  <div class="sf-path" id="panel-path"></div>
+  <div class="sf-panel-body" id="panel-body"></div>
+  <div class="sf-panel-footer" id="panel-footer">
+    <button class="btn-sf-del" id="panel-delete" style="display:none;">Delete</button>
+    <button class="btn-sf-cancel" id="panel-cancel">Close</button>
+    <button class="btn-sf-save" id="panel-save" style="display:none;">Save Changes</button>
+  </div>
+</div>
+
+<!-- New Opportunity Modal -->
+<div class="sf-modal-overlay" id="modal-new">
+  <div class="sf-modal">
+    <div class="sf-modal-hdr">
+      <h2>New Opportunity</h2>
+      <button class="sf-panel-close" id="n-close">&times;</button>
+    </div>
+    <div class="sf-modal-body">
+      <div class="sf-fields">
+        <div class="sf-field full"><label>Client / Company Name *</label><input id="n-client" placeholder="e.g. ABC Construction Pte Ltd"></div>
+        <div class="sf-field"><label>Estimated Value ($)</label><input id="n-value" type="number" min="0" step="100" placeholder="0"></div>
+        <div class="sf-field"><label>Product Type</label>
+          <select id="n-product">
+            <option value="">Select...</option>
+            <option>Bollards</option><option>Road Blockers</option><option>Gates</option>
+            <option>Curtain Wall</option><option>Structural Steel</option><option>Aluminium</option>
+            <option>Fencing</option><option>Railing</option><option>Ad-hoc</option><option>Other</option>
+          </select>
+        </div>
+        <div class="sf-field"><label>Contact Person</label><input id="n-contact" placeholder="Name"></div>
+        <div class="sf-field"><label>Phone</label><input id="n-phone" placeholder="+65 ..."></div>
+        <div class="sf-field"><label>Email</label><input id="n-email" type="email" placeholder="email@example.com"></div>
+        <div class="sf-field full"><label>Site Address</label><input id="n-site" placeholder="Street address"></div>
+        <div class="sf-field"><label>Source</label>
+          <select id="n-source">
+            <option value="">Select...</option>
+            <option>Repeat Client</option><option>Referral</option><option>Tender Portal</option>
+            <option>Cold Call</option><option>Walk-in</option><option>Other</option>
+          </select>
+        </div>
+        <div class="sf-field"><label>Assigned To</label>
+          <select id="n-owner"><option value="">Select...</option></select>
+        </div>
+        <div class="sf-field full"><label>Notes</label><textarea id="n-notes" rows="2" placeholder="Initial remarks..."></textarea></div>
+      </div>
+    </div>
+    <div class="sf-modal-footer">
+      <button class="btn-sf-cancel" id="n-cancel">Cancel</button>
+      <button class="btn-sf-save" id="n-save">Create Opportunity</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/utils.js?v=1776830235"></script>
+<script>
+// ── Constants & State ────────────────────────────────
+const STAGES = ['Enquiry', 'Site Visit', 'Quotation Sent', 'Negotiation', 'Won', 'Lost'];
+const STAGE_COLORS = {
+  'Enquiry':        'var(--accent)',
+  'Site Visit':     'var(--purple)',
+  'Quotation Sent': 'var(--amber)',
+  'Negotiation':    '#ea580c',
+  'Won':            'var(--green)',
+  'Lost':           '#9ca3af'
+};
+const AVATAR_COLORS = ['#3366ff','#8b5cf6','#ea580c','#0891b2','#059669','#d97706','#dc2626','#6366f1'];
+
+let opps = [];
+let stats = {};
+let currentUser = null;
+let canEdit = false;
+let viewMode = 'board';
+let draggedId = null;
+let sortCol = 'createdAt', sortDir = -1;
+let detailOppId = null;
+
+// ── Helpers ──────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtValue(v) {
+  v = parseFloat(v) || 0;
+  if (v >= 1e6) return '$' + (v/1e6).toFixed(v % 1e6 === 0 ? 0 : 1) + 'M';
+  if (v >= 1e3) return '$' + (v/1e3).toFixed(v % 1e3 === 0 ? 0 : 1) + 'K';
+  return '$' + v.toLocaleString();
+}
+function daysInStage(opp) {
+  if (!opp.stageChangedAt) return 0;
+  return Math.floor((Date.now() - new Date(opp.stageChangedAt).getTime()) / 86400000);
+}
+function fmtDate(d) {
+  if (!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-SG', { day: 'numeric', month: 'short' });
+}
+function fmtDateTime(ts) {
+  if (!ts) return '';
+  return new Date(ts).toLocaleDateString('en-SG', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+function pillClass(s) { return (s||'').replace(/\s+/g, '-'); }
+function initials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  return name.slice(0, 2).toUpperCase();
+}
+function avatarColor(name) {
+  let h = 0;
+  for (let i = 0; i < (name||'').length; i++) h = ((h << 5) - h) + name.charCodeAt(i);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+// ── PIN Gate ─────────────────────────────────────────
+let salesPin = null;
+
+async function init() {
+  // Show PIN gate
+  const gate = document.getElementById('pin-gate');
+  const gateBtn = document.getElementById('gate-pin-btn');
+  const gateInput = document.getElementById('gate-pin-input');
+  const gateErr = document.getElementById('gate-pin-error');
+
+  const tryUnlock = async () => {
+    const pw = gateInput.value.trim();
+    if (!pw) { gateErr.textContent = 'Enter password.'; gateErr.style.display = 'block'; return; }
+    gateBtn.disabled = true;
+    try {
+      const res = await fetch('/api/admin/pin', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify', pin: pw })
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        salesPin = pw;
+        gate.style.display = 'none';
+        await loadSalesContent();
+      } else {
+        gateErr.textContent = 'Incorrect password.';
+        gateErr.style.display = 'block';
+        gateBtn.disabled = false;
+      }
+    } catch {
+      gateErr.textContent = 'Error. Try again.';
+      gateErr.style.display = 'block';
+      gateBtn.disabled = false;
+    }
+  };
+
+  gateBtn.addEventListener('click', tryUnlock);
+  gateInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+  setTimeout(() => gateInput.focus(), 100);
+}
+
+// ── Load content after PIN verified ──────────────────
+async function loadSalesContent() {
+  try {
+    const me = await fetch('/api/auth/me').then(r => r.json());
+    currentUser = me.name;
+  } catch { currentUser = null; }
+
+  // Check access
+  try {
+    const r = await fetch('/api/sales/stats');
+    if (r.status === 403) {
+      document.getElementById('access-denied').style.display = '';
+      return;
+    }
+    stats = await r.json();
+  } catch {
+    document.getElementById('access-denied').style.display = '';
+    return;
+  }
+
+  canEdit = ['Lai Wei Xiang', 'Janessa'].includes(currentUser);
+  document.getElementById('sales-content').style.display = '';
+  document.getElementById('btn-new').style.display = canEdit ? '' : 'none';
+
+  opps = await fetch('/api/sales/opportunities').then(r => r.json()).catch(() => []);
+
+  // Populate owner dropdown in new modal
+  const ownerSel = document.getElementById('n-owner');
+  ['Lai Wei Xiang', 'Janessa'].forEach(n => {
+    const o = document.createElement('option'); o.value = n; o.textContent = n;
+    ownerSel.appendChild(o);
+  });
+
+  populateFilters();
+  render();
+  bindEvents();
+}
+
+function populateFilters() {
+  const products = [...new Set(opps.map(o => o.productType).filter(Boolean))].sort();
+  const owners = [...new Set(opps.map(o => o.assignedTo).filter(Boolean))].sort();
+  const pSel = document.getElementById('filter-product');
+  products.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; pSel.appendChild(o); });
+  const oSel = document.getElementById('filter-owner');
+  owners.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; oSel.appendChild(o); });
+  const sSel = document.getElementById('filter-stage');
+  STAGES.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sSel.appendChild(o); });
+}
+
+function bindEvents() {
+  document.getElementById('btn-new').addEventListener('click', openNewModal);
+  document.getElementById('n-cancel').addEventListener('click', closeNewModal);
+  document.getElementById('n-close').addEventListener('click', closeNewModal);
+  document.getElementById('modal-new').addEventListener('click', e => { if (e.target.id === 'modal-new') closeNewModal(); });
+  document.getElementById('n-save').addEventListener('click', saveNewOpp);
+  document.getElementById('view-board').addEventListener('click', () => { viewMode = 'board'; updateView(); });
+  document.getElementById('view-list').addEventListener('click', () => { viewMode = 'list'; updateView(); });
+  document.getElementById('filter-product').addEventListener('change', render);
+  document.getElementById('filter-owner').addEventListener('change', render);
+  document.getElementById('filter-stage').addEventListener('change', render);
+  document.getElementById('search-input').addEventListener('input', render);
+  document.getElementById('panel-close').addEventListener('click', closePanel);
+  document.getElementById('sf-overlay').addEventListener('click', closePanel);
+  document.getElementById('panel-cancel').addEventListener('click', closePanel);
+  document.getElementById('panel-save').addEventListener('click', saveDetail);
+  document.getElementById('panel-delete').addEventListener('click', deleteOpp);
+
+  // Table sort
+  document.querySelectorAll('.sf-table th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.sort;
+      if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+      document.querySelectorAll('.sf-table th').forEach(t => t.classList.remove('sorted'));
+      th.classList.add('sorted');
+      th.querySelector('.sort-arrow').innerHTML = sortDir > 0 ? '&#9650;' : '&#9660;';
+      render();
+    });
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closePanel(); closeNewModal(); }
+  });
+}
+
+// ── Filtering ────────────────────────────────────────
+function getFiltered() {
+  let list = [...opps];
+  const fp = document.getElementById('filter-product').value;
+  const fo = document.getElementById('filter-owner').value;
+  const fs = document.getElementById('filter-stage').value;
+  const sq = document.getElementById('search-input').value.trim().toLowerCase();
+  if (fp) list = list.filter(o => o.productType === fp);
+  if (fo) list = list.filter(o => o.assignedTo === fo);
+  if (fs) list = list.filter(o => o.stage === fs);
+  if (sq) list = list.filter(o =>
+    (o.clientName||'').toLowerCase().includes(sq) ||
+    (o.contactPerson||'').toLowerCase().includes(sq) ||
+    (o.productType||'').toLowerCase().includes(sq) ||
+    (o.quotationNo||'').toLowerCase().includes(sq)
+  );
+  return list;
+}
+
+// ── Render ───────────────────────────────────────────
+function render() {
+  renderKPIs();
+  const filtered = getFiltered();
+  renderBoard(filtered);
+  renderTable(filtered);
+  updateView();
+
+  // Show empty state if no opps at all
+  const hasOpps = opps.length > 0;
+  document.getElementById('sf-empty').style.display = (!hasOpps && viewMode === 'board') ? '' : 'none';
+  document.getElementById('sf-board').style.display = (hasOpps && viewMode === 'board') ? 'grid' : 'none';
+}
+
+function renderKPIs() {
+  const bar = document.getElementById('kpi-bar');
+  const wonVal = stats.totalValue || 0;
+  bar.innerHTML = `
+    <div class="kpi-item">
+      <div class="kpi-label">Pipeline Value</div>
+      <div class="kpi-value blue">${fmtValue(stats.pipelineValue)}</div>
+      <div class="kpi-sub">${stats.openCount || 0} open opportunities</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">Won Revenue</div>
+      <div class="kpi-value green">${fmtValue(wonVal)}</div>
+      <div class="kpi-sub">${stats.wonCount || 0} deals closed</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">Win Rate</div>
+      <div class="kpi-value">${stats.winRate || 0}%</div>
+      <div class="kpi-sub">${stats.wonCount || 0}W / ${stats.lostCount || 0}L</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-label">Expiring Quotes</div>
+      <div class="kpi-value ${(stats.expiringQuotes || 0) > 0 ? 'red' : ''}">${stats.expiringQuotes || 0}</div>
+      <div class="kpi-sub">need follow-up</div>
+    </div>
+  `;
+}
+
+function renderBoard(filtered) {
+  const board = document.getElementById('sf-board');
+  board.innerHTML = '';
+  STAGES.forEach(stage => {
+    const stageOpps = filtered.filter(o => o.stage === stage);
+    const stageVal = stageOpps.reduce((s, o) => s + (o.estimatedValue || 0), 0);
+    const col = document.createElement('div');
+    col.className = 'sf-col';
+    col.dataset.stage = stage;
+    col.innerHTML = `
+      <div class="sf-col-hdr">
+        <span class="sf-col-name">${esc(stage)}</span>
+        <span class="sf-col-count">${stageOpps.length}</span>
+        <span class="sf-col-val">${fmtValue(stageVal)}</span>
+      </div>
+    `;
+    const body = document.createElement('div');
+    body.className = 'sf-col-body';
+    body.dataset.stage = stage;
+    if (canEdit) {
+      body.addEventListener('dragover', e => { e.preventDefault(); body.classList.add('drag-over'); });
+      body.addEventListener('dragleave', () => body.classList.remove('drag-over'));
+      body.addEventListener('drop', e => { e.preventDefault(); body.classList.remove('drag-over'); onDrop(stage); });
+    }
+    if (!stageOpps.length) {
+      body.innerHTML = '<div class="sf-empty">No opportunities</div>';
+    } else {
+      stageOpps.forEach(opp => body.appendChild(buildCard(opp)));
+    }
+    col.appendChild(body);
+    board.appendChild(col);
+  });
+}
+
+function buildCard(opp) {
+  const div = document.createElement('div');
+  div.className = 'sf-card';
+  div.dataset.id = opp.id;
+  div.draggable = canEdit;
+  const days = daysInStage(opp);
+  const stale = days > 14 && !['Won','Lost','No-Bid'].includes(opp.stage);
+  const today = new Date().toISOString().split('T')[0];
+  const followSoon = opp.followUpDate && opp.followUpDate <= today;
+  const color = avatarColor(opp.clientName);
+  div.innerHTML = `
+    <div class="sf-card-top">
+      <div class="sf-avatar" style="background:${color}">${initials(opp.clientName)}</div>
+      <div class="sf-card-client" title="${esc(opp.clientName)}">${esc(opp.clientName)}</div>
+    </div>
+    <div class="sf-card-value">${fmtValue(opp.estimatedValue)}</div>
+    <div class="sf-card-row">
+      ${opp.productType ? `<span class="sf-badge">${esc(opp.productType)}</span>` : ''}
+      <span class="sf-days${stale ? ' stale' : ''}">${days}d</span>
+      ${opp.assignedTo ? `<span class="sf-card-owner">${esc(opp.assignedTo.split(' ')[0])}</span>` : ''}
+    </div>
+    ${followSoon ? `<div class="sf-card-followup">Follow-up: ${fmtDate(opp.followUpDate)}</div>` : ''}
+  `;
+  div.addEventListener('dragstart', () => { draggedId = opp.id; div.classList.add('dragging'); });
+  div.addEventListener('dragend', () => { div.classList.remove('dragging'); });
+  div.addEventListener('click', () => openPanel(opp.id));
+  return div;
+}
+
+function renderTable(filtered) {
+  const sorted = [...filtered].sort((a, b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (sortCol === 'daysInStage') { va = daysInStage(a); vb = daysInStage(b); }
+    if (sortCol === 'estimatedValue') { va = va || 0; vb = vb || 0; }
+    if (typeof va === 'string') return (va||'').localeCompare(vb||'') * sortDir;
+    return ((va||0) - (vb||0)) * sortDir;
+  });
+  const tbody = document.getElementById('sf-tbody');
+  tbody.innerHTML = sorted.map(o => {
+    const days = daysInStage(o);
+    const stale = days > 14 && !['Won','Lost','No-Bid'].includes(o.stage);
+    return `<tr class="clickable" data-id="${esc(o.id)}">
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sf-avatar" style="background:${avatarColor(o.clientName)};width:24px;height:24px;font-size:9px;">${initials(o.clientName)}</div>
+          <strong>${esc(o.clientName)}</strong>
+        </div>
+      </td>
+      <td style="font-weight:600;">${fmtValue(o.estimatedValue)}</td>
+      <td>${o.productType ? `<span class="sf-badge">${esc(o.productType)}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
+      <td><span class="sf-stage-pill ${pillClass(o.stage)}"><span class="dot"></span>${esc(o.stage)}</span></td>
+      <td><span class="sf-days${stale ? ' stale' : ''}">${days}d</span></td>
+      <td>${o.followUpDate ? fmtDate(o.followUpDate) : '<span style="color:var(--text-muted)">—</span>'}</td>
+      <td>${esc(o.assignedTo || '—')}</td>
+      <td style="color:var(--text-muted);font-size:12px;">${fmtDate(o.createdAt ? o.createdAt.split('T')[0] : '')}</td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('tr.clickable').forEach(tr => {
+    tr.addEventListener('click', () => openPanel(tr.dataset.id));
+  });
+}
+
+function updateView() {
+  document.getElementById('view-board').classList.toggle('active', viewMode === 'board');
+  document.getElementById('view-list').classList.toggle('active', viewMode === 'list');
+  const hasOpps = opps.length > 0;
+  document.getElementById('sf-board').style.display = (hasOpps && viewMode === 'board') ? 'grid' : 'none';
+  document.getElementById('sf-table-wrap').style.display = viewMode === 'list' ? '' : 'none';
+  document.getElementById('sf-empty').style.display = (!hasOpps && viewMode === 'board') ? '' : 'none';
+}
+
+// ── Drag & Drop ──────────────────────────────────────
+async function onDrop(newStage) {
+  if (!draggedId || !canEdit) return;
+  const opp = opps.find(o => o.id === draggedId);
+  if (!opp || opp.stage === newStage) { draggedId = null; return; }
+  if (newStage === 'Lost') {
+    const result = await confirmDelete('Mark as Lost?', opp.clientName);
+    if (!result) { draggedId = null; return; }
+    await updateOpp(opp.id, { stage: 'Lost', winLossReason: result.reason });
+  } else {
+    await updateOpp(opp.id, { stage: newStage });
+  }
+  if (newStage === 'Won') toast('Opportunity won — open details to convert to project.');
+  draggedId = null;
+}
+
+// ── API ──────────────────────────────────────────────
+async function updateOpp(id, fields) {
+  try {
+    const res = await fetch('/api/sales/opportunities/' + id, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fields)
+    });
+    if (!res.ok) { toast('Update failed', false); return; }
+    const updated = await res.json();
+    const idx = opps.findIndex(o => o.id === id);
+    if (idx !== -1) opps[idx] = updated;
+    stats = await fetch('/api/sales/stats').then(r => r.json()).catch(() => stats);
+    render();
+  } catch { toast('Network error', false); }
+}
+
+async function refreshData() {
+  opps = await fetch('/api/sales/opportunities').then(r => r.json()).catch(() => opps);
+  stats = await fetch('/api/sales/stats').then(r => r.json()).catch(() => stats);
+  render();
+}
+
+// ── New Opportunity Modal ────────────────────────────
+function openNewModal() {
+  ['n-client','n-value','n-contact','n-phone','n-email','n-site','n-notes'].forEach(id => document.getElementById(id).value = '');
+  ['n-product','n-source'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('n-owner').value = currentUser || '';
+  document.getElementById('modal-new').classList.add('open');
+  document.getElementById('n-client').focus();
+}
+function closeNewModal() { document.getElementById('modal-new').classList.remove('open'); }
+
+async function saveNewOpp() {
+  const clientName = document.getElementById('n-client').value.trim();
+  if (!clientName) { document.getElementById('n-client').focus(); toast('Client name is required', false); return; }
+  try {
+    const res = await fetch('/api/sales/opportunities', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clientName,
+        estimatedValue: document.getElementById('n-value').value,
+        productType: document.getElementById('n-product').value,
+        contactPerson: document.getElementById('n-contact').value.trim(),
+        phone: document.getElementById('n-phone').value.trim(),
+        email: document.getElementById('n-email').value.trim(),
+        siteAddress: document.getElementById('n-site').value.trim(),
+        source: document.getElementById('n-source').value,
+        assignedTo: document.getElementById('n-owner').value,
+        notes: document.getElementById('n-notes').value.trim()
+      })
+    });
+    if (!res.ok) { toast('Create failed: ' + ((await res.json()).error || ''), false); return; }
+    closeNewModal();
+    toast('Opportunity created');
+    await refreshData();
+    populateFilters();
+  } catch { toast('Network error', false); }
+}
+
+// ── Detail Panel ─────────────────────────────────────
+function openPanel(id) {
+  const opp = opps.find(o => o.id === id);
+  if (!opp) return;
+  detailOppId = id;
+
+  // Header
+  const color = avatarColor(opp.clientName);
+  document.getElementById('panel-avatar').style.background = color;
+  document.getElementById('panel-avatar').textContent = initials(opp.clientName);
+  document.getElementById('panel-title').textContent = opp.clientName;
+  document.getElementById('panel-sub').textContent = (opp.productType || 'Opportunity') + ' — ' + fmtValue(opp.estimatedValue);
+
+  // Path component
+  const pathEl = document.getElementById('panel-path');
+  const activeStages = STAGES.filter(s => s !== 'Lost');
+  const currentIdx = activeStages.indexOf(opp.stage);
+  const isLost = opp.stage === 'Lost' || opp.stage === 'No-Bid';
+  pathEl.innerHTML = activeStages.map((s, i) => {
+    let cls = 'sf-path-step';
+    if (isLost) {
+      cls += ' lost';
+    } else if (s === 'Won' && opp.stage === 'Won') {
+      cls += ' won';
+    } else if (i < currentIdx) {
+      cls += ' completed';
+    } else if (i === currentIdx) {
+      cls += ' current';
+    }
+    return `<div class="${cls}">${esc(s)}</div>`;
+  }).join('');
+
+  // Body
+  const body = document.getElementById('panel-body');
+  const isWon = opp.stage === 'Won';
+  const isConverted = !!opp.convertedProjectId;
+  const days = daysInStage(opp);
+
+  let html = '';
+
+  // Convert banner
+  if (isWon && !isConverted && canEdit) {
+    html += `<div class="sf-convert-banner">
+      <div class="msg">This opportunity is won. Convert it to a project to start operations.</div>
+      <button class="sf-convert-btn" id="convert-btn">Convert to Project</button>
+    </div>`;
+  }
+  if (isConverted) {
+    html += `<div class="sf-converted-link">Converted to project — <a href="/project?id=${esc(opp.convertedProjectId)}">${esc(opp.convertedProjectId)}</a></div>`;
+  }
+
+  // Highlight panel
+  html += `<div class="sf-highlight">
+    <div class="sf-hl-item"><div class="sf-hl-label">Value</div><div class="sf-hl-val green">${fmtValue(opp.estimatedValue)}</div></div>
+    <div class="sf-hl-item"><div class="sf-hl-label">Stage</div><div class="sf-hl-val">${esc(opp.stage)}</div></div>
+    <div class="sf-hl-item"><div class="sf-hl-label">Days in Stage</div><div class="sf-hl-val">${days}d</div></div>
+    <div class="sf-hl-item"><div class="sf-hl-label">Owner</div><div class="sf-hl-val">${esc(opp.assignedTo || '—')}</div></div>
+  </div>`;
+
+  // Details section
+  html += `<div class="sf-section">
+    <div class="sf-section-hdr" data-target="sec-details"><span class="chevron">&#9660;</span> Details</div>
+    <div class="sf-section-body" id="sec-details">
+      <div class="sf-fields">
+        <div class="sf-field"><label>Client</label><input id="d-client" value="${esc(opp.clientName)}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field"><label>Value ($)</label><input id="d-value" type="number" value="${opp.estimatedValue||0}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field"><label>Product Type</label>
+          <select id="d-product" ${canEdit?'':'disabled'}>
+            <option value="">Select...</option>
+            ${['Bollards','Road Blockers','Gates','Curtain Wall','Structural Steel','Aluminium','Fencing','Railing','Ad-hoc','Other'].map(p =>
+              `<option ${p===opp.productType?'selected':''}>${p}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="sf-field"><label>Stage</label>
+          <select id="d-stage" ${canEdit?'':'disabled'}>
+            ${STAGES.concat(['No-Bid']).map(s => `<option ${s===opp.stage?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+        <div class="sf-field"><label>Source</label>
+          <select id="d-source" ${canEdit?'':'disabled'}>
+            <option value="">Select...</option>
+            ${['Repeat Client','Referral','Tender Portal','Cold Call','Walk-in','Other'].map(s =>
+              `<option ${s===opp.source?'selected':''}>${s}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="sf-field"><label>Assigned To</label>
+          <select id="d-owner" ${canEdit?'':'disabled'}>
+            <option value="">Select...</option>
+            ${['Lai Wei Xiang','Janessa'].map(n =>
+              `<option ${n===opp.assignedTo?'selected':''}>${n}</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="sf-field"><label>Quotation No</label><input id="d-quoteno" value="${esc(opp.quotationNo||'')}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field"><label>Quote Expiry</label><input id="d-expiry" type="date" value="${opp.quoteExpiryDate||''}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field"><label>Follow-up Date</label><input id="d-followup" type="date" value="${opp.followUpDate||''}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field"><label>Win/Loss Reason</label><input id="d-reason" value="${esc(opp.winLossReason||'')}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field full"><label>Notes</label><textarea id="d-notes" rows="2" ${canEdit?'':'disabled'}>${esc(opp.notes||'')}</textarea></div>
+      </div>
+    </div>
+  </div>`;
+
+  // Contact section
+  html += `<div class="sf-section">
+    <div class="sf-section-hdr" data-target="sec-contact"><span class="chevron">&#9660;</span> Contact Information</div>
+    <div class="sf-section-body" id="sec-contact">
+      <div class="sf-fields">
+        <div class="sf-field"><label>Contact Person</label><input id="d-contact" value="${esc(opp.contactPerson||'')}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field"><label>Phone</label><input id="d-phone" value="${esc(opp.phone||'')}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field full"><label>Email</label><input id="d-email" type="email" value="${esc(opp.email||'')}" ${canEdit?'':'disabled'}></div>
+        <div class="sf-field full"><label>Site Address</label><input id="d-site" value="${esc(opp.siteAddress||'')}" ${canEdit?'':'disabled'}></div>
+      </div>
+    </div>
+  </div>`;
+
+  // Activity section
+  html += `<div class="sf-section">
+    <div class="sf-section-hdr" data-target="sec-activity"><span class="chevron">&#9660;</span> Activity Timeline</div>
+    <div class="sf-timeline" id="sec-activity">
+      ${canEdit ? `<div class="sf-tl-composer">
+        <textarea class="sf-tl-input" id="d-activity" placeholder="Log a note, call, or follow-up..." rows="1"></textarea>
+      </div>` : ''}
+      ${(opp.activity||[]).slice().reverse().map(a => `
+        <div class="sf-tl-item">
+          <div class="sf-tl-dot ${esc(a.type)}"></div>
+          <div>
+            <div class="sf-tl-text">${esc(a.note)}</div>
+            <div class="sf-tl-ts">${fmtDateTime(a.ts)}</div>
+          </div>
+        </div>
+      `).join('') || '<div style="font-size:12px;color:var(--text-muted);padding:0 20px;">No activity yet.</div>'}
+    </div>
+  </div>`;
+
+  body.innerHTML = html;
+
+  // Section toggle handlers
+  body.querySelectorAll('.sf-section-hdr').forEach(hdr => {
+    hdr.addEventListener('click', () => {
+      const target = document.getElementById(hdr.dataset.target);
+      if (target) {
+        target.classList.toggle('hidden');
+        hdr.classList.toggle('collapsed');
+      }
+    });
+  });
+
+  // Convert button
+  const convertBtn = document.getElementById('convert-btn');
+  if (convertBtn) convertBtn.addEventListener('click', convertToProject);
+
+  // Footer buttons
+  document.getElementById('panel-save').style.display = canEdit ? '' : 'none';
+  document.getElementById('panel-delete').style.display = canEdit ? '' : 'none';
+
+  // Open
+  document.getElementById('sf-overlay').classList.add('open');
+  document.getElementById('sf-panel').classList.add('open');
+}
+
+function closePanel() {
+  document.getElementById('sf-overlay').classList.remove('open');
+  document.getElementById('sf-panel').classList.remove('open');
+  detailOppId = null;
+}
+
+async function saveDetail() {
+  if (!detailOppId || !canEdit) return;
+  const fields = {
+    clientName: document.getElementById('d-client').value.trim(),
+    estimatedValue: document.getElementById('d-value').value,
+    productType: document.getElementById('d-product').value,
+    stage: document.getElementById('d-stage').value,
+    contactPerson: document.getElementById('d-contact').value.trim(),
+    phone: document.getElementById('d-phone').value.trim(),
+    email: document.getElementById('d-email').value.trim(),
+    siteAddress: document.getElementById('d-site').value.trim(),
+    quotationNo: document.getElementById('d-quoteno').value.trim(),
+    quoteExpiryDate: document.getElementById('d-expiry').value || null,
+    followUpDate: document.getElementById('d-followup').value || null,
+    source: document.getElementById('d-source').value,
+    assignedTo: document.getElementById('d-owner').value,
+    winLossReason: document.getElementById('d-reason').value.trim(),
+    notes: document.getElementById('d-notes').value.trim()
+  };
+  const activityEl = document.getElementById('d-activity');
+  if (activityEl && activityEl.value.trim()) fields.activityNote = activityEl.value.trim();
+  if (!fields.clientName) { toast('Client name is required', false); return; }
+  await updateOpp(detailOppId, fields);
+  toast('Changes saved');
+  closePanel();
+}
+
+async function deleteOpp() {
+  if (!detailOppId || !canEdit) return;
+  const opp = opps.find(o => o.id === detailOppId);
+  if (!opp) return;
+  const result = await confirmDelete('Delete this opportunity?', opp.clientName);
+  if (!result) return;
+  try {
+    const res = await fetch('/api/sales/opportunities/' + detailOppId, {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason: result.reason })
+    });
+    if (!res.ok) { toast('Delete failed', false); return; }
+    closePanel();
+    toast('Opportunity deleted');
+    await refreshData();
+  } catch { toast('Network error', false); }
+}
+
+async function convertToProject() {
+  if (!detailOppId || !canEdit) return;
+  const opp = opps.find(o => o.id === detailOppId);
+  if (!opp || opp.stage !== 'Won') return;
+  if (!confirm('Convert this opportunity to a new project? This will create a project record from the opportunity data.')) return;
+  try {
+    const res = await fetch('/api/sales/convert-to-project/' + detailOppId, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    if (!res.ok) { toast('Convert failed: ' + ((await res.json()).error || ''), false); return; }
+    const data = await res.json();
+    toast('Project created — redirecting...');
+    closePanel();
+    await refreshData();
+    setTimeout(() => window.location.href = '/project?id=' + data.projectId, 1200);
+  } catch { toast('Network error', false); }
+}
+
+init();
+</script>
+<script src="/js/nav.js"></script>
+</body>
+</html>

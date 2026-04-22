@@ -50,4 +50,14 @@
       closeSidebar();
     }
   });
+  // ── Sales nav visibility (only for authorised users) ──
+  var salesLink = document.getElementById('nav-sales');
+  if (salesLink) {
+    fetch('/api/auth/me').then(function(r) { return r.json(); }).then(function(me) {
+      var allowed = ['Lai Wei Xiang', 'Janessa', 'Alex Chew'];
+      if (me && me.name && allowed.indexOf(me.name) !== -1) {
+        salesLink.style.display = '';
+      }
+    }).catch(function() {});
+  }
 })();

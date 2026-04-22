@@ -58,7 +58,232 @@
   },
   {
     "weekStart": "2026-04-20",
-    "assignments": {},
+    "assignments": {
+      "wm-tan-yock-wan": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        },
+        "fri": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wt-fangkaew-sarawit": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "fri": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "sat": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 8
+        }
+      },
+      "wi-perumal-kamaraj": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "fri": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "sat": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        }
+      },
+      "wt-hoomphaeng-kritsana": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "fri": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        }
+      },
+      "wi-dhadikaran-muruganandam": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        },
+        "fri": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": "",
+          "otHours": 2
+        }
+      },
+      "wi-rajagopal-mayakrishnan": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-22724-poc-t232-woodland",
+          "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wi-kannaiyan-jaishankar": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-22724-poc-t232-woodland",
+          "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-pow-kin-pheng": {
+        "wed": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "City gate"
+        }
+      },
+      "wm-chin-poh-fatt": {
+        "wed": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "City gate"
+        }
+      },
+      "wm-lin-chee-cheong": {
+        "wed": {
+          "type": "Fabrication",
+          "projectId": "bd-22724-poc-t232-woodland",
+          "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": "Auto bollard"
+        }
+      },
+      "wi-palanisamy-manikandan": {
+        "wed": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-ee-kok-keong": {
+        "wed": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
+        }
+      },
+      "ss-tai-nyur-hing": {
+        "wed": {
+          "type": "Fabrication",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "",
+          "notes": "Hole marking and drilling"
+        }
+      },
+      "ss-chin-poh-hoon": {
+        "wed": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
+        }
+      }
+    },
     "supplyWorkers": [
       {
         "id": "supply-1776523111944",
@@ -68,6 +293,56 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-21T13:32:20.496Z"
+    "savedAt": "2026-04-22T02:34:21.301Z"
+  },
+  {
+    "weekStart": "2026-06-01",
+    "assignments": {
+      "wi-test-1": {
+        "mon": {
+          "type": "Fabrication",
+          "projectId": "__xtest_proj_1776784965600",
+          "projectName": "Extended Test",
+          "otHours": 2
+        },
+        "tue": {
+          "type": "Installation",
+          "projectId": "__xtest_proj_1776784965600",
+          "location": "Site A"
+        },
+        "wed": {
+          "type": "MC",
+          "notes": "MC"
+        },
+        "sat": {
+          "type": "Fabrication",
+          "projectId": "__xtest_proj_1776784965600",
+          "projectName": "Extended Test",
+          "otHours": 8
+        }
+      }
+    },
+    "supplyWorkers": [
+      {
+        "id": "supply-test-1",
+        "name": "Supply Test",
+        "company": "TestCo",
+        "role": "Worker",
+        "code": "EXT"
+      }
+    ],
+    "savedAt": "2026-04-21T15:22:45.951Z"
+  },
+  {
+    "weekStart": "2026-07-06",
+    "assignments": {
+      "w2": {
+        "tue": {
+          "type": "Installation"
+        }
+      }
+    },
+    "supplyWorkers": [],
+    "savedAt": "2026-04-21T15:22:46.068Z"
   }
 ]

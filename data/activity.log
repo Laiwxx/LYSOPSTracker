@@ -1369,3 +1369,361 @@
 {"ts":"2026-04-21T13:32:19.705Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
 {"ts":"2026-04-21T13:32:20.496Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
 {"ts":"2026-04-21T14:12:51.477Z","event":"task.updated","by":"Lai Wei Xiang","id":"mo7wjco91l2","title":"Review EOD flags — action any gaps from yesterday","status":"Done"}
+{"ts":"2026-04-21T15:13:14.391Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"../../etc","filename":"passwd","fileDeleted":false}
+{"ts":"2026-04-21T15:13:14.397Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776784394161","jobCode":"TEST-SCN"}
+{"ts":"2026-04-21T15:13:14.417Z","event":"site-request.created","by":"Scenario Tester","id":"mo8rjwz5it10","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-21T15:13:14.445Z","event":"claim.created","by":"Scenario Tester","id":"mo8rjwzxjp69","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-21T15:13:14.453Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-21T15:16:56.905Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-21T15:16:56.931Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776784616591","jobCode":"TEST-SCN"}
+{"ts":"2026-04-21T15:16:56.945Z","event":"site-request.created","by":"Scenario Tester","id":"mo8rooohbluz","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-21T15:16:57.042Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776784616591","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-21T15:16:57.070Z","event":"claim.created","by":"Scenario Tester","id":"mo8roorytuoa","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-21T15:16:57.085Z","event":"pr.created","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002","projectCode":"TEST"}
+{"ts":"2026-04-21T15:16:57.330Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002"}
+{"ts":"2026-04-21T15:21:13.863Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-21T15:21:13.867Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776784873587","jobCode":"TEST-SCN"}
+{"ts":"2026-04-21T15:21:13.881Z","event":"site-request.created","by":"Scenario Tester","id":"mo8ru6xkvhfq","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-21T15:21:13.958Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776784873587","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-21T15:21:13.975Z","event":"claim.created","by":"Scenario Tester","id":"mo8ru707m4gt","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-21T15:21:13.986Z","event":"pr.created","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002","projectCode":"TEST"}
+{"ts":"2026-04-21T15:21:14.214Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002"}
+{"ts":"2026-04-21T15:21:14.594Z","event":"project.created","by":"Extended Tester","id":"__xtest_proj_1776784874472","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:14.669Z","event":"worker.created","by":"Extended Tester","workerId":"mo8ru7jgzox0","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:14.745Z","event":"worker.updated","by":"Extended Tester","workerId":"mo8ru7jgzox0","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:14.818Z","event":"worker.deleted","by":"Extended Tester","workerId":"mo8ru7jgzox0","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:14.827Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-06-01","type":"weekly"}
+{"ts":"2026-04-21T15:21:14.836Z","event":"attendance.saved","by":"Extended Tester","date":"2026-06-03","count":2}
+{"ts":"2026-04-21T15:21:14.844Z","event":"claim.created","by":"Extended Tester","id":"mo8ru7obzypp","projectId":"__xtest_proj_1776784874472","claimNumber":"PC#1","amount":50000}
+{"ts":"2026-04-21T15:21:14.846Z","event":"claim.updated","by":"Extended Tester","id":"mo8ru7obzypp","claimNumber":"PC#1","status":"Certified"}
+{"ts":"2026-04-21T15:21:14.926Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784874472","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:14.931Z","event":"fab.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784874472","jobCode":"XTEST","itemIndex":0,"item":"Test Steel Beam","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-21T15:21:14.941Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784874472","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:14.945Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784874472","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:14.949Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:14.950Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:15.040Z","event":"claim.created","by":"Extended Tester","id":"mo8ru7tsrr2r","projectId":"__xtest_proj_1776784874472","claimNumber":"PC#0","amount":0}
+{"ts":"2026-04-21T15:21:15.119Z","event":"task.deleted","by":"Extended Tester","id":"mo8ru7vw4ghu","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-21T15:21:15.123Z","event":"task.deleted","by":"Extended Tester","id":"mo8ru7w1mvs5","title":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"}
+{"ts":"2026-04-21T15:21:15.198Z","event":"project.deleted.cascade","by":"Extended Tester","projectId":"__xtest_proj_1776784874472","jobCode":"XTEST","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:21:34.624Z","event":"project.created","by":"Extended Tester","id":"__xtest_proj_1776784894502","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:34.707Z","event":"worker.created","by":"Extended Tester","workerId":"mo8run039to5","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:34.786Z","event":"worker.updated","by":"Extended Tester","workerId":"mo8run039to5","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:34.867Z","event":"worker.deleted","by":"Extended Tester","workerId":"mo8run039to5","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:34.877Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-06-01","type":"weekly"}
+{"ts":"2026-04-21T15:21:34.885Z","event":"attendance.saved","by":"Extended Tester","date":"2026-06-03","count":2}
+{"ts":"2026-04-21T15:21:34.892Z","event":"claim.created","by":"Extended Tester","id":"mo8run58xtui","projectId":"__xtest_proj_1776784894502","claimNumber":"PC#1","amount":50000}
+{"ts":"2026-04-21T15:21:34.894Z","event":"claim.updated","by":"Extended Tester","id":"mo8run58xtui","claimNumber":"PC#1","status":"Certified"}
+{"ts":"2026-04-21T15:21:34.973Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784894502","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:34.979Z","event":"fab.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784894502","jobCode":"XTEST","itemIndex":0,"item":"Test Steel Beam","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-21T15:21:34.988Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784894502","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:34.991Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784894502","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:34.995Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:34.996Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:35.079Z","event":"claim.created","by":"Extended Tester","id":"mo8runafjc1d","projectId":"__xtest_proj_1776784894502","claimNumber":"PC#0","amount":0}
+{"ts":"2026-04-21T15:21:35.156Z","event":"task.deleted","by":"Extended Tester","id":"mo8runchyuk9","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-21T15:21:35.161Z","event":"task.deleted","by":"Extended Tester","id":"mo8runcmaqd1","title":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"}
+{"ts":"2026-04-21T15:21:35.239Z","event":"project.deleted.cascade","by":"Extended Tester","projectId":"__xtest_proj_1776784894502","jobCode":"XTEST","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:21:42.654Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-21T15:21:42.658Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776784902381","jobCode":"TEST-SCN"}
+{"ts":"2026-04-21T15:21:42.671Z","event":"site-request.created","by":"Scenario Tester","id":"mo8rut5aszht","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-21T15:21:42.754Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776784902381","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-21T15:21:42.764Z","event":"claim.created","by":"Scenario Tester","id":"mo8rut7weu3h","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-21T15:21:42.769Z","event":"pr.created","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002","projectCode":"TEST"}
+{"ts":"2026-04-21T15:21:43.013Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002"}
+{"ts":"2026-04-21T15:21:43.370Z","event":"project.created","by":"Extended Tester","id":"__xtest_proj_1776784903224","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:43.460Z","event":"worker.created","by":"Extended Tester","workerId":"mo8rutr8fih9","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:43.536Z","event":"worker.updated","by":"Extended Tester","workerId":"mo8rutr8fih9","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:43.608Z","event":"worker.deleted","by":"Extended Tester","workerId":"mo8rutr8fih9","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:43.615Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-06-01","type":"weekly"}
+{"ts":"2026-04-21T15:21:43.620Z","event":"attendance.saved","by":"Extended Tester","date":"2026-06-03","count":2}
+{"ts":"2026-04-21T15:21:43.626Z","event":"claim.created","by":"Extended Tester","id":"mo8rutvu33sm","projectId":"__xtest_proj_1776784903224","claimNumber":"PC#1","amount":50000}
+{"ts":"2026-04-21T15:21:43.628Z","event":"claim.updated","by":"Extended Tester","id":"mo8rutvu33sm","claimNumber":"PC#1","status":"Certified"}
+{"ts":"2026-04-21T15:21:43.707Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784903224","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:43.711Z","event":"fab.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784903224","jobCode":"XTEST","itemIndex":0,"item":"Test Steel Beam","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-21T15:21:43.718Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784903224","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:43.720Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784903224","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:43.724Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:43.726Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:43.808Z","event":"claim.created","by":"Extended Tester","id":"mo8ruu0w6uab","projectId":"__xtest_proj_1776784903224","claimNumber":"PC#0","amount":0}
+{"ts":"2026-04-21T15:21:43.885Z","event":"task.deleted","by":"Extended Tester","id":"mo8ruu2xxqzy","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-21T15:21:43.889Z","event":"task.deleted","by":"Extended Tester","id":"mo8ruu32iwm5","title":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"}
+{"ts":"2026-04-21T15:21:43.966Z","event":"project.deleted.cascade","by":"Extended Tester","projectId":"__xtest_proj_1776784903224","jobCode":"XTEST","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:21:44.490Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-21T15:21:44.495Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776784904204","jobCode":"TEST-SCN"}
+{"ts":"2026-04-21T15:21:44.583Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776784904204","jobCode":"TEST-SCN","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:21:44.593Z","event":"claim.created","by":"Scenario Tester","id":"mo8ruumpyjon","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-21T15:21:45.066Z","event":"project.created","by":"Extended Tester","id":"__xtest_proj_1776784904934","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:45.138Z","event":"worker.created","by":"Extended Tester","workerId":"mo8ruv1tde00","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:45.213Z","event":"worker.updated","by":"Extended Tester","workerId":"mo8ruv1tde00","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:45.287Z","event":"worker.deleted","by":"Extended Tester","workerId":"mo8ruv1tde00","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:21:45.297Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-06-01","type":"weekly"}
+{"ts":"2026-04-21T15:21:45.313Z","event":"claim.created","by":"Extended Tester","id":"mo8ruv6pmibg","projectId":"__xtest_proj_1776784904934","claimNumber":"PC#1","amount":50000}
+{"ts":"2026-04-21T15:21:45.315Z","event":"claim.updated","by":"Extended Tester","id":"mo8ruv6pmibg","claimNumber":"PC#1","status":"Certified"}
+{"ts":"2026-04-21T15:21:45.400Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784904934","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:45.406Z","event":"fab.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784904934","jobCode":"XTEST","itemIndex":0,"item":"Test Steel Beam","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-21T15:21:45.417Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784904934","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:45.420Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784904934","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:21:45.424Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:45.424Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:21:45.510Z","event":"claim.created","by":"Extended Tester","id":"mo8ruvc6kbq1","projectId":"__xtest_proj_1776784904934","claimNumber":"PC#0","amount":0}
+{"ts":"2026-04-21T15:21:45.661Z","event":"project.deleted.cascade","by":"Extended Tester","projectId":"__xtest_proj_1776784904934","jobCode":"XTEST","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:22:08.906Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-21T15:22:08.912Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776784928607","jobCode":"TEST-SCN"}
+{"ts":"2026-04-21T15:22:09.011Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776784928607","jobCode":"TEST-SCN","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:22:09.021Z","event":"claim.created","by":"Scenario Tester","id":"mo8rvdh9ab4h","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-21T15:22:09.487Z","event":"project.created","by":"Extended Tester","id":"__xtest_proj_1776784929359","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:09.561Z","event":"worker.created","by":"Extended Tester","workerId":"mo8rvdw9pbxc","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:22:09.651Z","event":"worker.updated","by":"Extended Tester","workerId":"mo8rvdw9pbxc","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:22:09.728Z","event":"worker.deleted","by":"Extended Tester","workerId":"mo8rvdw9pbxc","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:22:09.735Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-06-01","type":"weekly"}
+{"ts":"2026-04-21T15:22:09.749Z","event":"claim.created","by":"Extended Tester","id":"mo8rve1hxhue","projectId":"__xtest_proj_1776784929359","claimNumber":"PC#1","amount":50000}
+{"ts":"2026-04-21T15:22:09.751Z","event":"claim.updated","by":"Extended Tester","id":"mo8rve1hxhue","claimNumber":"PC#1","status":"Certified"}
+{"ts":"2026-04-21T15:22:09.843Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784929359","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:09.849Z","event":"fab.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784929359","jobCode":"XTEST","itemIndex":0,"item":"Test Steel Beam","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-21T15:22:09.859Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784929359","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:09.862Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784929359","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:09.867Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:22:09.868Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:22:09.959Z","event":"claim.created","by":"Extended Tester","id":"mo8rve7b5ieg","projectId":"__xtest_proj_1776784929359","claimNumber":"PC#0","amount":0}
+{"ts":"2026-04-21T15:22:10.128Z","event":"project.deleted.cascade","by":"Extended Tester","projectId":"__xtest_proj_1776784929359","jobCode":"XTEST","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:22:21.517Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-21T15:22:21.522Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776784941235","jobCode":"TEST-SCN"}
+{"ts":"2026-04-21T15:22:21.537Z","event":"site-request.created","by":"Scenario Tester","id":"mo8rvn4xyfnc","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-21T15:22:21.615Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776784941235","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-21T15:22:21.626Z","event":"claim.created","by":"Scenario Tester","id":"mo8rvn7eodq4","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-21T15:22:21.634Z","event":"pr.created","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002","projectCode":"TEST"}
+{"ts":"2026-04-21T15:22:21.863Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-002","prNumber":"PR26-002"}
+{"ts":"2026-04-21T15:22:45.717Z","event":"project.created","by":"Extended Tester","id":"__xtest_proj_1776784965600","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:45.793Z","event":"worker.created","by":"Extended Tester","workerId":"mo8rw5uoji9g","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:22:45.872Z","event":"worker.updated","by":"Extended Tester","workerId":"mo8rw5uoji9g","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:22:45.943Z","event":"worker.deleted","by":"Extended Tester","workerId":"mo8rw5uoji9g","name":"Test Worker XYZ"}
+{"ts":"2026-04-21T15:22:45.951Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-06-01","type":"weekly"}
+{"ts":"2026-04-21T15:22:45.957Z","event":"attendance.saved","by":"Extended Tester","date":"2026-06-03","count":2}
+{"ts":"2026-04-21T15:22:45.962Z","event":"claim.created","by":"Extended Tester","id":"mo8rw5zdnjhd","projectId":"__xtest_proj_1776784965600","claimNumber":"PC#1","amount":50000}
+{"ts":"2026-04-21T15:22:45.963Z","event":"claim.updated","by":"Extended Tester","id":"mo8rw5zdnjhd","claimNumber":"PC#1","status":"Certified"}
+{"ts":"2026-04-21T15:22:46.047Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784965600","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:46.051Z","event":"fab.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784965600","jobCode":"XTEST","itemIndex":0,"item":"Test Steel Beam","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-21T15:22:46.061Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784965600","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:46.064Z","event":"project.updated","by":"Extended Tester","projectId":"__xtest_proj_1776784965600","jobCode":"XTEST"}
+{"ts":"2026-04-21T15:22:46.067Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:22:46.068Z","event":"manpower-plan.saved","by":"Extended Tester","weekStart":"2026-07-06","type":"weekly"}
+{"ts":"2026-04-21T15:22:46.151Z","event":"claim.created","by":"Extended Tester","id":"mo8rw64n9gbu","projectId":"__xtest_proj_1776784965600","claimNumber":"PC#0","amount":0}
+{"ts":"2026-04-21T15:22:46.230Z","event":"task.deleted","by":"Extended Tester","id":"mo8rw66roagm","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-21T15:22:46.234Z","event":"task.deleted","by":"Extended Tester","id":"mo8rw66vsacg","title":"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"}
+{"ts":"2026-04-21T15:22:46.308Z","event":"project.deleted.cascade","by":"Extended Tester","projectId":"__xtest_proj_1776784965600","jobCode":"XTEST","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:42:02.316Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:42:12.694Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:42:25.818Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:43:02.288Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:43:10.070Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:43:11.869Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:43:14.020Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:43:58.054Z","event":"project.deleted.cascade","by":"Lai Wei Xiang","projectId":"fff","jobCode":"fff","removedSRs":0,"removedTasks":0}
+{"ts":"2026-04-21T15:44:05.752Z","event":"project.deleted.cascade","by":"Lai Wei Xiang","projectId":"__test_scenario_1776784394161","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-21T15:46:34.264Z","event":"project.created","by":"Lai Wei Xiang","id":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:46:45.572Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:46:47.175Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:46:47.819Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:46:51.939Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:46:52.822Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:46:53.401Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:46:55.399Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:03.706Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:04.808Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:05.114Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:05.793Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:06.098Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:07.477Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:08.297Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:08.808Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:09.410Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:22.448Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:24.159Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:25.383Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:26.161Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:27.823Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:28.358Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:29.602Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:31.322Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:37.388Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:39.204Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:43.726Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:48.034Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:47:49.369Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:48:30.875Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:48:31.462Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:50:11.887Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:50:12.618Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:50:19.095Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:50:25.279Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:50:30.087Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:50:37.083Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-21T15:51:52.221Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:52:13.988Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:52:46.905Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:53:26.485Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:56:04.090Z","event":"fab.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"fabDeadline","to":"2026-05-01"}]}
+{"ts":"2026-04-21T15:56:14.150Z","event":"fab.updated","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":1,"item":"LTA Bollard","changes":[{"field":"fabDeadline","to":"2026-04-28"}]}
+{"ts":"2026-04-21T15:56:39.629Z","event":"auth.password-reset","by":"System","user":"Jun Jie"}
+{"ts":"2026-04-21T15:56:47.107Z","event":"pr.deleted","by":"Lai Wei Xiang","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-21T15:58:23.210Z","event":"manpower-plan.saved","by":"Jun Jie","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-21T15:58:50.793Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-21T15:58:51.866Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-21T15:58:52.770Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-21T15:58:54.577Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Verified","to":"Installed"}]}
+{"ts":"2026-04-21T15:58:54.921Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Installed","to":"In Progress"}]}
+{"ts":"2026-04-21T15:58:55.358Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
+{"ts":"2026-04-22T00:09:07.161Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-22T00:09:28.121Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-22T00:09:48.034Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-22T00:10:18.791Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-22T00:45:00.018Z","event":"recurring-tasks.created","by":"System","date":"2026-04-22","count":27,"roles":["Lai Wei Xiang","Chris","Rena","Alex Mac","Janessa","Alex Chew","Teo Meei Haw"]}
+{"ts":"2026-04-22T01:20:11.815Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-22T01:20:48.365Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-22T01:26:46.308Z","event":"auth.password-reset","by":"System","user":"Teo Meei Haw"}
+{"ts":"2026-04-22T01:36:06.667Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":4,"logId":"log_mo9dsx5b9r0l"}
+{"ts":"2026-04-22T01:36:06.688Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":4,"item":"Cometa Man Trap","logId":"log_mo9dsx5b9r0l","delta":2,"newTotal":2,"step":"Mantrap installation"}
+{"ts":"2026-04-22T01:39:52.240Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":2,"logId":"log_mo9dxraigc5t"}
+{"ts":"2026-04-22T01:39:52.257Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":2,"item":"Cova Road Blocker 3 Meters","logId":"log_mo9dxraigc5t","delta":3,"newTotal":3,"step":"Installation"}
+{"ts":"2026-04-22T01:41:06.610Z","event":"site-request.created","by":"Teo Meei Haw","id":"mo9dzd0x20ad","item":"gate 2 sliding gate","requestedBy":"Teo Meei Haw","fabIdx":null}
+{"ts":"2026-04-22T01:42:31.343Z","event":"site-request.updated","by":"Teo Meei Haw","id":"mo9dzd0x20ad","actor":"Teo Meei Haw","previousStatus":"New","newStatus":"New","changes":{}}
+{"ts":"2026-04-22T01:42:59.546Z","event":"site-request.created","by":"Teo Meei Haw","id":"mo9e1s61w7uq","item":"SP30 Fixed Bollard","requestedBy":"Teo Meei Haw","fabIdx":0}
+{"ts":"2026-04-22T02:34:21.302Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-22T02:48:52.765Z","event":"project.updated","by":"Salve","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)"}
+{"ts":"2026-04-22T04:20:58.987Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"logId":"log_mo9joxaba5n8","originalSize":848662,"originalMime":"image/jpeg"}
+{"ts":"2026-04-22T04:20:59.156Z","event":"fab.log.created","by":"Chris","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"item":"Engineering Bollard","logId":"log_mo9joxaba5n8","delta":9,"newTotal":9}
+{"ts":"2026-04-22T04:21:40.127Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"logId":"log_mo9jppfduatw","originalSize":767956,"originalMime":"image/jpeg"}
+{"ts":"2026-04-22T04:21:40.177Z","event":"fab.log.created","by":"Chris","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"item":"Engineering Bollard","logId":"log_mo9jppfduatw","delta":12,"newTotal":21}
+{"ts":"2026-04-22T04:22:19.369Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"logId":"log_mo9jqk4fhfje","originalSize":803648,"originalMime":"image/jpeg"}
+{"ts":"2026-04-22T04:22:19.426Z","event":"fab.log.created","by":"Chris","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"item":"Engineering Bollard","logId":"log_mo9jqk4fhfje","delta":7,"newTotal":28}
+{"ts":"2026-04-22T04:23:10.488Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"logId":"log_mo9jrn42x1b6","originalSize":903449,"originalMime":"image/jpeg"}
+{"ts":"2026-04-22T04:23:34.841Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"logId":"log_mo9js6kaul9z","originalSize":791955,"originalMime":"image/jpeg"}
+{"ts":"2026-04-22T04:23:34.896Z","event":"fab.log.created","by":"Chris","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":0,"item":"Engineering Bollard","logId":"log_mo9js6kaul9z","delta":8,"newTotal":36}
+{"ts":"2026-04-22T04:25:54.317Z","event":"fab.updated","by":"Chris","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-22T04:25:55.232Z","event":"fab.updated","by":"Chris","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-22T04:25:56.120Z","event":"fab.updated","by":"Chris","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-22T04:25:57.080Z","event":"fab.updated","by":"Chris","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Ready for Delivery","to":"Delivered"}]}
+{"ts":"2026-04-22T04:26:01.247Z","event":"fab.updated","by":"Chris","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":4,"item":"Cova Road Blocker 3 Meters","changes":[{"field":"status","from":"Ready for Delivery","to":"Delivered"}]}
+{"ts":"2026-04-22T04:26:08.771Z","event":"fab.updated","by":"Chris","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","itemIndex":2,"item":"Cova Sliding Gate - 6 Meters + HPU > Gate frame","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-22T04:26:30.157Z","event":"fab.updated","by":"Chris","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Delivered","to":"Ready for Delivery"}]}
+{"ts":"2026-04-22T04:26:32.195Z","event":"fab.updated","by":"Chris","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"Ready for Delivery","to":"QC Check"}]}
+{"ts":"2026-04-22T04:26:33.196Z","event":"fab.updated","by":"Chris","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - City Scape Gate - 4.4 Meters","changes":[{"field":"status","from":"QC Check","to":"In Progress"}]}
+{"ts":"2026-04-22T04:28:34.739Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-22T04:28:34.751Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776832114417","jobCode":"TEST-SCN"}
+{"ts":"2026-04-22T04:28:34.769Z","event":"site-request.created","by":"Scenario Tester","id":"mo9jyq8gnawl","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-22T04:28:34.871Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776832114417","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-22T04:28:34.890Z","event":"claim.created","by":"Scenario Tester","id":"mo9jyqbt7ay5","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-22T04:28:34.902Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-22T04:28:35.148Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-22T04:31:22.384Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:33.991Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:34.380Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:35.327Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:36.059Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:37.072Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:49.716Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:53.576Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:31:56.439Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-22T04:36:14.005Z","event":"sales.opportunity.created","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","client":"Testing","value":50000}
+{"ts":"2026-04-22T04:36:24.809Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-22T04:36:24.814Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776832584513","jobCode":"TEST-SCN"}
+{"ts":"2026-04-22T04:36:24.829Z","event":"site-request.created","by":"Scenario Tester","id":"mo9k8sxp6jif","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-22T04:36:24.928Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776832584513","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-22T04:36:24.941Z","event":"claim.created","by":"Scenario Tester","id":"mo9k8t0te004","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-22T04:36:24.950Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-22T04:36:25.215Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-22T04:38:36.416Z","event":"task.updated","by":"Lai Wei Xiang","id":"mo9bz7cf2d6","title":"Review cash position — check what landed, what's overdue","status":"Done"}
+{"ts":"2026-04-22T04:39:39.699Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-22T04:39:39.707Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776832779373","jobCode":"TEST-SCN"}
+{"ts":"2026-04-22T04:39:39.725Z","event":"site-request.created","by":"Scenario Tester","id":"mo9kczbhuoj8","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-22T04:39:39.813Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776832779373","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-22T04:39:39.826Z","event":"claim.created","by":"Scenario Tester","id":"mo9kczeau9xz","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-22T04:39:39.836Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-22T04:39:40.076Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-22T04:52:04.793Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Site Visit"}
+{"ts":"2026-04-22T04:52:05.900Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Enquiry"}
+{"ts":"2026-04-22T04:52:28.940Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Site Visit"}
+{"ts":"2026-04-22T04:52:29.585Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Quotation Sent"}
+{"ts":"2026-04-22T04:52:30.341Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Negotiation"}
+{"ts":"2026-04-22T04:52:30.942Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Won"}
+{"ts":"2026-04-22T04:52:31.764Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Enquiry"}
+{"ts":"2026-04-22T04:54:34.833Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-22T04:54:34.841Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776833674491","jobCode":"TEST-SCN"}
+{"ts":"2026-04-22T04:54:34.858Z","event":"site-request.created","by":"Scenario Tester","id":"mo9kw6098dpc","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-22T04:54:34.948Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776833674491","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-22T04:54:34.963Z","event":"claim.created","by":"Scenario Tester","id":"mo9kw636i886","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-22T04:54:34.971Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-22T04:54:35.204Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-22T04:57:48.044Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-22T04:57:48.050Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776833867747","jobCode":"TEST-SCN"}
+{"ts":"2026-04-22T04:57:48.067Z","event":"site-request.created","by":"Scenario Tester","id":"mo9l0b37gj6v","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-22T04:57:48.157Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776833867747","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-22T04:57:48.171Z","event":"claim.created","by":"Scenario Tester","id":"mo9l0b6377pz","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-22T04:57:48.179Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-22T04:57:48.427Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-22T04:58:52.383Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Enquiry"}
+{"ts":"2026-04-22T09:12:42.279Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:43.588Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:44.455Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:44.892Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:48.149Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:48.468Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:49.379Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:49.899Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:50.991Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:12:54.719Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:43:26.887Z","event":"auth.password-reset","by":"System","user":"Jun Jie"}
+{"ts":"2026-04-22T09:44:50.136Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:44:50.163Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:44:50.865Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:44:52.160Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:44:55.913Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:44:58.622Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:45:13.477Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:47:10.856Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:47:16.739Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:47:18.685Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626"}
+{"ts":"2026-04-22T09:48:50.494Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-22T09:48:52.420Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-22T09:48:52.980Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-22T09:48:54.161Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Verified","to":"Installed"}]}
+{"ts":"2026-04-22T09:48:54.381Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25626","jobCode":"BD 25626","itemIndex":0,"item":"Engineering Bollard","changes":[{"field":"status","from":"Installed","to":"In Progress"}]}
+{"ts":"2026-04-22T09:50:20.799Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:23.846Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:26.895Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:29.554Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:30.203Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:32.554Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:39.082Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:40.613Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:43.520Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:48.161Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:49.993Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:50.710Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:50:54.910Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)"}
+{"ts":"2026-04-22T09:53:17.697Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","idx":2,"logId":"log_mo9vkbeal6j8"}
+{"ts":"2026-04-22T09:53:17.733Z","event":"install.log.created","by":"Jun Jie","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","idx":2,"item":"Removable Bollard","logId":"log_mo9vkbeal6j8","delta":2,"newTotal":2,"step":"removable bollards installed"}
+{"ts":"2026-04-22T09:56:35.828Z","event":"install.updated","by":"Salve","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","itemIndex":2,"item":"Removable Bollard","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-22T09:56:38.598Z","event":"install.updated","by":"Salve","projectId":"bd-25526-parry-ave","jobCode":"BD 25526 - (Parry Ave)","itemIndex":2,"item":"Removable Bollard","changes":[{"field":"status","from":"Verified","to":"Installed"}]}
+{"ts":"2026-04-22T09:59:42.656Z","event":"project.created","by":"Jun Jie","id":"bd-25726","jobCode":"BD 25726"}
+{"ts":"2026-04-22T09:59:57.046Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726"}
+{"ts":"2026-04-22T09:59:58.611Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726"}
+{"ts":"2026-04-22T09:59:59.753Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726"}
+{"ts":"2026-04-22T10:00:02.195Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726"}
+{"ts":"2026-04-22T10:00:02.743Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726"}
+{"ts":"2026-04-22T10:00:11.004Z","event":"project.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726"}
+{"ts":"2026-04-22T10:00:28.702Z","event":"fab.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-22T10:00:29.108Z","event":"fab.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"In Progress","to":"QC Check"}]}
+{"ts":"2026-04-22T10:00:29.782Z","event":"fab.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"QC Check","to":"Ready for Delivery"}]}
+{"ts":"2026-04-22T10:00:32.068Z","event":"fab.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"Ready for Delivery","to":"Delivered"}]}
+{"ts":"2026-04-22T10:01:47.313Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-22T10:01:47.723Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-22T10:01:48.227Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-22T10:01:49.248Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"Verified","to":"Installed"}]}
+{"ts":"2026-04-22T10:01:49.472Z","event":"install.updated","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","itemIndex":0,"item":"Engineered bollard","changes":[{"field":"status","from":"Installed","to":"In Progress"}]}
+{"ts":"2026-04-22T10:17:21.522Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-22724-poc-t232-woodland","jobCode":"BD 22724 - POC (T232 Woodland)","fabIdx":0,"logId":"log_mo9wfa8czxb1","originalSize":375928,"originalMime":"image/jpeg"}
+{"ts":"2026-04-22T10:17:21.575Z","event":"fab.log.created","by":"Teo Meei Haw","projectId":"bd-22724-poc-t232-woodland","jobCode":"BD 22724 - POC (T232 Woodland)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo9wfa8czxb1","delta":6,"newTotal":6}
+{"ts":"2026-04-22T10:19:21.200Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo9whui1i8x1"}
+{"ts":"2026-04-22T10:19:21.221Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mo9whui1i8x1","delta":4,"newTotal":4}
+{"ts":"2026-04-22T10:21:39.322Z","event":"site-request.created","by":"Teo Meei Haw","id":"mo9wksc9420j","item":"Tracker for Gate 1","requestedBy":"Teo Meei Haw","fabIdx":null}

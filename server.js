@@ -233,6 +233,15 @@ app.post('/api/auth/logout', (req, res) => {
   });
 });
 
+// Block direct access to locked pages — force through route handlers
+app.use((req, res, next) => {
+  if (req.path === '/sales.html') {
+    const user = req.session && req.session.user;
+    const SALES_ALLOWED = new Set(['Lai Wei Xiang', 'Janessa', 'Alex Chew']);
+    if (!user || !SALES_ALLOWED.has(user)) return res.redirect('/');
+  }
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(UPLOADS_DIR));
 
@@ -247,6 +256,13 @@ app.get('/feedback',     (req, res) => res.sendFile(path.join(__dirname, 'public
 app.get('/installation', (req, res) => res.sendFile(path.join(__dirname, 'public', 'installation.html')));
 app.get('/planning',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'planning.html')));
 app.get('/attendance',   (req, res) => res.sendFile(path.join(__dirname, 'public', 'attendance.html')));
+app.get('/sales', (req, res) => {
+  const user = req.session && req.session.user;
+  const SALES_ALLOWED = new Set(['Lai Wei Xiang', 'Janessa', 'Alex Chew']);
+  if (!user || !SALES_ALLOWED.has(user)) return res.redirect('/');
+  res.sendFile(path.join(__dirname, 'public', 'sales.html'));
+});
+app.get('/procurement',  (req, res) => res.sendFile(path.join(__dirname, 'public', 'procurement.html')));
 
 // ── Delivery Orders ─────────────────────────────────────────────────────────
 const DO_UPLOADS_DIR = path.join(UPLOADS_DIR, 'delivery-orders');
@@ -422,6 +438,10 @@ async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
   const senderEmail = process.env.SENDER_EMAIL;
   if (!senderEmail) return;
 
+  // Suppress emails triggered by scenario test accounts
+  const actor = getAuthUser();
+  if (actor === 'Scenario Tester') return;
+
   // TEST MODE: override recipient so all emails go to Lai during testing
   const recipient = process.env.EMAIL_TEST_OVERRIDE || toEmail;
 
@@ -525,6 +545,7 @@ function _taskEventWindow(dueDate) {
 // doesn't spam real staff calendars).
 async function createTaskCalendarEvent(task, assigneeEmail, assignedByName) {
   if (!task || !task.dueDate || !assigneeEmail) return null;
+  if (getAuthUser() === 'Scenario Tester') return null;
   const accessToken = await getAccessToken();
   if (!accessToken) { console.warn('[CAL SKIP] No access token'); return null; }
   const targetEmail = process.env.CALENDAR_TEST_OVERRIDE || assigneeEmail;
@@ -5412,6 +5433,213 @@ app.post('/api/prices', postRateLimit, (req, res) => {
 });
 
 // /api/purchase-orders CRUD removed — dead routes, no frontend caller, no data file
+
+// ── Sales Pipeline API ────────────────────────────────────────────────────────
+const OPPS_FILE = path.join(__dirname, 'data', 'opportunities.json');
+function readOpps() { if (!fs.existsSync(OPPS_FILE)) return []; return safeReadJSON(OPPS_FILE); }
+function writeOpps(d) { safeWriteJSON(OPPS_FILE, d); }
+
+const SALES_ACCESS = new Set(['Lai Wei Xiang', 'Janessa']);
+const SALES_READ   = new Set(['Lai Wei Xiang', 'Janessa', 'Alex Chew']);
+const VALID_OPP_STAGES = ['Enquiry', 'Site Visit', 'Quotation Sent', 'Negotiation', 'Won', 'Lost', 'No-Bid'];
+
+function requireSalesAccess(req, res, readOnly) {
+  const user = req.authUser || (req.session && req.session.user);
+  const allowed = readOnly ? SALES_READ : SALES_ACCESS;
+  if (!user || !allowed.has(user)) {
+    res.status(403).json({ error: 'Sales access restricted' });
+    return false;
+  }
+  return true;
+}
+
+// GET /api/sales/opportunities
+app.get('/api/sales/opportunities', (req, res) => {
+  if (!requireSalesAccess(req, res, true)) return;
+  try {
+    const opps = readOpps();
+    opps.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    if (req.query.stage) return res.json(opps.filter(o => o.stage === req.query.stage));
+    res.json(opps);
+  } catch (e) { logError('route.get.sales.opportunities', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// GET /api/sales/stats
+app.get('/api/sales/stats', (req, res) => {
+  if (!requireSalesAccess(req, res, true)) return;
+  try {
+    const opps = readOpps();
+    const active = opps.filter(o => !['Won', 'Lost', 'No-Bid'].includes(o.stage));
+    const won = opps.filter(o => o.stage === 'Won');
+    const lost = opps.filter(o => o.stage === 'Lost');
+    const closed = won.length + lost.length;
+    const today = todaySGT();
+    const expiring = opps.filter(o => o.quoteExpiryDate && o.quoteExpiryDate <= today && o.stage === 'Quotation Sent');
+    const pipeline = active.reduce((s, o) => s + (o.estimatedValue || 0), 0);
+    res.json({
+      pipelineValue: pipeline,
+      openCount: active.length,
+      winRate: closed > 0 ? Math.round((won.length / closed) * 100) : 0,
+      expiringQuotes: expiring.length,
+      wonCount: won.length,
+      lostCount: lost.length,
+      totalValue: won.reduce((s, o) => s + (o.estimatedValue || 0), 0)
+    });
+  } catch (e) { logError('route.get.sales.stats', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// POST /api/sales/opportunities
+app.post('/api/sales/opportunities', postRateLimit, (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    const b = req.body;
+    const clientName = sanitizeStr(b.clientName, 200);
+    if (!clientName) return res.status(400).json({ error: 'clientName required' });
+    const stage = VALID_OPP_STAGES.includes(b.stage) ? b.stage : 'Enquiry';
+    const opp = {
+      id: 'opp-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      clientName,
+      contactPerson:  sanitizeStr(b.contactPerson, 200),
+      phone:          sanitizeStr(b.phone, 50),
+      email:          sanitizeStr(b.email, 200),
+      siteAddress:    sanitizeStr(b.siteAddress, 500),
+      productType:    sanitizeStr(b.productType, 100),
+      estimatedValue: parseFloat(b.estimatedValue) || 0,
+      quotationNo:    sanitizeStr(b.quotationNo, 50),
+      quoteDate:      b.quoteDate && isValidDate(b.quoteDate) ? b.quoteDate : null,
+      quoteExpiryDate: b.quoteExpiryDate && isValidDate(b.quoteExpiryDate) ? b.quoteExpiryDate : null,
+      source:         sanitizeStr(b.source, 100),
+      stage,
+      stageChangedAt: new Date().toISOString(),
+      followUpDate:   b.followUpDate && isValidDate(b.followUpDate) ? b.followUpDate : null,
+      assignedTo:     sanitizeStr(b.assignedTo, 100),
+      notes:          sanitizeStr(b.notes, 2000),
+      winLossReason:  '',
+      competitorInfo: sanitizeStr(b.competitorInfo, 500),
+      convertedProjectId: null,
+      activity: [{ ts: new Date().toISOString(), type: 'created', note: `Opportunity created by ${getAuthUser()}` }],
+      createdBy:      getAuthUser(),
+      createdAt:      new Date().toISOString()
+    };
+    const opps = readOpps();
+    opps.push(opp);
+    writeOpps(opps);
+    logActivity('sales.opportunity.created', { id: opp.id, client: clientName, value: opp.estimatedValue });
+    res.status(201).json(opp);
+  } catch (e) { logError('route.post.sales.opportunity', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// PUT /api/sales/opportunities/:id
+app.put('/api/sales/opportunities/:id', (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
+    const b = req.body;
+    const OPP_WRITABLE = ['clientName','contactPerson','phone','email','siteAddress','productType',
+      'estimatedValue','quotationNo','quoteDate','quoteExpiryDate','source','stage',
+      'followUpDate','assignedTo','notes','winLossReason','competitorInfo'];
+    const oldStage = opps[idx].stage;
+    for (const k of OPP_WRITABLE) {
+      if (b[k] !== undefined) {
+        if (k === 'estimatedValue') opps[idx][k] = parseFloat(b[k]) || 0;
+        else if (k === 'stage' && !VALID_OPP_STAGES.includes(b[k])) continue;
+        else opps[idx][k] = typeof b[k] === 'string' ? sanitizeStr(b[k], k === 'notes' ? 2000 : 500) : b[k];
+      }
+    }
+    // Track stage changes
+    if (b.stage && b.stage !== oldStage) {
+      opps[idx].stageChangedAt = new Date().toISOString();
+      if (!opps[idx].activity) opps[idx].activity = [];
+      opps[idx].activity.push({
+        ts: new Date().toISOString(),
+        type: 'stage-change',
+        note: `${oldStage} → ${b.stage} by ${getAuthUser()}`
+      });
+    }
+    // Track notes/follow-up as activity
+    if (b.activityNote) {
+      if (!opps[idx].activity) opps[idx].activity = [];
+      opps[idx].activity.push({
+        ts: new Date().toISOString(),
+        type: 'note',
+        note: sanitizeStr(b.activityNote, 1000)
+      });
+    }
+    opps[idx].updatedAt = new Date().toISOString();
+    writeOpps(opps);
+    logActivity('sales.opportunity.updated', { id: opps[idx].id, stage: opps[idx].stage });
+    res.json(opps[idx]);
+  } catch (e) { logError('route.put.sales.opportunity', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// DELETE /api/sales/opportunities/:id
+app.delete('/api/sales/opportunities/:id', async (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    if (!await requireAdminAuth(req, res)) return;
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Not found' });
+    const removed = opps.splice(idx, 1)[0];
+    writeOpps(opps);
+    logActivity('sales.opportunity.deleted', { id: removed.id, client: removed.clientName, reason: sanitizeStr(req.body?.reason, 500) });
+    res.json({ ok: true });
+  } catch (e) { logError('route.delete.sales.opportunity', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// POST /api/sales/convert-to-project/:id — convert Won opportunity to project
+app.post('/api/sales/convert-to-project/:id', async (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    if (!await requireAdminAuth(req, res)) return;
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
+    if (opps[idx].stage !== 'Won') return res.status(400).json({ error: 'Only Won opportunities can be converted' });
+    if (opps[idx].convertedProjectId) return res.status(400).json({ error: 'Already converted to project ' + opps[idx].convertedProjectId });
+
+    const opp = opps[idx];
+    const projects = readProjects();
+    const projectId = 'proj-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const project = {
+      id: projectId,
+      jobCode: opp.quotationNo || '',
+      projectName: opp.clientName + (opp.productType ? ' — ' + opp.productType : ''),
+      name: opp.clientName,
+      client: opp.clientName,
+      contactPerson: opp.contactPerson || '',
+      contactEmail: opp.email || '',
+      contactPhone: opp.phone || '',
+      siteAddress: opp.siteAddress || '',
+      contractValue: opp.estimatedValue || 0,
+      status: 'Active',
+      startDate: todaySGT(),
+      stages: [], fabrication: [], installation: [], documents: [], drawings: [],
+      productScope: [],
+      createdBy: getAuthUser(),
+      createdAt: new Date().toISOString(),
+      convertedFromOpportunity: opp.id
+    };
+    projects.push(deriveFields(project));
+    writeProjects(projects);
+
+    // Mark opportunity as converted
+    opps[idx].convertedProjectId = projectId;
+    opps[idx].stage = 'Won';
+    if (!opps[idx].activity) opps[idx].activity = [];
+    opps[idx].activity.push({
+      ts: new Date().toISOString(),
+      type: 'converted',
+      note: `Converted to project ${projectId} by ${getAuthUser()}`
+    });
+    writeOpps(opps);
+
+    logActivity('sales.converted-to-project', { oppId: opp.id, projectId, client: opp.clientName });
+    res.status(201).json({ ok: true, projectId, project });
+  } catch (e) { logError('route.post.sales.convert', e); res.status(500).json({ error: 'Internal server error' }); }
+});
 
 // ── Historical PR Import ──────────────────────────────────────────────────────
 function importPRHistory() {

@@ -2,14 +2,14 @@
 - [System philosophy](project_philosophy.md) — one-role-one-page; 4 ops pages are source of truth, project page is read-only consolidation; fab-item vs project-stage are different layers.
 - [People and roles](people.md) — Chris/Teo/Jun Jie/Rena/Alex Chew/Salve/Alex Mac/Janessa/Murugan. Two QSs own different projects (not shared). Alex Chew = finance/invoices only, NOT on cert CC.
 - [Feedback: page-by-page workflow](feedback_workflow.md) — he prefers scoping work by page, not by feature.
-- [Page map (routes, labels, owners)](page_map.md) — verified page list; /my-tasks is labelled "Team", /planning is labelled "Manpower", no /claims page exists.
+- [Page map (routes, labels, owners)](page_map.md) — verified page list incl. Sales; /my-tasks = "Team", /planning = "Manpower", /sales = "Sales" (locked).
 - [Team page model and UX](team_page_model.md) — 3 task types (Mandatory/Requests/Personal), hours only on self/recurring, mark-as-seen (no In Progress), ack ladder capped at 3 days, calendar events.
 - [Visual style feedback](feedback_visual_style.md) — prefers plain/professional UI consistent across pages; themed aesthetics get reverted.
 - [Token discipline feedback](feedback_token_discipline.md) — cost-conscious about token spend; narrow before Read, batch parallel calls, short outputs, no ceremony.
 - [Use agents for validation](feedback_use_agents_for_validation.md) — default to specialist sub-agents for "check/validate/find bugs" asks; trivial edits stay direct.
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
 - [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. 15/17 projects missing endDate + siteEngineer.
-- [Pre-launch test gates](test_gates.md) — EMAIL_TEST_OVERRIDE + CALENDAR_TEST_OVERRIDE env vars route everything to boss during testing.
+- [Test email suppression (live mode)](test_gates.md) — app is live; Scenario Tester check in sendEmail/calendar suppresses test emails. No env vars needed.
 - [Page-by-page sweep status](project_page_sweep_status.md) — All pages audited. Dashboard + Admin done 2026-04-20.
 - [Tri-layer workflow: fab → site-request → install](project_tri_layer_workflow.md) — critical domain model. Fab, delivery, and install run concurrently.
 - [Factory daily-log model](project_factory_daily_log_model.md) — every build event is a log entry with mandatory photo; qtyDone derived from sum of deltas.
@@ -28,7 +28,13 @@
 - [Per-staff session auth](project_auth_system.md) — session-based login, 11 users, forgot-password, admin-reset, welcome emails, activity attribution.
 - [Mobile responsive nav](project_mobile_nav.md) — sidebar hidden ≤768px, hamburger toggle, slide-over drawer via nav.js.
 - [Recurring tasks v2](project_recurring_tasks_v2.md) — revised task defs: removed EOD/theatre, added GM + Finance roles, ops-reviewed daily counts.
-
-- [Bug patterns to prevent](feedback_bug_patterns.md) — 8 recurring patterns: _busy locks, safeWriteJSON, race conditions, path traversal, sendEmail, auth paths, email case, ID collision.
+- [Bug patterns to prevent](feedback_bug_patterns.md) — 16 recurring patterns: _busy locks, safeWriteJSON, race conditions, path traversal, sendEmail, auth, email case, ID collision, todaySGT, cascades, res.ok, adminAuth, role aliases, status enums, static file bypass, test account side effects.
+- [Scenario testing standard](feedback_testing_standard.md) — mandatory `node tests/scenario-test.js` after every API change, 0 failures required.
+- [Sales pipeline page](project_sales_page.md) — Salesforce-style CRM; 3-layer lock + PIN gate; kanban + list view; convert-to-project bridge.
+- [Suppress test emails](feedback_test_email_suppression.md) — sendEmail/calendar bail for Scenario Tester actor; prevents test runs emailing real staff.
+- [Locked pages pattern](feedback_locked_pages.md) — 5-layer access control: server route + static block + PIN gate + API 403 + nav hide.
 - [Feedback: Put In PDF & Picture for Procurement](feedback_mo80btmd7hod.md) — Feature Request by Lai Wei Xiang, Medium priority
 - [Feedback: Manpower not reflecting MC Status](feedback_mo8g7j8jwkvl.md) — Bug by Lai Wei Xiang, Medium priority
+- [Feedback: EOD](feedback_mo9cothqexv8.md) — Feature Request by Salve, Medium priority
+
+- [Feedback: LOG Photos](feedback_mo9wjimdzwpc.md) — UI Feedback by Jun Jie, Medium priority
