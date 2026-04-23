@@ -1,40 +1,49 @@
-- [User role and expectations](user_role.md) — Lai Wei Xiang runs a fabrication/installation ops business; boss seat, not a dev; expects Claude to spot bugs faster than he can.
-- [System philosophy](project_philosophy.md) — one-role-one-page; 4 ops pages are source of truth, project page is read-only consolidation; fab-item vs project-stage are different layers.
-- [People and roles](people.md) — Chris/Teo/Jun Jie/Rena/Alex Chew/Salve/Alex Mac/Janessa/Murugan. Two QSs own different projects (not shared). Alex Chew = finance/invoices only, NOT on cert CC.
-- [Feedback: page-by-page workflow](feedback_workflow.md) — he prefers scoping work by page, not by feature.
-- [Page map (routes, labels, owners)](page_map.md) — verified page list incl. Sales; /my-tasks = "Team", /planning = "Manpower", /sales = "Sales" (locked).
-- [Team page model and UX](team_page_model.md) — 3 task types (Mandatory/Requests/Personal), hours only on self/recurring, mark-as-seen (no In Progress), ack ladder capped at 3 days, calendar events.
-- [Visual style feedback](feedback_visual_style.md) — prefers plain/professional UI consistent across pages; themed aesthetics get reverted.
-- [Token discipline feedback](feedback_token_discipline.md) — cost-conscious about token spend; narrow before Read, batch parallel calls, short outputs, no ceremony.
-- [Use agents for validation](feedback_use_agents_for_validation.md) — default to specialist sub-agents for "check/validate/find bugs" asks; trivial edits stay direct.
-- Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
-- [Known data issues](known_data_issues.md) — open data cleanup items in `projects.json`. 15/17 projects missing endDate + siteEngineer.
-- [Test email suppression (live mode)](test_gates.md) — app is live; Scenario Tester check in sendEmail/calendar suppresses test emails. No env vars needed.
-- [Page-by-page sweep status](project_page_sweep_status.md) — All pages audited. Dashboard + Admin done 2026-04-20.
-- [Tri-layer workflow: fab → site-request → install](project_tri_layer_workflow.md) — critical domain model. Fab, delivery, and install run concurrently.
-- [Factory daily-log model](project_factory_daily_log_model.md) — every build event is a log entry with mandatory photo; qtyDone derived from sum of deltas.
-- [Feedback: notifications must be role-based](feedback_role_based_notifications.md) — never hardcode person names in email routing; use staff.json role aliases with boss fallback.
-- [Feedback: every metric must be legible](feedback_legible_metrics.md) — if a KPI needs a tooltip, delete it or relabel.
-- [Feedback: ship complete workflows](feedback_ship_complete_workflows.md) — every create/write action must ship with its undo/edit/delete path.
-- [Feedback: factory page is factory-only](feedback_factory_scope.md) — don't mix other roles' data into an ops page; each page serves one role owner.
-- [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs; PRs editable while Pending; procurement page is the full tracking view.
-- [Manpower OT and supply workers](project_manpower_ot.md) — Mon-Fri 8-5:30 standard, after = OT. Saturday = full OT (8h default). Supply workers 10h/day no OT. 72h monthly MOM cap tracked.
-- [Parts/BOM design](project_parts_bom_design.md) — Mechanical items have sub-parts (Fabricate/Order); parts become child fab rows; parent auto-derives status; Order parts visible read-only on Factory.
-- [1000-scenario audit results](audit_1000_scenario_results.md) — 977 scenarios, 945 pass, 5 bugs fixed. Data integrity clean across all 17 projects.
-- [Delete actions require reason](feedback_delete_reason.md) — every user-facing delete uses confirmDelete() with reason dropdown, not plain confirm().
-- [New project template](project_new_project_template.md) — 20-stage lifecycle, role-based team defaults, blank documents/drawings, deriveFields on create.
-- [Full codebase audit Apr 20](project_full_audit_apr20.md) — 4-agent audit: 6 server bugs, 9 delete violations, crash email flood, systemd hardening, admin login redesign.
-- [Server management via systemctl](feedback_systemctl_workflow.md) — never run node server.js manually; use systemctl restart/stop/status.
-- [Per-staff session auth](project_auth_system.md) — session-based login, 11 users, forgot-password, admin-reset, welcome emails, activity attribution.
-- [Mobile responsive nav](project_mobile_nav.md) — sidebar hidden ≤768px, hamburger toggle, slide-over drawer via nav.js.
-- [Recurring tasks v2](project_recurring_tasks_v2.md) — revised task defs: removed EOD/theatre, added GM + Finance roles, ops-reviewed daily counts.
-- [Bug patterns to prevent](feedback_bug_patterns.md) — 16 recurring patterns: _busy locks, safeWriteJSON, race conditions, path traversal, sendEmail, auth, email case, ID collision, todaySGT, cascades, res.ok, adminAuth, role aliases, status enums, static file bypass, test account side effects.
-- [Scenario testing standard](feedback_testing_standard.md) — mandatory `node tests/scenario-test.js` after every API change, 0 failures required.
-- [Sales pipeline page](project_sales_page.md) — Salesforce-style CRM; 3-layer lock + PIN gate; kanban + list view; convert-to-project bridge.
-- [Suppress test emails](feedback_test_email_suppression.md) — sendEmail/calendar bail for Scenario Tester actor; prevents test runs emailing real staff.
-- [Locked pages pattern](feedback_locked_pages.md) — 5-layer access control: server route + static block + PIN gate + API 403 + nav hide.
-- [Feedback: Put In PDF & Picture for Procurement](feedback_mo80btmd7hod.md) — Feature Request by Lai Wei Xiang, Medium priority
-- [Feedback: Manpower not reflecting MC Status](feedback_mo8g7j8jwkvl.md) — Bug by Lai Wei Xiang, Medium priority
-- [Feedback: EOD](feedback_mo9cothqexv8.md) — Feature Request by Salve, Medium priority
+## User & Preferences
+- [User role](user_role.md) — Boss of fabrication/installation ops business; not a dev; expects Claude to spot bugs fast.
+- [Token discipline](feedback_token_discipline.md) — cost-conscious; narrow reads, batch parallel, short outputs.
+- [Page-by-page workflow](feedback_workflow.md) — scopes work by page, not by feature.
+- [Visual style](feedback_visual_style.md) — plain/professional, consistent across pages; no themed aesthetics.
+- [Use agents for validation](feedback_use_agents_for_validation.md) — sub-agents for audits; trivial edits stay direct.
 
-- [Feedback: LOG Photos](feedback_mo9wjimdzwpc.md) — UI Feedback by Jun Jie, Medium priority
+## People & Roles
+- [People and roles](people.md) — Chris/Teo/Jun Jie/Rena/Alex Chew/Salve/Alex Mac/Janessa/Murugan. Two QSs, Alex Chew = finance only.
+- [Page map](page_map.md) — routes, labels, owners. /my-tasks = "Team", /planning = "Manpower", /sales = "Sales" (locked).
+
+## System Architecture
+- [System philosophy](project_philosophy.md) — one-role-one-page; ops pages are source of truth; project page is read-only consolidation.
+- [Auth system](project_auth_system.md) — session-based login, 11 users, forgot-password, admin-reset, welcome emails.
+- [Mobile nav](project_mobile_nav.md) — sidebar hidden ≤768px, hamburger toggle, slide-over drawer via nav.js.
+- [Locked pages pattern](feedback_locked_pages.md) — 5-layer access control: server route + static block + PIN gate + API 403 + nav hide.
+- [Server management](feedback_systemctl_workflow.md) — always use systemctl restart; never node server.js manually.
+- [Test email suppression](test_gates.md) — Scenario Tester check in sendEmail/calendar suppresses test emails.
+- [Scenario testing](feedback_testing_standard.md) — mandatory `node tests/scenario-test.js` after every API change, 0 failures.
+
+## Domain Models
+- [Tri-layer workflow](project_tri_layer_workflow.md) — fab → site-request → install run concurrently.
+- [Factory daily-log model](project_factory_daily_log_model.md) — every build event = log entry with mandatory photo; qtyDone = sum of deltas.
+- [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs; PRs editable while Pending.
+- [Parts/BOM design](project_parts_bom_design.md) — Mechanical items have sub-parts; parent auto-derives status.
+- [Manpower OT and supply](project_manpower_ot.md) — Mon-Fri 8-5:30, after = OT. Saturday = full OT. Supply workers 10h/day no OT. 72h MOM cap.
+- [Team page model](team_page_model.md) — 3 task types, mark-as-seen (no In Progress), ack ladder, calendar events.
+- [Recurring tasks v2](project_recurring_tasks_v2.md) — revised task defs with GM + Finance roles.
+- [New project template](project_new_project_template.md) — 20-stage lifecycle, role-based team defaults.
+
+## Code Standards
+- [Bug patterns to prevent](feedback_bug_patterns.md) — 16 patterns: _busy locks, safeWriteJSON, race conditions, path traversal, sendEmail, auth, todaySGT, cascades, etc.
+- [Delete actions require reason](feedback_delete_reason.md) — every delete uses confirmDelete() with reason dropdown.
+- [Role-based notifications](feedback_role_based_notifications.md) — never hardcode names; use staff.json role aliases.
+- [Legible metrics](feedback_legible_metrics.md) — if a KPI needs a tooltip, delete it or relabel.
+- [Ship complete workflows](feedback_ship_complete_workflows.md) — every create must ship with edit/delete path.
+- [Factory page is factory-only](feedback_factory_scope.md) — don't mix other roles' data into an ops page.
+- [Suppress test emails](feedback_test_email_suppression.md) — sendEmail/calendar bail for Scenario Tester actor.
+
+## Sales CRM (next major build)
+- [Sales pipeline page](project_sales_page.md) — current state: kanban + list view; convert-to-project bridge.
+- [Sales CRM full spec](project_sales_crm_spec.md) — Janessa's framework: 9 stages, FU/AFU engine, email compose, QS handoff.
+- [Sales CRM architecture](project_sales_crm_architecture.md) — 4-phase build plan (8-12 days), data model, FU state machine, existing bugs to fix.
+- [Sales leads are email-bound](feedback_sales_email_bound.md) — all leads via Outlook (enquiry@ + Janessa inbox). Mail.Read permission available. Keyword-based auto-intake.
+
+## Open Items
+- [Known data issues](known_data_issues.md) — 15/17 projects missing endDate + siteEngineer.
+- [Feedback: EOD edit feature](feedback_mo9cothqexv8.md) — Feature Request by Salve, Medium priority, In Review.
+- Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.

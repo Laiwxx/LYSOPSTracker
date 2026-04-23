@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Project Detail — LYS OPS</title>
-  <link rel="stylesheet" href="css/style.css?v=1776830235">
+  <link rel="stylesheet" href="css/style.css?v=1776929410">
 </head>
 <body>
 
@@ -88,6 +88,27 @@
         <div class="progress-bar" style="height:3px; margin-top:4px;">
           <div class="progress-fill green" id="fin-install-bar" style="width:0%"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lifecycle / DLP Bar -->
+  <div id="lifecycle-bar" style="display:none; background:var(--bg2); border-bottom:1px solid var(--border); padding:10px 16px;">
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; max-width:1200px; margin:0 auto;">
+      <div id="lifecycle-badge" style="font-size:12px; font-weight:700; border-radius:4px; padding:3px 10px;"></div>
+      <div id="lifecycle-info" style="font-size:12px; color:var(--text-muted); flex:1;"></div>
+      <div id="lifecycle-actions" style="display:flex; gap:6px;"></div>
+    </div>
+  </div>
+
+  <!-- Lifecycle Transition Modal -->
+  <div id="lifecycle-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:600; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--bg2); border-radius:var(--radius); padding:20px; width:100%; max-width:420px; box-shadow:var(--shadow-lg); margin:auto;">
+      <h3 id="lc-modal-title" style="font-size:15px; margin:0 0 14px;"></h3>
+      <div id="lc-modal-body"></div>
+      <div style="display:flex; gap:8px; margin-top:16px;">
+        <button onclick="closeLcModal()" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+        <button id="lc-modal-confirm" style="flex:1;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Confirm</button>
       </div>
     </div>
   </div>
@@ -504,8 +525,8 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="js/utils.js?v=1776830235"></script>
-  <script src="js/project.js?v=1776830235"></script>
+  <script src="js/utils.js?v=1776929410"></script>
+  <script src="js/project.js?v=1776929410"></script>
   <script src="/js/nav.js"></script>
 </body>
 </html>

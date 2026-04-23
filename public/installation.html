@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Installation — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776830235">
+  <link rel="stylesheet" href="/css/style.css?v=1776929410">
   <style>
     body { background: var(--bg); }
     .install-page { max-width: 640px; margin: 0 auto; padding: 16px; }
@@ -240,7 +240,7 @@
     }
     .install-log-entry:last-child { border-bottom: none; }
     .install-log-thumb {
-      width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0; cursor: pointer;
     }
     .install-log-meta { flex: 1; min-width: 0; }
     .install-log-actions { display: flex; gap: 4px; flex-shrink: 0; }
@@ -533,8 +533,8 @@
       <input type="number" id="ilog-delta" min="1" value="1" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;">
     </div>
     <div style="margin-bottom:10px;">
-      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Photo *</label>
-      <input type="file" id="ilog-photo" accept="image/*" capture="environment" style="font-size:13px;">
+      <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Photo(s) *</label>
+      <input type="file" id="ilog-photo" accept="image/*" multiple style="font-size:13px;">
       <div id="ilog-photo-preview" style="margin-top:6px;"></div>
     </div>
     <div style="margin-bottom:10px;">
@@ -639,7 +639,7 @@ let _factoryManagerName = 'Factory Manager';
 
 async function init() {
   const [allFull, srAll, staffData] = await Promise.all([
-    fetch('/api/projects?full=true').then(r => r.json()).catch(() => []),
+    fetch('/api/projects?full=true&lifecycle=active').then(r => r.json()).catch(() => []),
     fetch('/api/site-requests').then(r => r.json()).catch(() => []),
     fetch('/api/staff').then(r => r.json()).catch(() => ({}))
   ]);
@@ -1276,11 +1276,11 @@ function showMsg(text, type) {
 
 // ── Install Log Modal ──────────────────────────────────────────────────────
 let _ilogState = { pid: null, idx: null, editingLogId: null, busy: false };
-let _ilogFile = null;
+let _ilogFiles = []; // supports multiple photos
 
 function openInstallLogModal(pid, idx, itemName, jobCode) {
   _ilogState = { pid, idx, editingLogId: null, busy: false };
-  _ilogFile = null;
+  _ilogFiles = [];
   document.getElementById('install-log-title').textContent = itemName;
   document.getElementById('install-log-subtitle').textContent = jobCode;
   document.getElementById('ilog-delta').value = '1';
@@ -1300,16 +1300,18 @@ function openInstallLogModal(pid, idx, itemName, jobCode) {
 function closeInstallLogModal() {
   document.getElementById('install-log-overlay').style.display = 'none';
   _ilogState = { pid: null, idx: null, editingLogId: null, busy: false };
-  _ilogFile = null;
+  _ilogFiles = [];
 }
 
 document.getElementById('ilog-photo').addEventListener('change', function() {
-  const file = this.files[0];
-  if (!file) return;
-  _ilogFile = file;
+  const files = Array.from(this.files || []).slice(0, 10);
+  if (!files.length) return;
+  _ilogFiles = files;
   const preview = document.getElementById('ilog-photo-preview');
-  const url = URL.createObjectURL(file);
-  preview.innerHTML = `<img src="${url}" style="max-width:100%;max-height:120px;border-radius:6px;">`;
+  preview.innerHTML = files.map(f => {
+    const url = URL.createObjectURL(f);
+    return `<img src="${url}" style="max-width:80px;max-height:80px;border-radius:6px;margin:2px;object-fit:cover;">`;
+  }).join('');
 });
 
 async function compressInstallImage(file) {
@@ -1344,7 +1346,7 @@ async function saveInstallLogEntry() {
   const step     = document.getElementById('ilog-step').value.trim();
 
   if (delta === 0) { alert('Qty must be greater than 0'); return; }
-  if (!_ilogFile) { alert('Photo is required'); return; }
+  if (!_ilogFiles.length) { alert('Photo is required'); return; }
 
   _ilogState.busy = true;
   const btn = document.getElementById('ilog-save-btn');
@@ -1352,8 +1354,8 @@ async function saveInstallLogEntry() {
   btn.disabled = true;
 
   try {
-    // 1. Compress and upload photo
-    const blob = await compressInstallImage(_ilogFile);
+    // 1. Compress and upload primary photo
+    const blob = await compressInstallImage(_ilogFiles[0]);
     const logId = 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     const formData = new FormData();
     formData.append('photo', blob, 'install.jpg');
@@ -1362,11 +1364,28 @@ async function saveInstallLogEntry() {
     if (!photoRes.ok) throw new Error('Photo upload failed');
     const { photoPath } = await photoRes.json();
 
+    // 1b. Upload extra photos
+    const extraPhotos = [];
+    for (let i = 1; i < _ilogFiles.length; i++) {
+      const extraBlob = await compressInstallImage(_ilogFiles[i]);
+      const extraId = 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      const fd = new FormData();
+      fd.append('photo', extraBlob, 'install.jpg');
+      fd.append('logId', extraId);
+      const r = await fetch(`/api/projects/${pid}/installation/${idx}/log-photo`, { method: 'POST', body: fd });
+      if (r.ok) {
+        const d = await r.json();
+        extraPhotos.push(d.photoPath);
+      }
+    }
+
     // 2. Create log entry
+    const logBody = { delta, photoPath, note, location, step: step || undefined, loggedBy: currentEngineer || 'Site Engineer', id: logId };
+    if (extraPhotos.length) logBody.extraPhotos = extraPhotos;
     const logRes = await fetch(`/api/projects/${pid}/installation/${idx}/logs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ delta, photoPath, note, location, step: step || undefined, loggedBy: currentEngineer || 'Site Engineer', id: logId })
+      body: JSON.stringify(logBody)
     });
     if (!logRes.ok) {
       const err = await logRes.json().catch(() => ({}));
@@ -1437,7 +1456,7 @@ function renderInstallLogHistory(pid, idx, logs) {
     const deltaStr = (entry.delta > 0 ? '+' : '') + entry.delta;
     html += `
       <div class="install-log-entry">
-        ${entry.photoPath ? `<img class="install-log-thumb" src="${esc(entry.photoPath)}" alt="photo">` : ''}
+        ${entry.photoPath ? `<img class="install-log-thumb" src="${esc(entry.photoPath)}" alt="photo" onclick="openPhotoViewer('${esc(entry.photoPath)}')">` : ''}${Array.isArray(entry.extraPhotos) ? entry.extraPhotos.map(p => `<img class="install-log-thumb" src="${esc(p)}" alt="photo" style="margin-left:2px;" onclick="openPhotoViewer('${esc(p)}')">`).join('') : ''}
         <div class="install-log-meta">
           <div><strong>${esc(deltaStr)}</strong>${entry.step ? ' · ' + esc(entry.step) : ''} · ${esc(time)} · ${esc(entry.loggedBy || '')}</div>
           ${entry.location ? `<div>📍 ${esc(entry.location)}</div>` : ''}
@@ -1449,6 +1468,28 @@ function renderInstallLogHistory(pid, idx, logs) {
       </div>`;
   });
   return html;
+}
+
+// ── Photo viewer (lightbox) ───────────────────────────────────────────────────
+function openPhotoViewer(src) {
+  let overlay = document.getElementById('photo-viewer-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'photo-viewer-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:pointer;';
+    overlay.innerHTML = '<img id="photo-viewer-img" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;">' +
+      '<a id="photo-viewer-dl" style="position:absolute;bottom:20px;right:20px;background:var(--accent);color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;" download>Download</a>' +
+      '<button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;line-height:36px;text-align:center;">✕</button>';
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay || e.target.tagName === 'BUTTON') overlay.style.display = 'none';
+    });
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('photo-viewer-img').src = src;
+  var dl = document.getElementById('photo-viewer-dl');
+  dl.href = src;
+  dl.download = src.split('/').pop();
+  overlay.style.display = 'flex';
 }
 
 init();

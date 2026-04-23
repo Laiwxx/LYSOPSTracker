@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Team Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776830235">
+  <link rel="stylesheet" href="/css/style.css?v=1776929410">
   <style>
     /* ── Type-grouped sections (Mandatory / Requests / Personal) ── */
     .mc-type-group {
@@ -1124,7 +1124,7 @@ function buildCompactRow(task, opts) {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: task.assignedTo || 'Team' })
         });
-        if (!res.ok) { toast('Acknowledge failed', false); return; }
+        if (!res.ok) { alert('Acknowledge failed'); return; }
       } catch (err) { console.error('[ACK] error:', err); }
       reloadAndRender();
     });
@@ -1143,7 +1143,7 @@ function buildCompactRow(task, opts) {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ deletedBy: 'Team View', reason: result.reason })
     });
-    if (!res.ok) { toast('Delete failed', false); return; }
+    if (!res.ok) { alert('Delete failed'); return; }
     reloadAndRender();
   });
   actionsDiv.appendChild(delBtn);
@@ -1163,7 +1163,7 @@ function buildCompactRow(task, opts) {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ acknowledgedAt: null, acknowledgedBy: null })
       });
-      if (!res.ok) { toast('Undo failed', false); return; }
+      if (!res.ok) { alert('Undo failed'); return; }
       reloadAndRender();
     });
   }
@@ -1208,7 +1208,7 @@ async function updateTaskStatus(taskId, status) {
     method: 'PUT', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status })
   });
-  if (!res.ok) { toast('Update failed', false); return; }
+  if (!res.ok) { alert('Update failed'); return; }
   reloadAndRender();
 }
 

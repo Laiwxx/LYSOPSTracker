@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Sales Pipeline — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776830235">
+  <link rel="stylesheet" href="/css/style.css?v=1776929410">
   <style>
     /* ── Salesforce-style KPI Bar ─────────────────────── */
     .kpi-bar {
@@ -406,16 +406,43 @@
     @media (max-width: 768px) {
       .kpi-bar { flex-wrap: wrap; }
       .kpi-item { min-width: 48%; }
-      .sf-board { grid-template-columns: 1fr 1fr; }
+      .sf-board { display: none !important; }
+      .sf-mobile-tabs { display: flex !important; }
+      .sf-mobile-list { display: block !important; }
       .sf-fields { grid-template-columns: 1fr; }
       .sf-highlight { grid-template-columns: 1fr; }
       .sf-highlight .sf-hl-item { border-right: none !important; }
       .sf-path-step { font-size: 9px; padding: 5px 2px; }
       .sf-search { width: 140px; }
+      .sf-toolbar { flex-wrap: wrap; gap: 6px; }
     }
-    @media (max-width: 480px) {
-      .sf-board { grid-template-columns: 1fr; }
+    .sf-mobile-tabs {
+      display: none;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 8px 0;
+      scrollbar-width: none;
+      flex-wrap: nowrap;
     }
+    .sf-mobile-tabs::-webkit-scrollbar { display: none; }
+    .sf-mobile-tab {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .sf-mobile-tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .sf-mobile-list { display: none; }
   </style>
 </head>
 <body>
@@ -483,6 +510,16 @@
       <!-- KPI Bar -->
       <div class="kpi-bar" id="kpi-bar"></div>
 
+      <!-- Inbox Panel (collapsible) -->
+      <div id="inbox-panel" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;display:none;">
+        <div id="inbox-header" style="display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;">
+          <span style="font-size:13px;font-weight:700;">📥 Incoming Leads</span>
+          <span id="inbox-count" style="background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;padding:1px 7px;display:none;"></span>
+          <span style="margin-left:auto;font-size:11px;color:var(--text-muted);" id="inbox-chevron">▼</span>
+        </div>
+        <div id="inbox-list" style="padding:0 16px 12px;display:none;"></div>
+      </div>
+
       <!-- Toolbar -->
       <div class="sf-toolbar">
         <div class="sf-view-toggle">
@@ -496,8 +533,12 @@
         <select class="sf-filter" id="filter-stage"><option value="">All Stages</option></select>
       </div>
 
-      <!-- Board -->
+      <!-- Board (desktop) -->
       <div class="sf-board" id="sf-board"></div>
+
+      <!-- Mobile: stage tabs + card list -->
+      <div class="sf-mobile-tabs" id="sf-mobile-tabs"></div>
+      <div class="sf-mobile-list" id="sf-mobile-list"></div>
 
       <!-- Table -->
       <div class="sf-table-wrap" id="sf-table-wrap">
@@ -591,17 +632,20 @@
   </div>
 </div>
 
-<script src="/js/utils.js?v=1776830235"></script>
+<script src="/js/utils.js?v=1776929410"></script>
 <script>
 // ── Constants & State ────────────────────────────────
-const STAGES = ['Enquiry', 'Site Visit', 'Quotation Sent', 'Negotiation', 'Won', 'Lost'];
+const STAGES = ['New Lead', 'Discovery', 'Tender Review', 'Quotation', 'Presentation', 'Pending Tender', 'Tender Awarded', 'Won', 'Lost'];
 const STAGE_COLORS = {
-  'Enquiry':        'var(--accent)',
-  'Site Visit':     'var(--purple)',
-  'Quotation Sent': 'var(--amber)',
-  'Negotiation':    '#ea580c',
-  'Won':            'var(--green)',
-  'Lost':           '#9ca3af'
+  'New Lead':        'var(--accent)',
+  'Discovery':       'var(--purple)',
+  'Tender Review':   'var(--amber)',
+  'Quotation':       '#ea580c',
+  'Presentation':    '#0891b2',
+  'Pending Tender':  '#8b5cf6',
+  'Tender Awarded':  '#059669',
+  'Won':             'var(--green)',
+  'Lost':            '#9ca3af'
 };
 const AVATAR_COLORS = ['#3366ff','#8b5cf6','#ea580c','#0891b2','#059669','#d97706','#dc2626','#6366f1'];
 
@@ -709,15 +753,16 @@ async function loadSalesContent() {
     return;
   }
 
-  canEdit = ['Lai Wei Xiang', 'Janessa'].includes(currentUser);
+  canEdit = (stats.salesUsers || []).includes(currentUser);
   document.getElementById('sales-content').style.display = '';
   document.getElementById('btn-new').style.display = canEdit ? '' : 'none';
 
   opps = await fetch('/api/sales/opportunities').then(r => r.json()).catch(() => []);
 
-  // Populate owner dropdown in new modal
+  // Populate owner dropdown from server-provided list
   const ownerSel = document.getElementById('n-owner');
-  ['Lai Wei Xiang', 'Janessa'].forEach(n => {
+  ownerSel.innerHTML = '<option value="">— Select —</option>';
+  (stats.salesUsers || []).forEach(n => {
     const o = document.createElement('option'); o.value = n; o.textContent = n;
     ownerSel.appendChild(o);
   });
@@ -725,17 +770,33 @@ async function loadSalesContent() {
   populateFilters();
   render();
   bindEvents();
+
+  // Load inbox + email templates
+  loadEmailTemplates();
+  if (canEdit) loadInbox();
 }
 
 function populateFilters() {
   const products = [...new Set(opps.map(o => o.productType).filter(Boolean))].sort();
   const owners = [...new Set(opps.map(o => o.assignedTo).filter(Boolean))].sort();
+
   const pSel = document.getElementById('filter-product');
+  const pVal = pSel.value;
+  pSel.innerHTML = '<option value="">All Products</option>';
   products.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; pSel.appendChild(o); });
+  pSel.value = pVal;
+
   const oSel = document.getElementById('filter-owner');
+  const oVal = oSel.value;
+  oSel.innerHTML = '<option value="">All Owners</option>';
   owners.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; oSel.appendChild(o); });
+  oSel.value = oVal;
+
   const sSel = document.getElementById('filter-stage');
+  const sVal = sSel.value;
+  sSel.innerHTML = '<option value="">All Stages</option>';
   STAGES.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; sSel.appendChild(o); });
+  sSel.value = sVal;
 }
 
 function bindEvents() {
@@ -794,11 +855,14 @@ function getFiltered() {
 }
 
 // ── Render ───────────────────────────────────────────
+let mobileStageFilter = '';
+
 function render() {
   renderKPIs();
   const filtered = getFiltered();
   renderBoard(filtered);
   renderTable(filtered);
+  renderMobile(filtered);
   updateView();
 
   // Show empty state if no opps at all
@@ -807,9 +871,57 @@ function render() {
   document.getElementById('sf-board').style.display = (hasOpps && viewMode === 'board') ? 'grid' : 'none';
 }
 
+function renderMobile(filtered) {
+  // Stage tabs
+  const tabsEl = document.getElementById('sf-mobile-tabs');
+  const listEl = document.getElementById('sf-mobile-list');
+  if (!tabsEl || !listEl) return;
+
+  const activeStageCounts = {};
+  filtered.forEach(o => { activeStageCounts[o.stage] = (activeStageCounts[o.stage] || 0) + 1; });
+
+  tabsEl.innerHTML = '<div class="sf-mobile-tab ' + (!mobileStageFilter ? 'active' : '') + '" data-stage="">All (' + filtered.length + ')</div>' +
+    STAGES.map(s => {
+      const count = activeStageCounts[s] || 0;
+      return '<div class="sf-mobile-tab ' + (mobileStageFilter === s ? 'active' : '') + '" data-stage="' + esc(s) + '" style="' + (count ? '' : 'opacity:0.4;') + '">' + esc(s) + (count ? ' (' + count + ')' : '') + '</div>';
+    }).join('');
+
+  tabsEl.querySelectorAll('.sf-mobile-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      mobileStageFilter = tab.dataset.stage;
+      render();
+    });
+  });
+
+  // Card list filtered by selected stage
+  const mobileFiltered = mobileStageFilter ? filtered.filter(o => o.stage === mobileStageFilter) : filtered;
+  listEl.innerHTML = mobileFiltered.map(o => {
+    const color = avatarColor(o.clientName);
+    const days = daysInStage(o);
+    const stageColor = STAGE_COLORS[o.stage] || 'var(--text-muted)';
+    const todayStr = new Date().toISOString().split('T')[0];
+    const fuOverdue = (o.nextFollowUpDate && o.nextFollowUpDate <= todayStr);
+    return `<div class="sf-card" style="margin-bottom:8px;cursor:pointer;" onclick="openPanel('${esc(o.id)}')">
+      <div class="sf-card-top">
+        <div class="sf-avatar" style="background:${color}">${initials(o.clientName)}</div>
+        <div class="sf-card-client">${esc(o.clientName)}</div>
+      </div>
+      <div class="sf-card-value">${fmtValue(o.estimatedValue)}</div>
+      <div class="sf-card-row">
+        <span style="font-size:10px;padding:2px 6px;border-radius:3px;background:${stageColor};color:#fff;font-weight:600;">${esc(o.stage)}</span>
+        <span class="sf-days">${days}d</span>
+        ${o.assignedTo ? '<span class="sf-card-owner">' + esc(o.assignedTo.split(' ')[0]) + '</span>' : ''}
+      </div>
+      ${fuOverdue ? '<div style="font-size:11px;color:var(--red);font-weight:600;margin-top:4px;">⚠ Follow-up overdue</div>' :
+        o.nextFollowUpDate ? '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Next FU: ' + fmtDate(o.nextFollowUpDate) + '</div>' : ''}
+    </div>`;
+  }).join('') || '<div style="font-size:13px;color:var(--text-muted);padding:12px;">No opportunities in this stage.</div>';
+}
+
 function renderKPIs() {
   const bar = document.getElementById('kpi-bar');
   const wonVal = stats.totalValue || 0;
+  const overdueCount = stats.overdueFU || 0;
   bar.innerHTML = `
     <div class="kpi-item">
       <div class="kpi-label">Pipeline Value</div>
@@ -827,9 +939,14 @@ function renderKPIs() {
       <div class="kpi-sub">${stats.wonCount || 0}W / ${stats.lostCount || 0}L</div>
     </div>
     <div class="kpi-item">
+      <div class="kpi-label">Overdue Follow-ups</div>
+      <div class="kpi-value ${overdueCount > 0 ? 'red' : ''}">${overdueCount}</div>
+      <div class="kpi-sub">${overdueCount > 0 ? 'need action today' : 'all on track'}</div>
+    </div>
+    <div class="kpi-item">
       <div class="kpi-label">Expiring Quotes</div>
       <div class="kpi-value ${(stats.expiringQuotes || 0) > 0 ? 'red' : ''}">${stats.expiringQuotes || 0}</div>
-      <div class="kpi-sub">need follow-up</div>
+      <div class="kpi-sub">past expiry date</div>
     </div>
   `;
 }
@@ -876,7 +993,7 @@ function buildCard(opp) {
   const days = daysInStage(opp);
   const stale = days > 14 && !['Won','Lost','No-Bid'].includes(opp.stage);
   const today = new Date().toISOString().split('T')[0];
-  const followSoon = opp.followUpDate && opp.followUpDate <= today;
+  const followSoon = (opp.nextFollowUpDate && opp.nextFollowUpDate <= today) || (opp.followUpDate && opp.followUpDate <= today);
   const color = avatarColor(opp.clientName);
   div.innerHTML = `
     <div class="sf-card-top">
@@ -889,7 +1006,8 @@ function buildCard(opp) {
       <span class="sf-days${stale ? ' stale' : ''}">${days}d</span>
       ${opp.assignedTo ? `<span class="sf-card-owner">${esc(opp.assignedTo.split(' ')[0])}</span>` : ''}
     </div>
-    ${followSoon ? `<div class="sf-card-followup">Follow-up: ${fmtDate(opp.followUpDate)}</div>` : ''}
+    ${followSoon ? `<div class="sf-card-followup" style="color:var(--red);font-weight:600;">⚠ Follow-up overdue</div>` :
+      opp.nextFollowUpDate ? `<div class="sf-card-followup">Next FU: ${fmtDate(opp.nextFollowUpDate)}</div>` : ''}
   `;
   div.addEventListener('dragstart', () => { draggedId = opp.id; div.classList.add('dragging'); });
   div.addEventListener('dragend', () => { div.classList.remove('dragging'); });
@@ -987,9 +1105,12 @@ function openNewModal() {
 }
 function closeNewModal() { document.getElementById('modal-new').classList.remove('open'); }
 
+let _saveBusy = false;
 async function saveNewOpp() {
+  if (_saveBusy) return;
   const clientName = document.getElementById('n-client').value.trim();
   if (!clientName) { document.getElementById('n-client').focus(); toast('Client name is required', false); return; }
+  _saveBusy = true;
   try {
     const res = await fetch('/api/sales/opportunities', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1011,7 +1132,7 @@ async function saveNewOpp() {
     toast('Opportunity created');
     await refreshData();
     populateFilters();
-  } catch { toast('Network error', false); }
+  } catch { toast('Network error', false); } finally { _saveBusy = false; }
 }
 
 // ── Detail Panel ─────────────────────────────────────
@@ -1104,9 +1225,15 @@ function openPanel(id) {
         <div class="sf-field"><label>Assigned To</label>
           <select id="d-owner" ${canEdit?'':'disabled'}>
             <option value="">Select...</option>
-            ${['Lai Wei Xiang','Janessa'].map(n =>
+            ${(stats.salesUsers || []).map(n =>
               `<option ${n===opp.assignedTo?'selected':''}>${n}</option>`
             ).join('')}
+          </select>
+        </div>
+        <div class="sf-field"><label>QS Assigned</label>
+          <select id="d-qs" ${canEdit?'':'disabled'}>
+            <option value="">— Select QS —</option>
+            ${['Salve','Alex Mac'].map(n => `<option ${n===opp.qsAssigned?'selected':''}>${n}</option>`).join('')}
           </select>
         </div>
         <div class="sf-field"><label>Quotation No</label><input id="d-quoteno" value="${esc(opp.quotationNo||'')}" ${canEdit?'':'disabled'}></div>
@@ -1128,6 +1255,134 @@ function openPanel(id) {
         <div class="sf-field full"><label>Email</label><input id="d-email" type="email" value="${esc(opp.email||'')}" ${canEdit?'':'disabled'}></div>
         <div class="sf-field full"><label>Site Address</label><input id="d-site" value="${esc(opp.siteAddress||'')}" ${canEdit?'':'disabled'}></div>
       </div>
+    </div>
+  </div>`;
+
+  // Documents section — tender docs, quotation files, email attachments
+  const docs = opp.tenderDocUrls || [];
+  const hasSourceEmail = opp._sourceEmailId && opp._sourceMailbox;
+  html += `<div class="sf-section">
+    <div class="sf-section-hdr" data-target="sec-docs"><span class="chevron">&#9660;</span> Documents ${docs.length ? '(' + docs.length + ')' : ''}</div>
+    <div id="sec-docs" style="padding:14px;">
+      ${docs.length ? docs.map(d => {
+        const name = d.split('/').pop();
+        const isPdf = name.toLowerCase().endsWith('.pdf');
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:16px;">${isPdf ? '📄' : '📎'}</span>
+          <a href="${esc(d)}" target="_blank" style="flex:1;color:var(--text);font-size:13px;text-decoration:none;">${esc(name)}</a>
+          <a href="${esc(d)}" download style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:600;">Download</a>
+        </div>`;
+      }).join('') : '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">No documents yet.</div>'}
+      ${canEdit ? `<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;">
+        <label style="padding:6px 14px;background:var(--accent);color:#fff;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;">
+          📄 Upload File
+          <input type="file" id="opp-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" style="display:none;" onchange="uploadOppFile(false)">
+        </label>
+        ${opp.stage === 'Tender Review' ? `<label style="padding:6px 14px;background:var(--green);color:#fff;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;">
+          📋 Submit Quotation
+          <input type="file" id="opp-quote-input" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="uploadOppFile(true)">
+        </label>` : ''}
+        ${hasSourceEmail ? `<button onclick="fetchEmailAttachments()" id="fetch-att-btn" style="padding:6px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;">📥 Fetch from Email</button>` : ''}
+      </div>` : ''}
+    </div>
+  </div>`;
+
+  // Follow-up section (visible in Pending Tender / Tender Awarded stages)
+  const showFU = ['Pending Tender', 'Tender Awarded'].includes(opp.stage);
+  const fuList = (opp.followUps || []).slice().reverse();
+  const nextFU = opp.nextFollowUpDate;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const fuOverdue = nextFU && nextFU <= todayStr;
+  html += `<div class="sf-section" ${!showFU && !fuList.length ? 'style="display:none;"' : ''}>
+    <div class="sf-section-hdr" data-target="sec-followup"><span class="chevron">&#9660;</span> Follow-up Tracker
+      ${nextFU ? `<span style="margin-left:auto;font-size:11px;font-weight:600;color:${fuOverdue ? 'var(--red)' : 'var(--text-muted)'};">${fuOverdue ? '⚠ OVERDUE' : 'Next: ' + nextFU}</span>` : ''}
+    </div>
+    <div id="sec-followup" style="padding:14px;">
+      ${canEdit && showFU ? `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Log Follow-up Call</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          <select id="fu-outcome" style="flex:1;min-width:120px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;">
+            <option value="">— Outcome —</option>
+            <option value="Connected">Connected</option>
+            <option value="NPU">NPU (No Pick Up)</option>
+            <option value="Voicemail">Voicemail</option>
+            <option value="No Answer">No Answer</option>
+          </select>
+          <input type="number" id="fu-interval" value="25" min="7" max="60" title="Days until next FU (if connected)" style="width:70px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;">
+        </div>
+        <textarea id="fu-notes" rows="2" placeholder="Call notes (mandatory)..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;resize:vertical;box-sizing:border-box;font-family:inherit;margin-bottom:8px;"></textarea>
+        <button id="fu-submit-btn" onclick="logFollowUp()" style="padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;">Log Call</button>
+      </div>` : ''}
+      ${fuList.length ? fuList.map(fu => `
+        <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;">
+          <div style="font-weight:700;color:${fu.outcome === 'Connected' ? 'var(--green)' : 'var(--amber)' };min-width:50px;">${esc(fu.type)}</div>
+          <div style="flex:1;">
+            <div><span style="font-weight:600;">${esc(fu.outcome)}</span> — ${esc(fu.notes)}</div>
+            <div style="color:var(--text-muted);font-size:11px;margin-top:2px;">
+              ${fmtDateTime(fu.completedAt)}${fu.loggedBy ? ' by ' + esc(fu.loggedBy) : ''}${fu.nextDate ? ' → Next: ' + fu.nextDate : ''}
+            </div>
+          </div>
+        </div>
+      `).join('') : '<div style="font-size:12px;color:var(--text-muted);">No follow-ups logged yet.</div>'}
+    </div>
+  </div>`;
+
+  // Calendar scheduling section
+  const showDiscovery = ['New Lead', 'Discovery'].includes(opp.stage);
+  const showPresentation = ['Quotation', 'Presentation'].includes(opp.stage);
+  if (canEdit && (showDiscovery || showPresentation)) {
+    const calType = showDiscovery ? 'discovery' : 'presentation';
+    const calLabel = showDiscovery ? 'Discovery Call' : 'Presentation / Zoom Call';
+    const existingDate = showDiscovery ? opp.discoveryCallDate : opp.presentationDate;
+    html += `<div class="sf-section">
+      <div class="sf-section-hdr" data-target="sec-calendar"><span class="chevron">&#9660;</span> 📅 Schedule ${calLabel}</div>
+      <div id="sec-calendar" style="padding:14px;">
+        ${existingDate ? `<div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:8px;">✓ Scheduled: ${existingDate}</div>` : ''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:3px;">Date *</label>
+            <input type="date" id="cal-date" value="${existingDate || ''}" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:3px;">Time</label>
+            <input type="time" id="cal-time" value="10:00" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;">
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:3px;">Duration</label>
+            <select id="cal-duration" style="padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;">
+              <option value="30">30 min</option>
+              <option value="60" selected>1 hour</option>
+              <option value="90">1.5 hours</option>
+            </select>
+          </div>
+          <button id="cal-schedule-btn" onclick="scheduleCalEvent('${calType}')" style="padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;">
+            ${existingDate ? 'Reschedule' : 'Schedule'} & Send Invite
+          </button>
+        </div>
+        ${opp.email ? '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Calendar invite will be sent to ' + esc(opp.email) + '</div>' : '<div style="font-size:11px;color:var(--amber);margin-top:6px;">Add client email to send invite</div>'}
+      </div>
+    </div>`;
+  }
+
+  // Email compose section
+  html += `<div class="sf-section">
+    <div class="sf-section-hdr" data-target="sec-email"><span class="chevron">&#9660;</span> Send Email</div>
+    <div id="sec-email" style="padding:14px;display:none;">
+      ${canEdit ? `<div style="margin-bottom:8px;">
+        <select id="email-template" onchange="applyEmailTemplate()" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text);font-size:12px;">
+          <option value="">— Select template —</option>
+        </select>
+      </div>
+      <div style="margin-bottom:6px;">
+        <input id="email-to" type="email" value="${esc(opp.email || '')}" placeholder="To email *" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:6px;">
+        <input id="email-subject" placeholder="Subject *" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:8px;">
+        <textarea id="email-body" rows="6" placeholder="Email body *" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-size:12px;box-sizing:border-box;resize:vertical;font-family:inherit;"></textarea>
+      </div>
+      <button id="email-send-btn" onclick="sendOppEmail()" style="padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;">Send Email</button>` : '<div style="font-size:12px;color:var(--text-muted);">Read-only access</div>'}
     </div>
   </div>`;
 
@@ -1171,6 +1426,9 @@ function openPanel(id) {
   document.getElementById('panel-save').style.display = canEdit ? '' : 'none';
   document.getElementById('panel-delete').style.display = canEdit ? '' : 'none';
 
+  // Populate email template dropdown
+  populateEmailTemplateDropdown();
+
   // Open
   document.getElementById('sf-overlay').classList.add('open');
   document.getElementById('sf-panel').classList.add('open');
@@ -1198,6 +1456,7 @@ async function saveDetail() {
     followUpDate: document.getElementById('d-followup').value || null,
     source: document.getElementById('d-source').value,
     assignedTo: document.getElementById('d-owner').value,
+    qsAssigned: document.getElementById('d-qs').value,
     winLossReason: document.getElementById('d-reason').value.trim(),
     notes: document.getElementById('d-notes').value.trim()
   };
@@ -1227,11 +1486,39 @@ async function deleteOpp() {
   } catch { toast('Network error', false); }
 }
 
+let _fuBusy = false;
+async function logFollowUp() {
+  if (_fuBusy || !detailOppId) return;
+  const outcome = document.getElementById('fu-outcome').value;
+  const notes = document.getElementById('fu-notes').value.trim();
+  const intervalDays = parseInt(document.getElementById('fu-interval').value, 10) || 25;
+  if (!outcome) { toast('Select an outcome', false); return; }
+  if (!notes) { toast('Call notes are mandatory', false); document.getElementById('fu-notes').focus(); return; }
+  _fuBusy = true;
+  const btn = document.getElementById('fu-submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Logging...'; }
+  try {
+    const res = await fetch('/api/sales/opportunities/' + detailOppId + '/follow-up', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ outcome, notes, intervalDays })
+    });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); toast(err.error || 'Failed', false); return; }
+    toast('Follow-up logged');
+    await refreshData();
+    const opp = opps.find(o => o.id === detailOppId);
+    if (opp) openPanel(detailOppId); // re-render panel
+  } catch { toast('Network error', false); }
+  finally { _fuBusy = false; if (btn) { btn.disabled = false; btn.textContent = 'Log Call'; } }
+}
+
+let _convertBusy = false;
 async function convertToProject() {
-  if (!detailOppId || !canEdit) return;
+  if (!detailOppId || !canEdit || _convertBusy) return;
   const opp = opps.find(o => o.id === detailOppId);
   if (!opp || opp.stage !== 'Won') return;
-  if (!confirm('Convert this opportunity to a new project? This will create a project record from the opportunity data.')) return;
+  const result = await confirmDelete('Convert to project?', opp.clientName + ' — this will create a new project from this opportunity.');
+  if (!result) return;
+  _convertBusy = true;
   try {
     const res = await fetch('/api/sales/convert-to-project/' + detailOppId, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1243,8 +1530,204 @@ async function convertToProject() {
     closePanel();
     await refreshData();
     setTimeout(() => window.location.href = '/project?id=' + data.projectId, 1200);
+  } catch { toast('Network error', false); } finally { _convertBusy = false; }
+}
+
+// ── Schedule calendar event ──────────────────────────
+let _calBusy = false;
+async function scheduleCalEvent(type) {
+  if (_calBusy || !detailOppId) return;
+  const date = document.getElementById('cal-date').value;
+  const time = document.getElementById('cal-time').value || '10:00';
+  const duration = document.getElementById('cal-duration').value || '60';
+  if (!date) { toast('Select a date', false); return; }
+  _calBusy = true;
+  const btn = document.getElementById('cal-schedule-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Scheduling...'; }
+  try {
+    const res = await fetch('/api/sales/opportunities/' + detailOppId + '/calendar-event', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, date, time, duration: parseInt(duration) })
+    });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); toast(err.error || 'Failed', false); return; }
+    toast('Calendar event created — invite sent');
+    await refreshData();
+    openPanel(detailOppId);
+  } catch { toast('Network error', false); }
+  finally { _calBusy = false; if (btn) { btn.disabled = false; } }
+}
+
+// ── Upload file to opportunity ────────────────────────
+let _uploadBusy = false;
+async function uploadOppFile(isQuotation) {
+  if (_uploadBusy || !detailOppId) return;
+  const input = isQuotation ? document.getElementById('opp-quote-input') : document.getElementById('opp-file-input');
+  if (!input || !input.files.length) return;
+  _uploadBusy = true;
+  try {
+    const fd = new FormData();
+    fd.append('file', input.files[0]);
+    if (isQuotation) fd.append('isQuotation', 'true');
+    const res = await fetch('/api/sales/opportunities/' + detailOppId + '/upload', { method: 'POST', body: fd });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); toast(err.error || 'Upload failed', false); return; }
+    toast(isQuotation ? 'Quotation submitted — stage advanced' : 'File uploaded');
+    await refreshData();
+    openPanel(detailOppId);
+  } catch { toast('Upload failed', false); }
+  finally { _uploadBusy = false; input.value = ''; }
+}
+
+// ── Fetch email attachments ───────────────────────────
+let _fetchAttBusy = false;
+async function fetchEmailAttachments() {
+  if (_fetchAttBusy || !detailOppId) return;
+  _fetchAttBusy = true;
+  const btn = document.getElementById('fetch-att-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '📥 Fetching...'; }
+  try {
+    const res = await fetch('/api/sales/opportunities/' + detailOppId + '/fetch-attachments', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); toast(err.error || 'Fetch failed', false); return; }
+    const data = await res.json();
+    if (data.fetched > 0) {
+      toast(data.fetched + ' file(s) downloaded');
+      await refreshData();
+      openPanel(detailOppId); // re-render to show files
+    } else {
+      toast('No downloadable attachments found', false);
+    }
+  } catch { toast('Network error', false); }
+  finally { _fetchAttBusy = false; if (btn) { btn.disabled = false; btn.textContent = '📥 Fetch from Email'; } }
+}
+
+// ── Inbox scanning ────────────────────────────────────
+async function loadInbox() {
+  try {
+    const emails = await fetch('/api/sales/inbox').then(r => r.ok ? r.json() : []);
+    const panel = document.getElementById('inbox-panel');
+    const list = document.getElementById('inbox-list');
+    const count = document.getElementById('inbox-count');
+    const newEmails = emails.filter(e => !e.existingOpp);
+    if (!newEmails.length && !emails.length) { panel.style.display = 'none'; return; }
+    panel.style.display = '';
+    count.style.display = newEmails.length ? '' : 'none';
+    count.textContent = newEmails.length;
+
+    list.innerHTML = emails.map(e => {
+      // Detect PDFs and drive links in preview
+      const tags = [];
+      if (e.hasAttachments) tags.push('<span style="background:rgba(226,68,92,0.12);color:var(--red);padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;">📎 PDF/Files</span>');
+      const preview = (e.preview || '').toLowerCase();
+      if (preview.includes('drive.google.com') || preview.includes('docs.google.com'))
+        tags.push('<span style="background:rgba(0,200,117,0.12);color:var(--green);padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;">Google Drive</span>');
+      if (preview.includes('1drv.ms') || preview.includes('onedrive') || preview.includes('sharepoint'))
+        tags.push('<span style="background:rgba(51,102,255,0.12);color:var(--accent);padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;">OneDrive</span>');
+      if (preview.includes('dropbox.com'))
+        tags.push('<span style="background:rgba(51,102,255,0.12);color:var(--accent);padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;">Dropbox</span>');
+      if (preview.includes('.pdf'))
+        tags.push('<span style="background:rgba(226,68,92,0.12);color:var(--red);padding:2px 6px;border-radius:3px;font-size:11px;font-weight:600;">PDF link</span>');
+      const tagHtml = tags.length ? '<div style="display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;">' + tags.join('') + '</div>' : '';
+
+      return `
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:600;">${esc(e.from)} <span style="color:var(--text-muted);font-weight:400;font-size:12px;">&lt;${esc(e.fromEmail)}&gt;</span></div>
+          <div style="font-size:13px;margin-top:3px;">${esc(e.subject)}</div>
+          <div style="color:var(--text-muted);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(e.preview)}</div>
+          ${tagHtml}
+          <div style="color:var(--text-muted);font-size:11px;margin-top:4px;">${fmtDateTime(e.receivedAt)} · ${esc(e.mailbox)}</div>
+        </div>
+        <div style="flex-shrink:0;padding-top:4px;">
+          ${e.existingOpp
+            ? '<span style="font-size:11px;color:var(--green);font-weight:600;">Already a lead</span>'
+            : `<button onclick="promoteEmail('${esc(e.id)}','${esc(e.mailbox)}','${esc(e.fromEmail)}','${esc(e.from)}','${esc(e.subject)}')" style="padding:6px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">+ Create Lead</button>`
+          }
+        </div>
+      </div>`;
+    }).join('') || '<div style="font-size:13px;color:var(--text-muted);">No matching emails found.</div>';
+  } catch (e) { console.error('[INBOX]', e); }
+}
+
+async function promoteEmail(emailId, mailbox, fromEmail, fromName, subject) {
+  try {
+    const res = await fetch('/api/sales/inbox/promote', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ emailId, mailbox, fromEmail, fromName, subject })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      toast(err.error || 'Failed to create lead', false); return;
+    }
+    toast('Lead created from email');
+    await refreshData();
+    loadInbox();
   } catch { toast('Network error', false); }
 }
+
+// ── Email compose ────────────────────────────────────
+let _emailTemplates = [];
+async function loadEmailTemplates() {
+  try {
+    _emailTemplates = await fetch('/api/sales/email-templates').then(r => r.ok ? r.json() : []);
+  } catch { _emailTemplates = []; }
+}
+
+function applyEmailTemplate() {
+  const sel = document.getElementById('email-template');
+  if (!sel) return;
+  const tpl = _emailTemplates.find(t => t.id === sel.value);
+  if (!tpl) return;
+  const opp = opps.find(o => o.id === detailOppId) || {};
+  const replace = s => s.replace(/\{\{clientName\}\}/g, opp.clientName || '').replace(/\{\{quotationNo\}\}/g, opp.quotationNo || '');
+  document.getElementById('email-subject').value = replace(tpl.subject);
+  document.getElementById('email-body').value = replace(tpl.body);
+}
+
+let _emailBusy = false;
+async function sendOppEmail() {
+  if (_emailBusy || !detailOppId) return;
+  const to = document.getElementById('email-to').value.trim();
+  const subject = document.getElementById('email-subject').value.trim();
+  const body = document.getElementById('email-body').value.trim();
+  if (!to || !subject || !body) { toast('Fill in all email fields', false); return; }
+  _emailBusy = true;
+  const btn = document.getElementById('email-send-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+  try {
+    const res = await fetch('/api/sales/opportunities/' + detailOppId + '/send-email', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, subject, body })
+    });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); toast(err.error || 'Send failed', false); return; }
+    toast('Email sent');
+    document.getElementById('email-subject').value = '';
+    document.getElementById('email-body').value = '';
+    document.getElementById('email-template').value = '';
+    await refreshData();
+    if (detailOppId) openPanel(detailOppId);
+  } catch { toast('Network error', false); }
+  finally { _emailBusy = false; if (btn) { btn.disabled = false; btn.textContent = 'Send Email'; } }
+}
+
+// Populate email templates in detail panel
+function populateEmailTemplateDropdown() {
+  const sel = document.getElementById('email-template');
+  if (!sel || !_emailTemplates.length) return;
+  sel.innerHTML = '<option value="">— Select template —</option>' +
+    _emailTemplates.map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');
+}
+
+// Populate templates is called from openPanel directly
+
+// Inbox toggle
+document.getElementById('inbox-header')?.addEventListener('click', () => {
+  const list = document.getElementById('inbox-list');
+  const chev = document.getElementById('inbox-chevron');
+  if (list.style.display === 'none') { list.style.display = ''; chev.textContent = '▲'; }
+  else { list.style.display = 'none'; chev.textContent = '▼'; }
+});
 
 init();
 </script>

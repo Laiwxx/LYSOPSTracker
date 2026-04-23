@@ -31,12 +31,18 @@
     try {
       const s = await api('GET', '/api/summary');
 
-      // Active projects = total minus completed
-      var active = (s.total || 0) - (s.completed || 0);
+      // Active projects (lifecycle-based)
+      var active = s.activeCount || ((s.total || 0) - (s.completed || 0));
       var heroActive = document.getElementById('hero-active');
       if (heroActive) heroActive.textContent = active;
       var heroActiveSub = document.getElementById('hero-active-sub');
-      if (heroActiveSub) heroActiveSub.textContent = 'of ' + (s.total || 0) + ' projects';
+      var subParts = [];
+      if (s.dlpCount) subParts.push(s.dlpCount + ' in DLP');
+      if (s.settledCount) subParts.push(s.settledCount + ' settled');
+      if (heroActiveSub) heroActiveSub.textContent = subParts.length ? subParts.join(', ') : 'of ' + (s.total || 0) + ' projects';
+
+      // DLP section
+      renderDlpSection(s);
 
       // Portfolio-average FAB / Install
       var fabPct  = s.overallFabPct  || s.avgFabPct  || 0;
@@ -187,13 +193,13 @@
         var itemsHtml = p.items.map(function (item) {
           var ticketCssClass = '';
           if (item.deliveryRequested && item.ticketStatus) {
-            var tsMap = { 'New': 'ticket-status-new', 'Acknowledged': 'ticket-status-acknowledged', 'In Production': 'ticket-status-inproduction', 'Ready': 'ticket-status-ready', 'Delivered': 'ticket-status-delivered' };
+            var tsMap = { 'New': 'ticket-status-new', 'Acknowledged': 'ticket-status-acknowledged', 'In Fabrication': 'ticket-status-inproduction', 'Ready': 'ticket-status-ready', 'Delivered': 'ticket-status-delivered' };
             ticketCssClass = tsMap[item.ticketStatus] || '';
           }
 
           var ticketBadge = '';
           if (item.deliveryRequested) {
-            var tbMap = { 'New': ['ticket-new','New'], 'Acknowledged': ['ticket-acknowledged','Seen by Chris'], 'In Production': ['ticket-inproduction','In Production'], 'Ready': ['ticket-ready','Ready'], 'Delivered': ['ticket-delivered','Delivered'] };
+            var tbMap = { 'New': ['ticket-new','New'], 'Acknowledged': ['ticket-acknowledged','Acknowledged'], 'In Fabrication': ['ticket-inproduction','In Fabrication'], 'Ready': ['ticket-ready','Ready'], 'Delivered': ['ticket-delivered','Delivered'] };
             var tbPair = tbMap[item.ticketStatus] || ['ticket-new','New'];
             ticketBadge = '<span class="ticket-badge ' + tbPair[0] + '">' + tbPair[1] + '</span>';
           }
@@ -216,13 +222,19 @@
           var actionHtml = '';
           if (item.deliveryRequested && item.deliveryReqId) {
             if (item.ticketStatus === 'New') {
-              actionHtml = '<button class="btn btn-sm btn-ticket-action" data-pid="' + esc(p.projectId) + '" data-reqid="' + esc(item.deliveryReqId) + '" data-action="acknowledge">Acknowledge</button>';
+              actionHtml = '<button class="btn btn-sm btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="acknowledge">Acknowledge</button>';
             } else if (item.ticketStatus === 'Acknowledged') {
-              actionHtml = '<button class="btn btn-sm btn-ticket-action" data-pid="' + esc(p.projectId) + '" data-reqid="' + esc(item.deliveryReqId) + '" data-action="inproduction">Mark In Production</button>';
-            } else if (item.ticketStatus === 'In Production') {
-              actionHtml = '<button class="btn btn-sm btn-ticket-action" data-pid="' + esc(p.projectId) + '" data-reqid="' + esc(item.deliveryReqId) + '" data-action="ready">Mark Ready</button>';
+              actionHtml = '<button class="btn btn-sm btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="inproduction">Mark In Fabrication</button>' +
+                ' <button class="btn btn-sm btn-ghost btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="undo-new" style="font-size:10px;">↩ Undo</button>';
+            } else if (item.ticketStatus === 'In Fabrication') {
+              actionHtml = '<button class="btn btn-sm btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="ready">Mark Ready</button>' +
+                ' <button class="btn btn-sm btn-ghost btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="undo-ack" style="font-size:10px;">↩ Back</button>';
             } else if (item.ticketStatus === 'Ready') {
-              actionHtml = '<span style="color:var(--green);font-size:11px;font-weight:700;">✓ Ready — awaiting delivery</span>';
+              actionHtml = '<button class="btn btn-sm btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="delivered" style="background:var(--green);color:#fff;">🚚 Mark Delivered</button>' +
+                ' <button class="btn btn-sm btn-ghost btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="undo-fab" style="font-size:10px;">↩ Back</button>';
+            } else if (item.ticketStatus === 'Delivered') {
+              actionHtml = '<span style="color:var(--green);font-size:11px;font-weight:700;">✓ Delivered</span>' +
+                ' <button class="btn btn-sm btn-ghost btn-ticket-action" data-reqid="' + esc(item.deliveryReqId) + '" data-action="undo-ready" style="font-size:10px;">↩ Undo</button>';
             }
           }
 
@@ -247,7 +259,7 @@
           '<div class="factory-project-header">' +
             '<span class="factory-project-name">' + esc(p.jobCode) + ' · ' + esc(p.projectName) + '</span>' +
             endLabel +
-            '<a href="project.html?id=' + esc(p.projectId) + '" class="btn btn-ghost btn-sm" style="margin-left:auto;">View →</a>' +
+            '<a href="/factory" class="btn btn-ghost btn-sm" style="margin-left:auto;">View →</a>' +
           '</div>' +
           fabBarHtml +
           chipsHtml +
@@ -258,18 +270,29 @@
       // Ticket action buttons
       list.querySelectorAll('.btn-ticket-action').forEach(function (btn) {
         btn.addEventListener('click', async function () {
-          var pid = this.dataset.pid, reqId = this.dataset.reqid, action = this.dataset.action;
+          var reqId = this.dataset.reqid, action = this.dataset.action;
           var now = new Date().toISOString();
-          var updates = {};
+          var updates = { _actor: 'Dashboard' };
           if (action === 'acknowledge') {
-            updates = { ticketStatus: 'Acknowledged', acknowledgedBy: 'Chris', acknowledgedAt: now };
+            updates.status = 'Acknowledged';
           } else if (action === 'inproduction') {
-            updates = { ticketStatus: 'In Production', inProductionAt: now };
+            updates.status = 'In Fabrication';
           } else if (action === 'ready') {
-            updates = { ticketStatus: 'Ready', readyAt: now, readyMarkedBy: 'Chris' };
+            updates.status = 'Ready';
+          } else if (action === 'delivered') {
+            updates.status = 'Delivered';
+          } else if (action === 'undo-new') {
+            updates.status = 'New';
+          } else if (action === 'undo-ack') {
+            updates.status = 'Acknowledged';
+          } else if (action === 'undo-fab') {
+            updates.status = 'In Fabrication';
+          } else if (action === 'undo-ready') {
+            updates.status = 'Ready';
           }
           try {
-            await api('PUT', '/api/projects/' + pid + '/delivery-requests/' + reqId, updates);
+            var r = await api('PUT', '/api/site-requests/' + reqId, updates);
+            if (r.status >= 400) throw new Error('Status ' + r.status);
             showToast('Updated.', 'success');
             loadFactoryQueue();
           } catch { showToast('Failed to update.', 'error'); }
@@ -1290,6 +1313,66 @@
   function esc(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
+
+  // ── DLP / Retention section ──────────────────────────────────────────────
+  async function renderDlpSection(summary) {
+    var el = document.getElementById('dlp-section');
+    if (!el) return;
+    var dlpCount = (summary.dlpCount || 0) + (summary.settledCount || 0);
+    if (dlpCount === 0) { el.style.display = 'none'; return; }
+    el.style.display = '';
+
+    try {
+      var projects = await api('GET', '/api/projects?lifecycle=dlp,settled');
+      var fmt = function(d) { return d ? new Date(d).toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'; };
+      var money = function(n) { return '$' + (n || 0).toLocaleString(); };
+      var today = new Date().toISOString().slice(0, 10);
+
+      var rows = projects.map(function(p) {
+        var lc = p.lifecycle || 'dlp';
+        var lcLabel = lc === 'dlp' ? '<span style="color:var(--amber);font-weight:600;">DLP</span>'
+                                    : '<span style="color:var(--accent);font-weight:600;">Settled</span>';
+        var dlpWarn = p.dlpEndDate && p.dlpEndDate <= today
+          ? ' <span style="color:var(--red);font-weight:600;">EXPIRED</span>' : '';
+        return '<tr>' +
+          '<td style="padding:6px 10px;font-size:12px;"><a href="/project?id=' + esc(p.id) + '" style="color:var(--text);text-decoration:none;">' + esc(p.jobCode) + '</a></td>' +
+          '<td style="padding:6px 10px;font-size:12px;">' + esc(p.projectName || '').slice(0, 40) + '</td>' +
+          '<td style="padding:6px 10px;font-size:12px;text-align:center;">' + lcLabel + '</td>' +
+          '<td style="padding:6px 10px;font-size:12px;">' + fmt(p.handoverDate) + '</td>' +
+          '<td style="padding:6px 10px;font-size:12px;">' + fmt(p.dlpEndDate) + dlpWarn + '</td>' +
+          '<td style="padding:6px 10px;font-size:12px;text-align:right;">' + money(p.retentionAmount) + '</td>' +
+          '<td style="padding:6px 10px;font-size:12px;text-align:center;">' + (p.retentionReleased ? '<span style="color:var(--green);">Yes</span>' : '<span style="color:var(--text-muted);">No</span>') + '</td>' +
+        '</tr>';
+      }).join('');
+
+      var totalRetention = projects.reduce(function(s, p) { return s + (p.retentionAmount || 0); }, 0);
+      var unreleased = projects.filter(function(p) { return !p.retentionReleased; }).reduce(function(s, p) { return s + (p.retentionAmount || 0); }, 0);
+
+      el.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">' +
+          '<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);">DLP & Retention</div>' +
+          '<span style="font-size:11px;color:var(--amber);font-weight:600;">' + projects.length + ' project' + (projects.length !== 1 ? 's' : '') + '</span>' +
+          (unreleased > 0 ? '<span style="font-size:11px;color:var(--text-muted);">Unreleased: ' + money(unreleased) + '</span>' : '') +
+        '</div>' +
+        '<div style="overflow-x:auto;">' +
+        '<table style="width:100%;border-collapse:collapse;">' +
+          '<thead><tr style="border-bottom:1px solid var(--border);">' +
+            '<th style="padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-muted);text-align:left;">Job Code</th>' +
+            '<th style="padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-muted);text-align:left;">Project</th>' +
+            '<th style="padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-muted);text-align:center;">Status</th>' +
+            '<th style="padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-muted);text-align:left;">Handover</th>' +
+            '<th style="padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-muted);text-align:left;">DLP Ends</th>' +
+            '<th style="padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-muted);text-align:right;">Retention</th>' +
+            '<th style="padding:6px 10px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text-muted);text-align:center;">Released</th>' +
+          '</tr></thead>' +
+          '<tbody>' + (rows || '<tr><td colspan="7" style="padding:12px;font-size:12px;color:var(--text-muted);text-align:center;">None</td></tr>') + '</tbody>' +
+        '</table></div>';
+    } catch (err) {
+      console.error('[Dashboard] DLP section failed:', err);
+      el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">Failed to load DLP data</div>';
+    }
+  }
+  window.renderDlpSection = renderDlpSection;
 
   // Expose for inline onclick handlers
   window.loadWeeklyBrief = loadWeeklyBrief;

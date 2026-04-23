@@ -3,23 +3,23 @@
     "id": "bd-19121-rbss-dnr",
     "jobCode": "BD 19121- RBSS (DNR)",
     "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
-    "product": "2x Block S - Auto Bollard Cova, 3x Block S - Auto Bollard Cova, 7x Block S - Auto Bollard Cova, 2x Block S - Cova Road Blocker, 1x Block S - Cova Road Blocker, 1x CityScape Gate",
+    "product": "2x Block S - Auto Bollard Cova, 3x Block S - Auto Bollard Cova, 7x Block S - Auto Bollard Cova, 2x Block S - Cova Road Blocker, 1x Block S - Cova Road Blocker, 4x CityScape Gate ",
     "contractValue": 1595650,
     "voValue": 0,
     "client": "Police Force",
     "contact": "",
     "mainCon": "Robert Bosch",
     "consultant": "",
-    "startDate": "",
-    "endDate": "",
+    "startDate": "2024-12-31",
+    "endDate": "2026-07-31",
     "projectManager": "Lai Wei Xiang",
-    "qs": "Salve",
+    "qs": "Alex Mac",
     "factoryManager": "Chris",
     "drafter": "Murugan",
     "purchaser": "Rena",
     "sales": "Janessa",
-    "siteEngineer": "",
-    "status": "On Track",
+    "siteEngineer": "Lai Wei Xiang",
+    "status": "Delayed",
     "currentStage": "Drawing Submission",
     "actionBy": "Drafter",
     "fabPercent": 0,
@@ -236,10 +236,10 @@
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
         "status": "Not Started",
-        "started": "",
+        "started": "2026-04-23",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-23T08:43:04.266Z",
         "refs": [],
         "fileName": ""
       },
@@ -248,10 +248,10 @@
         "name": "Installation",
         "owner": "Site Engineer",
         "status": "Not Started",
-        "started": "",
+        "started": "2026-04-23",
         "done": "",
         "notes": "",
-        "statusChangedAt": null,
+        "statusChangedAt": "2026-04-23T08:43:04.267Z",
         "refs": [],
         "fileName": ""
       },
@@ -386,7 +386,8 @@
         "doneQty": 0,
         "notes": "",
         "qtyDone": 0,
-        "status": "Not Started"
+        "status": "Not Started",
+        "logs": []
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -525,19 +526,30 @@
         "parts": []
       },
       {
-        "item": "CityScape Gate",
-        "qty": 1,
-        "unit": "units",
+        "item": "CityScape Gate ",
+        "qty": 4,
+        "unit": "Meter",
         "type": "Local Fabrication",
         "itemType": "Mechanical",
-        "partsRequired": true,
+        "partsRequired": false,
         "parts": []
       }
     ],
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "fabLeadTimeDays": 180,
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 79782.5,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-21222-qa-ica-kallang",
@@ -882,7 +894,17 @@
     "scopeNotes": "rwr",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 75320,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-21923-shimizu-dnr",
@@ -1059,7 +1081,8 @@
         "logs": [],
         "fab_started_at": "2026-04-17T10:51:06.240Z",
         "fab_completed_at": null,
-        "doneQty": 0
+        "doneQty": 0,
+        "fabDeadline": "2026-05-30"
       }
     ],
     "installation": [
@@ -1134,7 +1157,17 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 21000,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-22724-poc-t232-woodland",
@@ -1476,7 +1509,17 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 107500,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-23525-china-harbour-8sw",
@@ -1778,7 +1821,17 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 20500,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-23625-the-reserve-residence",
@@ -2058,7 +2111,17 @@
         "zoneLabel": ""
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 7381.25,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-23925-chong-pang-id",
@@ -2326,7 +2389,17 @@
         "zoneLabel": ""
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 4312,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-24025-chiong-de189",
@@ -2870,7 +2943,17 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 27500,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-24425-qing-feng-somerset",
@@ -3138,13 +3221,23 @@
         "zoneLabel": ""
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 2600,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-25225-nakano-st-eng-dc",
     "jobCode": "BD 25225- Nakano (ST Eng DC)",
     "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
-    "product": "127x SP30 Fixed Bollard, 1x Cova Sliding Gate - 6 Meters + HPU, 3x Cova Road Blocker 3 Meters, 22x SP400 Fixed Bollard Shallow Mounted, 2x Cometa Man Trap",
+    "product": "127x SP30 Fixed Bollard, 1x Cova Sliding Gate - 6 Meters + HPU, 3x Cova Road Blocker 3 Meters, 22x SP400 Fixed Bollard Shallow Mounted, 2x Cometa Man Trap, 2x Turnstile, 9x SP400 Fixed Bollards, 1x Fencing",
     "contractValue": 662875,
     "voValue": 0,
     "client": "",
@@ -3163,8 +3256,8 @@
     "status": "On Track",
     "currentStage": "Delivered",
     "actionBy": "Purchaser",
-    "fabPercent": 65,
-    "installPercent": 6,
+    "fabPercent": 0,
+    "installPercent": 11,
     "paidAmount": 0,
     "latestNotes": "Highlighted to Client on Crash Rated Wall Materials ready for delivery and MOS shows clearly required 2 casting (Footing beam and Wall)\r\n\r\n- Client highlighted crash rated wall erection based on (16mL every cycle), ready for site marking and installation.\r\n- Arranged for site marking on 6th Jan 2026, Highlighted in groupchat for maincon surveyor to provide reference point for bollard centre reference point before we arrange for site marking.\r\n- Highlighted to Maincon due to their internal boundary ramp slope from lowest point GL 3.1m - 3.6m, Top wall FFL to maintain at 4.2m\r\n- External Boundary maintain at GL 3.0m throughout, crash rated wall from 800mmH will need to increase to 1.2mH, Vincent (Precision) is checking back with PE regarding if existing footing design is sufficient to hold the wall extension loading before providing rebar details.\r\n- To submit revised dwg for SP30 Crash Rated Bollards Footings at Water Transfer Tank area as footing design clash with existing slab.\r\n- To submit revised dwg for SP30 Crash Rated Bollards along Corporation Road as it clash with drainage wall and top slab (Rebar detail for Tie back)",
     "stages": [
@@ -3415,7 +3508,7 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 127,
         "unit": "units",
-        "qtyDone": 100,
+        "qtyDone": 0,
         "qtySent": 0,
         "status": "Ready for Delivery",
         "started": "",
@@ -3423,20 +3516,8 @@
         "fab_completed_at": "2026-04-15T15:49:02.385Z",
         "fab_started_at": "2026-04-15T16:41:24.955Z",
         "cycle_days": 0,
-        "logs": [
-          {
-            "id": "log_mo7zzyzed6tm",
-            "loggedAt": "2026-04-21T02:21:54.376Z",
-            "loggedBy": "Chris",
-            "delta": 100,
-            "photoPath": "/uploads/fab-logs/bd-25225-nakano-st-eng-dc/log_mo7zzyzed6tm.jpg",
-            "note": "",
-            "editedAt": null,
-            "editedBy": null,
-            "editHistory": []
-          }
-        ],
-        "doneQty": 100,
+        "logs": [],
+        "doneQty": 0,
         "fabDeadline": null
       },
       {
@@ -3445,7 +3526,7 @@
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
-        "status": "Parts In Progress",
+        "status": "Not Started",
         "started": "",
         "done": "",
         "fab_started_at": "2026-04-15T16:50:45.295Z",
@@ -3472,43 +3553,9 @@
           }
         ],
         "partsProgress": {
-          "done": 1,
-          "total": 5
+          "done": 0,
+          "total": 3
         },
-        "doneQty": 0
-      },
-      {
-        "item": "Cova Sliding Gate - 6 Meters + HPU > Gate frame",
-        "totalQty": 1,
-        "unit": "units",
-        "qtyDone": 0,
-        "qtySent": 0,
-        "status": "QC Check",
-        "started": "",
-        "done": "",
-        "isPartRow": true,
-        "parentIdx": 1,
-        "partSource": "Fabricate",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null,
-        "doneQty": 0
-      },
-      {
-        "item": "Cova Sliding Gate - 6 Meters + HPU > Track rail 6m",
-        "totalQty": 2,
-        "unit": "units",
-        "qtyDone": 0,
-        "qtySent": 0,
-        "status": "Not Started",
-        "started": "",
-        "done": "",
-        "isPartRow": true,
-        "parentIdx": 1,
-        "partSource": "Fabricate",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null,
         "doneQty": 0
       },
       {
@@ -3539,6 +3586,30 @@
         "fab_completed_at": "2026-04-15T17:48:58.206Z",
         "fabDeadline": "2026-04-02",
         "doneQty": 0
+      },
+      {
+        "item": "SP400 Fixed Bollards",
+        "totalQty": 9,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": "2026-04-15T17:41:28.013Z",
+        "fab_completed_at": null,
+        "doneQty": 0
+      },
+      {
+        "item": "Fencing",
+        "totalQty": 1,
+        "unit": "Meters",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": ""
       }
     ],
     "installation": [
@@ -3546,7 +3617,7 @@
         "item": "SP30 Fixed Bollard",
         "totalQty": 127,
         "unit": "units",
-        "doneQty": 4,
+        "doneQty": 10,
         "notes": "",
         "status": "In Progress",
         "logs": [
@@ -3558,9 +3629,19 @@
             "location": "Corporation Road",
             "loggedBy": "Teo Meei Haw",
             "loggedAt": "2026-04-22T10:19:21.220Z"
+          },
+          {
+            "id": "log_mobddfcpxi5e",
+            "delta": 6,
+            "photoPath": "/uploads/install-logs/bd-25225-nakano-st-eng-dc/log_mobddfcpxi5e.jpg",
+            "extraPhotos": [],
+            "note": "6 to 11 bollards work in progress",
+            "location": "Corporation Road",
+            "loggedBy": "Teo Meei Haw",
+            "loggedAt": "2026-04-23T10:59:36.147Z"
           }
         ],
-        "qtyDone": 4,
+        "qtyDone": 10,
         "installSteps": [
           "Rebar Installation"
         ]
@@ -3624,6 +3705,59 @@
           }
         ],
         "qtyDone": 2
+      },
+      {
+        "item": "Turnstile",
+        "totalQty": 2,
+        "unit": "units",
+        "doneQty": 2,
+        "notes": "",
+        "qtyDone": 2,
+        "status": "Installed",
+        "logs": [
+          {
+            "id": "log_mobdhwyhjth7",
+            "delta": 2,
+            "photoPath": "/uploads/install-logs/bd-25225-nakano-st-eng-dc/log_mobdhwyhjth7.jpg",
+            "extraPhotos": [],
+            "note": "Work Done",
+            "location": "Guard House",
+            "step": "turnstile installation",
+            "loggedBy": "Teo Meei Haw",
+            "loggedAt": "2026-04-23T11:03:05.580Z"
+          }
+        ]
+      },
+      {
+        "item": "SP400 Fixed Bollards",
+        "totalQty": 9,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Fencing",
+        "totalQty": 1,
+        "unit": "Meters",
+        "doneQty": 1,
+        "notes": "",
+        "qtyDone": 1,
+        "status": "Installed",
+        "logs": [
+          {
+            "id": "log_mobdgze4agx5",
+            "delta": 1,
+            "photoPath": "/uploads/install-logs/bd-25225-nakano-st-eng-dc/log_mobdgze4agx5.jpg",
+            "extraPhotos": [],
+            "note": "work in progress",
+            "location": "Corporation Road",
+            "step": "Installation",
+            "loggedBy": "Teo Meei Haw",
+            "loggedAt": "2026-04-23T11:02:22.161Z"
+          }
+        ]
       }
     ],
     "prpo": [],
@@ -3708,13 +3842,50 @@
         "partsRequired": false,
         "zoneLabel": "",
         "parts": []
+      },
+      {
+        "item": "Turnstile",
+        "qty": 2,
+        "unit": "units",
+        "type": "Overseas Order",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "SP400 Fixed Bollards",
+        "qty": 9,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Fencing",
+        "qty": 1,
+        "unit": "Meters",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "scopeNotes": "",
     "drawingFolders": [
       "General"
     ],
-    "fabLeadTimeDays": 120
+    "fabLeadTimeDays": 120,
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 33143.75,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-25325-sam-lain-tt-tuas",
@@ -3982,7 +4153,17 @@
         "zoneLabel": ""
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 1225,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-25426-woh-hup-wcp",
@@ -4250,7 +4431,17 @@
         "zoneLabel": ""
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 352136,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-25526-parry-ave",
@@ -4661,7 +4852,17 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 1187.15,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-xxx26-hwa-seng-t5-ers",
@@ -4989,7 +5190,17 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 10225,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-xxx26-v3-taman-jurong",
@@ -5308,7 +5519,17 @@
     "scopeNotes": "",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 11435,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "pj10025-ica-kallang",
@@ -5600,7 +5821,17 @@
     "category": "Structural Steel",
     "drawingFolders": [
       "General"
-    ]
+    ],
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 17500,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "pj10726-clementi-close-metal",
@@ -5868,7 +6099,17 @@
         "zoneLabel": ""
       }
     ],
-    "scopeNotes": ""
+    "scopeNotes": "",
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 19139.99,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-25626",
@@ -6349,7 +6590,17 @@
       "General"
     ],
     "scopeNotes": "",
-    "fabLeadTimeDays": 180
+    "fabLeadTimeDays": 180,
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 10125.5,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   },
   {
     "id": "bd-25726",
@@ -6375,7 +6626,7 @@
     "currentStage": "Site Ready",
     "actionBy": "Project Manager/Site Engineer",
     "fabPercent": 0,
-    "installPercent": 0,
+    "installPercent": 100,
     "paidAmount": 0,
     "latestNotes": "",
     "stages": [
@@ -6599,11 +6850,11 @@
         "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
-        "status": "In Progress",
+        "status": "Completed",
         "started": "2026-04-22",
-        "done": "",
+        "done": "2026-04-23",
         "notes": "",
-        "statusChangedAt": "2026-04-22T10:01:49.470Z",
+        "statusChangedAt": "2026-04-23T10:19:07.895Z",
         "fileName": "",
         "refs": []
       },
@@ -6611,11 +6862,11 @@
         "num": 20,
         "name": "Handover",
         "owner": "Project Manager",
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "2026-04-22",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-22T10:01:49.470Z",
+        "statusChangedAt": "2026-04-23T10:19:07.896Z",
         "fileName": "",
         "refs": []
       }
@@ -6638,10 +6889,30 @@
         "item": "Engineered bollard",
         "totalQty": 43,
         "unit": "units",
-        "doneQty": 0,
+        "doneQty": 43,
         "notes": "",
-        "qtyDone": 0,
-        "status": "In Progress"
+        "qtyDone": 43,
+        "status": "Installed",
+        "logs": [
+          {
+            "id": "log_mobbxc5eg7oy",
+            "delta": 43,
+            "photoPath": "/uploads/install-logs/bd-25726/log_mobbxc5eg7oy.jpg",
+            "extraPhotos": [
+              "/uploads/install-logs/bd-25726/log_mobbxcrdt3x4.jpg",
+              "/uploads/install-logs/bd-25726/log_mobbxd285v1g.jpg",
+              "/uploads/install-logs/bd-25726/log_mobbxdcmzvxt.jpg",
+              "/uploads/install-logs/bd-25726/log_mobbxdlwasz1.jpg",
+              "/uploads/install-logs/bd-25726/log_mobbxe0rkx33.jpg",
+              "/uploads/install-logs/bd-25726/log_mobbxec0jhpd.jpg"
+            ],
+            "note": "Pending Bollard sleeves, eta 6/5 arrival",
+            "location": "Level 1 drop off",
+            "step": "Bollard installation",
+            "loggedBy": "Jun Jie",
+            "loggedAt": "2026-04-23T10:19:07.895Z"
+          }
+        ]
       }
     ],
     "productScope": [
@@ -6665,6 +6936,16 @@
       "General"
     ],
     "scopeNotes": "",
-    "fabLeadTimeDays": 0
+    "fabLeadTimeDays": 0,
+    "lifecycle": "active",
+    "handoverDate": null,
+    "dlpMonths": 12,
+    "dlpEndDate": null,
+    "retentionPercent": 5,
+    "retentionAmount": 0,
+    "retentionReleased": false,
+    "retentionReleasedDate": null,
+    "finalAccountDate": null,
+    "archivedDate": null
   }
 ]

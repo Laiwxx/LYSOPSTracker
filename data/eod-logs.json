@@ -219,22 +219,22 @@
     ]
   },
   {
-    "id": "mo9l0b660fu8",
-    "staffName": "Scenario Tester",
-    "date": "2026-04-21",
-    "submittedAt": "2026-04-22T04:57:48.174Z",
-    "totalHours": 1,
-    "hours": 1,
-    "notes": "Test",
-    "summary": "Test",
-    "issues": "",
-    "taskEntries": []
-  },
-  {
     "id": "mo9celjru49e",
     "staffName": "Salve",
     "date": "2026-04-22",
     "submittedAt": "2026-04-22T00:56:58.263Z",
+    "totalHours": 0,
+    "hours": 0,
+    "notes": "",
+    "summary": "",
+    "issues": "",
+    "taskEntries": []
+  },
+  {
+    "id": "mobdjpghzois",
+    "staffName": "Teo Meei Haw",
+    "date": "2026-04-23",
+    "submittedAt": "2026-04-23T11:04:28.577Z",
     "totalHours": 0,
     "hours": 0,
     "notes": "",

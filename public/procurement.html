@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LYS OPS · Procurement</title>
   <meta name="theme-color" content="#1a1d2e">
-  <link rel="stylesheet" href="css/style.css?v=1776830235">
+  <link rel="stylesheet" href="css/style.css?v=1776929410">
   <style>
     /* ── Tabs ──────────────────────────────────────────────────────────────── */
     .proc-tabs {
@@ -850,7 +850,7 @@ function confirmDelete(title, itemName) {
   async function loadAll() {
     [allPRs, allProjects, allSuppliers, allPrices, allDOs] = await Promise.all([
       fetch('/api/purchase-requisitions').then(r => r.json()).catch(() => []),
-      fetch('/api/projects').then(r => r.json()).catch(() => []),
+      fetch('/api/projects?lifecycle=active').then(r => r.json()).catch(() => []),
       fetch('/api/suppliers').then(r => r.json()).catch(() => []),
       fetch('/api/prices').then(r => r.json()).catch(() => []),
       fetch('/api/delivery-orders').then(r => r.json()).catch(() => [])
@@ -1222,6 +1222,7 @@ function confirmDelete(title, itemName) {
       const formData = new FormData();
       formData.append('file', poDocInput.files[0]);
       formData.append('prId', viewingPRId);
+      if (pr.projectCode) formData.append('projectCode', pr.projectCode);
       try {
         const uploadRes = await fetch('/api/upload-po-doc', { method: 'POST', body: formData });
         if (uploadRes.ok) {

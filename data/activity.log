@@ -1727,3 +1727,310 @@
 {"ts":"2026-04-22T10:19:21.200Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mo9whui1i8x1"}
 {"ts":"2026-04-22T10:19:21.221Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mo9whui1i8x1","delta":4,"newTotal":4}
 {"ts":"2026-04-22T10:21:39.322Z","event":"site-request.created","by":"Teo Meei Haw","id":"mo9wksc9420j","item":"Tracker for Gate 1","requestedBy":"Teo Meei Haw","fabIdx":null}
+{"ts":"2026-04-23T00:45:00.063Z","event":"recurring-tasks.created","by":"System","date":"2026-04-23","count":27,"roles":["Lai Wei Xiang","Chris","Rena","Alex Mac","Janessa","Alex Chew","Teo Meei Haw"]}
+{"ts":"2026-04-23T01:39:08.814Z","event":"task.updated","by":"Teo Meei Haw","id":"mo9bz7chon1","title":"Set today's installation target — project, item, qty, location","status":"Done"}
+{"ts":"2026-04-23T01:39:22.539Z","event":"task.updated","by":"Teo Meei Haw","id":"mo7wjcobmfw","title":"Check factory readiness for items needed this week","status":"Done"}
+{"ts":"2026-04-23T01:39:32.577Z","event":"task.updated","by":"Teo Meei Haw","id":"moarf21jo2n","title":"Set today's installation target — project, item, qty, location","status":"Done"}
+{"ts":"2026-04-23T01:40:01.984Z","event":"task.updated","by":"Teo Meei Haw","id":"mo7wjcoblbx","title":"Set today's installation target — project, item, qty, location","status":"Done"}
+{"ts":"2026-04-23T01:40:27.039Z","event":"task.updated","by":"Teo Meei Haw","id":"moarf21kpjq","title":"Check factory readiness for items needed this week","status":"Done"}
+{"ts":"2026-04-23T02:37:26.194Z","event":"task.acknowledged","by":"Chris","id":"mo7wjcoa7jz","title":"Assign workers to projects and plan transport"}
+{"ts":"2026-04-23T02:37:30.135Z","event":"task.updated","by":"Chris","id":"mo7wjcoa7jz","title":"Assign workers to projects and plan transport","status":"Done"}
+{"ts":"2026-04-23T02:37:40.273Z","event":"task.updated","by":"Chris","id":"mo9bz7cf4h1","title":"Take attendance — mark MC/absent workers","status":"Done"}
+{"ts":"2026-04-23T02:37:51.308Z","event":"task.updated","by":"Chris","id":"mo7wjcoa4bo","title":"Take attendance — mark MC/absent workers","status":"Done"}
+{"ts":"2026-04-23T02:37:54.721Z","event":"task.updated","by":"Chris","id":"mo7wjcoa5y4","title":"Review today's fabrication priorities across all projects","status":"Done"}
+{"ts":"2026-04-23T02:37:56.529Z","event":"task.updated","by":"Chris","id":"mo7wjcoa6zr","title":"Check site requests inbox — acknowledge within 2 hours","status":"Done"}
+{"ts":"2026-04-23T02:37:58.208Z","event":"task.updated","by":"Chris","id":"mo7wjcoa8go","title":"Update FAB progress on all active items","status":"Done"}
+{"ts":"2026-04-23T02:37:59.459Z","event":"task.updated","by":"Chris","id":"mo7wjcoa9b8","title":"Confirm next-day material and delivery readiness","status":"Done"}
+{"ts":"2026-04-23T02:38:01.504Z","event":"task.updated","by":"Chris","id":"mo9bz7cf5nw","title":"Review today's fabrication priorities across all projects","status":"Done"}
+{"ts":"2026-04-23T02:38:02.670Z","event":"task.updated","by":"Chris","id":"mo9bz7cf5nw","title":"Review today's fabrication priorities across all projects","status":"Done"}
+{"ts":"2026-04-23T02:38:04.380Z","event":"task.updated","by":"Chris","id":"mo9bz7cf5nw","title":"Review today's fabrication priorities across all projects","status":"Done"}
+{"ts":"2026-04-23T02:38:04.584Z","event":"task.updated","by":"Chris","id":"mo9bz7cf5nw","title":"Review today's fabrication priorities across all projects","status":"Done"}
+{"ts":"2026-04-23T02:38:10.587Z","event":"task.updated","by":"Chris","id":"mo9bz7cf683","title":"Check site requests inbox — acknowledge within 2 hours","status":"Done"}
+{"ts":"2026-04-23T02:38:14.797Z","event":"task.updated","by":"Chris","id":"mo9bz7cf72f","title":"Assign workers to projects and plan transport","status":"Done"}
+{"ts":"2026-04-23T02:38:17.834Z","event":"task.updated","by":"Chris","id":"mo9bz7cf88i","title":"Update FAB progress on all active items","status":"Done"}
+{"ts":"2026-04-23T02:38:18.917Z","event":"task.updated","by":"Chris","id":"mo9bz7cf88i","title":"Update FAB progress on all active items","status":"Done"}
+{"ts":"2026-04-23T02:38:22.835Z","event":"task.updated","by":"Chris","id":"mo9bz7cf9el","title":"Confirm next-day material and delivery readiness","status":"Done"}
+{"ts":"2026-04-23T02:39:17.276Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T02:39:29.893Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T02:39:39.703Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T02:39:57.713Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:49:50.529Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:50:08.391Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:54:28.839Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:54:59.481Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:55:08.432Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:55:21.572Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:55:41.808Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:55:54.192Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:56:09.010Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:56:22.600Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:56:33.604Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:57:30.118Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:57:40.439Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:57:47.420Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:57:53.880Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:58:03.479Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:58:13.592Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:58:21.893Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:58:30.039Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:58:34.993Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:59:00.608Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:59:10.616Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:59:19.068Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T04:59:24.507Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:00:01.919Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:00:13.271Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:00:25.154Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:00:43.062Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:00:52.237Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:01:02.682Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:01:04.521Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T05:01:15.954Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-23T07:17:37.732Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T07:17:41.200Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T07:17:42.742Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T07:17:47.121Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T07:17:54.057Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T07:18:15.417Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T07:18:21.126Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T07:18:31.423Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-23T07:18:49.784Z","event":"site-request.created","by":"Lai Wei Xiang","id":"mob5hiuv4etv","item":"Block S - Auto Bollard Cova","requestedBy":"Lai Wei Xiang","fabIdx":0}
+{"ts":"2026-04-23T07:39:13.148Z","event":"fab.log.deleted","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","fabIdx":0,"item":"SP30 Fixed Bollard","logId":"log_mo7zzyzed6tm","deletedDelta":100,"newTotal":0,"photoUnlinked":true}
+{"ts":"2026-04-23T07:53:36.027Z","event":"auth.password-reset","by":"System","user":"Janessa"}
+{"ts":"2026-04-23T08:06:22.184Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:23.269Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:24.251Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:25.346Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:25.879Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:26.404Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:27.756Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:32.415Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:33.284Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:35.238Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:38.677Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:39.481Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:42.449Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:42.995Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:49.836Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:51.118Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:51.539Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:52.334Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:06:53.305Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:07:01.754Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:07:02.944Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:07:05.417Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:07:06.670Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:07:08.003Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:07:08.917Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T08:10:36.834Z","event":"fab.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)","itemIndex":0,"item":"SP30 FIXED","changes":[{"field":"fabDeadline","to":"2026-05-30"}]}
+{"ts":"2026-04-23T08:10:56.765Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-23T08:10:57.562Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-23T08:10:58.233Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"Verified","to":"Installed"}]}
+{"ts":"2026-04-23T08:10:58.517Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"Installed","to":"In Progress"}]}
+{"ts":"2026-04-23T08:11:30.688Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Lai Wei Xiang","previousStatus":"New","newStatus":"New","changes":{"notes":{"from":"","to":"Please Ensure All Lifting Items and Equipment Is All Accounted For"}}}
+{"ts":"2026-04-23T08:13:31.245Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T08:13:36.359Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T08:13:38.639Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T08:13:39.222Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T08:31:43.417Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T08:31:43.426Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776933103089","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T08:31:43.450Z","event":"site-request.created","by":"Scenario Tester","id":"mob839llxqd3","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T08:31:43.536Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776933103089","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T08:31:43.549Z","event":"claim.created","by":"Scenario Tester","id":"mob839odf9xv","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T08:31:43.558Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T08:31:43.806Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T08:35:54.159Z","event":"auth.password-reset","by":"System","user":"Lai Wei Xiang"}
+{"ts":"2026-04-23T08:41:31.005Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T08:41:31.010Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776933690695","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T08:41:31.025Z","event":"site-request.created","by":"Scenario Tester","id":"mob8fuz56592","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T08:41:31.106Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776933690695","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T08:41:31.116Z","event":"claim.created","by":"Scenario Tester","id":"mob8fv1olzwz","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T08:41:31.124Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T08:41:31.350Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T08:42:04.016Z","event":"install.log.photo.uploaded","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"logId":"log_mob8gk7lziy8"}
+{"ts":"2026-04-23T08:42:04.041Z","event":"install.log.created","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"item":"Block S - Auto Bollard Cova","logId":"log_mob8gk7lziy8","delta":1,"newTotal":1}
+{"ts":"2026-04-23T08:42:08.774Z","event":"install.log.photo.uploaded","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"logId":"log_mob8gnwyaujb"}
+{"ts":"2026-04-23T08:42:08.798Z","event":"install.log.created","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"item":"Block S - Auto Bollard Cova","logId":"log_mob8gnwyaujb","delta":1,"newTotal":2}
+{"ts":"2026-04-23T08:42:16.320Z","event":"install.log.deleted","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"logId":"log_mob8gnwyaujb","deletedDelta":1,"newTotal":1}
+{"ts":"2026-04-23T08:42:19.790Z","event":"install.log.deleted","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"logId":"log_mob8gk7lziy8","deletedDelta":1,"newTotal":0}
+{"ts":"2026-04-23T08:43:04.097Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"Installed","to":"In Progress"}]}
+{"ts":"2026-04-23T08:43:04.268Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"In Progress","to":"Not Started"}]}
+{"ts":"2026-04-23T09:01:41.972Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T09:01:41.979Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776934901676","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T09:01:42.006Z","event":"site-request.created","by":"Scenario Tester","id":"mob95tdhehua","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T09:01:42.095Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776934901676","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T09:01:42.120Z","event":"claim.created","by":"Scenario Tester","id":"mob95tgoal22","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T09:01:42.131Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T09:01:42.364Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T09:19:50.695Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T09:19:50.701Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776935990382","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T09:19:50.723Z","event":"site-request.created","by":"Scenario Tester","id":"mob9t5fmwyah","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T09:19:50.804Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776935990382","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T09:19:50.818Z","event":"claim.created","by":"Scenario Tester","id":"mob9t5ias33i","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T09:19:50.829Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T09:19:51.089Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T09:38:54.353Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T09:38:57.602Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T09:39:00.151Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)"}
+{"ts":"2026-04-23T09:46:54.480Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T09:46:54.485Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776937614164","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T09:46:54.501Z","event":"site-request.created","by":"Scenario Tester","id":"mobaryclv56m","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T09:46:54.576Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776937614164","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T09:46:54.588Z","event":"claim.created","by":"Scenario Tester","id":"mobaryf00eh3","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T09:46:54.600Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T09:46:54.835Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T09:51:43.609Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T09:51:43.615Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776937903330","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T09:51:43.629Z","event":"site-request.created","by":"Scenario Tester","id":"mobay5fxvn27","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T09:51:43.705Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776937903330","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T09:51:43.717Z","event":"claim.created","by":"Scenario Tester","id":"mobay5icnb09","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T09:51:43.724Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T09:51:43.975Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T10:13:17.814Z","event":"task.acknowledged","by":"Ack Tester","id":"mobbpw1c4qx5","title":"ACK TEST TASK"}
+{"ts":"2026-04-23T10:13:17.818Z","event":"task.updated","by":"Ack Tester","id":"mobbpw1c4qx5","title":"ACK TEST TASK","status":"Pending"}
+{"ts":"2026-04-23T10:13:17.822Z","event":"task.deleted","by":"Ack Tester","id":"mobbpw1c4qx5","title":"ACK TEST TASK"}
+{"ts":"2026-04-23T10:16:21.600Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T10:16:21.605Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776939381290","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T10:16:21.621Z","event":"site-request.created","by":"Scenario Tester","id":"mobbttv9yl3g","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T10:16:21.698Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776939381290","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T10:16:21.712Z","event":"claim.created","by":"Scenario Tester","id":"mobbttxra5zf","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T10:16:21.720Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T10:16:21.971Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T10:16:21.978Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobbtty2iaol","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T10:16:54.592Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T10:16:54.597Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776939414313","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T10:16:54.616Z","event":"site-request.created","by":"Scenario Tester","id":"mobbujbs7fi0","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T10:16:54.713Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776939414313","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T10:16:54.729Z","event":"claim.created","by":"Scenario Tester","id":"mobbujex5hx5","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T10:16:54.736Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T10:16:54.965Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T10:16:54.969Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobbujf57gv7","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T10:19:05.080Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"logId":"log_mobbxc5eg7oy"}
+{"ts":"2026-04-23T10:19:05.819Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"logId":"log_mobbxcrdt3x4"}
+{"ts":"2026-04-23T10:19:06.260Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"logId":"log_mobbxd285v1g"}
+{"ts":"2026-04-23T10:19:06.583Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"logId":"log_mobbxdcmzvxt"}
+{"ts":"2026-04-23T10:19:07.090Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"logId":"log_mobbxdlwasz1"}
+{"ts":"2026-04-23T10:19:07.519Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"logId":"log_mobbxe0rkx33"}
+{"ts":"2026-04-23T10:19:07.869Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"logId":"log_mobbxec0jhpd"}
+{"ts":"2026-04-23T10:19:07.897Z","event":"install.log.created","by":"Jun Jie","projectId":"bd-25726","jobCode":"BD 25726","idx":0,"item":"Engineered bollard","logId":"log_mobbxc5eg7oy","delta":43,"newTotal":43,"step":"Bollard installation"}
+{"ts":"2026-04-23T10:22:44.753Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Dashboard","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"}}}
+{"ts":"2026-04-23T10:24:22.796Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Acknowledged","newStatus":"In Fabrication","changes":{"status":{"from":"Acknowledged","to":"In Fabrication"}}}
+{"ts":"2026-04-23T10:24:23.246Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Ready","changes":{"status":{"from":"In Fabrication","to":"Ready"}}}
+{"ts":"2026-04-23T10:24:23.759Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Ready","newStatus":"Delivered","changes":{"status":{"from":"Ready","to":"Delivered"}}}
+{"ts":"2026-04-23T10:24:29.254Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Delivered","newStatus":"Ready","changes":{"status":{"from":"Delivered","to":"Ready"}}}
+{"ts":"2026-04-23T10:24:35.190Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Ready","newStatus":"Delivered","changes":{"status":{"from":"Ready","to":"Delivered"}}}
+{"ts":"2026-04-23T10:24:38.792Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Delivered","newStatus":"Ready","changes":{"status":{"from":"Delivered","to":"Ready"}}}
+{"ts":"2026-04-23T10:57:51.742Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mobdb6nnqci9"}
+{"ts":"2026-04-23T10:57:51.762Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mobdb6nnqci9","delta":1,"newTotal":5}
+{"ts":"2026-04-23T10:59:02.787Z","event":"install.log.deleted","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mobdb6nnqci9","deletedDelta":1,"newTotal":4}
+{"ts":"2026-04-23T10:59:36.130Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"logId":"log_mobddfcpxi5e"}
+{"ts":"2026-04-23T10:59:36.148Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":0,"item":"SP30 Fixed Bollard","logId":"log_mobddfcpxi5e","delta":6,"newTotal":10}
+{"ts":"2026-04-23T11:02:22.110Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":7,"logId":"log_mobdgze4agx5"}
+{"ts":"2026-04-23T11:02:22.163Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":7,"item":"Fencing","logId":"log_mobdgze4agx5","delta":1,"newTotal":1,"step":"Installation"}
+{"ts":"2026-04-23T11:03:05.488Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":5,"logId":"log_mobdhwyhjth7"}
+{"ts":"2026-04-23T11:03:05.581Z","event":"install.log.created","by":"Teo Meei Haw","projectId":"bd-25225-nakano-st-eng-dc","jobCode":"BD 25225- Nakano (ST Eng DC)","idx":5,"item":"Turnstile","logId":"log_mobdhwyhjth7","delta":2,"newTotal":2,"step":"turnstile installation"}
+{"ts":"2026-04-23T11:04:03.731Z","event":"task.updated","by":"Teo Meei Haw","id":"moarf21nr2c","title":"Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other","status":"Done"}
+{"ts":"2026-04-23T11:04:08.103Z","event":"task.updated","by":"Teo Meei Haw","id":"moarf21mqde","title":"Update installation progress on active projects","status":"Done"}
+{"ts":"2026-04-23T11:04:10.949Z","event":"task.updated","by":"Teo Meei Haw","id":"mo9bz7cir4k","title":"Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other","status":"Done"}
+{"ts":"2026-04-23T11:04:13.112Z","event":"task.updated","by":"Teo Meei Haw","id":"mo9bz7ciqxt","title":"Update installation progress on active projects","status":"Done"}
+{"ts":"2026-04-23T11:04:16.396Z","event":"task.updated","by":"Teo Meei Haw","id":"mo9bz7cip0h","title":"Check factory readiness for items needed this week","status":"Done"}
+{"ts":"2026-04-23T11:04:19.320Z","event":"task.updated","by":"Teo Meei Haw","id":"mo7wjcobokw","title":"Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other","status":"Done"}
+{"ts":"2026-04-23T11:04:21.573Z","event":"task.updated","by":"Teo Meei Haw","id":"mo7wjcobn0k","title":"Update installation progress on active projects","status":"Done"}
+{"ts":"2026-04-23T11:44:01.193Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mo9dzd0x20ad","actor":"Chris","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"}}}
+{"ts":"2026-04-23T11:44:01.218Z","event":"notify.delivery-acknowledged","by":"Lai Wei Xiang","requestedBy":"Teo Meei Haw","item":"gate 2 sliding gate","projectJobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-23T11:44:03.371Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mo9dzd0x20ad","actor":"Chris","previousStatus":"Acknowledged","newStatus":"New","changes":{"status":{"from":"Acknowledged","to":"New"}}}
+{"ts":"2026-04-23T11:44:04.808Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Ready","newStatus":"Delivered","changes":{"status":{"from":"Ready","to":"Delivered"}}}
+{"ts":"2026-04-23T11:44:08.541Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Delivered","newStatus":"Ready","changes":{"status":{"from":"Delivered","to":"Ready"}}}
+{"ts":"2026-04-23T11:52:55.975Z","event":"auth.password-reset","by":"System","user":"Alex Mac"}
+{"ts":"2026-04-23T11:53:03.476Z","event":"auth.password-reset","by":"System","user":"Alex Mac"}
+{"ts":"2026-04-23T11:53:05.907Z","event":"auth.password-reset","by":"System","user":"Alex Mac"}
+{"ts":"2026-04-23T11:53:31.412Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Ready","newStatus":"In Fabrication","changes":{"status":{"from":"Ready","to":"In Fabrication"}}}
+{"ts":"2026-04-23T11:53:32.232Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Acknowledged","changes":{"status":{"from":"In Fabrication","to":"Acknowledged"}}}
+{"ts":"2026-04-23T11:53:32.835Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Acknowledged","newStatus":"New","changes":{"status":{"from":"Acknowledged","to":"New"}}}
+{"ts":"2026-04-23T12:45:01.537Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Site Visit"}
+{"ts":"2026-04-23T12:45:02.519Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mo9k8kl01nzk","stage":"Enquiry"}
+{"ts":"2026-04-23T13:10:31.437Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T13:10:31.442Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776949831130","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T13:10:31.459Z","event":"site-request.created","by":"Scenario Tester","id":"mobi1t0jkorq","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T13:10:31.537Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776949831130","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T13:10:31.550Z","event":"claim.created","by":"Scenario Tester","id":"mobi1t32umk8","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T13:10:31.559Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T13:10:31.788Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T13:10:31.793Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobi1t3eew3t","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T13:21:10.298Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T13:21:10.303Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776950470028","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T13:21:10.314Z","event":"site-request.created","by":"Scenario Tester","id":"mobifhyinjzn","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T13:21:10.387Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776950470028","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T13:21:10.397Z","event":"claim.created","by":"Scenario Tester","id":"mobifi0tdvru","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T13:21:10.403Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T13:21:10.625Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T13:21:10.628Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobifi10s8z6","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T13:22:44.746Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T13:22:44.752Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776950564423","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T13:22:44.771Z","event":"site-request.created","by":"Scenario Tester","id":"mobihiub1g9r","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T13:22:44.848Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776950564423","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T13:22:44.864Z","event":"claim.created","by":"Scenario Tester","id":"mobihiwwdj8x","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T13:22:44.877Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T13:22:45.112Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T13:22:45.116Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobihixb7ovw","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T13:39:07.438Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T13:39:07.446Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776951547112","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T13:39:07.470Z","event":"site-request.created","by":"Scenario Tester","id":"mobj2l3h5ljt","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T13:39:07.550Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776951547112","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T13:39:07.566Z","event":"claim.created","by":"Scenario Tester","id":"mobj2l66low1","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T13:39:07.577Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T13:39:07.831Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T13:39:07.836Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobj2l6kb8gt","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T13:49:57.797Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T13:49:57.802Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776952197496","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T13:49:57.819Z","event":"site-request.created","by":"Scenario Tester","id":"mobjgiwrimx6","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T13:49:57.896Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776952197496","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T13:49:57.912Z","event":"claim.created","by":"Scenario Tester","id":"mobjgizbhjq8","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T13:49:57.919Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T13:49:58.181Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T13:49:58.187Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobjgizlw2mq","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T13:59:17.234Z","event":"sales.lead.from-email","by":"Lai Wei Xiang","oppId":"opp-mobjsik12xum","from":"meiyan.how@tateng.com.sg","subject":"RE: PO 00454/TE for  PR250-BD25526 -Parry Avenue","mailbox":"enquiry@laiyewseng.com.sg"}
+{"ts":"2026-04-23T13:59:19.276Z","event":"sales.lead.from-email","by":"Lai Wei Xiang","oppId":"opp-mobjsk4s9478","from":"coolnexionsales@gmail.com","subject":"Re: Quotation - boss room & level 2","mailbox":"enquiry@laiyewseng.com.sg"}
+{"ts":"2026-04-23T14:05:56.107Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T14:05:56.112Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776953155805","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T14:05:56.127Z","event":"site-request.created","by":"Scenario Tester","id":"mobk12ce4z0a","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T14:05:56.204Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776953155805","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T14:05:56.217Z","event":"claim.created","by":"Scenario Tester","id":"mobk12ex8i5z","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T14:05:56.225Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T14:05:56.455Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T14:05:56.461Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobk12f7mywl","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T14:08:23.151Z","event":"sales.attachments.fetched","by":"Lai Wei Xiang","oppId":"opp-mobjsk4s9478","count":1,"files":["C20260244Q-RR.pdf"]}
+{"ts":"2026-04-23T14:08:28.497Z","event":"sales.attachments.fetched","by":"Lai Wei Xiang","oppId":"opp-mobjsik12xum","count":1,"files":["image001.png"]}
+{"ts":"2026-04-23T14:11:59.972Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T14:11:59.978Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776953519664","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T14:11:59.996Z","event":"site-request.created","by":"Scenario Tester","id":"mobk8v3wy529","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T14:12:00.076Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776953519664","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T14:12:00.089Z","event":"claim.created","by":"Scenario Tester","id":"mobk8v6hxw1j","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T14:12:00.097Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T14:12:00.344Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T14:12:00.349Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobk8v6r3g5x","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T14:13:45.348Z","event":"sales.lead.from-email","by":"Lai Wei Xiang","oppId":"opp-mobkb4ecmkdz","from":"SESAMiCustcare@sesami.com","subject":"RFQ Biz@lert Notification for 2026/00233","mailbox":"enquiry@laiyewseng.com.sg"}
+{"ts":"2026-04-23T14:31:54.054Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T14:31:54.060Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776954713691","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T14:31:54.078Z","event":"site-request.created","by":"Scenario Tester","id":"mobkyggt66ja","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T14:31:54.163Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776954713691","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T14:31:54.179Z","event":"claim.created","by":"Scenario Tester","id":"mobkygjmqdz6","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T14:31:54.186Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T14:31:54.414Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T14:31:54.420Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobkygjwvkv1","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T14:39:16.190Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T14:39:16.197Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776955155877","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T14:39:16.215Z","event":"site-request.created","by":"Scenario Tester","id":"mobl7xmfuxci","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T14:39:16.291Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776955155877","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T14:39:16.303Z","event":"claim.created","by":"Scenario Tester","id":"mobl7xovtjit","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T14:39:16.309Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T14:39:16.546Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T14:39:16.552Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobl7xp3j764","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T14:44:29.577Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T14:44:29.583Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776955469250","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T14:44:29.600Z","event":"site-request.created","by":"Scenario Tester","id":"moblenfkgf8r","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T14:44:29.678Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776955469250","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T14:44:29.691Z","event":"claim.created","by":"Scenario Tester","id":"mobleni3p9e1","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T14:44:29.698Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T14:44:29.938Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T14:44:29.945Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moblenicv1y4","title":"Test ticket","reason":"test"}

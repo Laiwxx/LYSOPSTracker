@@ -275,7 +275,7 @@ async function run() {
 
   // 21 — Update opportunity stage
   if (testOppId) {
-    const r = await api('PUT', `/api/sales/opportunities/${testOppId}`, { stage: 'Quotation Sent' });
+    const r = await api('PUT', `/api/sales/opportunities/${testOppId}`, { stage: 'Quotation' });
     test('21. PUT opp stage → Quotation Sent', r.status === 200 && r.data?.stage === 'Quotation Sent', `status=${r.status} stage=${r.data?.stage}`);
   } else {
     test('21. PUT opp stage (skipped — no access)', true);
@@ -333,6 +333,13 @@ async function run() {
   if (testClaimId) await api('DELETE', `/api/claims/${testClaimId}`, { pin: TEST_ADMIN_PIN, reason: 'test' });
   if (testPRId) await api('DELETE', `/api/purchase-requisitions/${testPRId}`, { pin: TEST_ADMIN_PIN, reason: 'test' });
   if (testTicketId) await api('DELETE', `/api/tickets/${testTicketId}`, { pin: TEST_ADMIN_PIN, reason: 'test' });
+  // Clean up EOD logs from test user
+  try {
+    const eodFile = path.join(__dirname, '..', 'data', 'eod-logs.json');
+    const eodLogs = JSON.parse(fs.readFileSync(eodFile, 'utf8'));
+    const cleaned = eodLogs.filter(l => l.staffName !== TEST_NAME);
+    if (cleaned.length < eodLogs.length) fs.writeFileSync(eodFile, JSON.stringify(cleaned, null, 2));
+  } catch {}
   console.log('  Test data cleaned up.');
 
   // ── SUMMARY ──
@@ -343,4 +350,4 @@ async function run() {
   process.exit(failed > 0 ? 1 : 0);
 }
 
-run().catch(err => { console.error('Runner crashed:', err); cleanupCreds(); process.exit(1); });
+run().catch(err => { console.error('Runner crashed:', err); cleanup(); process.exit(1); });

@@ -12,8 +12,8 @@
     "quoteDate": null,
     "quoteExpiryDate": null,
     "source": "Cold Call",
-    "stage": "Enquiry",
-    "stageChangedAt": "2026-04-22T04:52:31.764Z",
+    "stage": "New Lead",
+    "stageChangedAt": "2026-04-23T12:45:02.518Z",
     "followUpDate": null,
     "assignedTo": "Janessa",
     "notes": "",
@@ -60,10 +60,156 @@
         "ts": "2026-04-22T04:52:31.764Z",
         "type": "stage-change",
         "note": "Won → Enquiry by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-23T12:45:01.536Z",
+        "type": "stage-change",
+        "note": "Enquiry → Site Visit by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-23T12:45:02.518Z",
+        "type": "stage-change",
+        "note": "Site Visit → Enquiry by Lai Wei Xiang"
       }
     ],
     "createdBy": "Lai Wei Xiang",
     "createdAt": "2026-04-22T04:36:14.004Z",
-    "updatedAt": "2026-04-22T04:58:52.383Z"
+    "updatedAt": "2026-04-23T12:45:02.518Z"
+  },
+  {
+    "id": "opp-mobjsik12xum",
+    "clientName": "Mei Yan How",
+    "contactPerson": "Mei Yan How",
+    "phone": "",
+    "email": "meiyan.how@tateng.com.sg",
+    "siteAddress": "",
+    "productType": "",
+    "estimatedValue": 0,
+    "quotationNo": "",
+    "quoteDate": null,
+    "quoteExpiryDate": null,
+    "source": "Email — enquiry@laiyewseng.com.sg",
+    "stage": "New Lead",
+    "stageChangedAt": "2026-04-23T13:59:17.233Z",
+    "followUpDate": null,
+    "assignedTo": "Janessa",
+    "notes": "RE: PO 00454/TE for  PR250-BD25526 -Parry Avenue",
+    "winLossReason": "",
+    "competitorInfo": "",
+    "convertedProjectId": null,
+    "followUps": [],
+    "nextFollowUpDate": null,
+    "fuSequence": 0,
+    "afuSequence": 0,
+    "qsAssigned": "",
+    "tenderDocUrls": [
+      "/uploads/sales/opp-mobjsik12xum/image001.png"
+    ],
+    "quotationFileUrl": null,
+    "activity": [
+      {
+        "ts": "2026-04-23T13:59:17.233Z",
+        "type": "created",
+        "note": "Lead created from email: \"RE: PO 00454/TE for  PR250-BD25526 -Parry Avenue\" from meiyan.how@tateng.com.sg (enquiry@laiyewseng.com.sg)"
+      },
+      {
+        "ts": "2026-04-23T14:08:28.497Z",
+        "type": "attachment",
+        "note": "📎 Fetched 1 file(s) from email: image001.png"
+      }
+    ],
+    "createdBy": "Lai Wei Xiang",
+    "createdAt": "2026-04-23T13:59:17.233Z",
+    "_sourceEmailId": "AAMkAGYwNjkwNjBmLWJmNjQtNDZhMC05OWU5LTIyNWEzNTBkNjE2MQBGAAAAAADtUQaiQAHYS719gMdp1WEFBwD3t-g12QxDRqtVgpz1lLWDAAAAAAEMAAD3t-g12QxDRqtVgpz1lLWDAAUexIRHAAA=",
+    "_sourceMailbox": "enquiry@laiyewseng.com.sg",
+    "updatedAt": "2026-04-23T14:08:28.497Z"
+  },
+  {
+    "id": "opp-mobjsk4s9478",
+    "clientName": "Coolnexion Pte Ltd",
+    "contactPerson": "Coolnexion Pte Ltd",
+    "phone": "",
+    "email": "coolnexionsales@gmail.com",
+    "siteAddress": "",
+    "productType": "",
+    "estimatedValue": 0,
+    "quotationNo": "",
+    "quoteDate": null,
+    "quoteExpiryDate": null,
+    "source": "Email — enquiry@laiyewseng.com.sg",
+    "stage": "New Lead",
+    "stageChangedAt": "2026-04-23T13:59:19.276Z",
+    "followUpDate": null,
+    "assignedTo": "Janessa",
+    "notes": "Re: Quotation - boss room & level 2",
+    "winLossReason": "",
+    "competitorInfo": "",
+    "convertedProjectId": null,
+    "followUps": [],
+    "nextFollowUpDate": null,
+    "fuSequence": 0,
+    "afuSequence": 0,
+    "qsAssigned": "",
+    "tenderDocUrls": [
+      "/uploads/sales/opp-mobjsk4s9478/C20260244Q-RR.pdf"
+    ],
+    "quotationFileUrl": null,
+    "activity": [
+      {
+        "ts": "2026-04-23T13:59:19.276Z",
+        "type": "created",
+        "note": "Lead created from email: \"Re: Quotation - boss room & level 2\" from coolnexionsales@gmail.com (enquiry@laiyewseng.com.sg)"
+      },
+      {
+        "ts": "2026-04-23T14:08:23.151Z",
+        "type": "attachment",
+        "note": "📎 Fetched 1 file(s) from email: C20260244Q-RR.pdf"
+      }
+    ],
+    "createdBy": "Lai Wei Xiang",
+    "createdAt": "2026-04-23T13:59:19.276Z",
+    "_sourceEmailId": "AAMkAGYwNjkwNjBmLWJmNjQtNDZhMC05OWU5LTIyNWEzNTBkNjE2MQBGAAAAAADtUQaiQAHYS719gMdp1WEFBwD3t-g12QxDRqtVgpz1lLWDAAAAAAEMAAD3t-g12QxDRqtVgpz1lLWDAAUexIQ-AAA=",
+    "_sourceMailbox": "enquiry@laiyewseng.com.sg",
+    "updatedAt": "2026-04-23T14:08:23.151Z"
+  },
+  {
+    "id": "opp-mobkb4ecmkdz",
+    "clientName": "Customer Care",
+    "contactPerson": "Customer Care",
+    "phone": "",
+    "email": "SESAMiCustcare@sesami.com",
+    "siteAddress": "",
+    "productType": "",
+    "estimatedValue": 0,
+    "quotationNo": "",
+    "quoteDate": null,
+    "quoteExpiryDate": null,
+    "source": "Email — enquiry@laiyewseng.com.sg",
+    "stage": "New Lead",
+    "stageChangedAt": "2026-04-23T14:13:45.348Z",
+    "followUpDate": null,
+    "assignedTo": "Janessa",
+    "notes": "RFQ Biz@lert Notification for 2026/00233",
+    "winLossReason": "",
+    "competitorInfo": "",
+    "convertedProjectId": null,
+    "followUps": [],
+    "nextFollowUpDate": null,
+    "fuSequence": 0,
+    "afuSequence": 0,
+    "qsAssigned": "",
+    "tenderDocUrls": [],
+    "quotationFileUrl": null,
+    "activity": [
+      {
+        "ts": "2026-04-23T14:13:45.348Z",
+        "type": "created",
+        "note": "Lead created from email: \"RFQ Biz@lert Notification for 2026/00233\" from SESAMiCustcare@sesami.com (enquiry@laiyewseng.com.sg)"
+      }
+    ],
+    "createdBy": "Lai Wei Xiang",
+    "createdAt": "2026-04-23T14:13:45.348Z",
+    "_sourceEmailId": "AAMkAGYwNjkwNjBmLWJmNjQtNDZhMC05OWU5LTIyNWEzNTBkNjE2MQBGAAAAAADtUQaiQAHYS719gMdp1WEFBwD3t-g12QxDRqtVgpz1lLWDAAAAAAEMAAD3t-g12QxDRqtVgpz1lLWDAAUexIQ1AAA=",
+    "_sourceMailbox": "enquiry@laiyewseng.com.sg"
   }
 ]

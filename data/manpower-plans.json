@@ -209,6 +209,13 @@
           "projectName": "T232 - Rapid Transit System",
           "location": "",
           "notes": ""
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "serangoon",
+          "notes": ""
         }
       },
       "wi-kannaiyan-jaishankar": {
@@ -216,6 +223,13 @@
           "type": "Installation",
           "projectId": "bd-22724-poc-t232-woodland",
           "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": ""
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "pj10025-ica-kallang",
+          "projectName": "Column Jacketing / Stainless Steel Bench - ICA Kallang",
           "location": "",
           "notes": ""
         }
@@ -227,6 +241,13 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "City gate"
+        },
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "city gate"
         }
       },
       "wm-chin-poh-fatt": {
@@ -236,6 +257,13 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "City gate"
+        },
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "city gate"
         }
       },
       "wm-lin-chee-cheong": {
@@ -245,10 +273,24 @@
           "projectName": "T232 - Rapid Transit System",
           "location": "",
           "notes": "Auto bollard"
+        },
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Auto bollard"
         }
       },
       "wi-palanisamy-manikandan": {
         "wed": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        },
+        "thu": {
           "type": "Installation",
           "projectId": "bd-25225-nakano-st-eng-dc",
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
@@ -263,6 +305,13 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "Blocker"
+        },
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
         }
       },
       "ss-tai-nyur-hing": {
@@ -272,6 +321,13 @@
           "projectName": "DE189",
           "location": "",
           "notes": "Hole marking and drilling"
+        },
+        "thu": {
+          "type": "Installation",
+          "projectId": "pj10025-ica-kallang",
+          "projectName": "Column Jacketing / Stainless Steel Bench - ICA Kallang",
+          "location": "",
+          "notes": ""
         }
       },
       "ss-chin-poh-hoon": {
@@ -281,19 +337,195 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "Blocker"
+        },
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
+        }
+      },
+      "wi-natarasan-sivakumar": {
+        "wed": {
+          "type": "Driver",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        },
+        "thu": {
+          "type": "Driver",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wi-mariyappan-malayandi": {
+        "wed": {
+          "type": "Driver",
+          "projectId": "pj10025-ica-kallang",
+          "projectName": "Column Jacketing / Stainless Steel Bench - ICA Kallang",
+          "location": "",
+          "notes": ""
+        },
+        "thu": {
+          "type": "Driver",
+          "projectId": "pj10025-ica-kallang",
+          "projectName": "Column Jacketing / Stainless Steel Bench - ICA Kallang",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920250105": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920260486": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920267481": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920273939": {
+        "thu": {
+          "type": "Fabrication",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920283526": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920293657": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920301943": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920310103": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "supply-1776920315040": {
+        "thu": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "serangoon",
+          "notes": ""
         }
       }
     },
     "supplyWorkers": [
       {
-        "id": "supply-1776523111944",
-        "name": "Batman",
-        "company": "Bin",
+        "id": "supply-1776920250105",
+        "name": "Selvarasu Govindan",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920260486",
+        "name": "Palani Anandhakumar",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920267481",
+        "name": "Sivanantham",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920273939",
+        "name": "Irudhayaraj",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920283526",
+        "name": "Thangaraj",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920293657",
+        "name": "Pavadaisamy Ragu",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920301943",
+        "name": "Kumaraguru Kanagasabai",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920310103",
+        "name": "Jeyraman Sasikumar",
+        "company": "",
+        "role": "Worker",
+        "code": "EXT"
+      },
+      {
+        "id": "supply-1776920315040",
+        "name": "Ammasi Thavamani",
+        "company": "",
         "role": "Worker",
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-22T02:34:21.301Z"
+    "savedAt": "2026-04-23T05:01:15.954Z"
   },
   {
     "weekStart": "2026-06-01",

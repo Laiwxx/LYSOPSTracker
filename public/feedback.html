@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feedback — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776830235">
+  <link rel="stylesheet" href="/css/style.css?v=1776929410">
   <style>
     .fb-form {
       background: var(--bg2);
@@ -160,6 +160,99 @@
     }
     .del-ticket-btn:hover { background: rgba(226,68,92,0.2); }
 
+    /* Comments */
+    .ticket-comments {
+      border-top: 1px solid var(--border);
+      margin-top: 10px;
+      padding-top: 10px;
+    }
+    .ticket-comments-toggle {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px 0;
+      font-family: inherit;
+    }
+    .ticket-comments-toggle:hover { color: var(--text); }
+    .comment-list { margin-top: 8px; }
+    .comment-item {
+      font-size: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .comment-author {
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .comment-time {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    .comment-del {
+      font-size: 10px;
+      color: var(--red);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0 2px;
+      margin-left: auto;
+      font-family: inherit;
+      opacity: 0.6;
+      min-width: 32px;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .comment-del:hover { opacity: 1; }
+    .comment-text {
+      color: var(--text);
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+    .comment-add {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      align-items: flex-start;
+    }
+    .comment-add textarea {
+      flex: 1;
+      font-size: 12px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      resize: vertical;
+      min-height: 32px;
+      font-family: inherit;
+      line-height: 1.4;
+    }
+    .comment-add-btn {
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .comment-add-btn:disabled { opacity: 0.5; cursor: default; }
+
     /* Toast */
     #fb-toast {
       position: fixed;
@@ -278,7 +371,7 @@
 
 <div id="fb-toast"></div>
 
-<script src="/js/utils.js?v=1776830235"></script>
+<script src="/js/utils.js?v=1776929410"></script>
 <script>
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -335,6 +428,23 @@ async function loadStaff() {
   });
 }
 
+let _currentUser = '';
+
+function renderComments(ticket) {
+  const comments = ticket.comments || [];
+  if (!comments.length) return '<div style="font-size:11px;color:var(--text-muted);padding:4px 0;">No comments yet.</div>';
+  return comments.map(c => `
+    <div class="comment-item">
+      <div class="comment-header">
+        <span class="comment-author">${esc(c.author)}</span>
+        <span class="comment-time">${formatDate(c.createdAt)}</span>
+        <button class="comment-del" data-tid="${esc(ticket.id)}" data-cid="${esc(c.id)}" title="Delete comment">✕</button>
+      </div>
+      <div class="comment-text">${esc(c.text)}</div>
+    </div>
+  `).join('');
+}
+
 // ── Render ticket list ─────────────────────────────────
 function renderTickets(tickets) {
   document.getElementById('ticket-count').textContent = tickets.length;
@@ -372,6 +482,18 @@ function renderTickets(tickets) {
           <option value="High"   ${t.priority === 'High'   ? 'selected' : ''}>High</option>
         </select>
         <button class="del-ticket-btn" data-id="${esc(t.id)}">Delete</button>
+      </div>
+      <div class="ticket-comments" data-id="${esc(t.id)}">
+        <button class="ticket-comments-toggle" data-id="${esc(t.id)}">
+          💬 Comments${(t.comments && t.comments.length) ? ' (' + t.comments.length + ')' : ''}
+        </button>
+        <div class="comment-thread" data-id="${esc(t.id)}" style="display:none;">
+          <div class="comment-list">${renderComments(t)}</div>
+          <div class="comment-add">
+            <textarea class="comment-input" data-id="${esc(t.id)}" rows="1" placeholder="Add a comment…"></textarea>
+            <button class="comment-add-btn" data-id="${esc(t.id)}">Post</button>
+          </div>
+        </div>
       </div>
     </div>
   `).join('');
@@ -424,6 +546,53 @@ function renderTickets(tickets) {
       loadTickets();
     });
   });
+
+  // Comment toggle
+  el.querySelectorAll('.ticket-comments-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const thread = el.querySelector('.comment-thread[data-id="' + btn.dataset.id + '"]');
+      if (thread) thread.style.display = thread.style.display === 'none' ? '' : 'none';
+    });
+  });
+
+  // Post comment
+  el.querySelectorAll('.comment-add-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const tid = btn.dataset.id;
+      const input = el.querySelector('.comment-input[data-id="' + tid + '"]');
+      const text = input.value.trim();
+      if (!text) return;
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/tickets/' + tid + '/comments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, author: _currentUser || 'Unknown' })
+        });
+        if (!res.ok) { showToast('Comment failed', 'var(--red)'); return; }
+        showToast('Comment added');
+        loadTickets();
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+
+  // Delete comment
+  el.querySelectorAll('.comment-del').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const result = await confirmDelete('Delete this comment?', btn.closest('.comment-item')?.querySelector('.comment-text')?.textContent || '');
+      if (!result) return;
+      const res = await fetch('/api/tickets/' + btn.dataset.tid + '/comments/' + btn.dataset.cid, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: result.reason })
+      });
+      if (!res.ok) { showToast('Delete failed', 'var(--red)'); return; }
+      showToast('Comment deleted', 'var(--red)');
+      loadTickets();
+    });
+  });
 }
 
 // ── Load tickets ───────────────────────────────────────
@@ -471,8 +640,10 @@ document.getElementById('fb-submit').addEventListener('click', async () => {
 });
 
 // ── Init ───────────────────────────────────────────────
-loadStaff();
-loadTickets();
+fetch('/api/auth/me').then(r => r.json()).then(d => { _currentUser = d.name || ''; }).catch(() => {}).finally(() => {
+  loadStaff();
+  loadTickets();
+});
 </script>
 <script src="/js/nav.js"></script>
 </body>

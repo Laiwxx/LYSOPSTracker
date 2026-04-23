@@ -269,7 +269,18 @@ const DO_UPLOADS_DIR = path.join(UPLOADS_DIR, 'delivery-orders');
 if (!fs.existsSync(DO_UPLOADS_DIR)) fs.mkdirSync(DO_UPLOADS_DIR, { recursive: true });
 const uploadDO = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, DO_UPLOADS_DIR),
+    destination: (req, file, cb) => {
+      // Organize into project subfolders when projectCode is provided
+      const projectCode = (req.body.projectCode || '').trim();
+      if (projectCode) {
+        const safeCode = path.basename(projectCode);
+        const projectDir = path.join(DO_UPLOADS_DIR, safeCode);
+        if (!projectDir.startsWith(path.resolve(DO_UPLOADS_DIR))) return cb(new Error('Invalid project code'));
+        if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+        return cb(null, projectDir);
+      }
+      cb(null, DO_UPLOADS_DIR);
+    },
     filename: (req, file, cb) => {
       const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       cb(null, `${Date.now()}-${safe}`);
@@ -285,9 +296,22 @@ const uploadDO = multer({
 // ── PO Document upload ──────────────────────────────────────────────────────
 const PO_DOCS_DIR = path.join(UPLOADS_DIR, 'po-docs');
 if (!fs.existsSync(PO_DOCS_DIR)) fs.mkdirSync(PO_DOCS_DIR, { recursive: true });
+const SALES_UPLOADS_DIR = path.join(UPLOADS_DIR, 'sales');
+if (!fs.existsSync(SALES_UPLOADS_DIR)) fs.mkdirSync(SALES_UPLOADS_DIR, { recursive: true });
 const uploadPODoc = multer({
   storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, PO_DOCS_DIR),
+    destination: (req, file, cb) => {
+      // Organize into project subfolders when projectCode is provided
+      const projectCode = (req.body.projectCode || '').trim();
+      if (projectCode) {
+        const safeCode = path.basename(projectCode);
+        const projectDir = path.join(PO_DOCS_DIR, safeCode);
+        if (!projectDir.startsWith(path.resolve(PO_DOCS_DIR))) return cb(new Error('Invalid project code'));
+        if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+        return cb(null, projectDir);
+      }
+      cb(null, PO_DOCS_DIR);
+    },
     filename: (req, file, cb) => {
       const safe = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
       cb(null, `${Date.now()}-${safe}`);
@@ -300,8 +324,10 @@ const uploadPODoc = multer({
 app.post('/api/upload-po-doc', uploadPODoc.single('file'), (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No PDF uploaded' });
-    const filePath = `/uploads/po-docs/${req.file.filename}`;
-    logActivity('po.doc.uploaded', { prId: req.body.prId || null, filename: req.file.filename });
+    const projectCode = (req.body.projectCode || '').trim();
+    const subPath = projectCode ? `${path.basename(projectCode)}/` : '';
+    const filePath = `/uploads/po-docs/${subPath}${req.file.filename}`;
+    logActivity('po.doc.uploaded', { prId: req.body.prId || null, projectCode: projectCode || null, filename: req.file.filename });
     res.json({ filePath, filename: req.file.filename });
   } catch (e) { logError('route.post.upload-po-doc', e); res.status(500).json({ error: 'Upload failed' }); }
 });
@@ -315,9 +341,11 @@ app.post('/api/delivery-orders', uploadDO.single('file'), (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
     const dos = readDOs();
+    const doProjectCode = (req.body.projectCode || '').trim();
+    const doSubPath = doProjectCode ? `${path.basename(doProjectCode)}/` : '';
     const entry = {
       id: 'do_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      filename: 'delivery-orders/' + req.file.filename,
+      filename: `delivery-orders/${doSubPath}${req.file.filename}`,
       originalName: req.file.originalname,
       fileSize: req.file.size,
       prId: req.body.prId || null,
@@ -875,7 +903,9 @@ app.post('/api/tickets', postRateLimit, (req, res) => {
     res.json(ticket);
 
     // Write feedback as MD file for Claude to pick up next session
-    try {
+    // Skip for test accounts to avoid polluting memory
+    if (ticket.submittedBy === 'Scenario Tester') { /* skip memory write for tests */ }
+    else try {
       const memDir = path.join(__dirname, '..', '.claude', 'projects', '-home-ubuntu-ops-tracker', 'memory');
       const memFile = path.join(memDir, `feedback_${ticket.id}.md`);
       const memIndex = path.join(memDir, 'MEMORY.md');
@@ -939,14 +969,57 @@ app.put('/api/tickets/:id', (req, res) => {
   } catch (e) { logError('route.put.tickets', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
+// POST /api/tickets/:id/comments — add a comment to a ticket
+app.post('/api/tickets/:id/comments', postRateLimit, (req, res) => {
+  try {
+    const tickets = readTickets();
+    const idx = tickets.findIndex(t => t.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Ticket not found' });
+    const text = sanitizeStr(req.body.text, 2000);
+    const author = sanitizeStr(req.body.author, 100);
+    if (!text || !author) return res.status(400).json({ error: 'text and author are required' });
+    if (!Array.isArray(tickets[idx].comments)) tickets[idx].comments = [];
+    const comment = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      text,
+      author,
+      createdAt: new Date().toISOString(),
+    };
+    tickets[idx].comments.push(comment);
+    writeTickets(tickets);
+    res.json(comment);
+  } catch (e) { logError('route.post.ticket-comment', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// DELETE /api/tickets/:id/comments/:commentId — remove a comment
+app.delete('/api/tickets/:id/comments/:commentId', (req, res) => {
+  try {
+    const tickets = readTickets();
+    const idx = tickets.findIndex(t => t.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Ticket not found' });
+    if (!Array.isArray(tickets[idx].comments)) return res.status(404).json({ error: 'Comment not found' });
+    const cIdx = tickets[idx].comments.findIndex(c => c.id === req.params.commentId);
+    if (cIdx === -1) return res.status(404).json({ error: 'Comment not found' });
+    // Only the comment author can delete their own comment
+    const currentUser = req.authUser || (req.session && req.session.user);
+    const comment = tickets[idx].comments[cIdx];
+    if (comment.author !== currentUser) return res.status(403).json({ error: 'You can only delete your own comments' });
+    const removedComment = tickets[idx].comments.splice(cIdx, 1)[0];
+    writeTickets(tickets);
+    logActivity('ticket.comment.deleted', { ticketId: req.params.id, commentId: req.params.commentId, author: removedComment.author, reason: sanitizeStr(req.body?.reason, 500) || '' });
+    res.json({ ok: true });
+  } catch (e) { logError('route.delete.ticket-comment', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
 // DELETE /api/tickets/:id — remove a ticket
 app.delete('/api/tickets/:id', (req, res) => {
   try {
     const tickets = readTickets();
     const idx = tickets.findIndex(t => t.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Ticket not found' });
-    tickets.splice(idx, 1);
+    const removed = tickets.splice(idx, 1)[0];
     writeTickets(tickets);
+    logActivity('ticket.deleted', { ticketId: removed.id, title: removed.title, reason: sanitizeStr(req.body?.reason, 500) || '' });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.tickets', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -1313,12 +1386,17 @@ app.post('/api/projects/:id/upload', uploadImageOrPdf.single('file'), (req, res)
 app.get('/api/summary', (req, res) => {
   try {
   const projects = readProjects().map(p => deriveFields(p));
+  const activeProjects = projects.filter(p => p.lifecycle === 'active');
   const summary = {
     total: projects.length,
+    activeCount: activeProjects.length,
+    dlpCount: projects.filter(p => p.lifecycle === 'dlp').length,
+    settledCount: projects.filter(p => p.lifecycle === 'settled').length,
+    archivedCount: projects.filter(p => p.lifecycle === 'archived').length,
     completed: projects.filter(p => p.status === 'Completed').length,
-    onTrack: projects.filter(p => p.status === 'On Track').length,
-    delayed: projects.filter(p => p.status === 'Delayed').length,
-    onHold: projects.filter(p => p.status === 'On Hold').length,
+    onTrack: activeProjects.filter(p => p.status === 'On Track').length,
+    delayed: activeProjects.filter(p => p.status === 'Delayed').length,
+    onHold: activeProjects.filter(p => p.status === 'On Hold').length,
     totalContract: projects.reduce((s, p) => s + (p.contractValue || 0), 0),
     totalVO: projects.reduce((s, p) => s + (p.voValue || 0), 0),
     totalClaimed: projects.reduce((s, p) => s + (p.paidAmount || 0), 0),
@@ -1335,13 +1413,17 @@ app.get('/api/summary', (req, res) => {
     ? ((summary.totalClaimed / summary.totalContract) * 100).toFixed(1)
     : '0.0';
   summary.outstanding = (summary.totalContract + summary.totalVO) - summary.totalClaimed;
-  const active = projects.filter(p => p.status !== 'Completed');
-  summary.avgFabPct = active.length
-    ? Math.round(active.reduce((s, p) => s + (parseFloat(p.fabPercent) || 0), 0) / active.length)
+  summary.avgFabPct = activeProjects.length
+    ? Math.round(activeProjects.reduce((s, p) => s + (parseFloat(p.fabPercent) || 0), 0) / activeProjects.length)
     : 0;
-  summary.avgInstallPct = active.length
-    ? Math.round(active.reduce((s, p) => s + (parseFloat(p.installPercent) || 0), 0) / active.length)
+  summary.avgInstallPct = activeProjects.length
+    ? Math.round(activeProjects.reduce((s, p) => s + (parseFloat(p.installPercent) || 0), 0) / activeProjects.length)
     : 0;
+  // DLP projects approaching expiry (within 30 days)
+  const dlpProjects = projects.filter(p => p.lifecycle === 'dlp');
+  const in30d = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+  summary.dlpExpiringSoon = dlpProjects.filter(p => p.dlpEndDate && p.dlpEndDate <= in30d).length;
+  summary.totalRetentionHeld = dlpProjects.reduce((s, p) => s + (p.retentionAmount || 0), 0);
   res.json(summary);
   } catch (e) { logError('route.get.summary', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -1349,11 +1431,11 @@ app.get('/api/summary', (req, res) => {
 // --- API: Action Required (Pending/In Progress stages across all projects) ---
 app.get('/api/actions', (req, res) => {
   try {
-    const projects = readProjects();
+    const projects = readProjects().map(p => deriveFields(p));
     const now = Date.now();
     const actions = [];
     for (const p of projects) {
-      if (p.status === 'Completed') continue;
+      if (p.lifecycle !== 'active') continue;
       for (const stage of (p.stages || [])) {
         if (stage.status === 'Pending' || stage.status === 'In Progress') {
           const changedAt = stage.statusChangedAt ? new Date(stage.statusChangedAt).getTime() : now;
@@ -1381,7 +1463,13 @@ app.get('/api/actions', (req, res) => {
 // --- API: List all projects (summary fields) ---
 app.get('/api/projects', (req, res) => {
   try {
-    const projects = readProjects().map(p => deriveFields(p));
+    let projects = readProjects().map(p => deriveFields(p));
+    // ?lifecycle=active (default for ops pages), ?lifecycle=all, or ?lifecycle=dlp,settled
+    const lcFilter = req.query.lifecycle;
+    if (lcFilter && lcFilter !== 'all') {
+      const allowed = lcFilter.split(',').map(s => s.trim());
+      projects = projects.filter(p => allowed.includes(p.lifecycle));
+    }
     // ?full=true returns complete project objects (used by installation page)
     if (req.query.full === 'true') return res.json(projects);
     const summary = projects.map(p => ({
@@ -1392,6 +1480,7 @@ app.get('/api/projects', (req, res) => {
       contractValue: p.contractValue,
       voValue: p.voValue,
       status: p.status,
+      lifecycle: p.lifecycle,
       fabPercent: p.fabPercent,
       installPercent: p.installPercent,
       latestNotes: p.latestNotes,
@@ -1399,7 +1488,11 @@ app.get('/api/projects', (req, res) => {
       client: p.client,
       currentStage: p.currentStage,
       actionBy: p.actionBy,
-      endDate: p.endDate
+      endDate: p.endDate,
+      handoverDate: p.handoverDate,
+      dlpEndDate: p.dlpEndDate,
+      retentionAmount: p.retentionAmount,
+      retentionReleased: p.retentionReleased
     }));
     res.json(summary);
   } catch (e) { logError('route.get.projects', e); res.status(500).json({ error: 'Internal server error' }); }
@@ -1574,7 +1667,36 @@ function deriveStages(p) {
 
 // ── Derive computed fields from live sub-arrays ──────────────────────────────
 // Call this on every project before saving to keep derived fields accurate.
+// Valid lifecycle states for projects
+const VALID_LIFECYCLES = ['active', 'dlp', 'settled', 'archived'];
+
 function deriveFields(p) {
+  // Ensure lifecycle field exists (default to 'active')
+  if (!p.lifecycle || !VALID_LIFECYCLES.includes(p.lifecycle)) p.lifecycle = 'active';
+  // Ensure DLP/retention fields exist
+  if (p.handoverDate === undefined)         p.handoverDate = null;
+  if (p.dlpMonths === undefined)            p.dlpMonths = 12;
+  if (p.dlpEndDate === undefined)           p.dlpEndDate = null;
+  if (p.retentionPercent === undefined)     p.retentionPercent = 5;
+  if (p.retentionAmount === undefined)      p.retentionAmount = null;
+  if (p.retentionReleased === undefined)    p.retentionReleased = false;
+  if (p.retentionReleasedDate === undefined) p.retentionReleasedDate = null;
+  if (p.finalAccountDate === undefined)     p.finalAccountDate = null;
+  if (p.archivedDate === undefined)         p.archivedDate = null;
+
+  // Auto-derive retention amount from contract value
+  const cv = parseFloat(p.contractValue) || 0;
+  const vo = parseFloat(p.voValue) || 0;
+  const rp = parseFloat(p.retentionPercent) || 5;
+  p.retentionAmount = Math.round((cv + vo) * rp / 100 * 100) / 100;
+
+  // Auto-derive DLP end date from handover date + months
+  if (p.handoverDate && p.dlpMonths) {
+    const hd = new Date(p.handoverDate);
+    hd.setMonth(hd.getMonth() + (parseInt(p.dlpMonths, 10) || 12));
+    p.dlpEndDate = hd.toISOString().slice(0, 10);
+  }
+
   // fabPercent — from fabrication array (exclude parent container rows)
   const fabRows  = p.fabrication  || [];
   const fabRowsForPct = fabRows.filter(r => !r.isMechanicalParent);
@@ -1775,6 +1897,98 @@ app.put('/api/projects/:id', async (req, res) => {
   } catch (e) { logError('route.put.projects', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
 
+// --- API: Project lifecycle transition ---
+// POST /api/projects/:id/lifecycle — change lifecycle state
+// Valid transitions: active→dlp, dlp→settled, settled→archived, settled→dlp (reopen)
+// Body: { lifecycle, handoverDate?, dlpMonths?, reason? }
+app.post('/api/projects/:id/lifecycle', async (req, res) => {
+  try {
+    if (!await requireAdminAuth(req, res)) return;
+    const projects = readProjects();
+    const idx = projects.findIndex(p => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Project not found' });
+    const p = projects[idx];
+    deriveFields(p);
+
+    const target = sanitizeStr(req.body.lifecycle, 20);
+    if (!VALID_LIFECYCLES.includes(target)) return res.status(400).json({ error: 'Invalid lifecycle: ' + target });
+
+    const current = p.lifecycle || 'active';
+    const ALLOWED = {
+      'active':   ['dlp'],
+      'dlp':      ['settled'],
+      'settled':  ['archived', 'dlp'],  // dlp = reopen
+      'archived': ['dlp'],              // reopen from archive
+    };
+    if (!(ALLOWED[current] || []).includes(target)) {
+      return res.status(400).json({ error: `Cannot transition from ${current} to ${target}` });
+    }
+
+    // active → dlp: require handover date
+    if (target === 'dlp' && current === 'active') {
+      const handoverDate = sanitizeStr(req.body.handoverDate, 20);
+      if (!handoverDate) return res.status(400).json({ error: 'handoverDate is required for DLP transition' });
+      p.handoverDate = handoverDate;
+      if (req.body.dlpMonths !== undefined) p.dlpMonths = parseInt(req.body.dlpMonths, 10) || 12;
+      if (req.body.retentionPercent !== undefined) p.retentionPercent = parseFloat(req.body.retentionPercent) || 5;
+      p.status = 'Completed';
+    }
+
+    // dlp → settled: mark retention released + final account date
+    if (target === 'settled') {
+      p.retentionReleased = true;
+      p.retentionReleasedDate = req.body.retentionReleasedDate || todaySGT();
+      p.finalAccountDate = req.body.finalAccountDate || todaySGT();
+    }
+
+    // → archived
+    if (target === 'archived') {
+      p.archivedDate = todaySGT();
+    }
+
+    // settled/archived → dlp: reopen (defect callback)
+    if (target === 'dlp' && (current === 'settled' || current === 'archived')) {
+      p.retentionReleased = false;
+      p.retentionReleasedDate = null;
+      p.finalAccountDate = null;
+      p.archivedDate = null;
+    }
+
+    const oldLifecycle = p.lifecycle;
+    p.lifecycle = target;
+    deriveFields(p); // recalculate DLP end date etc.
+    writeProjects(projects);
+    logActivity('project.lifecycle.changed', {
+      projectId: p.id, jobCode: p.jobCode,
+      from: oldLifecycle, to: target,
+      reason: sanitizeStr(req.body.reason, 500) || undefined,
+    });
+    res.json({ ok: true, lifecycle: p.lifecycle, project: deriveFields(p) });
+
+    // Email notifications
+    const bossEmail = getBossEmail();
+    const bossName = getBossName();
+    if (target === 'dlp' && current === 'active' && bossEmail) {
+      const qsEmail = p.qs ? getStaffEmail(p.qs) : null;
+      const cc = qsEmail ? [qsEmail] : [];
+      sendEmail(bossEmail, bossName,
+        `[DLP Started] ${p.jobCode} — Handover complete`,
+        emailWrap(null,
+          `<p style="margin:0 0 16px;">Project has moved to Defects Liability Period:</p>` +
+          emailTable([
+            ['Project', escHtml(p.jobCode) + ' — ' + escHtml(p.projectName)],
+            ['Handover Date', escHtml(p.handoverDate)],
+            ['DLP Period', p.dlpMonths + ' months'],
+            ['DLP Ends', escHtml(p.dlpEndDate)],
+            ['Retention', '$' + (p.retentionAmount || 0).toLocaleString()],
+          ]),
+          'View Project', `${APP_URL}/project?id=${p.id}`),
+        cc
+      ).catch(() => {});
+    }
+  } catch (e) { logError('route.post.project.lifecycle', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
 // --- API: Delete project ---
 app.delete('/api/projects/:id', async (req, res) => {
   try {
@@ -1825,7 +2039,8 @@ app.get('/api/factory-queue', (req, res) => {
   const queue = [];
 
   for (const p of projects) {
-    if (p.status === 'Completed') continue;
+    deriveFields(p);
+    if (p.lifecycle !== 'active') continue;
     const fabItemsRaw = (p.fabrication || []);
     // Merge productScope items so the factory queue auto-populates even when
     // Chris hasn't hit "Sync to FAB" yet. Only Local Fabrication items flow here;
@@ -2303,12 +2518,21 @@ app.post('/api/projects/:id/fabrication/:idx/logs', postRateLimit, (req, res) =>
       entryId = 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     }
 
+    // extraPhotos: optional array of additional photo paths
+    let extraPhotos = [];
+    if (Array.isArray(req.body.extraPhotos)) {
+      extraPhotos = req.body.extraPhotos
+        .filter(p => typeof p === 'string' && p.startsWith('/uploads/fab-logs/'))
+        .slice(0, 9); // max 9 extra (10 total with primary)
+    }
+
     const entry = {
       id: entryId,
       loggedAt: new Date().toISOString(),
       loggedBy,
       delta: Math.round(delta * 100) / 100,
       photoPath,
+      extraPhotos,
       note,
       editedAt: null,
       editedBy: null,
@@ -2372,6 +2596,11 @@ app.put('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req, r
     if (typeof req.body.photoPath === 'string' && req.body.photoPath.trim()) {
       entry.photoPath = req.body.photoPath.trim();
     }
+    if (Array.isArray(req.body.extraPhotos)) {
+      entry.extraPhotos = req.body.extraPhotos
+        .filter(p => typeof p === 'string' && p.startsWith('/uploads/fab-logs/'))
+        .slice(0, 9);
+    }
     if (typeof req.body.note === 'string') entry.note = req.body.note.slice(0, 500);
     entry.editedAt = new Date().toISOString();
     const fmNameEdit = (readStaff()['Factory Manager'] || {}).name || 'Factory Manager';
@@ -2434,16 +2663,26 @@ app.delete('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, expr
     // Path-traversal guard: require the /uploads/ prefix and verify the
     // resolved path lives inside UPLOADS_DIR before unlinking.
     let photoUnlinked = false;
+    // Collect all photo paths to unlink (primary + extras)
+    const photosToUnlink = [];
     if (removed.photoPath && typeof removed.photoPath === 'string' && removed.photoPath.startsWith('/uploads/fab-logs/')) {
+      photosToUnlink.push(removed.photoPath);
+    }
+    if (Array.isArray(removed.extraPhotos)) {
+      removed.extraPhotos.forEach(p => {
+        if (typeof p === 'string' && p.startsWith('/uploads/fab-logs/')) photosToUnlink.push(p);
+      });
+    }
+    for (const photoPath of photosToUnlink) {
       try {
-        const rel = removed.photoPath.replace(/^\/uploads\//, '');
+        const rel = photoPath.replace(/^\/uploads\//, '');
         const abs = path.resolve(path.join(UPLOADS_DIR, rel));
         if (abs.startsWith(UPLOADS_DIR + path.sep) && fs.existsSync(abs)) {
           fs.unlinkSync(abs);
           photoUnlinked = true;
         }
       } catch (unlinkErr) {
-        logError('fab.log.delete.unlink', unlinkErr, { photoPath: removed.photoPath, logId: removed.id });
+        logError('fab.log.delete.unlink', unlinkErr, { photoPath, logId: removed.id });
       }
     }
 
@@ -2638,7 +2877,15 @@ app.post('/api/projects/:id/installation/:idx/logs', postRateLimit, (req, res) =
       return res.status(409).json({ error: 'Duplicate log id' });
     }
 
-    const entry = { id: logId, delta, photoPath, note, location, step: step || undefined, loggedBy, loggedAt: new Date().toISOString() };
+    // extraPhotos: optional array of additional photo paths
+    let extraPhotos = [];
+    if (Array.isArray(req.body.extraPhotos)) {
+      extraPhotos = req.body.extraPhotos
+        .filter(p => typeof p === 'string' && p.startsWith('/uploads/install-logs/'))
+        .slice(0, 9);
+    }
+
+    const entry = { id: logId, delta, photoPath, extraPhotos, note, location, step: step || undefined, loggedBy, loggedAt: new Date().toISOString() };
     row.logs.push(entry);
     recomputeQtyDone(row);
     // Auto-derive status
@@ -2708,6 +2955,11 @@ app.put('/api/projects/:id/installation/:idx/logs/:logId', postRateLimit, (req, 
 
     entry.delta = Math.round(nextDelta * 100) / 100;
     if (typeof req.body.photoPath === 'string' && req.body.photoPath.trim()) entry.photoPath = req.body.photoPath.trim();
+    if (Array.isArray(req.body.extraPhotos)) {
+      entry.extraPhotos = req.body.extraPhotos
+        .filter(p => typeof p === 'string' && p.startsWith('/uploads/install-logs/'))
+        .slice(0, 9);
+    }
     if (typeof req.body.note === 'string') entry.note = req.body.note.slice(0, 500);
     if (typeof req.body.location === 'string') entry.location = req.body.location.slice(0, 200);
     entry.editedAt = new Date().toISOString();
@@ -2735,13 +2987,16 @@ app.delete('/api/projects/:id/installation/:idx/logs/:logId', postRateLimit, (re
     row.logs.splice(logIdx, 1);
     recomputeQtyDone(row);
 
-    // Delete photo file
-    try {
-      if (entry.photoPath) {
-        const filePath = path.resolve(__dirname, 'public', entry.photoPath.replace(/^\//, ''));
+    // Delete photo files (primary + extras)
+    const installPhotos = [];
+    if (entry.photoPath) installPhotos.push(entry.photoPath);
+    if (Array.isArray(entry.extraPhotos)) entry.extraPhotos.forEach(p => { if (p) installPhotos.push(p); });
+    for (const pp of installPhotos) {
+      try {
+        const filePath = path.resolve(__dirname, 'public', pp.replace(/^\//, ''));
         if (filePath.startsWith(path.resolve(INSTALL_LOGS_DIR)) && fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      }
-    } catch {}
+      } catch {}
+    }
 
     deriveFields(project);
     writeProjects(projects);
@@ -3206,7 +3461,7 @@ app.put('/api/tasks/:id', (req, res) => {
   if (idx === -1) return res.status(404).json({ error: 'Task not found' });
   const TASK_WRITABLE = ['title','description','taskType','category','assignedTo','requestedBy',
     'dueDate','status','priority','notes','tags','projectId','projectJobCode','projectName',
-    'hoursLogged','completedAt','linkedMeetingNoteIdx'];
+    'hoursLogged','completedAt','linkedMeetingNoteIdx','acknowledgedAt','acknowledgedBy'];
   const updates = {};
   for (const k of TASK_WRITABLE) { if (req.body[k] !== undefined) updates[k] = req.body[k]; }
   const oldAssignee = tasks[idx].assignedTo;
@@ -3877,31 +4132,33 @@ cron.schedule('0 9 * * 1-5', async () => {
   console.log('[CRON] SOP claims check done');
 
   // ── Check 3: Unacknowledged task reminders ────────────────────────────────
-  // Capped escalation ladder: day 1 reminder, day 2 reminder, day 3 reminder
-  // + BOSS FLAG (huge red flag — not using the tool). After day 3 we stop
-  // nagging: the escalation to the boss is the signal, not continued noise.
+  // Two-step escalation: Day 1 = gentle reminder to assignee (CC requester).
+  // Day 3 = final flag to assignee + boss CC'd. After that we stop.
   console.log('[CRON] 9am unacknowledged task reminder check...');
-  const MAX_ACK_REMINDERS = 3;
+  const ACK_REMINDER_DAYS = [1, 3]; // send reminders on day 1 and day 3
   const allTasks = readTasks();
   const dayMs = 24 * 60 * 60 * 1000;
-  const cutoff = new Date(now - dayMs).toISOString();
   let tasksChanged = false;
   for (const task of allTasks) {
     if (!task.assignedTo || task.acknowledgedAt || task.status === 'Done') continue;
-    if (!task.createdAt || task.createdAt > cutoff) continue;
-    if (task.ackReminderSentAt && task.ackReminderSentAt > cutoff) continue;
+    if (!task.createdAt) continue;
+    const ageMs = now - new Date(task.createdAt).getTime();
+    const ageDays = ageMs / dayMs;
     const sentSoFar = task.ackReminderCount || 0;
-    if (sentSoFar >= MAX_ACK_REMINDERS) continue; // ladder exhausted — boss was already flagged
+    if (sentSoFar >= ACK_REMINDER_DAYS.length) continue; // ladder exhausted
+    const nextDay = ACK_REMINDER_DAYS[sentSoFar];
+    if (ageDays < nextDay) continue; // not time yet
+    // Don't send more than once per 20h (prevents double-sends on restart)
+    if (task.ackReminderSentAt && (now - new Date(task.ackReminderSentAt).getTime()) < 20 * 60 * 60 * 1000) continue;
     const assigneeEmail = getStaffEmail(task.assignedTo);
     if (!assigneeEmail) { console.warn('[EMAIL SKIP] No email for:', task.assignedTo); continue; }
     const reminderNum = sentSoFar + 1;
+    const isFinal = reminderNum === ACK_REMINDER_DAYS.length;
     const ccEmails = [];
     if (task.requestedBy) {
       const rbEmail = getStaffEmail(task.requestedBy);
       if (rbEmail) ccEmails.push(rbEmail);
     }
-    // On the final (3rd) reminder, also escalate to the boss.
-    const isFinal = reminderNum === MAX_ACK_REMINDERS;
     if (isFinal) {
       const bossEmail = getBossEmail() || process.env.SENDER_EMAIL;
       if (bossEmail) ccEmails.push(bossEmail);
@@ -3909,7 +4166,7 @@ cron.schedule('0 9 * * 1-5', async () => {
     try {
       const subject = isFinal
         ? `[FINAL FLAG] Still unacknowledged after 3 days: ${task.title}`
-        : `[Reminder ${reminderNum}/${MAX_ACK_REMINDERS}] Please acknowledge: ${task.title}`;
+        : `[Reminder] Please acknowledge: ${task.title}`;
       const htmlBody = isFinal
         ? emailWrap(`Hi ${escHtml(task.assignedTo)},`,
           emailUrgentBox(`This task has been sitting unacknowledged for <strong>3 days</strong>. The boss has been CC'd — please acknowledge or raise any blockers now.`) +
@@ -3917,12 +4174,12 @@ cron.schedule('0 9 * * 1-5', async () => {
           `<p style="margin:8px 0 0;font-size:12px;color:#888;">Final reminder — no further nags will be sent.</p>`,
           'View My Tasks', `${APP_URL}/my-tasks`)
         : emailWrap(`Hi ${escHtml(task.assignedTo)},`,
-          `<p style="margin:0 0 16px;">You have an unacknowledged task assigned to you (reminder ${reminderNum} of ${MAX_ACK_REMINDERS}):</p>` +
+          `<p style="margin:0 0 16px;">You have an unacknowledged task assigned to you:</p>` +
           emailTable([['Task', escHtml(task.title)]]) +
           `<p style="margin:0;">Please acknowledge this task so the requester knows you have received it.</p>`,
           'View My Tasks', `${APP_URL}/my-tasks`);
       await sendEmail(assigneeEmail, task.assignedTo, subject, htmlBody, ccEmails);
-      console.log(`[CRON] Ack reminder ${reminderNum}/${MAX_ACK_REMINDERS}${isFinal ? ' (BOSS FLAG)' : ''} → ${assigneeEmail} for task: ${task.title}`);
+      console.log(`[CRON] Ack reminder ${reminderNum}/${ACK_REMINDER_DAYS.length}${isFinal ? ' (BOSS FLAG)' : ''} → ${assigneeEmail} for task: ${task.title}`);
       task.ackReminderSentAt = now.toISOString();
       task.ackReminderCount = reminderNum;
       if (isFinal) task.ackBossFlaggedAt = now.toISOString();
@@ -4040,6 +4297,146 @@ cron.schedule('0 9 * * 1-5', async () => {
       console.log('[CRON] No new install-complete notes needed');
     }
   } catch (e) { logError('cron.9am-install-complete-notes', e); }
+
+  // ── Check 6: DLP expiry reminders ─────────────────────────────────────────
+  // Email boss + finance when a project's DLP is expiring within 30 days.
+  // Also flags already-expired DLP with unreleased retention.
+  try {
+    console.log('[CRON] 9am DLP expiry check...');
+    const allProjects = readProjects();
+    const dlpProjects = allProjects.map(p => deriveFields(p)).filter(p => p.lifecycle === 'dlp');
+    const today = todaySGT();
+    const in30d = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+    let dlpDirty = false;
+    for (const p of dlpProjects) {
+      if (!p.dlpEndDate) continue;
+      // Only alert if DLP ends within 30 days or already expired
+      if (p.dlpEndDate > in30d) continue;
+      // Don't nag more than once per week
+      if (p._dlpReminderSentAt && (Date.now() - new Date(p._dlpReminderSentAt).getTime()) < 7 * 86400000) continue;
+
+      const expired = p.dlpEndDate <= today;
+      const bossEmail = getBossEmail();
+      const bossName = getBossName();
+      if (!bossEmail) continue;
+
+      const subject = expired
+        ? `[DLP EXPIRED] ${p.jobCode} — Retention claimable`
+        : `[DLP Expiring] ${p.jobCode} — ${p.dlpEndDate}`;
+      const body = emailWrap(null,
+        (expired
+          ? emailUrgentBox(`DLP has <strong>expired</strong> for this project. Retention of <strong>$${(p.retentionAmount || 0).toLocaleString()}</strong> is now claimable.`)
+          : emailWarningBox(`DLP is expiring on <strong>${escHtml(p.dlpEndDate)}</strong>. Retention of <strong>$${(p.retentionAmount || 0).toLocaleString()}</strong> will be claimable.`)) +
+        emailTable([
+          ['Project', escHtml(p.jobCode) + ' — ' + escHtml(p.projectName)],
+          ['Handover', escHtml(p.handoverDate || '—')],
+          ['DLP Ends', escHtml(p.dlpEndDate)],
+          ['Retention', '$' + (p.retentionAmount || 0).toLocaleString()],
+        ]),
+        'View Project', `${APP_URL}/project?id=${p.id}`);
+
+      try {
+        await sendEmail(bossEmail, bossName, subject, body);
+        // Mark on the source array so we write once after the loop
+        const idx = allProjects.findIndex(pp => pp.id === p.id);
+        if (idx >= 0) {
+          allProjects[idx]._dlpReminderSentAt = new Date().toISOString();
+          dlpDirty = true;
+        }
+        console.log(`[CRON] DLP ${expired ? 'expired' : 'expiring'} reminder sent for ${p.jobCode}`);
+      } catch (e) { console.error(`[CRON] DLP reminder failed for ${p.id}:`, e.message); }
+    }
+    if (dlpDirty) writeProjects(allProjects);
+    console.log('[CRON] DLP expiry check done');
+  } catch (e) { logError('cron.9am-dlp-expiry', e); }
+
+  // ── Check 7: Auto-archive settled projects past 3 years ───────────────────
+  try {
+    console.log('[CRON] 9am auto-archive check...');
+    const projects = readProjects();
+    const threeYearsAgo = new Date(Date.now() - 3 * 365.25 * 86400000).toISOString().slice(0, 10);
+    let archived = 0;
+    for (const p of projects) {
+      deriveFields(p);
+      if (p.lifecycle !== 'settled') continue;
+      if (!p.finalAccountDate || p.finalAccountDate > threeYearsAgo) continue;
+      p.lifecycle = 'archived';
+      p.archivedDate = todaySGT();
+      logActivity('project.auto-archived', { projectId: p.id, jobCode: p.jobCode, finalAccountDate: p.finalAccountDate });
+      archived++;
+    }
+    if (archived > 0) {
+      writeProjects(projects);
+      console.log(`[CRON] Auto-archived ${archived} settled project(s)`);
+    }
+    console.log('[CRON] Auto-archive check done');
+  } catch (e) { logError('cron.9am-auto-archive', e); }
+
+  // ── Check 8: Sales follow-up reminders ────────────────────────────────────
+  try {
+    console.log('[CRON] 9am sales follow-up check...');
+    const opps = readOpps();
+    const today = todaySGT();
+    const overdueOpps = opps.filter(o =>
+      o.nextFollowUpDate && o.nextFollowUpDate <= today &&
+      !['Won', 'Lost', 'No-Bid'].includes(o.stage)
+    );
+    if (overdueOpps.length > 0) {
+      const salesEmail = getRoleEmail('Sales');
+      if (salesEmail) {
+        const salesName = (readStaff()['Sales'] || {}).name || 'Sales';
+        const rows = overdueOpps.map(o =>
+          `['${escHtml(o.clientName)}', '${escHtml(o.stage)}', '${escHtml(o.nextFollowUpDate)}', '${escHtml((o.fuSequence || 0) > 0 ? 'FU' + o.fuSequence : 'First call')}']`
+        );
+        await sendEmail(salesEmail, salesName,
+          `[Follow-Up Due] ${overdueOpps.length} opportunity follow-up${overdueOpps.length > 1 ? 's' : ''} overdue`,
+          emailWrap(`Hi ${escHtml(salesName)},`,
+            `<p style="margin:0 0 16px;">You have <strong>${overdueOpps.length}</strong> overdue follow-up${overdueOpps.length > 1 ? 's' : ''}:</p>` +
+            emailTable(overdueOpps.map(o => [
+              escHtml(o.clientName),
+              escHtml(o.stage),
+              escHtml(o.nextFollowUpDate),
+              (o.fuSequence || 0) > 0 ? 'FU' + o.fuSequence : 'First call'
+            ])),
+            'Open Sales Pipeline', `${APP_URL}/sales`)
+        ).catch(e => console.error('[CRON] Sales FU email failed:', e.message));
+        console.log(`[CRON] Sales FU reminder sent: ${overdueOpps.length} overdue`);
+      }
+    }
+    console.log('[CRON] Sales follow-up check done');
+  } catch (e) { logError('cron.9am-sales-followup', e); }
+
+  // ── Check 9: 24hr nudge for New Lead without follow-up ─────────────────────
+  try {
+    console.log('[CRON] 9am new-lead nudge check...');
+    const opps = readOpps();
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    let oppsChanged = false;
+    for (const opp of opps) {
+      if (opp.stage !== 'New Lead') continue;
+      if (opp._nudgeSentAt) continue; // already nudged
+      if (!opp.createdAt || opp.createdAt > oneDayAgo) continue; // less than 24hrs old
+      if (!opp.email) continue;
+      // Send nudge email to client
+      try {
+        const salesName = (readStaff()['Sales'] || {}).name || 'Sales Team';
+        await sendEmail(opp.email, opp.contactPerson || opp.clientName,
+          `Following up on your enquiry — ${opp.clientName || ''}`,
+          emailWrap(null,
+            `<p style="margin:0 0 16px;">We recently received your enquiry and would love to schedule a brief call to discuss your requirements.</p>` +
+            `<p style="margin:0 0 16px;">Please let us know a convenient time, or reply to this email with any details about your project.</p>` +
+            `<p style="margin:0;">Best regards,<br>${escHtml(salesName)}<br>Lai Yew Seng Engineering Pte Ltd</p>`)
+        );
+        opp._nudgeSentAt = new Date().toISOString();
+        if (!Array.isArray(opp.activity)) opp.activity = [];
+        opp.activity.push({ ts: new Date().toISOString(), type: 'auto-nudge', note: '24hr auto-nudge sent to ' + opp.email });
+        oppsChanged = true;
+        console.log(`[CRON] 24hr nudge sent to ${opp.email} for opp ${opp.id}`);
+      } catch (e) { console.error(`[CRON] Nudge failed for ${opp.id}:`, e.message); }
+    }
+    if (oppsChanged) writeOpps(opps);
+    console.log('[CRON] New-lead nudge check done');
+  } catch (e) { logError('cron.9am-sales-nudge', e); }
 
   } catch (e) { logError('cron.9am-checks', e); }
 }, { timezone: 'Asia/Singapore' });
@@ -5439,9 +5836,23 @@ const OPPS_FILE = path.join(__dirname, 'data', 'opportunities.json');
 function readOpps() { if (!fs.existsSync(OPPS_FILE)) return []; return safeReadJSON(OPPS_FILE); }
 function writeOpps(d) { safeWriteJSON(OPPS_FILE, d); }
 
-const SALES_ACCESS = new Set(['Lai Wei Xiang', 'Janessa']);
-const SALES_READ   = new Set(['Lai Wei Xiang', 'Janessa', 'Alex Chew']);
-const VALID_OPP_STAGES = ['Enquiry', 'Site Visit', 'Quotation Sent', 'Negotiation', 'Won', 'Lost', 'No-Bid'];
+const SALES_ACCESS = new Set((() => {
+  const staff = readStaff();
+  const names = new Set();
+  // GM (boss) + Sales always have write access
+  for (const key of ['GM', 'Boss', 'Sales']) {
+    if (staff[key] && staff[key].name) names.add(staff[key].name);
+  }
+  if (!names.size) { names.add('Lai Wei Xiang'); names.add('Janessa'); }
+  return [...names];
+})());
+const SALES_READ = new Set([...SALES_ACCESS, ...((() => {
+  const staff = readStaff();
+  const names = [];
+  if (staff['Finance'] && staff['Finance'].name) names.push(staff['Finance'].name);
+  return names;
+})())]);
+const VALID_OPP_STAGES = ['New Lead', 'Discovery', 'Tender Review', 'Quotation', 'Presentation', 'Pending Tender', 'Tender Awarded', 'Won', 'Lost', 'No-Bid'];
 
 function requireSalesAccess(req, res, readOnly) {
   const user = req.authUser || (req.session && req.session.user);
@@ -5474,16 +5885,38 @@ app.get('/api/sales/stats', (req, res) => {
     const lost = opps.filter(o => o.stage === 'Lost');
     const closed = won.length + lost.length;
     const today = todaySGT();
-    const expiring = opps.filter(o => o.quoteExpiryDate && o.quoteExpiryDate <= today && o.stage === 'Quotation Sent');
+    const expiring = opps.filter(o => o.quoteExpiryDate && o.quoteExpiryDate <= today && o.stage === 'Quotation');
+    const overdueFU = active.filter(o => o.nextFollowUpDate && o.nextFollowUpDate <= today).length;
     const pipeline = active.reduce((s, o) => s + (o.estimatedValue || 0), 0);
+    // Avg days per stage (for active opps)
+    const stageAvg = {};
+    const now = Date.now();
+    for (const s of VALID_OPP_STAGES) {
+      const inStage = opps.filter(o => o.stage === s && o.stageChangedAt);
+      if (inStage.length) {
+        const avg = Math.round(inStage.reduce((sum, o) => sum + (now - new Date(o.stageChangedAt).getTime()) / 86400000, 0) / inStage.length);
+        stageAvg[s] = avg;
+      }
+    }
+    // Pipeline value by stage
+    const pipelineByStage = {};
+    for (const o of active) {
+      pipelineByStage[o.stage] = (pipelineByStage[o.stage] || 0) + (o.estimatedValue || 0);
+    }
+    // Sales access list for frontend (derived from roles, not hardcoded)
+    const salesUsers = [...SALES_ACCESS];
     res.json({
       pipelineValue: pipeline,
       openCount: active.length,
       winRate: closed > 0 ? Math.round((won.length / closed) * 100) : 0,
       expiringQuotes: expiring.length,
+      overdueFU,
       wonCount: won.length,
       lostCount: lost.length,
-      totalValue: won.reduce((s, o) => s + (o.estimatedValue || 0), 0)
+      totalValue: won.reduce((s, o) => s + (o.estimatedValue || 0), 0),
+      stageAvg,
+      pipelineByStage,
+      salesUsers
     });
   } catch (e) { logError('route.get.sales.stats', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -5495,7 +5928,7 @@ app.post('/api/sales/opportunities', postRateLimit, (req, res) => {
     const b = req.body;
     const clientName = sanitizeStr(b.clientName, 200);
     if (!clientName) return res.status(400).json({ error: 'clientName required' });
-    const stage = VALID_OPP_STAGES.includes(b.stage) ? b.stage : 'Enquiry';
+    const stage = VALID_OPP_STAGES.includes(b.stage) ? b.stage : 'New Lead';
     const opp = {
       id: 'opp-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       clientName,
@@ -5517,6 +5950,14 @@ app.post('/api/sales/opportunities', postRateLimit, (req, res) => {
       winLossReason:  '',
       competitorInfo: sanitizeStr(b.competitorInfo, 500),
       convertedProjectId: null,
+      // Follow-up engine
+      followUps: [],
+      nextFollowUpDate: null,
+      fuSequence: 0,
+      afuSequence: 0,
+      qsAssigned: sanitizeStr(b.qsAssigned, 100) || '',
+      tenderDocUrls: [],
+      quotationFileUrl: null,
       activity: [{ ts: new Date().toISOString(), type: 'created', note: `Opportunity created by ${getAuthUser()}` }],
       createdBy:      getAuthUser(),
       createdAt:      new Date().toISOString()
@@ -5539,7 +5980,8 @@ app.put('/api/sales/opportunities/:id', (req, res) => {
     const b = req.body;
     const OPP_WRITABLE = ['clientName','contactPerson','phone','email','siteAddress','productType',
       'estimatedValue','quotationNo','quoteDate','quoteExpiryDate','source','stage',
-      'followUpDate','assignedTo','notes','winLossReason','competitorInfo'];
+      'followUpDate','assignedTo','notes','winLossReason','competitorInfo',
+      'nextFollowUpDate','qsAssigned','quotationFileUrl'];
     const oldStage = opps[idx].stage;
     for (const k of OPP_WRITABLE) {
       if (b[k] !== undefined) {
@@ -5557,7 +5999,92 @@ app.put('/api/sales/opportunities/:id', (req, res) => {
         type: 'stage-change',
         note: `${oldStage} → ${b.stage} by ${getAuthUser()}`
       });
+
+      // ── Auto-task: create QS task when entering Tender Review ──
+      if (b.stage === 'Tender Review') {
+        try {
+          const opp = opps[idx];
+          const qsName = opp.qsAssigned || (readStaff()['QS'] || {}).name || '';
+          if (qsName) {
+            const tasks = readTasks();
+            // Avoid duplicate: check if a sales-review task already exists for this opp
+            const exists = tasks.some(t => t.projectId === opp.id && t.category === 'sales-review' && t.status !== 'Done');
+            if (!exists) {
+              const deadline = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);
+              const task = {
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                title: `Prepare quotation for ${opp.clientName}`,
+                description: `Client: ${opp.clientName}\nProduct: ${opp.productType || '—'}\nEstimated value: $${(opp.estimatedValue || 0).toLocaleString()}\nEmail: ${opp.email || '—'}\nSite: ${opp.siteAddress || '—'}`,
+                taskType: 'Request',
+                category: 'sales-review',
+                assignedTo: qsName,
+                requestedBy: opp.assignedTo || getAuthUser(),
+                dueDate: deadline,
+                status: 'Pending',
+                priority: 'High',
+                notes: '',
+                projectId: opp.id,
+                projectJobCode: opp.quotationNo || '',
+                projectName: opp.clientName,
+                createdAt: new Date().toISOString(),
+                weekOf: null
+              };
+              tasks.push(task);
+              writeTasks(tasks);
+              opp.activity.push({ ts: new Date().toISOString(), type: 'auto-task', note: `Auto-created QS task for ${qsName} (due ${deadline})` });
+              logActivity('sales.qs-task.auto-created', { oppId: opp.id, qsName, taskId: task.id });
+
+              // Email QS
+              const qsEmail = getStaffEmail(qsName);
+              if (qsEmail) {
+                sendEmail(qsEmail, qsName,
+                  `[Quotation Request] ${opp.clientName} — ${opp.productType || 'New tender'}`,
+                  emailWrap(`Hi ${escHtml(qsName)},`,
+                    `<p style="margin:0 0 16px;">A new quotation has been requested:</p>` +
+                    emailTable([
+                      ['Client', escHtml(opp.clientName)],
+                      ['Product', escHtml(opp.productType || '—')],
+                      ['Estimated Value', '$' + (opp.estimatedValue || 0).toLocaleString()],
+                      ['Deadline', deadline],
+                      ['Requested By', escHtml(opp.assignedTo || '—')]
+                    ]),
+                    'View My Tasks', `${APP_URL}/my-tasks`)
+                ).catch(() => {});
+              }
+            }
+          }
+        } catch (taskErr) { logError('sales.qs-task.auto-create', taskErr); }
+      }
+
+      // ── Auto-schedule first FU when entering Pending Tender ──
+      if (b.stage === 'Pending Tender' && !opps[idx].nextFollowUpDate) {
+        const fuDate = new Date(Date.now() + 25 * 86400000).toISOString().slice(0, 10);
+        opps[idx].nextFollowUpDate = fuDate;
+        opps[idx].fuSequence = 0;
+        opps[idx].activity.push({ ts: new Date().toISOString(), type: 'auto-fu', note: `FU1 auto-scheduled for ${fuDate}` });
+      }
+
+      // ── Auto-schedule first AFU when entering Tender Awarded ──
+      if (b.stage === 'Tender Awarded' && !opps[idx].nextFollowUpDate) {
+        const afuDate = new Date(Date.now() + 25 * 86400000).toISOString().slice(0, 10);
+        opps[idx].nextFollowUpDate = afuDate;
+        opps[idx].afuSequence = 0;
+        opps[idx].activity.push({ ts: new Date().toISOString(), type: 'auto-fu', note: `AFU1 auto-scheduled for ${afuDate}` });
+      }
     }
+
+    // ── Auto-advance: Tender Review → Quotation when quote uploaded ──
+    if (b.quotationFileUrl && opps[idx].stage === 'Tender Review') {
+      opps[idx].stage = 'Quotation';
+      opps[idx].stageChangedAt = new Date().toISOString();
+      if (!opps[idx].activity) opps[idx].activity = [];
+      opps[idx].activity.push({
+        ts: new Date().toISOString(),
+        type: 'stage-change',
+        note: `Tender Review → Quotation (auto-advanced on quotation upload)`
+      });
+    }
+
     // Track notes/follow-up as activity
     if (b.activityNote) {
       if (!opps[idx].activity) opps[idx].activity = [];
@@ -5574,11 +6101,75 @@ app.put('/api/sales/opportunities/:id', (req, res) => {
   } catch (e) { logError('route.put.sales.opportunity', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// DELETE /api/sales/opportunities/:id
-app.delete('/api/sales/opportunities/:id', async (req, res) => {
+// POST /api/sales/opportunities/:id/follow-up — log a follow-up call
+app.post('/api/sales/opportunities/:id/follow-up', postRateLimit, (req, res) => {
   if (!requireSalesAccess(req, res, false)) return;
   try {
-    if (!await requireAdminAuth(req, res)) return;
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
+    const opp = opps[idx];
+    const outcome = sanitizeStr(req.body.outcome, 30);
+    const notes = sanitizeStr(req.body.notes, 2000);
+    if (!notes) return res.status(400).json({ error: 'Call notes are mandatory' });
+    if (!['Connected', 'NPU', 'Voicemail', 'No Answer'].includes(outcome)) {
+      return res.status(400).json({ error: 'Invalid outcome. Must be Connected, NPU, Voicemail, or No Answer' });
+    }
+
+    // Determine FU type based on stage
+    const isAFU = opp.stage === 'Tender Awarded';
+    const seqKey = isAFU ? 'afuSequence' : 'fuSequence';
+    const currentSeq = (opp[seqKey] || 0) + 1;
+    opp[seqKey] = currentSeq;
+    const fuType = (isAFU ? 'AFU' : 'FU') + currentSeq;
+
+    // Calculate next follow-up date
+    let nextDate = null;
+    const intervalDays = parseInt(req.body.intervalDays, 10) || 25; // default ~3.5 weeks
+    if (outcome === 'Connected') {
+      // Connected → schedule next FU in 3-4 weeks
+      nextDate = new Date(Date.now() + intervalDays * 86400000).toISOString().slice(0, 10);
+    } else {
+      // NPU / Voicemail / No Answer → retry in 2 days, same FU number
+      nextDate = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
+      opp[seqKey] = currentSeq - 1; // don't increment — same FU retry
+    }
+
+    const fuEntry = {
+      id: 'fu-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      scheduledDate: opp.nextFollowUpDate || todaySGT(),
+      completedAt: new Date().toISOString(),
+      type: fuType,
+      outcome,
+      notes,
+      nextAction: outcome === 'Connected' ? (isAFU ? 'AFU' : 'FU') + (opp[seqKey] + 1) : fuType + ' retry',
+      nextDate,
+      loggedBy: getAuthUser()
+    };
+
+    if (!Array.isArray(opp.followUps)) opp.followUps = [];
+    opp.followUps.push(fuEntry);
+    opp.nextFollowUpDate = nextDate;
+
+    // Also log to activity timeline
+    if (!Array.isArray(opp.activity)) opp.activity = [];
+    opp.activity.push({
+      ts: new Date().toISOString(),
+      type: 'follow-up-call',
+      note: `${fuType}: ${outcome} — ${notes}${nextDate ? ' → Next: ' + nextDate : ''}`
+    });
+
+    opp.updatedAt = new Date().toISOString();
+    writeOpps(opps);
+    logActivity('sales.follow-up.logged', { oppId: opp.id, client: opp.clientName, fuType, outcome });
+    res.json({ followUp: fuEntry, opp });
+  } catch (e) { logError('route.post.sales.follow-up', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// DELETE /api/sales/opportunities/:id
+app.delete('/api/sales/opportunities/:id', (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
     const opps = readOpps();
     const idx = opps.findIndex(o => o.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Not found' });
@@ -5590,10 +6181,9 @@ app.delete('/api/sales/opportunities/:id', async (req, res) => {
 });
 
 // POST /api/sales/convert-to-project/:id — convert Won opportunity to project
-app.post('/api/sales/convert-to-project/:id', async (req, res) => {
+app.post('/api/sales/convert-to-project/:id', (req, res) => {
   if (!requireSalesAccess(req, res, false)) return;
   try {
-    if (!await requireAdminAuth(req, res)) return;
     const opps = readOpps();
     const idx = opps.findIndex(o => o.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
@@ -5639,6 +6229,399 @@ app.post('/api/sales/convert-to-project/:id', async (req, res) => {
     logActivity('sales.converted-to-project', { oppId: opp.id, projectId, client: opp.clientName });
     res.status(201).json({ ok: true, projectId, project });
   } catch (e) { logError('route.post.sales.convert', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// ── Sales: Email compose (send from CRM) ─────────────────────────────────────
+app.post('/api/sales/opportunities/:id/send-email', postRateLimit, async (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
+    const opp = opps[idx];
+
+    const to = sanitizeStr(req.body.to, 200);
+    const subject = sanitizeStr(req.body.subject, 300);
+    const body = sanitizeStr(req.body.body, 5000);
+    if (!to || !subject || !body) return res.status(400).json({ error: 'to, subject, and body are required' });
+
+    // Send via Graph API
+    await sendEmail(to, opp.contactPerson || opp.clientName, subject,
+      emailWrap(null, `<div style="white-space:pre-wrap;">${escHtml(body)}</div>`));
+
+    // Log to activity timeline
+    if (!Array.isArray(opp.activity)) opp.activity = [];
+    opp.activity.push({
+      ts: new Date().toISOString(),
+      type: 'email',
+      note: `📧 Sent to ${to}: "${subject}"`
+    });
+    opp.updatedAt = new Date().toISOString();
+    writeOpps(opps);
+    logActivity('sales.email.sent', { oppId: opp.id, to, subject });
+    res.json({ ok: true });
+  } catch (e) { logError('route.post.sales.send-email', e); res.status(500).json({ error: 'Send failed: ' + (e.message || 'unknown') }); }
+});
+
+// ── Sales: Email templates ───────────────────────────────────────────────────
+app.get('/api/sales/email-templates', (req, res) => {
+  if (!requireSalesAccess(req, res, true)) return;
+  const salesName = (readStaff()['Sales'] || {}).name || 'Sales Team';
+  const companyName = 'Lai Yew Seng Engineering Pte Ltd';
+  res.json([
+    {
+      id: 'discovery-intro',
+      name: 'Discovery Call Intro',
+      subject: 'Re: Your Enquiry — Schedule a Call',
+      body: `Dear {{clientName}},\n\nThank you for your enquiry. We would like to schedule a brief call to understand your requirements better.\n\nPlease select a convenient time slot using the link below:\n[Insert Calendly/Booking Link]\n\nLooking forward to speaking with you.\n\nBest regards,\n${salesName}\n${companyName}`
+    },
+    {
+      id: 'post-call-recap',
+      name: 'Post-Call Recap',
+      subject: 'Meeting Recap — {{clientName}}',
+      body: `Dear {{clientName}},\n\nThank you for your time today. Here is a summary of what we discussed:\n\n- [Key points from call]\n- [Next steps]\n\nWe will prepare a quotation and get back to you by [date].\n\nBest regards,\n${salesName}\n${companyName}`
+    },
+    {
+      id: 'quotation-cover',
+      name: 'Quotation Cover Letter',
+      subject: 'Quotation — {{clientName}}',
+      body: `Dear {{clientName}},\n\nPlease find attached our quotation for your review.\n\nQuotation No: {{quotationNo}}\nValidity: 30 days from date of issue\n\nShould you have any queries, please do not hesitate to contact us.\n\nBest regards,\n${salesName}\n${companyName}`
+    },
+    {
+      id: 'follow-up-nudge',
+      name: 'Follow-Up Nudge',
+      subject: 'Following Up — {{clientName}}',
+      body: `Dear {{clientName}},\n\nI hope this email finds you well. I wanted to follow up on our previous conversation regarding your project.\n\nWould you be available for a quick call this week to discuss the next steps?\n\nBest regards,\n${salesName}\n${companyName}`
+    }
+  ]);
+});
+
+// ── Sales: Inbox scanning (read enquiry emails) ─────────────────────────────
+// GET /api/sales/inbox — fetch recent emails from configured inboxes matching keywords
+app.get('/api/sales/inbox', async (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) return res.status(503).json({ error: 'Email not configured' });
+
+    const admin = readAdmin();
+    const keywords = admin.salesKeywords || ['RFQ', 'Enquiry', 'Tender', 'Quotation', 'Quote', 'Price'];
+    const inboxes = admin.salesInboxes || ['enquiry@laiyewseng.com.sg'];
+
+    // Read last 7 days of emails from each inbox
+    const since = new Date(Date.now() - 7 * 86400000).toISOString();
+    const allEmails = [];
+
+    for (const mailbox of inboxes) {
+      try {
+        const url = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(mailbox)}/messages` +
+          `?$filter=receivedDateTime ge ${since}&$select=id,subject,bodyPreview,from,receivedDateTime,hasAttachments` +
+          `&$orderby=receivedDateTime desc&$top=50`;
+        const r = await fetch(url, { headers: { Authorization: 'Bearer ' + accessToken } });
+        if (!r.ok) {
+          console.warn(`[INBOX] Failed to read ${mailbox}: ${r.status}`);
+          continue;
+        }
+        const data = await r.json();
+        const messages = data.value || [];
+
+        // Filter by keywords (case-insensitive match on subject + body preview)
+        const keywordRegex = new RegExp(keywords.join('|'), 'i');
+        for (const msg of messages) {
+          const text = (msg.subject || '') + ' ' + (msg.bodyPreview || '');
+          if (!keywordRegex.test(text)) continue;
+
+          // Skip internal emails
+          const fromEmail = msg.from?.emailAddress?.address || '';
+          if (fromEmail.toLowerCase().endsWith('@laiyewseng.com.sg')) continue;
+
+          allEmails.push({
+            id: msg.id,
+            mailbox,
+            subject: msg.subject || '(No subject)',
+            from: msg.from?.emailAddress?.name || fromEmail,
+            fromEmail,
+            preview: (msg.bodyPreview || '').slice(0, 500),
+            receivedAt: msg.receivedDateTime,
+            hasAttachments: msg.hasAttachments || false,
+            hasLinks: /drive\.google|docs\.google|1drv\.ms|onedrive|sharepoint|dropbox\.com|\.pdf/i.test(msg.bodyPreview || ''),
+          });
+        }
+      } catch (e) {
+        console.error(`[INBOX] Error reading ${mailbox}:`, e.message);
+      }
+    }
+
+    // Deduplicate by fromEmail + subject (within same day)
+    const seen = new Set();
+    const deduped = allEmails.filter(e => {
+      const key = e.fromEmail.toLowerCase() + '|' + (e.subject || '').toLowerCase().slice(0, 50) + '|' + (e.receivedAt || '').slice(0, 10);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    // Mark which emails already have an opportunity (by sender email)
+    const opps = readOpps();
+    const oppEmails = new Set(opps.map(o => (o.email || '').toLowerCase()).filter(Boolean));
+    deduped.forEach(e => {
+      e.existingOpp = oppEmails.has(e.fromEmail.toLowerCase());
+    });
+
+    res.json(deduped);
+  } catch (e) { logError('route.get.sales.inbox', e); res.status(500).json({ error: 'Failed to scan inbox' }); }
+});
+
+// POST /api/sales/inbox/promote — create opportunity from an inbox email
+app.post('/api/sales/inbox/promote', postRateLimit, async (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    const emailId = sanitizeStr(req.body.emailId, 200);
+    const mailbox = sanitizeStr(req.body.mailbox, 200);
+    const fromEmail = sanitizeStr(req.body.fromEmail, 200);
+    const fromName = sanitizeStr(req.body.fromName, 200);
+    const subject = sanitizeStr(req.body.subject, 300);
+    if (!fromEmail) return res.status(400).json({ error: 'fromEmail required' });
+
+    // Check if already exists
+    const opps = readOpps();
+    const recentDupe = opps.find(o =>
+      (o.email || '').toLowerCase() === fromEmail.toLowerCase() &&
+      new Date(o.createdAt) > new Date(Date.now() - 7 * 86400000)
+    );
+    if (recentDupe) return res.status(409).json({ error: 'Lead from this email already exists (created ' + recentDupe.createdAt.slice(0, 10) + ')', existingId: recentDupe.id });
+
+    const opp = {
+      id: 'opp-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      clientName: fromName || fromEmail.split('@')[0],
+      contactPerson: fromName || '',
+      phone: '',
+      email: fromEmail,
+      siteAddress: '',
+      productType: '',
+      estimatedValue: 0,
+      quotationNo: '',
+      quoteDate: null,
+      quoteExpiryDate: null,
+      source: 'Email — ' + (mailbox || 'inbox'),
+      stage: 'New Lead',
+      stageChangedAt: new Date().toISOString(),
+      followUpDate: null,
+      assignedTo: (readStaff()['Sales'] || {}).name || '',
+      notes: subject || '',
+      winLossReason: '',
+      competitorInfo: '',
+      convertedProjectId: null,
+      followUps: [],
+      nextFollowUpDate: null,
+      fuSequence: 0,
+      afuSequence: 0,
+      qsAssigned: '',
+      tenderDocUrls: [],
+      quotationFileUrl: null,
+      activity: [{
+        ts: new Date().toISOString(),
+        type: 'created',
+        note: `Lead created from email: "${subject}" from ${fromEmail} (${mailbox})`
+      }],
+      createdBy: getAuthUser(),
+      createdAt: new Date().toISOString(),
+      _sourceEmailId: emailId,
+      _sourceMailbox: mailbox
+    };
+    opps.push(opp);
+    writeOpps(opps);
+    logActivity('sales.lead.from-email', { oppId: opp.id, from: fromEmail, subject, mailbox });
+    res.status(201).json(opp);
+  } catch (e) { logError('route.post.sales.inbox.promote', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// POST /api/sales/opportunities/:id/calendar-event — create Outlook calendar event
+app.post('/api/sales/opportunities/:id/calendar-event', postRateLimit, async (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
+    const opp = opps[idx];
+
+    const eventDate = sanitizeStr(req.body.date, 20);
+    const eventTime = sanitizeStr(req.body.time, 10) || '10:00';
+    const eventType = sanitizeStr(req.body.type, 30); // 'discovery' or 'presentation'
+    const duration = parseInt(req.body.duration, 10) || 30; // minutes
+    if (!eventDate || !eventType) return res.status(400).json({ error: 'date and type are required' });
+
+    const assigneeEmail = getStaffEmail(opp.assignedTo) || getRoleEmail('Sales');
+    if (!assigneeEmail) return res.status(400).json({ error: 'No email for assignee' });
+
+    const accessToken = await getAccessToken();
+    if (!accessToken) return res.status(503).json({ error: 'Calendar not configured' });
+
+    const startDT = `${eventDate}T${eventTime}:00`;
+    const endMinutes = parseInt(eventTime.split(':')[1] || '0', 10) + duration;
+    const endHour = parseInt(eventTime.split(':')[0], 10) + Math.floor(endMinutes / 60);
+    const endMin = endMinutes % 60;
+    const endDT = `${eventDate}T${String(endHour).padStart(2,'0')}:${String(endMin).padStart(2,'0')}:00`;
+
+    const label = eventType === 'discovery' ? 'Discovery Call' : eventType === 'presentation' ? 'Presentation' : 'Meeting';
+    const subject = `[${label}] ${opp.clientName}${opp.productType ? ' — ' + opp.productType : ''}`;
+    const bodyHtml = `<p><strong>${escHtml(label)}</strong> with <strong>${escHtml(opp.clientName)}</strong></p>` +
+      (opp.contactPerson ? `<p>Contact: ${escHtml(opp.contactPerson)}</p>` : '') +
+      (opp.phone ? `<p>Phone: ${escHtml(opp.phone)}</p>` : '') +
+      (opp.email ? `<p>Email: ${escHtml(opp.email)}</p>` : '') +
+      `<p><a href="${APP_URL}/sales">Open in LYS Sales Pipeline →</a></p>`;
+
+    // Also invite the client if they have an email
+    const attendees = [];
+    if (opp.email) attendees.push({ emailAddress: { address: opp.email, name: opp.contactPerson || opp.clientName }, type: 'required' });
+
+    const targetEmail = process.env.CALENDAR_TEST_OVERRIDE || assigneeEmail;
+    const eventBody = {
+      subject,
+      body: { contentType: 'HTML', content: bodyHtml },
+      start: { dateTime: startDT, timeZone: 'Asia/Singapore' },
+      end: { dateTime: endDT, timeZone: 'Asia/Singapore' },
+      isReminderOn: true,
+      reminderMinutesBeforeStart: 60,
+      attendees,
+      categories: ['LYS Sales'],
+      showAs: 'busy',
+    };
+
+    const calRes = await fetch(`https://graph.microsoft.com/v1.0/users/${targetEmail}/events`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify(eventBody)
+    });
+    if (!calRes.ok) {
+      const err = await calRes.text();
+      logError('sales.calendar.create', new Error(err.slice(0, 200)));
+      return res.status(502).json({ error: 'Calendar event creation failed' });
+    }
+    const calData = await calRes.json();
+
+    // Store event reference on opp
+    if (eventType === 'discovery') {
+      opp.discoveryCallDate = eventDate;
+      opp.discoveryCalEventId = calData.id;
+    } else if (eventType === 'presentation') {
+      opp.presentationDate = eventDate;
+      opp.presentationCalEventId = calData.id;
+    }
+    if (!Array.isArray(opp.activity)) opp.activity = [];
+    opp.activity.push({
+      ts: new Date().toISOString(),
+      type: 'calendar',
+      note: `📅 ${label} scheduled for ${eventDate} at ${eventTime} — calendar invite sent to ${opp.email || 'assignee'}`
+    });
+    opp.updatedAt = new Date().toISOString();
+    writeOpps(opps);
+    logActivity('sales.calendar.created', { oppId: opp.id, type: eventType, date: eventDate, eventId: calData.id });
+    res.json({ ok: true, eventId: calData.id });
+  } catch (e) { logError('route.post.sales.calendar', e); res.status(500).json({ error: 'Failed: ' + (e.message || 'unknown') }); }
+});
+
+// POST /api/sales/opportunities/:id/upload — upload file to opportunity
+app.post('/api/sales/opportunities/:id/upload', uploadImageOrPdf.single('file'), (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
+
+    const opp = opps[idx];
+    const oppDir = path.join(SALES_UPLOADS_DIR, opp.id);
+    if (!fs.existsSync(oppDir)) fs.mkdirSync(oppDir, { recursive: true });
+
+    const safeName = req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const destPath = path.join(oppDir, safeName);
+    if (!path.resolve(destPath).startsWith(path.resolve(SALES_UPLOADS_DIR))) {
+      return res.status(400).json({ error: 'Invalid filename' });
+    }
+    fs.renameSync(req.file.path, destPath);
+
+    const publicPath = `/uploads/sales/${opp.id}/${safeName}`;
+    if (!Array.isArray(opp.tenderDocUrls)) opp.tenderDocUrls = [];
+    if (!opp.tenderDocUrls.includes(publicPath)) opp.tenderDocUrls.push(publicPath);
+
+    // If this is a quotation upload (field hint from frontend)
+    const isQuotation = req.body.isQuotation === 'true';
+    if (isQuotation) opp.quotationFileUrl = publicPath;
+
+    if (!Array.isArray(opp.activity)) opp.activity = [];
+    opp.activity.push({
+      ts: new Date().toISOString(),
+      type: 'upload',
+      note: `📄 Uploaded ${isQuotation ? 'quotation' : 'document'}: ${req.file.originalname}`
+    });
+    opp.updatedAt = new Date().toISOString();
+    writeOpps(opps);
+    logActivity('sales.file.uploaded', { oppId: opp.id, file: safeName, isQuotation });
+    res.json({ filePath: publicPath, fileName: safeName });
+  } catch (e) { logError('route.post.sales.upload', e); res.status(500).json({ error: 'Upload failed' }); }
+});
+
+// POST /api/sales/opportunities/:id/fetch-attachments — pull email attachments into the opportunity
+app.post('/api/sales/opportunities/:id/fetch-attachments', postRateLimit, async (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    const opps = readOpps();
+    const idx = opps.findIndex(o => o.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Opportunity not found' });
+    const opp = opps[idx];
+
+    const emailId = req.body.emailId || opp._sourceEmailId;
+    const mailbox = req.body.mailbox || opp._sourceMailbox;
+    if (!emailId || !mailbox) return res.status(400).json({ error: 'No source email linked to this opportunity' });
+
+    const accessToken = await getAccessToken();
+    if (!accessToken) return res.status(503).json({ error: 'Email not configured' });
+
+    // Fetch attachments from the source email
+    const attUrl = `https://graph.microsoft.com/v1.0/users/${encodeURIComponent(mailbox)}/messages/${emailId}/attachments`;
+    const attRes = await fetch(attUrl, { headers: { Authorization: 'Bearer ' + accessToken } });
+    if (!attRes.ok) return res.status(502).json({ error: 'Failed to fetch attachments from email' });
+    const attData = await attRes.json();
+    const attachments = (attData.value || []).filter(a =>
+      a.contentBytes && a.name &&
+      (a.contentType === 'application/pdf' || /\.(pdf|doc|docx|xls|xlsx|jpg|jpeg|png)$/i.test(a.name))
+    );
+
+    if (!attachments.length) return res.json({ fetched: 0, message: 'No downloadable attachments found' });
+
+    // Save to uploads/sales/<oppId>/
+    const oppDir = path.join(SALES_UPLOADS_DIR, opp.id);
+    if (!fs.existsSync(oppDir)) fs.mkdirSync(oppDir, { recursive: true });
+
+    const saved = [];
+    if (!Array.isArray(opp.tenderDocUrls)) opp.tenderDocUrls = [];
+
+    for (const att of attachments) {
+      const safeName = att.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const filePath = path.join(oppDir, safeName);
+      // Verify path stays inside uploads dir
+      if (!path.resolve(filePath).startsWith(path.resolve(SALES_UPLOADS_DIR))) continue;
+      fs.writeFileSync(filePath, Buffer.from(att.contentBytes, 'base64'));
+      const publicPath = `/uploads/sales/${opp.id}/${safeName}`;
+      if (!opp.tenderDocUrls.includes(publicPath)) opp.tenderDocUrls.push(publicPath);
+      saved.push({ name: att.name, path: publicPath, size: att.size });
+    }
+
+    if (saved.length) {
+      if (!Array.isArray(opp.activity)) opp.activity = [];
+      opp.activity.push({
+        ts: new Date().toISOString(),
+        type: 'attachment',
+        note: `📎 Fetched ${saved.length} file(s) from email: ${saved.map(s => s.name).join(', ')}`
+      });
+      opp.updatedAt = new Date().toISOString();
+      writeOpps(opps);
+      logActivity('sales.attachments.fetched', { oppId: opp.id, count: saved.length, files: saved.map(s => s.name) });
+    }
+
+    res.json({ fetched: saved.length, files: saved });
+  } catch (e) { logError('route.post.sales.fetch-attachments', e); res.status(500).json({ error: 'Failed: ' + (e.message || 'unknown') }); }
 });
 
 // ── Historical PR Import ──────────────────────────────────────────────────────

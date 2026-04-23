@@ -93,10 +93,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.010Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:37:51.307Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -105,8 +105,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoa5y4",
@@ -122,10 +122,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.010Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:37:54.720Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -134,8 +134,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoa6zr",
@@ -151,10 +151,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.010Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:37:56.528Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -163,8 +163,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoa7jz",
@@ -180,10 +180,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.010Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:37:30.134Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -192,8 +192,10 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2,
+    "acknowledgedAt": "2026-04-23T02:37:26.194Z",
+    "acknowledgedBy": "Chris"
   },
   {
     "id": "mo7wjcoa8go",
@@ -209,10 +211,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.010Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:37:58.207Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -221,8 +223,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoa9b8",
@@ -238,10 +240,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.010Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:37:59.458Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -250,8 +252,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoaa7a",
@@ -279,8 +281,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoab34",
@@ -308,8 +310,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoac02",
@@ -337,8 +339,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoad21",
@@ -366,8 +368,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcoae35",
@@ -395,8 +397,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcobf1i",
@@ -424,8 +426,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcobgoj",
@@ -453,8 +455,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcobh4m",
@@ -482,8 +484,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcobixo",
@@ -596,10 +598,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.011Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T01:40:01.984Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -608,8 +610,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcobmfw",
@@ -625,10 +627,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.011Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T01:39:22.539Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -637,8 +639,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcobn0k",
@@ -654,10 +656,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.011Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T11:04:21.573Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -666,8 +668,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo7wjcobokw",
@@ -683,10 +685,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-21T00:45:00.011Z",
     "dueDate": "2026-04-21",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T11:04:19.319Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -695,8 +697,8 @@
     "archived": false,
     "archivedAt": null,
     "overdueEmailSent": true,
-    "ackReminderSentAt": "2026-04-22T01:00:00.012Z",
-    "ackReminderCount": 1
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 2
   },
   {
     "id": "mo867agq",
@@ -720,7 +722,9 @@
     "archived": false,
     "archivedAt": null,
     "calendarEventId": "AAMkADk1NGUwMWFiLTBjYjMtNGVlNi04YmRmLTFmNmEyNWQ2N2QxMwBGAAAAAAArDFtrQ8-5RKjd-HYBK85DBwCJajdqnHObTK-RZ3rejkuVAAAAAAENAACJajdqnHObTK-RZ3rejkuVAACNYyOMAAA=",
-    "calendarEventOwner": "chris@laiyewseng.com.sg"
+    "calendarEventOwner": "chris@laiyewseng.com.sg",
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo8697xf",
@@ -744,7 +748,9 @@
     "archived": false,
     "archivedAt": null,
     "calendarEventId": "AAMkAGIyZDQwOGMxLWMwYjQtNGVjMy05ODk4LTkzNDIxMmMwYzQ0YQBGAAAAAAB2lY9OFoc2QqHt8WnBYP37BwBvHDXA5e42Q40-bt6QoDZwAAAAAAENAABvHDXA5e42Q40-bt6QoDZwAAUeJGxQAAA=",
-    "calendarEventOwner": "Salve@laiyewseng.com.sg"
+    "calendarEventOwner": "Salve@laiyewseng.com.sg",
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo869scp",
@@ -768,7 +774,9 @@
     "archived": false,
     "archivedAt": null,
     "calendarEventId": "AQMkADMwZDI2NWQ1LTk0YjUtNDA5Ni04Njk1LWM5Mzk2ODIzYjFjZABGAAADrisvm1D-ukGKbu-Jkou1iQcAnzNLVrMXEkaLzigpPAhskAAAAgENAAAAnzNLVrMXEkaLzigpPAhskAAFJGabSwAAAA==",
-    "calendarEventOwner": "alexmac@laiyewseng.com.sg"
+    "calendarEventOwner": "alexmac@laiyewseng.com.sg",
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7ce1l0",
@@ -794,7 +802,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cf2d6",
@@ -846,7 +857,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cf4h1",
@@ -862,17 +876,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.015Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:37:40.272Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cf5nw",
@@ -888,17 +905,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.015Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:38:01.503Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cf683",
@@ -914,17 +934,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.015Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:38:10.587Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cf72f",
@@ -940,17 +963,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.015Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:38:14.796Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cf88i",
@@ -966,17 +992,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.015Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:38:17.833Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cf9el",
@@ -992,17 +1021,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.015Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T02:38:22.835Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cga5q",
@@ -1028,7 +1060,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cgbhm",
@@ -1054,7 +1089,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cgcr3",
@@ -1080,7 +1118,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cgdc3",
@@ -1106,7 +1147,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cged8",
@@ -1132,7 +1176,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cgf0s",
@@ -1158,7 +1205,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cgguf",
@@ -1184,7 +1234,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cghtk",
@@ -1210,7 +1263,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7chil5",
@@ -1236,7 +1292,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7chj3z",
@@ -1262,7 +1321,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7chkxc",
@@ -1288,7 +1350,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7chlge",
@@ -1314,7 +1379,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7chmai",
@@ -1340,7 +1408,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7chnqo",
@@ -1366,7 +1437,10 @@
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7chon1",
@@ -1382,17 +1456,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.017Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T01:39:08.813Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cip0h",
@@ -1408,17 +1485,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.018Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T11:04:16.395Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7ciqxt",
@@ -1434,17 +1514,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.018Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T11:04:13.112Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9bz7cir4k",
@@ -1460,17 +1543,20 @@
     "createdBy": "System",
     "createdAt": "2026-04-22T00:45:00.018Z",
     "dueDate": "2026-04-22",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-23T11:04:10.949Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
     ],
     "weekOf": "2026-04-20",
     "archived": false,
-    "archivedAt": null
+    "archivedAt": null,
+    "overdueEmailSent": true,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
   },
   {
     "id": "mo9ci0frjjxr",
@@ -1490,6 +1576,710 @@
     "completedAt": null,
     "linkedMeetingNoteIdx": null,
     "tags": [],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null,
+    "ackReminderSentAt": "2026-04-23T01:00:00.021Z",
+    "ackReminderCount": 1
+  },
+  {
+    "id": "moarf20u1dn",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Review EOD flags — action any gaps from yesterday",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "People",
+    "assignedTo": "Lai Wei Xiang",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.030Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf20v20y",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Review cash position — check what landed, what's overdue",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Finance",
+    "assignedTo": "Lai Wei Xiang",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.031Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf20v3hc",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Approve/reject pending decisions — POs, scope changes, OT",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Lai Wei Xiang",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.031Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf20w45f",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Take attendance — mark MC/absent workers",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "People",
+    "assignedTo": "Chris",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.032Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf20x5a1",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Review today's fabrication priorities across all projects",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Chris",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.033Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf20y61d",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Check site requests inbox — acknowledge within 2 hours",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Chris",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.034Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf20z7g4",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Assign workers to projects and plan transport",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "People",
+    "assignedTo": "Chris",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.035Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf2118mt",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Update FAB progress on all active items",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Chris",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.037Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf2129qb",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Confirm next-day material and delivery readiness",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Chris",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.039Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf214azk",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Review and action all new PRs raised since yesterday",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Rena",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.040Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf215bp3",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Check all pending POs — confirm delivery dates with suppliers",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Rena",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.041Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf218cys",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Follow up on overdue supplier deliveries",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Rena",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.044Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf219d95",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Update material ETA for all active projects",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Rena",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.045Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21aeo4",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Review SOP Act deadlines — flag anything due within 7 days",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Alex Mac",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.046Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21cfhu",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Chase outstanding payment responses past SOP deadline — escalate if >3 days",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Alex Mac",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.048Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21dgwd",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Update claims status for all active projects",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Alex Mac",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.049Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21fhhd",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Prepare next progress claim for any project within 5 working days of claim date",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Alex Mac",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.051Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21giga",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Follow up on outstanding quotations with clients",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Janessa",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.052Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21hj21",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Check for new enquiries / tender invitations",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Janessa",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.053Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21hkm2",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Update sales pipeline — Tendering / Quotation stage projects",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Janessa",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.053Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21ilx7",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Issue invoices for any certified claims within 24 hours of QS confirmation",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Alex Chew",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.054Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21jmwx",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Update payment received — match to bank statement",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Alex Chew",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.055Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21jnl3",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Flag any invoice unpaid past 30 days to QS + boss",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Alex Chew",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.055Z",
+    "dueDate": "2026-04-23",
+    "status": "Pending",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": null,
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21jo2n",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Set today's installation target — project, item, qty, location",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Teo Meei Haw",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.055Z",
+    "dueDate": "2026-04-23",
+    "status": "Done",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": "2026-04-23T01:39:32.577Z",
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21kpjq",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Check factory readiness for items needed this week",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Operations",
+    "assignedTo": "Teo Meei Haw",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.056Z",
+    "dueDate": "2026-04-23",
+    "status": "Done",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": "2026-04-23T01:40:27.039Z",
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21mqde",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Update installation progress on active projects",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Teo Meei Haw",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.058Z",
+    "dueDate": "2026-04-23",
+    "status": "Done",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": "2026-04-23T11:04:08.102Z",
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
+    "weekOf": "2026-04-20",
+    "archived": false,
+    "archivedAt": null
+  },
+  {
+    "id": "moarf21nr2c",
+    "projectId": "",
+    "projectJobCode": "",
+    "projectName": "",
+    "title": "Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other",
+    "description": "",
+    "taskType": "Recurring",
+    "category": "Reporting",
+    "assignedTo": "Teo Meei Haw",
+    "requestedBy": "System",
+    "createdBy": "System",
+    "createdAt": "2026-04-23T00:45:00.059Z",
+    "dueDate": "2026-04-23",
+    "status": "Done",
+    "priority": "Normal",
+    "hoursLogged": [],
+    "completedAt": "2026-04-23T11:04:03.730Z",
+    "linkedMeetingNoteIdx": null,
+    "tags": [
+      "recurring"
+    ],
     "weekOf": "2026-04-20",
     "archived": false,
     "archivedAt": null

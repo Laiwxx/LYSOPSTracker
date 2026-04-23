@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776830235">
+  <link rel="stylesheet" href="/css/style.css?v=1776929410">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -687,7 +687,7 @@
   </div>
 </div>
 
-<script src="/js/utils.js?v=1776830235"></script>
+<script src="/js/utils.js?v=1776929410"></script>
 <script>
 // ── Constants ──────────────────────────────────────────
 const DAYS      = ['mon','tue','wed','thu','fri','sat'];
@@ -745,7 +745,7 @@ function shortDate(d) {
 async function init() {
   const [wData, pData] = await Promise.all([
     fetch('/api/workers?active=true').then(r => r.json()).catch(() => []),
-    fetch('/api/projects').then(r => r.json()).catch(() => [])
+    fetch('/api/projects?lifecycle=active').then(r => r.json()).catch(() => [])
   ]);
 
   workers  = (wData || []).filter(w => w.active !== false);

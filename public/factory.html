@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776830235">
+  <link rel="stylesheet" href="/css/style.css?v=1776929410">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 960px; margin: 0 auto; padding: 16px; }
@@ -1093,6 +1093,7 @@
       object-fit: cover;
       flex-shrink: 0;
       background: var(--bg);
+      cursor: pointer;
     }
     .fab-today-log-note {
       flex: 1;
@@ -1784,15 +1785,18 @@ function renderLogHistoryHtml(projectId, fabIdx, allLogs) {
       const deltaStr = (delta > 0 ? '+' : '') + delta;
       const deltaClass = delta < 0 ? ' neg' : '';
       const thumb = entry.photoPath
-        ? `<img class="fab-today-log-thumb" src="${escHtml(entry.photoPath)}" alt="">`
+        ? `<img class="fab-today-log-thumb" src="${escHtml(entry.photoPath)}" alt="" onclick="openPhotoViewer('${escHtml(entry.photoPath)}')">`
         : `<div class="fab-today-log-thumb" title="No photo (baseline migration)"></div>`;
+      const extraThumbs = Array.isArray(entry.extraPhotos) && entry.extraPhotos.length
+        ? entry.extraPhotos.map(p => `<img class="fab-today-log-thumb" src="${escHtml(p)}" alt="" style="margin-left:2px;" onclick="openPhotoViewer('${escHtml(p)}')">`).join('')
+        : '';
       const editedBadge = entry.editedAt
         ? ` <span class="fab-today-log-edited" title="Edited by ${escHtml(entry.editedBy || '')}">edited</span>`
         : '';
       return `<div class="fab-today-log-entry">` +
         `<span class="fab-today-log-time">${escHtml(hhmm)}</span>` +
         `<span class="fab-today-log-delta${deltaClass}">${escHtml(deltaStr)}</span>` +
-        thumb +
+        thumb + extraThumbs +
         `<span class="fab-today-log-note">${escHtml(entry.note || '')}${editedBadge}</span>` +
         `<div class="fab-today-log-actions">` +
           `<button type="button" class="fab-today-log-btn" onclick="openLogEditModal('${escHtml(projectId)}',${fabIdx},'${escHtml(entry.id)}')">Edit</button>` +
@@ -2316,9 +2320,12 @@ async function renderManpower(mpPlan, workers, dayKey) {
     return;
   }
 
-  // Build worker lookup map
+  // Build worker lookup map (own workers + supply workers from manpower plan)
   const workerMap = {};
   workers.forEach(w => { workerMap[w.id] = w; });
+  if (Array.isArray(mpPlan.supplyWorkers)) {
+    mpPlan.supplyWorkers.forEach(w => { if (w.id && w.name) workerMap[w.id] = w; });
+  }
 
   // Find workers assigned today to factory (Fabrication type only)
   const todayFactory = [];
@@ -2595,14 +2602,17 @@ function renderSRActions(req) {
   } else if (req.status === 'Acknowledged') {
     el.innerHTML =
       `<button class="sr-btn sr-btn-amber" onclick="updateSRStatus('${escHtml(req.id)}','In Fabrication')">🔧 Mark In Fabrication</button>` +
-      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>`;
+      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>` +
+      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','New')" style="margin-left:8px;">↩ Undo</button>`;
   } else if (req.status === 'In Fabrication') {
     el.innerHTML =
       `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Ready')">📦 Mark Ready</button>` +
-      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>`;
+      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>` +
+      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','Acknowledged')" style="margin-left:8px;">↩ Back</button>`;
   } else if (req.status === 'Ready') {
     el.innerHTML =
-      `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Delivered')">🚚 Mark Delivered</button>`;
+      `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Delivered')">🚚 Mark Delivered</button>` +
+      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','In Fabrication')" style="margin-left:8px;">↩ Back</button>`;
   } else if (req.status === 'Issue') {
     el.innerHTML =
       `<button class="sr-btn sr-btn-primary" onclick="updateSRStatus('${escHtml(req.id)}','Acknowledged')">↩ Resume</button>`;
@@ -2832,7 +2842,7 @@ let _fprProjects = [];
 
 async function openFactoryPRModal() {
   if (!_fprProjects.length) {
-    try { _fprProjects = await fetch('/api/projects').then(r => r.json()); } catch {}
+    try { _fprProjects = await fetch('/api/projects?lifecycle=active').then(r => r.json()); } catch {}
   }
   const sel = document.getElementById('fpr-project');
   sel.innerHTML = '<option value="">— Select Project —</option>';
@@ -3017,7 +3027,7 @@ async function editPR(id) {
 
   // Load projects for dropdown
   if (!_fprProjects.length) {
-    try { _fprProjects = await fetch('/api/projects').then(r => r.json()); } catch {}
+    try { _fprProjects = await fetch('/api/projects?lifecycle=active').then(r => r.json()); } catch {}
   }
   const sel = document.getElementById('fpr-project');
   sel.innerHTML = '<option value="">— Select Project —</option>';
@@ -3112,9 +3122,12 @@ const logModalState = {
   projectJob:  '',
   photoBlob:   null,  // compressed Blob ready to upload (null if keeping existing)
   photoPreviewUrl: null, // object URL for <img>, or existing photoPath URL in edit mode
+  extraBlobs:  [],    // additional compressed Blobs
+  extraPreviewUrls: [], // object URLs for extra photo previews
   busy:        false, // true while upload/save is in flight
   editingLogId: null, // null = create, log id = editing
   existingPhotoPath: null, // the current log's photoPath (for edit mode, when user doesn't replace)
+  existingExtraPhotos: [], // existing extra photos (edit mode)
 };
 
 // Compress an image file to a JPEG Blob sized ≤ maxEdge on the long side.
@@ -3173,11 +3186,13 @@ async function uploadLogPhotoBlob(projectId, fabIdx, blob, logId) {
 }
 
 // Create the log entry, pairing it to an already-uploaded photo via id.
-async function createLogEntry(projectId, fabIdx, logId, delta, photoPath, note) {
+async function createLogEntry(projectId, fabIdx, logId, delta, photoPath, note, extraPhotos) {
+  const body = { id: logId, delta, photoPath, note };
+  if (extraPhotos && extraPhotos.length) body.extraPhotos = extraPhotos;
   const res = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/logs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: logId, delta, photoPath, note }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -3222,6 +3237,7 @@ function openLogEditModal(projectId, fabIdx, logId) {
   logModalState.projectJob = fabData[projectId].jobCode || '';
   logModalState.editingLogId = logId;
   logModalState.existingPhotoPath = entry.photoPath || null;
+  logModalState.existingExtraPhotos = Array.isArray(entry.extraPhotos) ? [...entry.extraPhotos] : [];
 
   document.getElementById('log-modal-title').textContent = 'Edit log entry';
   document.getElementById('log-modal-save-btn').textContent = 'Save edit';
@@ -3242,6 +3258,11 @@ function openLogEditModal(projectId, fabIdx, logId) {
     document.getElementById('log-modal-photo-status').textContent = 'Existing photo. Tap Retake to replace.';
   }
 
+  // Show existing extra photos
+  if (logModalState.existingExtraPhotos.length) {
+    renderExtraPhotoPreviews();
+  }
+
   _bindLogModalInputs();
   updateLogSaveButton();
   document.getElementById('log-modal').classList.add('open');
@@ -3255,6 +3276,11 @@ function _resetLogModalState() {
   logModalState.photoBlob = null;
   if (logModalState.photoPreviewUrl) URL.revokeObjectURL(logModalState.photoPreviewUrl);
   logModalState.photoPreviewUrl = null;
+  logModalState.extraBlobs.forEach(() => {});
+  logModalState.extraPreviewUrls.forEach(u => URL.revokeObjectURL(u));
+  logModalState.extraBlobs = [];
+  logModalState.extraPreviewUrls = [];
+  logModalState.existingExtraPhotos = [];
   logModalState.busy = false;
   logModalState.editingLogId = null;
   logModalState.existingPhotoPath = null;
@@ -3268,6 +3294,8 @@ function _resetLogModalState() {
   status.textContent = '';
   status.classList.remove('err');
   document.getElementById('log-modal-save-btn').disabled = true;
+  const extrasEl = document.getElementById('log-modal-extra-photos');
+  if (extrasEl) extrasEl.innerHTML = '';
 }
 
 function _bindLogModalInputs() {
@@ -3294,25 +3322,42 @@ function closeLogModal() {
   document.getElementById('log-modal').classList.remove('open');
 }
 
-// Photo file input changed — compress + preview.
+// Photo file input changed — compress + preview. Supports multiple files:
+// first file = primary photo, additional files = extras.
 async function handleLogPhotoCapture(e) {
-  const file = e.target.files && e.target.files[0];
-  if (!file) return;
+  const files = e.target.files;
+  if (!files || !files.length) return;
   const status = document.getElementById('log-modal-photo-status');
   status.classList.remove('err');
-  status.textContent = 'Compressing photo…';
+  const total = Math.min(files.length, 10);
+  status.textContent = 'Compressing ' + total + ' photo' + (total > 1 ? 's' : '') + '…';
   try {
-    const blob = await compressImage(file);
-    logModalState.photoBlob = blob;
+    // First file = primary photo
+    const primaryBlob = await compressImage(files[0]);
+    logModalState.photoBlob = primaryBlob;
     if (logModalState.photoPreviewUrl) URL.revokeObjectURL(logModalState.photoPreviewUrl);
-    logModalState.photoPreviewUrl = URL.createObjectURL(blob);
+    logModalState.photoPreviewUrl = URL.createObjectURL(primaryBlob);
     const img = document.getElementById('log-modal-photo-img');
     img.src = logModalState.photoPreviewUrl;
     document.getElementById('log-modal-photo-empty').style.display = 'none';
     document.getElementById('log-modal-photo-preview').style.display = '';
     document.getElementById('log-modal-photo-zone').classList.add('filled');
-    const kb = Math.round(blob.size / 1024);
-    status.textContent = 'Photo ready (' + kb + ' KB).';
+
+    // Additional files = extra photos (max 9 extras)
+    // Clear previous extras from this selection
+    logModalState.extraPreviewUrls.forEach(u => URL.revokeObjectURL(u));
+    logModalState.extraBlobs = [];
+    logModalState.extraPreviewUrls = [];
+    logModalState.existingExtraPhotos = []; // new selection replaces existing
+    for (let i = 1; i < total; i++) {
+      const blob = await compressImage(files[i]);
+      logModalState.extraBlobs.push(blob);
+      logModalState.extraPreviewUrls.push(URL.createObjectURL(blob));
+    }
+
+    renderExtraPhotoPreviews();
+    const totalKb = Math.round((primaryBlob.size + logModalState.extraBlobs.reduce((a, b) => a + b.size, 0)) / 1024);
+    status.textContent = total + ' photo' + (total > 1 ? 's' : '') + ' ready (' + totalKb + ' KB total).';
     updateLogSaveButton();
   } catch (err) {
     console.error('log photo compression failed:', err);
@@ -3320,6 +3365,39 @@ async function handleLogPhotoCapture(e) {
     status.textContent = 'Photo failed: ' + (err.message || 'unknown error');
     logModalState.photoBlob = null;
   }
+}
+
+// Render extra photo thumbnails below the primary preview
+function renderExtraPhotoPreviews() {
+  const container = document.getElementById('log-modal-extra-photos');
+  if (!container) return;
+  let html = '';
+  // Existing extra photos (from edit mode)
+  logModalState.existingExtraPhotos.forEach((p, i) => {
+    html += '<div style="display:inline-block;position:relative;margin:3px;">' +
+      '<img src="' + escHtml(p) + '" style="width:56px;height:56px;object-fit:cover;border-radius:4px;border:1px solid var(--border);">' +
+      '<button type="button" onclick="removeExtraPhoto(\'existing\',' + i + ')" style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:10px;line-height:16px;text-align:center;cursor:pointer;padding:0;">✕</button>' +
+      '</div>';
+  });
+  // New extra photos
+  logModalState.extraPreviewUrls.forEach((u, i) => {
+    html += '<div style="display:inline-block;position:relative;margin:3px;">' +
+      '<img src="' + u + '" style="width:56px;height:56px;object-fit:cover;border-radius:4px;border:1px solid var(--border);">' +
+      '<button type="button" onclick="removeExtraPhoto(\'new\',' + i + ')" style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:10px;line-height:16px;text-align:center;cursor:pointer;padding:0;">✕</button>' +
+      '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function removeExtraPhoto(type, idx) {
+  if (type === 'existing') {
+    logModalState.existingExtraPhotos.splice(idx, 1);
+  } else {
+    URL.revokeObjectURL(logModalState.extraPreviewUrls[idx]);
+    logModalState.extraBlobs.splice(idx, 1);
+    logModalState.extraPreviewUrls.splice(idx, 1);
+  }
+  renderExtraPhotoPreviews();
 }
 
 function retakeLogPhoto() {
@@ -3405,12 +3483,21 @@ async function saveLogEntry() {
       let photoPath = logModalState.existingPhotoPath;
       if (logModalState.photoBlob) {
         status.textContent = 'Uploading new photo…';
-        // Use the existing logId as the photo filename — overwrites in place.
         const up = await uploadLogPhotoBlob(pid, idx, logModalState.photoBlob, logModalState.editingLogId);
         photoPath = up.photoPath;
       }
+      // Upload extra photos
+      const extraPhotoPaths = [...logModalState.existingExtraPhotos];
+      if (logModalState.extraBlobs.length) {
+        status.textContent = 'Uploading extra photos…';
+        for (const blob of logModalState.extraBlobs) {
+          const extraId = makeLogId();
+          const up = await uploadLogPhotoBlob(pid, idx, blob, extraId);
+          extraPhotoPaths.push(up.photoPath);
+        }
+      }
       status.textContent = 'Saving edit…';
-      const body = { delta, note };
+      const body = { delta, note, extraPhotos: extraPhotoPaths };
       if (photoPath && photoPath !== logModalState.existingPhotoPath) body.photoPath = photoPath;
       const res = await fetch('/api/projects/' + encodeURIComponent(pid) + '/fabrication/' + idx + '/logs/' + logModalState.editingLogId, {
         method: 'PUT',
@@ -3427,8 +3514,18 @@ async function saveLogEntry() {
       const logId = makeLogId();
       status.textContent = 'Uploading photo…';
       const { photoPath } = await uploadLogPhotoBlob(pid, idx, logModalState.photoBlob, logId);
+      // Upload extra photos
+      const extraPhotoPaths = [];
+      if (logModalState.extraBlobs.length) {
+        status.textContent = 'Uploading ' + logModalState.extraBlobs.length + ' extra photo(s)…';
+        for (const blob of logModalState.extraBlobs) {
+          const extraId = makeLogId();
+          const up = await uploadLogPhotoBlob(pid, idx, blob, extraId);
+          extraPhotoPaths.push(up.photoPath);
+        }
+      }
       status.textContent = 'Saving log entry…';
-      result = await createLogEntry(pid, idx, logId, delta, photoPath, note);
+      result = await createLogEntry(pid, idx, logId, delta, photoPath, note, extraPhotoPaths);
     }
 
     // Update local state so the row re-renders with the new total.
@@ -3540,6 +3637,28 @@ function toggleTodaysLogsPanel(projectId, fabIdx) {
   panel.hidden = !panel.hidden;
 }
 
+// ── Photo viewer (lightbox) ───────────────────────────────────────────────────
+function openPhotoViewer(src) {
+  let overlay = document.getElementById('photo-viewer-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'photo-viewer-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:pointer;';
+    overlay.innerHTML = '<img id="photo-viewer-img" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;">' +
+      '<a id="photo-viewer-dl" style="position:absolute;bottom:20px;right:20px;background:var(--accent);color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;" download>Download</a>' +
+      '<button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;line-height:36px;text-align:center;">✕</button>';
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay || e.target.tagName === 'BUTTON') overlay.style.display = 'none';
+    });
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('photo-viewer-img').src = src;
+  const dl = document.getElementById('photo-viewer-dl');
+  dl.href = src;
+  dl.download = src.split('/').pop();
+  overlay.style.display = 'flex';
+}
+
 // ── Start ─────────────────────────────────────────────────────────────────────
 init();
 </script>
@@ -3556,10 +3675,10 @@ init();
       <div class="log-modal-photo-zone" id="log-modal-photo-zone">
         <div class="log-modal-photo-empty" id="log-modal-photo-empty">
           <div class="log-modal-photo-icon">📷</div>
-          <div class="log-modal-photo-hint">Take a photo of the built item.<br>Photo is required — it's your evidence log.</div>
+          <div class="log-modal-photo-hint">Take or select photos of the built item.<br>Photo is required — it's your evidence log.</div>
           <label class="log-modal-photo-btn">
-            Capture photo
-            <input type="file" accept="image/*" capture="environment" id="log-modal-photo-input" style="display:none;">
+            Capture photo(s)
+            <input type="file" accept="image/*" multiple id="log-modal-photo-input" style="display:none;">
           </label>
         </div>
         <div class="log-modal-photo-preview" id="log-modal-photo-preview" style="display:none;">
@@ -3568,6 +3687,7 @@ init();
         </div>
       </div>
       <div class="log-modal-photo-status" id="log-modal-photo-status"></div>
+      <div id="log-modal-extra-photos" style="margin-top:4px;"></div>
       <div class="log-modal-field">
         <label for="log-modal-delta">How many did you build?</label>
         <input type="number" id="log-modal-delta" min="1" step="1" inputmode="numeric" placeholder="e.g. 3">

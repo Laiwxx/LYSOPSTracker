@@ -140,6 +140,7 @@ function renderAll() {
   renderTopbar();
   renderHeader();
   renderFinBar();
+  renderLifecycleBar();
   renderFields();
   renderDocuments();
   renderDrawings();
@@ -2822,6 +2823,158 @@ async function renderHistoryTab() {
   const refreshBtn = document.getElementById('history-refresh-btn');
   if (refreshBtn) {
     refreshBtn.onclick = renderHistoryTab;
+  }
+}
+
+// ── Lifecycle Bar ────────────────────────────────────────────────────────────
+const LC_LABELS = { active: 'Active', dlp: 'DLP', settled: 'Settled', archived: 'Archived' };
+const LC_COLORS = {
+  active:   { bg: 'rgba(0,200,117,0.12)', color: 'var(--green)' },
+  dlp:      { bg: 'rgba(253,171,61,0.15)', color: 'var(--amber)' },
+  settled:  { bg: 'rgba(51,102,255,0.12)', color: 'var(--accent)' },
+  archived: { bg: 'rgba(107,114,148,0.15)', color: 'var(--text-muted)' },
+};
+
+function renderLifecycleBar() {
+  const bar = document.getElementById('lifecycle-bar');
+  if (!bar) return;
+  const lc = project.lifecycle || 'active';
+  bar.style.display = '';
+
+  const badge = document.getElementById('lifecycle-badge');
+  const c = LC_COLORS[lc] || LC_COLORS.active;
+  badge.style.background = c.bg;
+  badge.style.color = c.color;
+  badge.textContent = LC_LABELS[lc] || lc;
+
+  const info = document.getElementById('lifecycle-info');
+  const actions = document.getElementById('lifecycle-actions');
+  const fmt = d => d ? new Date(d).toLocaleDateString('en-SG', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  const money = n => '$' + (n || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+  if (lc === 'active') {
+    info.textContent = 'Active project — visible on all ops pages.';
+    actions.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="openLcTransition(\'dlp\')">Move to DLP →</button>';
+  } else if (lc === 'dlp') {
+    const parts = [];
+    if (project.handoverDate) parts.push('Handover: ' + fmt(project.handoverDate));
+    if (project.dlpEndDate) parts.push('DLP ends: ' + fmt(project.dlpEndDate));
+    if (project.retentionAmount) parts.push('Retention: ' + money(project.retentionAmount));
+    info.textContent = parts.join(' · ') || 'Defects Liability Period';
+    actions.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="openLcTransition(\'settled\')">Mark Settled →</button>';
+  } else if (lc === 'settled') {
+    const parts = [];
+    if (project.finalAccountDate) parts.push('Final account: ' + fmt(project.finalAccountDate));
+    if (project.retentionReleasedDate) parts.push('Retention released: ' + fmt(project.retentionReleasedDate));
+    info.textContent = parts.join(' · ') || 'Fully settled';
+    actions.innerHTML =
+      '<button class="btn btn-ghost btn-sm" onclick="openLcTransition(\'dlp\')" title="Reopen for defect callback">Reopen →</button>' +
+      '<button class="btn btn-ghost btn-sm" onclick="openLcTransition(\'archived\')">Archive →</button>';
+  } else if (lc === 'archived') {
+    info.textContent = project.archivedDate ? 'Archived on ' + fmt(project.archivedDate) : 'Archived';
+    actions.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="openLcTransition(\'dlp\')" title="Reopen for defect callback">Reopen →</button>';
+  }
+}
+
+function openLcTransition(target) {
+  const modal = document.getElementById('lifecycle-modal');
+  const title = document.getElementById('lc-modal-title');
+  const body = document.getElementById('lc-modal-body');
+  const confirmBtn = document.getElementById('lc-modal-confirm');
+  const current = project.lifecycle || 'active';
+
+  if (target === 'dlp' && current === 'active') {
+    title.textContent = 'Move to Defects Liability Period';
+    body.innerHTML =
+      '<div style="margin-bottom:10px;">' +
+        '<label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Handover Date *</label>' +
+        '<input type="date" id="lc-handover-date" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+      '</div>' +
+      '<div style="margin-bottom:10px;">' +
+        '<label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">DLP Period (months)</label>' +
+        '<input type="number" id="lc-dlp-months" value="' + (project.dlpMonths || 12) + '" min="1" max="60" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+      '</div>' +
+      '<div style="margin-bottom:10px;">' +
+        '<label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Retention %</label>' +
+        '<input type="number" id="lc-retention-pct" value="' + (project.retentionPercent || 5) + '" min="0" max="100" step="0.5" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+      '</div>';
+    confirmBtn.textContent = 'Move to DLP';
+    confirmBtn.onclick = () => submitLcTransition('dlp', {
+      handoverDate: document.getElementById('lc-handover-date').value,
+      dlpMonths: parseInt(document.getElementById('lc-dlp-months').value, 10) || 12,
+      retentionPercent: parseFloat(document.getElementById('lc-retention-pct').value) || 5,
+    });
+  } else if (target === 'settled') {
+    title.textContent = 'Mark as Settled';
+    body.innerHTML =
+      '<p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;">Confirm that the final account is settled and retention has been released.</p>' +
+      '<div style="margin-bottom:10px;">' +
+        '<label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Final Account Date</label>' +
+        '<input type="date" id="lc-final-date" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+      '</div>' +
+      '<div style="margin-bottom:10px;">' +
+        '<label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Retention Released Date</label>' +
+        '<input type="date" id="lc-retention-date" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+      '</div>';
+    confirmBtn.textContent = 'Mark Settled';
+    confirmBtn.onclick = () => submitLcTransition('settled', {
+      finalAccountDate: document.getElementById('lc-final-date').value,
+      retentionReleasedDate: document.getElementById('lc-retention-date').value,
+    });
+  } else if (target === 'archived') {
+    title.textContent = 'Archive Project';
+    body.innerHTML = '<p style="font-size:12px;color:var(--text-muted);margin:0;">This project will be moved to the archive. You can reopen it later if needed.</p>';
+    confirmBtn.textContent = 'Archive';
+    confirmBtn.onclick = () => submitLcTransition('archived');
+  } else if (target === 'dlp' && (current === 'settled' || current === 'archived')) {
+    title.textContent = 'Reopen Project';
+    body.innerHTML =
+      '<p style="font-size:12px;color:var(--text-muted);margin:0 0 12px;">Reopen this project for defect callback or additional work.</p>' +
+      '<div style="margin-bottom:10px;">' +
+        '<label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Reason</label>' +
+        '<input type="text" id="lc-reason" placeholder="e.g. Defect callback from client" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;">' +
+      '</div>';
+    confirmBtn.textContent = 'Reopen';
+    confirmBtn.onclick = () => submitLcTransition('dlp', {
+      reason: document.getElementById('lc-reason').value,
+    });
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeLcModal() {
+  document.getElementById('lifecycle-modal').style.display = 'none';
+}
+
+async function submitLcTransition(target, extra) {
+  const confirmBtn = document.getElementById('lc-modal-confirm');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Saving…';
+  try {
+    const body = { lifecycle: target, ...(extra || {}) };
+    const res = await fetch('/api/projects/' + projectId + '/lifecycle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.error || 'Transition failed');
+      return;
+    }
+    const result = await res.json();
+    if (result.project) {
+      project = result.project;
+    } else {
+      project.lifecycle = target;
+    }
+    closeLcModal();
+    renderAll();
+  } catch (e) {
+    alert('Error: ' + (e.message || 'unknown'));
+  } finally {
+    confirmBtn.disabled = false;
   }
 }
 
