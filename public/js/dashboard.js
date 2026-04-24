@@ -1247,7 +1247,7 @@
   // ── EOD Status Panel ──────────────────────────────────────────────────────
   async function loadEodStatus() {
     try {
-      var today = new Date().toISOString().split('T')[0];
+      var today = todaySGT();
       var todayDisplay = new Date().toLocaleDateString('en-SG', { weekday: 'long', day: 'numeric', month: 'short' });
 
       var titleEl = document.getElementById('eod-title');

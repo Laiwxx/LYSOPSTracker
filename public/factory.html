@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776929410">
+  <link rel="stylesheet" href="/css/style.css?v=1777037426">
   <style>
     body { background: var(--bg); }
     .factory-page { max-width: 960px; margin: 0 auto; padding: 16px; }
@@ -1340,7 +1340,7 @@ function confirmDelete(title, itemName) {
 let fabData    = {};  // { projectId: fullProjectData }
 const FAB_STAGES = ['Not Started', 'In Progress', 'QC Check', 'Ready for Delivery', 'Delivered'];
 let siteRequests = [];
-const today    = new Date().toISOString().split('T')[0];
+const today    = (() => { const s = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })); return s.getFullYear() + '-' + String(s.getMonth()+1).padStart(2,'0') + '-' + String(s.getDate()).padStart(2,'0'); })();
 
 document.getElementById('factory-date').textContent = new Date().toLocaleDateString('en-SG', {
   weekday: 'short', day: 'numeric', month: 'short'

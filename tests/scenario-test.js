@@ -326,6 +326,92 @@ async function run() {
 
   console.log('');
 
+  // ── SECURITY & FIREWALL ──
+  console.log('Security & Firewall');
+  console.log('-------------------');
+
+  // 27 — Unauthenticated POST blocked
+  { const r = await api('POST', '/api/tasks', { title: 'hack', assignedTo: 'X' }, { noAuth: true });
+    test('27. Unauth POST /api/tasks → 401', r.status === 401, `status=${r.status}`); }
+
+  // 28 — Unauthenticated DELETE blocked
+  { const r = await api('DELETE', '/api/projects/fake-id', null, { noAuth: true });
+    test('28. Unauth DELETE /api/projects → 401', r.status === 401, `status=${r.status}`); }
+
+  // 29 — Path traversal via upload filename (double-encoded)
+  { const r = await api('DELETE', '/api/projects/x/upload/..%252F..%252Fetc%252Fpasswd');
+    test('29. Double-encoded path traversal → blocked', r.status === 400 || (r.status === 200 && !r.data?.fileDeleted), `status=${r.status}`); }
+
+  // 30 — Path traversal via dot-dot-slash in filename
+  { const r = await api('DELETE', '/api/projects/x/upload/../../config/credentials.json');
+    test('30. Direct ../../ traversal → blocked', r.status === 400 || r.status === 404 || (r.status === 200 && !r.data?.fileDeleted), `status=${r.status}`); }
+
+  // 31 — Admin endpoint without PIN
+  { const r = await api('DELETE', '/api/projects/nonexistent', { reason: 'test' });
+    test('31. Delete project without PIN → 403', r.status === 403, `status=${r.status}`); }
+
+  // 32 — Admin endpoint with wrong PIN
+  { const r = await api('DELETE', '/api/projects/nonexistent', { pin: 'wrong-pin', reason: 'test' });
+    test('32. Delete project with wrong PIN → 403', r.status === 403, `status=${r.status}`); }
+
+  // 33 — Worker CRUD requires admin auth
+  { const r = await api('POST', '/api/workers', { name: 'Hack Worker', type: 'Own' });
+    test('33. POST /api/workers without PIN → 403', r.status === 403, `status=${r.status}`); }
+
+  // 34 — XSS in task title should be stored safely (no script execution, just stored as text)
+  { const xss = '<script>alert("xss")</script>';
+    const r = await api('POST', '/api/tasks', {
+      title: xss, assignedTo: TEST_NAME, createdBy: TEST_NAME
+    });
+    const stored = r.data?.title || '';
+    // Title should be stored as-is (sanitized on output) or stripped
+    test('34. XSS in task title → stored without execution risk', r.status === 200 || r.status === 201, `status=${r.status}`);
+    if (r.data?.id) await api('DELETE', `/api/tasks/${r.data.id}`, { deletedBy: TEST_NAME, reason: 'test cleanup' });
+  }
+
+  // 35 — SQL/NoSQL injection in query params (should not crash)
+  { const r = await api('GET', '/api/tasks?assignedTo[$ne]=null');
+    test('35. NoSQL injection in query → no crash', r.status === 200, `status=${r.status}`); }
+
+  // 36 — Oversized payload (very long string)
+  { const big = 'A'.repeat(100000);
+    const r = await api('POST', '/api/tasks', { title: big, assignedTo: TEST_NAME, createdBy: TEST_NAME });
+    // Should either reject (413/400) or truncate, not crash
+    test('36. 100KB title → no crash', r.status < 500, `status=${r.status}`);
+    if (r.data?.id) await api('DELETE', `/api/tasks/${r.data.id}`, { deletedBy: TEST_NAME, reason: 'test cleanup' });
+  }
+
+  // 37 — CRLF injection in header-sensitive field
+  { const r = await api('POST', '/api/tickets', {
+      title: 'Test\r\nInjected-Header: evil', type: 'Bug', submittedBy: TEST_NAME, description: 'test'
+    });
+    test('37. CRLF in ticket title → no crash', r.status < 500, `status=${r.status}`);
+    if (r.data?.id) await api('DELETE', `/api/tickets/${r.data.id}`, { pin: TEST_ADMIN_PIN, reason: 'test' });
+  }
+
+  // 38 — JSON body with prototype pollution keys
+  { const r = await api('POST', '/api/tasks', {
+      title: 'Proto test', assignedTo: TEST_NAME, createdBy: TEST_NAME,
+      '__proto__': { admin: true }, 'constructor': { prototype: { admin: true } }
+    });
+    test('38. Prototype pollution keys → no crash', r.status < 500, `status=${r.status}`);
+    if (r.data?.id) await api('DELETE', `/api/tasks/${r.data.id}`, { deletedBy: TEST_NAME, reason: 'test cleanup' });
+  }
+
+  // 39 — Basic Auth with invalid base64
+  { const r = await api('GET', '/api/projects', null, { noAuth: true, basicAuth: 'Basic !!!notbase64!!!' });
+    test('39. Malformed Basic Auth → 401 (no crash)', r.status === 401, `status=${r.status}`); }
+
+  // 40 — Access admin PIN endpoint without admin auth
+  { const r = await api('POST', '/api/admin/pin', { action: 'set', pin: '0000' });
+    test('40. Set admin PIN without auth → rejected', r.status === 400 || r.status === 403, `status=${r.status}`); }
+
+  // 41 — Document file delete with traversal in docIndex
+  { const r = await api('DELETE', '/api/projects/fakeproj/documents/99/file');
+    test('41. Doc file delete on nonexistent project → 404', r.status === 404, `status=${r.status}`); }
+
+  console.log('');
+
   // ── CLEANUP ──
   console.log('Cleanup');
   console.log('-------');

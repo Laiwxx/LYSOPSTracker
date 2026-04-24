@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Sales Pipeline — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776929410">
+  <link rel="stylesheet" href="/css/style.css?v=1777037426">
   <style>
     /* ── Salesforce-style KPI Bar ─────────────────────── */
     .kpi-bar {
@@ -632,7 +632,7 @@
   </div>
 </div>
 
-<script src="/js/utils.js?v=1776929410"></script>
+<script src="/js/utils.js?v=1777037426"></script>
 <script>
 // ── Constants & State ────────────────────────────────
 const STAGES = ['New Lead', 'Discovery', 'Tender Review', 'Quotation', 'Presentation', 'Pending Tender', 'Tender Awarded', 'Won', 'Lost'];
@@ -899,7 +899,7 @@ function renderMobile(filtered) {
     const color = avatarColor(o.clientName);
     const days = daysInStage(o);
     const stageColor = STAGE_COLORS[o.stage] || 'var(--text-muted)';
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = todaySGT();
     const fuOverdue = (o.nextFollowUpDate && o.nextFollowUpDate <= todayStr);
     return `<div class="sf-card" style="margin-bottom:8px;cursor:pointer;" onclick="openPanel('${esc(o.id)}')">
       <div class="sf-card-top">
@@ -992,7 +992,7 @@ function buildCard(opp) {
   div.draggable = canEdit;
   const days = daysInStage(opp);
   const stale = days > 14 && !['Won','Lost','No-Bid'].includes(opp.stage);
-  const today = new Date().toISOString().split('T')[0];
+  const today = todaySGT();
   const followSoon = (opp.nextFollowUpDate && opp.nextFollowUpDate <= today) || (opp.followUpDate && opp.followUpDate <= today);
   const color = avatarColor(opp.clientName);
   div.innerHTML = `

@@ -8,6 +8,7 @@ const multer = require('multer');
 const cron = require('node-cron');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const { AsyncLocalStorage } = require('async_hooks');
 const _authStore = new AsyncLocalStorage();
 
@@ -63,6 +64,8 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; font-src 'self'; frame-ancestors 'none';");
   next();
 });
 
@@ -164,10 +167,17 @@ function getSessionSecret() {
 }
 app.set('trust proxy', 1); // Trust nginx reverse proxy
 app.use(session({
+  store: new FileStore({
+    path: path.join(__dirname, 'data', 'sessions'),
+    ttl: 30 * 24 * 60 * 60, // 30 days max
+    retries: 0,
+    reapInterval: 3600, // clean expired sessions every hour
+    logFn: () => {} // silence file-store logs
+  }),
   secret: getSessionSecret(),
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax', secure: 'auto' } // 30 days
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax', secure: 'auto' } // 7 days default; extended to 30 days with "remember me"
 }));
 
 // Public paths that don't require auth
@@ -211,13 +221,40 @@ app.use((req, res, next) => {
 });
 
 // ── Login / Logout endpoints ─────────────────────────────────────────────────
-app.post('/api/auth/login', (req, res) => {
-  const { username, password } = req.body;
+// Login brute-force protection: 5 attempts per IP per 5 minutes
+const _loginAttempts = new Map();
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of _loginAttempts) if (now - v.start > 5 * 60 * 1000) _loginAttempts.delete(k);
+}, 60000).unref();
+function loginRateLimit(req, res, next) {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  let entry = _loginAttempts.get(ip);
+  if (!entry || now - entry.start > 5 * 60 * 1000) {
+    entry = { count: 0, start: now };
+  }
+  entry.count++;
+  _loginAttempts.set(ip, entry);
+  if (entry.count > 5) {
+    return res.status(429).json({ error: 'Too many login attempts. Please wait 5 minutes.' });
+  }
+  next();
+}
+
+app.post('/api/auth/login', loginRateLimit, (req, res) => {
+  const { username, password, rememberMe } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Email and password required' });
   const creds = readCredentials();
   const key = username.toLowerCase().trim();
   const entry = creds[key];
   if (entry && bcrypt.compareSync(password, entry.hash)) {
+    // Clear login attempts on success
+    _loginAttempts.delete(req.ip || req.socket.remoteAddress || 'unknown');
+    // Extend session to 30 days if "remember me" checked
+    if (rememberMe) {
+      req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
+    }
     req.session.user = entry.name;
     req.session.username = key;
     res.json({ ok: true, name: entry.name });
@@ -727,6 +764,11 @@ function todaySGT() {
   const sgt = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
   return sgt.getFullYear() + '-' + String(sgt.getMonth() + 1).padStart(2, '0') + '-' + String(sgt.getDate()).padStart(2, '0');
 }
+function dateSGT(offsetDays) {
+  const sgt = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+  sgt.setDate(sgt.getDate() + offsetDays);
+  return sgt.getFullYear() + '-' + String(sgt.getMonth() + 1).padStart(2, '0') + '-' + String(sgt.getDate()).padStart(2, '0');
+}
 function getWeekStart(date) {
   // Use SGT-aware date to determine the correct Monday
   const d = date ? new Date(date) : new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
@@ -1168,6 +1210,13 @@ app.get('/api/auth/me', (req, res) => {
 // No auth required — user can't log in, so this is outside the auth gate.
 // Rate-limited to prevent abuse. Accepts { username: "email@..." } for backwards compat with login form field name.
 const _resetAttempts = {};
+setInterval(() => {
+  const now = Date.now();
+  for (const k of Object.keys(_resetAttempts)) {
+    _resetAttempts[k] = _resetAttempts[k].filter(t => now - t < 3600000);
+    if (!_resetAttempts[k].length) delete _resetAttempts[k];
+  }
+}, 600000).unref(); // prune every 10 minutes
 app.post('/api/auth/forgot-password', (req, res) => {
   try {
     const { username } = req.body;
@@ -1273,17 +1322,22 @@ app.post('/api/auth/send-welcome-emails', async (req, res) => {
 });
 
 // ── Rate limiter for admin password verify ────────────────────────────────────
-const _adminAttempts = [];        // timestamps of recent failed attempts
-const ADMIN_MAX_ATTEMPTS = 5;     // max failures per window
+const _adminAttempts = new Map();  // ip → [timestamps] of recent failed attempts
+const ADMIN_MAX_ATTEMPTS = 5;     // max failures per IP per window
 const ADMIN_WINDOW_MS = 60000;    // 1-minute window
 
-function checkAdminRateLimit() {
+function checkAdminRateLimit(ip) {
   const now = Date.now();
-  // Purge old entries
-  while (_adminAttempts.length && _adminAttempts[0] < now - ADMIN_WINDOW_MS) _adminAttempts.shift();
-  return _adminAttempts.length < ADMIN_MAX_ATTEMPTS;
+  let arr = _adminAttempts.get(ip) || [];
+  arr = arr.filter(ts => now - ts < ADMIN_WINDOW_MS);
+  _adminAttempts.set(ip, arr);
+  return arr.length < ADMIN_MAX_ATTEMPTS;
 }
-function recordAdminFailure() { _adminAttempts.push(Date.now()); }
+function recordAdminFailure(ip) {
+  const arr = _adminAttempts.get(ip) || [];
+  arr.push(Date.now());
+  _adminAttempts.set(ip, arr);
+}
 
 // Verify a plaintext password against stored hash (or legacy plaintext)
 async function verifyAdminPassword(plain, stored) {
@@ -1318,11 +1372,12 @@ app.post('/api/admin/pin', async (req, res) => {
 
     if (action === 'verify') {
       if (!admin.pin) return res.json({ ok: false, noPinSet: true });
-      if (!checkAdminRateLimit()) {
+      const adminIp = req.ip || req.socket.remoteAddress || 'unknown';
+      if (!checkAdminRateLimit(adminIp)) {
         return res.status(429).json({ error: 'Too many attempts. Wait 1 minute.' });
       }
       const ok = await verifyAdminPassword(pin, admin.pin);
-      if (!ok) { recordAdminFailure(); return res.json({ ok: false }); }
+      if (!ok) { recordAdminFailure(adminIp); return res.json({ ok: false }); }
       return res.json({ ok: true });
     }
 
@@ -2489,6 +2544,7 @@ app.post('/api/projects/:id/fabrication/:idx/logs', postRateLimit, (req, res) =>
     }
     const photoPath = typeof req.body.photoPath === 'string' ? req.body.photoPath.trim() : '';
     if (!photoPath) return res.status(400).json({ error: 'photoPath is required — every log entry must carry photo evidence' });
+    if (!photoPath.startsWith('/uploads/fab-logs/')) return res.status(400).json({ error: 'photoPath must start with /uploads/fab-logs/' });
     const note = typeof req.body.note === 'string' ? req.body.note.slice(0, 500) : '';
     const fmName = (readStaff()['Factory Manager'] || {}).name || 'Factory Manager';
     const loggedBy = (typeof req.body.loggedBy === 'string' && req.body.loggedBy.trim()) || fmName;
@@ -2594,7 +2650,8 @@ app.put('/api/projects/:id/fabrication/:idx/logs/:logId', postRateLimit, (req, r
     entry.editHistory.push(priorSnapshot);
     entry.delta = Math.round(nextDelta * 100) / 100;
     if (typeof req.body.photoPath === 'string' && req.body.photoPath.trim()) {
-      entry.photoPath = req.body.photoPath.trim();
+      const pp = req.body.photoPath.trim();
+      if (pp.startsWith('/uploads/fab-logs/')) entry.photoPath = pp;
     }
     if (Array.isArray(req.body.extraPhotos)) {
       entry.extraPhotos = req.body.extraPhotos
@@ -2806,7 +2863,7 @@ function _loadInstallRowOr404(req, res) {
 }
 
 // POST /api/projects/:id/installation/:idx/log-photo — upload install photo
-app.post('/api/projects/:id/installation/:idx/log-photo', uploadLogPhoto.single('photo'),
+app.post('/api/projects/:id/installation/:idx/log-photo', postRateLimit, uploadLogPhoto.single('photo'),
   async (req, res) => {
     try {
       const projects = readProjects();
@@ -2853,6 +2910,7 @@ app.post('/api/projects/:id/installation/:idx/logs', postRateLimit, (req, res) =
     }
     const photoPath = typeof req.body.photoPath === 'string' ? req.body.photoPath.trim() : '';
     if (!photoPath) return res.status(400).json({ error: 'photoPath is required' });
+    if (!photoPath.startsWith('/uploads/install-logs/')) return res.status(400).json({ error: 'photoPath must start with /uploads/install-logs/' });
     const note     = typeof req.body.note === 'string' ? req.body.note.slice(0, 500) : '';
     const location = typeof req.body.location === 'string' ? req.body.location.slice(0, 200) : '';
     const step     = typeof req.body.step === 'string' ? req.body.step.trim().slice(0, 100) : '';
@@ -2885,7 +2943,7 @@ app.post('/api/projects/:id/installation/:idx/logs', postRateLimit, (req, res) =
         .slice(0, 9);
     }
 
-    const entry = { id: logId, delta, photoPath, extraPhotos, note, location, step: step || undefined, loggedBy, loggedAt: new Date().toISOString() };
+    const entry = { id: logId, delta: Math.round(delta * 100) / 100, photoPath, extraPhotos, note, location, step: step || undefined, loggedBy, loggedAt: new Date().toISOString() };
     row.logs.push(entry);
     recomputeQtyDone(row);
     // Auto-derive status
@@ -2954,7 +3012,10 @@ app.put('/api/projects/:id/installation/:idx/logs/:logId', postRateLimit, (req, 
     if (proposedSum < 0) return res.status(400).json({ error: 'Would go below 0' });
 
     entry.delta = Math.round(nextDelta * 100) / 100;
-    if (typeof req.body.photoPath === 'string' && req.body.photoPath.trim()) entry.photoPath = req.body.photoPath.trim();
+    if (typeof req.body.photoPath === 'string' && req.body.photoPath.trim()) {
+      const pp = req.body.photoPath.trim();
+      if (pp.startsWith('/uploads/install-logs/')) entry.photoPath = pp;
+    }
     if (Array.isArray(req.body.extraPhotos)) {
       entry.extraPhotos = req.body.extraPhotos
         .filter(p => typeof p === 'string' && p.startsWith('/uploads/install-logs/'))
@@ -2984,6 +3045,13 @@ app.delete('/api/projects/:id/installation/:idx/logs/:logId', postRateLimit, (re
     if (logIdx === -1) return res.status(404).json({ error: 'Log entry not found' });
     const entry = row.logs[logIdx];
 
+    // Validate: don't allow delete if it would push qtyDone negative
+    const otherSum = row.logs.reduce((a, l, i) => i === logIdx ? a : a + (parseFloat(l.delta) || 0), 0);
+    const proposedSum = Math.round(otherSum * 100) / 100;
+    if (proposedSum < 0) {
+      return res.status(400).json({ error: `Cannot delete: would result in negative installed qty (${proposedSum}).` });
+    }
+
     row.logs.splice(logIdx, 1);
     recomputeQtyDone(row);
 
@@ -2995,7 +3063,7 @@ app.delete('/api/projects/:id/installation/:idx/logs/:logId', postRateLimit, (re
       try {
         const filePath = path.resolve(__dirname, 'public', pp.replace(/^\//, ''));
         if (filePath.startsWith(path.resolve(INSTALL_LOGS_DIR)) && fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      } catch {}
+      } catch (unlinkErr) { console.warn('[install-log-delete] Failed to unlink photo:', pp, unlinkErr.message); }
     }
 
     deriveFields(project);
@@ -3744,7 +3812,7 @@ app.post('/api/eod-log', postRateLimit, (req, res) => {
 
 // ── Claims (SOP Act pipeline) ─────────────────────────────────────────────────
 function readClaims() {
-  if (!fs.existsSync(CLAIMS_FILE)) fs.writeFileSync(CLAIMS_FILE, '[]');
+  if (!fs.existsSync(CLAIMS_FILE)) safeWriteJSON(CLAIMS_FILE, []);
   return safeReadJSON(CLAIMS_FILE);
 }
 function writeClaims(c) {
@@ -3857,6 +3925,7 @@ app.post('/api/claims', (req, res) => {
     const submittedStr = b.submittedDate && isValidDate(b.submittedDate) ? b.submittedDate : todaySGT();
     const submitted = new Date(submittedStr + 'T00:00:00');
     const certDue = new Date(submitted); certDue.setDate(certDue.getDate() + 21);
+    const certDueStr = certDue.getFullYear() + '-' + String(certDue.getMonth() + 1).padStart(2, '0') + '-' + String(certDue.getDate()).padStart(2, '0');
     const claim = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       projectId:            b.projectId || '',
@@ -3867,7 +3936,7 @@ app.post('/api/claims', (req, res) => {
       claimAmount:          parseFloat(b.claimAmount) || 0,
       submittedDate:        b.submittedDate || todaySGT(),
       submittedBy:          b.submittedBy || '',
-      certificationDue:     certDue.toISOString().split('T')[0],
+      certificationDue:     certDueStr,
       certifiedDate:        null,
       certifiedAmount:      null,
       invoiceNumber:        b.invoiceNumber || null,
@@ -3906,7 +3975,7 @@ app.put('/api/claims/:id', (req, res) => {
     if (b.certifiedDate && !claims[idx].certifiedDate) {
       const certDate = new Date(b.certifiedDate);
       const payDue = new Date(certDate); payDue.setDate(payDue.getDate() + 35);
-      b.paymentDue = payDue.toISOString().split('T')[0];
+      b.paymentDue = payDue.getFullYear() + '-' + String(payDue.getMonth() + 1).padStart(2, '0') + '-' + String(payDue.getDate()).padStart(2, '0');
       if (!b.status) b.status = 'Certified';
     }
     if (b.invoiceRaisedDate && !claims[idx].invoiceRaisedDate && !b.status) b.status = 'Invoiced';
@@ -4068,8 +4137,8 @@ cron.schedule('0 9 * * 1-5', async () => {
   const projectsForClaims = readProjects();
   const projById = {};
   projectsForClaims.forEach(p => { projById[p.id] = p; });
-  const in7days = new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0];
-  const in3days = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
+  const in7days = dateSGT(7);
+  const in3days = dateSGT(3);
   const bossEmail = getBossEmail() || process.env.SENDER_EMAIL;
   let claimsChanged = false;
   for (const claim of claims) {
@@ -4197,10 +4266,10 @@ cron.schedule('0 9 * * 1-5', async () => {
   // caught up overnight, ping the boss again at 9am.
   console.log('[CRON] 9am yesterday EOD re-check...');
   try {
-    const y = new Date(Date.now() - 86400000);
-    const yDay = y.getDay(); // 0=Sun, 6=Sat — skip weekends (no EOD expected)
+    const yesterday = dateSGT(-1);
+    const yDate = new Date(yesterday + 'T00:00:00');
+    const yDay = yDate.getDay(); // 0=Sun, 6=Sat — skip weekends (no EOD expected)
     if (yDay !== 0 && yDay !== 6) {
-      const yesterday = y.toISOString().split('T')[0];
       const history = readEODHistory();
       const histEntry = history.find(h => h.date === yesterday);
       if (histEntry && Array.isArray(histEntry.missing) && histEntry.missing.length) {
@@ -4253,7 +4322,7 @@ cron.schedule('0 9 * * 1-5', async () => {
         continue;
       }
       noteTasks.push({
-        id: Date.now().toString(36) + createdNotes.toString(36),
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
         projectId:      p.id,
         projectJobCode: p.jobCode || '',
         projectName:    p.projectName || '',
@@ -4326,7 +4395,7 @@ cron.schedule('0 9 * * 1-5', async () => {
       const body = emailWrap(null,
         (expired
           ? emailUrgentBox(`DLP has <strong>expired</strong> for this project. Retention of <strong>$${(p.retentionAmount || 0).toLocaleString()}</strong> is now claimable.`)
-          : emailWarningBox(`DLP is expiring on <strong>${escHtml(p.dlpEndDate)}</strong>. Retention of <strong>$${(p.retentionAmount || 0).toLocaleString()}</strong> will be claimable.`)) +
+          : emailWarnBox(`DLP is expiring on <strong>${escHtml(p.dlpEndDate)}</strong>. Retention of <strong>$${(p.retentionAmount || 0).toLocaleString()}</strong> will be claimable.`)) +
         emailTable([
           ['Project', escHtml(p.jobCode) + ' — ' + escHtml(p.projectName)],
           ['Handover', escHtml(p.handoverDate || '—')],
@@ -4816,7 +4885,7 @@ app.delete('/api/workers/:id', async (req, res) => {
 // ── Attendance API ─────────────────────────────────────────────────────────────
 
 function readAttendance() {
-  if (!fs.existsSync(ATTENDANCE_FILE)) fs.writeFileSync(ATTENDANCE_FILE, '[]');
+  if (!fs.existsSync(ATTENDANCE_FILE)) safeWriteJSON(ATTENDANCE_FILE, []);
   return safeReadJSON(ATTENDANCE_FILE);
 }
 
@@ -4835,7 +4904,7 @@ app.get('/api/attendance/week', (req, res) => {
     const dates = dayKeys.map((_, i) => {
       const d = new Date(wsDate);
       d.setDate(d.getDate() + i);
-      return d.toISOString().split('T')[0];
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     });
     const all = readAttendance();
     // Build { workerId: { mon: status, tue: status, ... } } for non-working statuses only
@@ -5509,13 +5578,13 @@ function getSGTContext() {
 
 function cleanDuplicateRecurringTasks() {
   try {
-    const todaySGT = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Singapore"})).toISOString().slice(0,10);
+    const todayStr = todaySGT();
     const tasks = readTasks();
     const seen = new Map(); // key: "assignedTo|title" -> index of first occurrence
     const toRemove = new Set();
     tasks.forEach((t, i) => {
       if (t.taskType !== 'Recurring') return;
-      if ((t.dueDate || '').slice(0,10) !== todaySGT) return;
+      if ((t.dueDate || '').slice(0,10) !== todayStr) return;
       const key = `${t.assignedTo}|${t.title}`;
       if (seen.has(key)) {
         toRemove.add(i);
@@ -6010,7 +6079,7 @@ app.put('/api/sales/opportunities/:id', (req, res) => {
             // Avoid duplicate: check if a sales-review task already exists for this opp
             const exists = tasks.some(t => t.projectId === opp.id && t.category === 'sales-review' && t.status !== 'Done');
             if (!exists) {
-              const deadline = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);
+              const deadline = dateSGT(5);
               const task = {
                 id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
                 title: `Prepare quotation for ${opp.clientName}`,
@@ -6058,7 +6127,7 @@ app.put('/api/sales/opportunities/:id', (req, res) => {
 
       // ── Auto-schedule first FU when entering Pending Tender ──
       if (b.stage === 'Pending Tender' && !opps[idx].nextFollowUpDate) {
-        const fuDate = new Date(Date.now() + 25 * 86400000).toISOString().slice(0, 10);
+        const fuDate = dateSGT(25);
         opps[idx].nextFollowUpDate = fuDate;
         opps[idx].fuSequence = 0;
         opps[idx].activity.push({ ts: new Date().toISOString(), type: 'auto-fu', note: `FU1 auto-scheduled for ${fuDate}` });
@@ -6128,10 +6197,10 @@ app.post('/api/sales/opportunities/:id/follow-up', postRateLimit, (req, res) => 
     const intervalDays = parseInt(req.body.intervalDays, 10) || 25; // default ~3.5 weeks
     if (outcome === 'Connected') {
       // Connected → schedule next FU in 3-4 weeks
-      nextDate = new Date(Date.now() + intervalDays * 86400000).toISOString().slice(0, 10);
+      nextDate = dateSGT(intervalDays);
     } else {
       // NPU / Voicemail / No Answer → retry in 2 days, same FU number
-      nextDate = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
+      nextDate = dateSGT(2);
       opp[seqKey] = currentSeq - 1; // don't increment — same FU retry
     }
 
@@ -6175,7 +6244,7 @@ app.delete('/api/sales/opportunities/:id', (req, res) => {
     if (idx === -1) return res.status(404).json({ error: 'Not found' });
     const removed = opps.splice(idx, 1)[0];
     writeOpps(opps);
-    logActivity('sales.opportunity.deleted', { id: removed.id, client: removed.clientName, reason: sanitizeStr(req.body?.reason, 500) });
+    logActivity('sales.opportunity.deleted', { id: removed.id, client: removed.clientName, reason: sanitizeStr(req.query?.reason, 500) });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.sales.opportunity', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -6701,7 +6770,7 @@ app.post('/api/purchase-requisitions', postRateLimit, async (req, res) => {
   try {
     const prs = readPRs();
     const b   = req.body;
-    const yr  = new Date().getFullYear().toString().slice(2);
+    const yr  = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })).getFullYear().toString().slice(2);
     const allSeqs = prs.map(p => parseInt(((p.prNumber || '').match(/(\d+)$/) || [])[1] || '0'));
     const nextSeq = (allSeqs.length ? Math.max(...allSeqs) : 0) + 1;
     const prNumber = `PR${yr}-${String(nextSeq).padStart(3, '0')}`;
@@ -6713,7 +6782,7 @@ app.post('/api/purchase-requisitions', postRateLimit, async (req, res) => {
       qtyArrived:   0, arriveDate: null, outstanding: parseFloat(it.qty) || 0
     })) : [];
     const pr = {
-      id: prNumber, prNumber, poNumber: null,
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), prNumber, poNumber: null,
       requestDate:  todaySGT(),
       projectCode:  String(b.projectCode || '').trim().slice(0, 100),
       site:         String(b.site || '').trim().slice(0, 200),
@@ -6821,7 +6890,7 @@ app.put('/api/purchase-requisitions/:id', postRateLimit, async (req, res) => {
               ['Supplier', escHtml(pr.supplier || '—')],
               ['ETA', escHtml(pr.eta || 'TBC')]
             ]) +
-            (pr.poDocPath ? `<p style="margin:0;"><a href="${APP_URL}${pr.poDocPath}">View PO Document</a></p>` : ''),
+            (pr.poDocPath ? `<p style="margin:0;"><a href="${APP_URL}${escHtml(pr.poDocPath)}">View PO Document</a></p>` : ''),
             'Open Procurement', `${APP_URL}/procurement`)
         ).catch(() => {});
       }

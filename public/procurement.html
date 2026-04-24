@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LYS OPS · Procurement</title>
   <meta name="theme-color" content="#1a1d2e">
-  <link rel="stylesheet" href="css/style.css?v=1776929410">
+  <link rel="stylesheet" href="css/style.css?v=1777037426">
   <style>
     /* ── Tabs ──────────────────────────────────────────────────────────────── */
     .proc-tabs {
@@ -1060,7 +1060,7 @@ function confirmDelete(title, itemName) {
 
     const container = document.getElementById('delivery-items-container');
     container.innerHTML = (pr.items || []).map((item, i) => {
-      const today = new Date().toISOString().split('T')[0];
+      const today = (() => { const s = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })); return s.getFullYear() + '-' + String(s.getMonth()+1).padStart(2,'0') + '-' + String(s.getDate()).padStart(2,'0'); })();
       return `<div class="delivery-item-row">
         <div class="delivery-item-label">${escHtml(item.description || 'Item ' + (i+1))}</div>
         <div class="delivery-item-meta">Ordered: ${item.qty != null ? item.qty : '—'}${item.unit ? ' ' + escHtml(item.unit) : ''} · Arrived so far: ${item.qtyArrived || 0} · Outstanding: ${item.outstanding != null ? item.outstanding : '—'}</div>
@@ -1335,7 +1335,7 @@ function confirmDelete(title, itemName) {
     document.getElementById('price-grade').value      = p ? (p.grade || '') : '';
     document.getElementById('price-unit-price').value = p ? (p.unitPrice || '') : '';
     document.getElementById('price-unit').value       = p ? (p.unit || '') : '';
-    document.getElementById('price-date').value       = p ? (p.date || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0];
+    document.getElementById('price-date').value       = p ? (p.date || (() => { const s = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })); return s.getFullYear() + '-' + String(s.getMonth()+1).padStart(2,'0') + '-' + String(s.getDate()).padStart(2,'0'); })()) : (() => { const s = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })); return s.getFullYear() + '-' + String(s.getMonth()+1).padStart(2,'0') + '-' + String(s.getDate()).padStart(2,'0'); })();
     document.getElementById('price-lead-time').value  = p ? (p.leadTimeDays || '') : '';
     document.getElementById('price-notes').value      = p ? (p.notes || '') : '';
     // Populate supplier datalist

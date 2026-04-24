@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776929410">
+  <link rel="stylesheet" href="/css/style.css?v=1777037426">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -687,7 +687,7 @@
   </div>
 </div>
 
-<script src="/js/utils.js?v=1776929410"></script>
+<script src="/js/utils.js?v=1777037426"></script>
 <script>
 // ── Constants ──────────────────────────────────────────
 const DAYS      = ['mon','tue','wed','thu','fri','sat'];
@@ -1475,7 +1475,7 @@ function esc(s) {
 // TRANSPORT PLAN
 // ══════════════════════════════════════════════════════
 
-let tpDate    = new Date().toISOString().split('T')[0]; // default today
+let tpDate    = todaySGT(); // default today
 let tpTrips   = [];   // array of trip objects for tpDate
 let tpPresent = [];   // workers Present/On Site for tpDate
 let tpSuggestedTrips = []; // auto-suggested from manpower plan

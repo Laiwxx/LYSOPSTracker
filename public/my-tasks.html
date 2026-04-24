@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Team Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776929410">
+  <link rel="stylesheet" href="/css/style.css?v=1777037426">
   <style>
     /* ── Type-grouped sections (Mandatory / Requests / Personal) ── */
     .mc-type-group {
@@ -569,7 +569,7 @@ function confirmDelete(title, itemName) {
   });
 }
 
-const todayStr = new Date().toISOString().split('T')[0];
+const todayStr = (() => { const s = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })); return s.getFullYear() + '-' + String(s.getMonth()+1).padStart(2,'0') + '-' + String(s.getDate()).padStart(2,'0'); })();
 let allTasks = [];
 let staffList = [];
 let projectsList = [];

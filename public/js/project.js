@@ -2479,7 +2479,7 @@ async function renderClaimsTab() {
   const cert    = claims.filter(c => c.status === 'Certified').length;
   const inv     = claims.filter(c => c.status === 'Invoiced').length;
   const paid    = claims.filter(c => c.status === 'Paid').length;
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = todaySGT();
   const overdue = claims.filter(c =>
     c.status !== 'Paid' && c.certificationDue && c.certificationDue < todayStr
   ).length;
@@ -2532,12 +2532,12 @@ async function renderClaimsTab() {
         const patch = { status: sel.value };
         // When marking certified, prompt for certified date
         if (sel.value === 'Certified') {
-          const d = prompt('Enter certification date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+          const d = prompt('Enter certification date (YYYY-MM-DD):', todaySGT());
           if (d) patch.certifiedDate = d;
         }
         // When marking paid, prompt for paid date + ref
         if (sel.value === 'Paid') {
-          const d = prompt('Enter payment received date (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+          const d = prompt('Enter payment received date (YYYY-MM-DD):', todaySGT());
           if (d) patch.paymentReceivedDate = d;
           const ref = prompt('Payment reference (bank ref / cheque no):');
           if (ref) patch._paymentRef = ref; // stored temporarily, merged with existing notes below
@@ -2593,7 +2593,7 @@ function buildClaimCard(c) {
   };
   const color = statusColors[c.status] || 'var(--text-muted)';
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = todaySGT();
   const certDue    = c.certificationDue || '—';
   const payDue     = c.paymentDue       || '—';
   const certOverdue = c.certificationDue && c.certificationDue < today && c.status === 'Awaiting Certification';
@@ -2656,7 +2656,7 @@ function showNewClaimModal() {
   const existing = document.getElementById('claim-modal-overlay');
   if (existing) existing.remove();
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = todaySGT();
 
   const overlay = document.createElement('div');
   overlay.id = 'claim-modal-overlay';

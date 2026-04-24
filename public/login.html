@@ -152,6 +152,10 @@
         <label for="login-pass">Password</label>
         <input type="password" id="login-pass" name="password" autocomplete="current-password" required>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;margin:8px 0 4px;">
+        <input type="checkbox" id="remember-me" style="width:16px;height:16px;accent-color:#3366ff;cursor:pointer;">
+        <label for="remember-me" style="font-size:13px;color:#8888a0;cursor:pointer;user-select:none;">Remember me for 30 days</label>
+      </div>
       <button type="submit" class="login-btn" id="login-btn">Sign In</button>
       <div class="login-error" id="login-error"></div>
     </form>
@@ -186,10 +190,11 @@
       btn.disabled = true;
       btn.textContent = 'Signing in\u2026';
 
+      var rememberMe = document.getElementById('remember-me').checked;
       fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username, password: password })
+        body: JSON.stringify({ username: username, password: password, rememberMe: rememberMe })
       }).then(function(res) {
         if (res.ok) {
           window.location.href = '/';

@@ -27,6 +27,14 @@ async function api(method, path, body) {
 // ---------------------------------------------------------------------------
 // Number formatting
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// SGT date — use instead of new Date().toISOString().split('T')[0]
+// ---------------------------------------------------------------------------
+function todaySGT() {
+  const sgt = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+  return sgt.getFullYear() + '-' + String(sgt.getMonth() + 1).padStart(2, '0') + '-' + String(sgt.getDate()).padStart(2, '0');
+}
+
 function fmtCurrency(n) {
   if (n === null || n === undefined || isNaN(n)) return '$0';
   return '$' + Math.round(n).toLocaleString('en-SG');

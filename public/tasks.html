@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1776929410">
+  <link rel="stylesheet" href="/css/style.css?v=1777037426">
   <style>
     /* ── Command Center ──────────────────────────────── */
     .cc-section {
@@ -182,6 +182,7 @@
 <div class="topbar">
   <div class="topbar-title"><span>LYS</span> OPS · Tasks</div>
   <div style="display:flex;gap:8px;align-items:center;">
+    <button id="new-task-btn" style="padding:5px 12px;background:var(--accent);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">+ New Task</button>
     <button id="archive-btn" style="padding:5px 12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius);color:rgba(255,255,255,0.85);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📦 Archive Done</button>
   </div>
 </div>
@@ -194,6 +195,9 @@
       <span class="staff-initial" style="font-size:13px;">📊</span><span>Dashboard</span>
     </a>
     <div class="tasks-sidebar-label">Views</div>
+    <button id="nav-overview" class="staff-nav-btn active" onclick="selectView('overview')">
+      <span class="staff-initial" style="font-size:13px;">📋</span><span>Overview</span>
+    </button>
     <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">👥</span><span>Team</span>
     </a>
@@ -216,6 +220,8 @@
     <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
     </a>
+    <div class="tasks-sidebar-label" style="margin-top:12px;">Staff</div>
+    <div id="staff-nav-list"></div>
     <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
       <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
     </a>
@@ -457,7 +463,7 @@ function renderCommandCenter() {
 
 // Section 1: Pending Acknowledgement
 function renderPendingAck() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = (() => { const s = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })); return s.getFullYear() + '-' + String(s.getMonth()+1).padStart(2,'0') + '-' + String(s.getDate()).padStart(2,'0'); })();
   const unacked = ALL_TASKS.filter(t =>
     t.assignedTo &&
     (!t.acknowledgedAt || t.acknowledgedAt === '') &&
@@ -565,7 +571,7 @@ function buildKanbanCard(task) {
   card.draggable = true;
   card.dataset.id = task.id;
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = (() => { const s = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Singapore' })); return s.getFullYear() + '-' + String(s.getMonth()+1).padStart(2,'0') + '-' + String(s.getDate()).padStart(2,'0'); })();
   const overdue = task.dueDate && task.dueDate < today && task.status !== 'Done';
   const unacked = task.assignedTo && !task.acknowledgedAt && task.status !== 'Done';
 
@@ -610,7 +616,7 @@ function buildKanbanCard(task) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ deletedBy: currentStaff || 'Unknown', reason: result.reason })
     });
-    if (!res.ok) { toast('Delete failed', false); return; }
+    if (!res.ok) { showToast('Delete failed', 'var(--red)'); return; }
     kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
     loadKanban(currentStaff);
   });
@@ -635,7 +641,7 @@ async function onDrop(event, newStatus) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     });
-    if (!res.ok) { toast('Status update failed', false); draggedTaskId = null; return; }
+    if (!res.ok) { showToast('Status update failed', 'var(--red)'); draggedTaskId = null; return; }
     draggedTaskId = null;
     [ALL_TASKS, kanbanData] = await Promise.all([
       fetch('/api/tasks').then(r => r.json()),
@@ -644,7 +650,7 @@ async function onDrop(event, newStatus) {
     loadKanban(currentStaff);
     renderPendingAck();
     buildSidebarNav();
-  } catch (e) { toast('Network error', false); draggedTaskId = null; }
+  } catch (e) { showToast('Network error', 'var(--red)'); draggedTaskId = null; }
 }
 
 async function loadHistory(staffName, period) {
@@ -735,7 +741,7 @@ function setupNewTask() {
         createdBy:      document.getElementById('nt-requested-by').value
       })
     });
-    if (!res.ok) { toast('Failed to create task', false); return; }
+    if (!res.ok) { showToast('Failed to create task', 'var(--red)'); return; }
     closeModal();
     ALL_TASKS  = await fetch('/api/tasks').then(r => r.json());
     kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
@@ -751,9 +757,9 @@ function setupArchive() {
     const result = await confirmDelete('Archive all Done tasks from previous weeks?', 'Bulk archive');
     if (!result) return;
     const res = await fetch('/api/tasks/archive-week', { method: 'POST' });
-    if (!res.ok) { toast('Archive failed', false); return; }
+    if (!res.ok) { showToast('Archive failed', 'var(--red)'); return; }
     const data = await res.json();
-    toast('Archived ' + data.archived + ' tasks');
+    showToast('Archived ' + data.archived + ' tasks');
     ALL_TASKS  = await fetch('/api/tasks').then(r => r.json());
     kanbanData = await fetch('/api/tasks/kanban').then(r => r.json());
     buildSidebarNav();
