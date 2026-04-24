@@ -23,7 +23,7 @@
     "currentStage": "Drawing Submission",
     "actionBy": "Drafter",
     "fabPercent": 0,
-    "installPercent": 0,
+    "installPercent": 13,
     "paidAmount": 0,
     "latestNotes": "",
     "stages": [
@@ -235,11 +235,11 @@
         "num": 18,
         "name": "Site Ready",
         "owner": "Project Manager/Site Engineer",
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "2026-04-23",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-23T08:43:04.266Z",
+        "statusChangedAt": "2026-04-24T10:14:59.378Z",
         "refs": [],
         "fileName": ""
       },
@@ -247,11 +247,11 @@
         "num": 19,
         "name": "Installation",
         "owner": "Site Engineer",
-        "status": "Not Started",
+        "status": "In Progress",
         "started": "2026-04-23",
         "done": "",
         "notes": "",
-        "statusChangedAt": "2026-04-23T08:43:04.267Z",
+        "statusChangedAt": "2026-04-24T10:14:59.378Z",
         "refs": [],
         "fileName": ""
       },
@@ -383,11 +383,23 @@
         "item": "Block S - Auto Bollard Cova",
         "totalQty": 2,
         "unit": "units",
-        "doneQty": 0,
+        "doneQty": 2,
         "notes": "",
-        "qtyDone": 0,
-        "status": "Not Started",
-        "logs": []
+        "qtyDone": 2,
+        "status": "Verified",
+        "logs": [
+          {
+            "id": "log_mocr99xln5b3",
+            "delta": 2,
+            "photoPath": "/uploads/install-logs/bd-19121-rbss-dnr/log_mocr99xln5b3.jpg",
+            "extraPhotos": [],
+            "note": "Site unable to take photos",
+            "location": "DNR BLOCK S",
+            "step": "Outer Casing Installation",
+            "loggedBy": "Lai Wei Xiang",
+            "loggedAt": "2026-04-24T10:16:03.397Z"
+          }
+        ]
       },
       {
         "item": "Block S - Auto Bollard Cova",
@@ -910,29 +922,29 @@
     "id": "bd-21923-shimizu-dnr",
     "jobCode": "BD 21923- SHIMIZU (DNR)",
     "projectName": "Development @ Neil Road",
-    "product": "50x SP30 FIXED",
+    "product": "93x SP400 FIXED, 6x Enginnering Removable Stainess Steel 304 - With Hairline Finish, 93x Stainless Steel Sleeve - Crash Rated Bollard, 1x Enginnering Fixed Stainess Steel 304 - With Hairline Finish, 23x Safety Bollard ( LTA Standard ), 6x Stainless Steel Sleeve - Engineering Bollard",
     "contractValue": 420000,
     "voValue": 0,
-    "client": "",
+    "client": "ICA ",
     "contact": "",
     "mainCon": "",
     "consultant": "",
     "startDate": "2026-02-19",
     "endDate": "2026-05-20",
     "projectManager": "Lai Wei Xiang",
-    "qs": "Salve",
+    "qs": "Alex Mac",
     "factoryManager": "Chris",
     "drafter": "Murugan",
     "purchaser": "Rena",
     "sales": "Janessa",
-    "siteEngineer": "",
+    "siteEngineer": "Lai Wei Xiang",
     "status": "On Track",
     "currentStage": "Drawing Submission",
     "actionBy": "Drafter",
     "fabPercent": 0,
     "installPercent": 0,
     "paidAmount": 0,
-    "latestNotes": "[2026-04-08] Fabrication For SP30 To commence Tomorrow",
+    "latestNotes": "",
     "stages": [
       {
         "num": 1,
@@ -1067,11 +1079,27 @@
         "fileName": ""
       }
     ],
-    "documents": [],
+    "documents": [
+      {
+        "name": "LOA",
+        "group": "Other",
+        "allowMultiple": false,
+        "status": "Approved",
+        "submitted": "2026-01-24",
+        "approved": "2026-02-13",
+        "notes": "BQ For Item",
+        "files": [
+          {
+            "fileName": "projects/bd-21923-shimizu-dnr/1777041502249-Shimizu__DNR_-_contract_BQ.pdf",
+            "uploadedAt": "2026-04-24T14:38:22.226Z"
+          }
+        ]
+      }
+    ],
     "fabrication": [
       {
-        "item": "SP30 FIXED",
-        "totalQty": 50,
+        "item": "SP400 FIXED",
+        "totalQty": 93,
         "unit": "units",
         "qtyDone": 0,
         "qtySent": 0,
@@ -1081,19 +1109,133 @@
         "logs": [],
         "fab_started_at": "2026-04-17T10:51:06.240Z",
         "fab_completed_at": null,
-        "doneQty": 0,
-        "fabDeadline": "2026-05-30"
+        "doneQty": 0
+      },
+      {
+        "item": "Enginnering Removable Stainess Steel 304 - With Hairline Finish",
+        "totalQty": 6,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0
+      },
+      {
+        "item": "Stainless Steel Sleeve - Crash Rated Bollard",
+        "totalQty": 93,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0
+      },
+      {
+        "item": "Enginnering Fixed Stainess Steel 304 - With Hairline Finish",
+        "totalQty": 1,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0
+      },
+      {
+        "item": "Safety Bollard ( LTA Standard )",
+        "totalQty": 23,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0
+      },
+      {
+        "item": "Stainless Steel Sleeve - Engineering Bollard",
+        "totalQty": 6,
+        "unit": "units",
+        "qtyDone": 0,
+        "qtySent": 0,
+        "status": "Not Started",
+        "started": "",
+        "done": "",
+        "logs": [],
+        "fab_started_at": null,
+        "fab_completed_at": null,
+        "doneQty": 0
       }
     ],
     "installation": [
       {
-        "item": "SP30 FIXED",
-        "totalQty": 50,
+        "item": "SP400 FIXED",
+        "totalQty": 93,
         "unit": "units",
         "doneQty": 0,
         "notes": "",
-        "status": "Not Started",
-        "qtyDone": 0
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Enginnering Removable Stainess Steel 304 - With Hairline Finish",
+        "totalQty": 6,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Stainless Steel Sleeve - Crash Rated Bollard",
+        "totalQty": 93,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Enginnering Fixed Stainess Steel 304 - With Hairline Finish",
+        "totalQty": 1,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Safety Bollard ( LTA Standard )",
+        "totalQty": 23,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
+      },
+      {
+        "item": "Stainless Steel Sleeve - Engineering Bollard",
+        "totalQty": 6,
+        "unit": "units",
+        "doneQty": 0,
+        "notes": "",
+        "qtyDone": 0,
+        "status": "Not Started"
       }
     ],
     "prpo": [],
@@ -1103,13 +1245,59 @@
     "meetingNotes": [],
     "productScope": [
       {
-        "item": "SP30 FIXED",
-        "qty": 50,
+        "item": "SP400 FIXED",
+        "qty": 93,
         "unit": "units",
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Enginnering Removable Stainess Steel 304 - With Hairline Finish",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Stainless Steel Sleeve - Crash Rated Bollard",
+        "qty": 93,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Enginnering Fixed Stainess Steel 304 - With Hairline Finish",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Safety Bollard ( LTA Standard )",
+        "qty": 23,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Stainless Steel Sleeve - Engineering Bollard",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "drawings": [
@@ -2417,7 +2605,7 @@
     "projectManager": "Lai Wei Xiang",
     "qs": "Salve",
     "factoryManager": "Chris",
-    "drafter": "Senthil",
+    "drafter": "Murugan",
     "purchaser": "Rena",
     "sales": "Janessa",
     "siteEngineer": "",
@@ -2901,43 +3089,71 @@
         "item": "Engineered Bollard - Boon Lay",
         "qty": 124,
         "unit": "pcs",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Engineered Bollard - Ang Mo Kio",
         "qty": 36,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Engineered Bollard - Seng Kang",
         "qty": 40,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Engineered Bollard - Bedok",
         "qty": 44,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Engineered Bollard - Toh Payoh Interchange",
         "qty": 66,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Engineered Bollard - Clementi",
         "qty": 29,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       },
       {
         "item": "Engineered Bollard - Serangoon",
         "qty": 22,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "scopeNotes": "",
@@ -6946,6 +7162,8 @@
     "retentionReleased": false,
     "retentionReleasedDate": null,
     "finalAccountDate": null,
-    "archivedDate": null
+    "archivedDate": null,
+    "installCompleteTaskCreated": true,
+    "installCompleteTaskAt": "2026-04-24T01:01:01.621Z"
   }
 ]

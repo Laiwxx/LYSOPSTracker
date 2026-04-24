@@ -70,11 +70,17 @@
         "ts": "2026-04-23T12:45:02.518Z",
         "type": "stage-change",
         "note": "Site Visit → Enquiry by Lai Wei Xiang"
+      },
+      {
+        "ts": "2026-04-24T01:01:01.874Z",
+        "type": "auto-nudge",
+        "note": "24hr auto-nudge sent to gegeg@gmail.com"
       }
     ],
     "createdBy": "Lai Wei Xiang",
     "createdAt": "2026-04-22T04:36:14.004Z",
-    "updatedAt": "2026-04-23T12:45:02.518Z"
+    "updatedAt": "2026-04-23T12:45:02.518Z",
+    "_nudgeSentAt": "2026-04-24T01:01:01.874Z"
   },
   {
     "id": "opp-mobjsik12xum",

@@ -2034,3 +2034,227 @@
 {"ts":"2026-04-23T14:44:29.698Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
 {"ts":"2026-04-23T14:44:29.938Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
 {"ts":"2026-04-23T14:44:29.945Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moblenicv1y4","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-23T15:10:09.905Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-23T15:10:09.912Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1776957009590","jobCode":"TEST-SCN"}
+{"ts":"2026-04-23T15:10:09.932Z","event":"site-request.created","by":"Scenario Tester","id":"mobmbnyjj4kv","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-23T15:10:10.028Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1776957009590","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-23T15:10:10.042Z","event":"claim.created","by":"Scenario Tester","id":"mobmbo1mcjux","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-23T15:10:10.052Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-23T15:10:10.299Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-23T15:10:10.305Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mobmbo1y1ewj","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T00:45:00.026Z","event":"recurring-tasks.created","by":"System","date":"2026-04-24","count":27,"roles":["Lai Wei Xiang","Chris","Rena","Alex Mac","Janessa","Alex Chew","Teo Meei Haw"]}
+{"ts":"2026-04-24T01:01:01.632Z","event":"install-complete-notes.created","by":"System","count":1}
+{"ts":"2026-04-24T01:31:30.802Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:31:52.154Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:32:04.138Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:32:38.431Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:32:57.586Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:33:10.841Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:36:33.823Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:37:34.214Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:38:59.044Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:39:05.753Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T01:39:09.871Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-20","type":"weekly"}
+{"ts":"2026-04-24T04:24:16.568Z","event":"task.acknowledged","by":"Salve","id":"mo8697xf","title":"Please Update All Project Information of Products"}
+{"ts":"2026-04-24T04:24:20.646Z","event":"task.updated","by":"Salve","id":"mo9ci0frjjxr","title":"Prepare quotation for T5 LIW Fence Work","status":"Done"}
+{"ts":"2026-04-24T10:14:46.319Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Dashboard","previousStatus":"New","newStatus":"Acknowledged","changes":{"status":{"from":"New","to":"Acknowledged"}}}
+{"ts":"2026-04-24T10:14:59.386Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-24T10:15:00.344Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-24T10:15:04.878Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":0,"item":"Block S - Auto Bollard Cova","changes":[{"field":"status","from":"Installed","to":"Verified"}]}
+{"ts":"2026-04-24T10:16:03.333Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"logId":"log_mocr99xln5b3"}
+{"ts":"2026-04-24T10:16:03.407Z","event":"install.log.created","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":0,"item":"Block S - Auto Bollard Cova","logId":"log_mocr99xln5b3","delta":2,"newTotal":2,"step":"Outer Casing Installation"}
+{"ts":"2026-04-24T10:45:21.277Z","event":"task.updated","by":"Teo Meei Haw","id":"moc6uwoio6v","title":"Set today's installation target — project, item, qty, location","status":"Done"}
+{"ts":"2026-04-24T10:45:23.858Z","event":"task.updated","by":"Teo Meei Haw","id":"moc6uwojpky","title":"Check factory readiness for items needed this week","status":"Done"}
+{"ts":"2026-04-24T10:45:27.455Z","event":"task.updated","by":"Teo Meei Haw","id":"moc6uwojqqe","title":"Update installation progress on active projects","status":"Done"}
+{"ts":"2026-04-24T10:45:30.350Z","event":"task.updated","by":"Teo Meei Haw","id":"moc6uwojrrs","title":"Log result — qty done vs target, reason if short: Site Not Ready / Factory Delay / Manpower Shortage / Weather / Client Access / Other","status":"Done"}
+{"ts":"2026-04-24T13:39:09.698Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T13:39:09.707Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777037949396","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T13:39:09.725Z","event":"site-request.created","by":"Scenario Tester","id":"mocyihi5y69i","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T13:39:09.810Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777037949396","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T13:39:09.829Z","event":"claim.created","by":"Scenario Tester","id":"mocyihl1y13x","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T13:39:09.840Z","event":"pr.created","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T13:39:10.082Z","event":"pr.deleted","by":"Scenario Tester","id":"PR26-001","prNumber":"PR26-001"}
+{"ts":"2026-04-24T13:39:10.087Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mocyihlftfwx","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:02:54.615Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:02:54.621Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777039374313","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:02:54.640Z","event":"site-request.created","by":"Scenario Tester","id":"moczd0z3mkio","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:02:54.724Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777039374313","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:02:54.739Z","event":"claim.created","by":"Scenario Tester","id":"moczd11vys8s","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:02:54.747Z","event":"pr.created","by":"Scenario Tester","id":"moczd123numv","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:02:54.980Z","event":"pr.deleted","by":"Scenario Tester","id":"moczd123numv","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:02:54.984Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moczd126gtlm","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:05:00.222Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:05:00.228Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777039499917","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:05:00.247Z","event":"site-request.created","by":"Scenario Tester","id":"moczfpw7rcsf","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:05:00.341Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777039499917","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:05:00.357Z","event":"claim.created","by":"Scenario Tester","id":"moczfpz9iolb","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:05:00.364Z","event":"pr.created","by":"Scenario Tester","id":"moczfpzg1d4s","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:05:00.552Z","event":"task.deleted","by":"Scenario Tester","id":"moczfq4gv4ti","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-24T14:05:00.570Z","event":"task.deleted","by":"Scenario Tester","id":"moczfq4zppk1","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-24T14:05:00.575Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moczfq59poes","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-24T14:05:00.585Z","event":"task.deleted","by":"Scenario Tester","id":"moczfq5ekfun","title":"Proto test"}
+{"ts":"2026-04-24T14:05:00.759Z","event":"pr.deleted","by":"Scenario Tester","id":"moczfpzg1d4s","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:05:00.763Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moczfpziu6hl","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:06:30.601Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:06:30.608Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777039590278","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:06:30.628Z","event":"site-request.created","by":"Scenario Tester","id":"moczhnmsgzhg","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:06:30.715Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777039590278","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:06:30.728Z","event":"claim.created","by":"Scenario Tester","id":"moczhnpkue95","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:06:30.736Z","event":"pr.created","by":"Scenario Tester","id":"moczhnpsxyxs","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:06:30.925Z","event":"task.deleted","by":"Scenario Tester","id":"moczhnuuc0v9","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-24T14:06:30.941Z","event":"task.deleted","by":"Scenario Tester","id":"moczhnvah1rg","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-24T14:06:30.947Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moczhnvks0vc","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-24T14:06:30.956Z","event":"task.deleted","by":"Scenario Tester","id":"moczhnvrgw89","title":"Proto test"}
+{"ts":"2026-04-24T14:06:31.114Z","event":"pr.deleted","by":"Scenario Tester","id":"moczhnpsxyxs","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:06:31.118Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moczhnpvck2l","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:16:48.243Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Lai Wei Xiang","previousStatus":"Acknowledged","newStatus":"Acknowledged","changes":{}}
+{"ts":"2026-04-24T14:19:08.049Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:19:08.056Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777040347741","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:19:08.073Z","event":"site-request.created","by":"Scenario Tester","id":"moczxw2xs55h","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:19:08.156Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777040347741","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:19:08.169Z","event":"claim.created","by":"Scenario Tester","id":"moczxw5lande","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:19:08.178Z","event":"pr.created","by":"Scenario Tester","id":"moczxw5u0yuu","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:19:08.354Z","event":"task.deleted","by":"Scenario Tester","id":"moczxwakiwux","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-24T14:19:08.371Z","event":"task.deleted","by":"Scenario Tester","id":"moczxwb08nyd","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-24T14:19:08.376Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moczxwb9yv3h","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-24T14:19:08.384Z","event":"task.deleted","by":"Scenario Tester","id":"moczxwbfgmfd","title":"Proto test"}
+{"ts":"2026-04-24T14:19:08.552Z","event":"pr.deleted","by":"Scenario Tester","id":"moczxw5u0yuu","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:19:08.556Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moczxw5wbcmd","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:21:27.118Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:21:27.128Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777040486811","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:21:27.169Z","event":"site-request.created","by":"Scenario Tester","id":"mod00vepyfzh","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:21:27.260Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777040486811","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:21:27.300Z","event":"claim.created","by":"Scenario Tester","id":"mod00vicy9sw","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:21:27.321Z","event":"pr.created","by":"Scenario Tester","id":"mod00vix8jxt","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:21:27.584Z","event":"task.deleted","by":"Scenario Tester","id":"mod00vpx4tkx","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-24T14:21:27.620Z","event":"task.deleted","by":"Scenario Tester","id":"mod00vqwskdr","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-24T14:21:27.634Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod00vrfu8ax","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-24T14:21:27.650Z","event":"task.deleted","by":"Scenario Tester","id":"mod00vrtwg7x","title":"Proto test"}
+{"ts":"2026-04-24T14:21:27.836Z","event":"pr.deleted","by":"Scenario Tester","id":"mod00vix8jxt","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:21:27.845Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod00vj4002n","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:32:33.959Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:35.824Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:37.650Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:40.397Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:41.390Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:42.102Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:42.528Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:44.164Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:44.768Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:47.154Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:48.877Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:32:51.946Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:22.955Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:23.824Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:28.464Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:30.640Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:31.139Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:34.564Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:35.946Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:48.907Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:55.024Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:33:56.793Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:17.639Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:25.367Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:25.741Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:26.551Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:27.550Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:27.865Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:29.112Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:29.844Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:34.095Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:34.721Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:36.188Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:37.286Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:38.677Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:41.036Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:43.059Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:43.402Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:34:44.247Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:17.774Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:21.368Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:28.413Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:28.937Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:30.372Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:30.683Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:32.907Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:35:55.876Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:03.464Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:05.772Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:09.108Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:10.943Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:12.021Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:12.744Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:14.228Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:15.945Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:17.068Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:18.117Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:19.672Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:37.739Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:38.457Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:42.373Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:47.198Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:48.738Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:50.727Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:36:51.509Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:02.512Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:06.453Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:07.286Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:11.388Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:19.138Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:21.170Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:22.119Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:51.260Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:37:56.428Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:22.254Z","event":"project.upload","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)","filename":"1777041502249-Shimizu__DNR_-_contract_BQ.pdf","originalName":"Shimizu (DNR)- contract BQ.pdf","mimetype":"application/pdf","size":659423,"itemName":"","uploadedBy":""}
+{"ts":"2026-04-24T14:38:22.291Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:38.682Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:41.047Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:42.118Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:43.005Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:45.482Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:51.755Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:38:55.326Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:39:02.083Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21923-shimizu-dnr","jobCode":"BD 21923- SHIMIZU (DNR)"}
+{"ts":"2026-04-24T14:40:22.942Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:40:22.951Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777041622616","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:40:22.992Z","event":"site-request.created","by":"Scenario Tester","id":"mod0p7tc1w06","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:40:23.071Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777041622616","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:40:23.103Z","event":"claim.created","by":"Scenario Tester","id":"mod0p7wfcm54","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:40:23.121Z","event":"pr.created","by":"Scenario Tester","id":"mod0p7wxoo3f","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:40:23.351Z","event":"task.deleted","by":"Scenario Tester","id":"mod0p832lrh0","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-24T14:40:23.373Z","event":"task.deleted","by":"Scenario Tester","id":"mod0p83pqyi7","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-24T14:40:23.384Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod0p844au3n","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-24T14:40:23.397Z","event":"task.deleted","by":"Scenario Tester","id":"mod0p84e5519","title":"Proto test"}
+{"ts":"2026-04-24T14:40:23.491Z","event":"claim.deleted","by":"Scenario Tester","id":"mod0p7wfcm54","claimNumber":"TEST-CLM","projectId":"x"}
+{"ts":"2026-04-24T14:40:23.570Z","event":"pr.deleted","by":"Scenario Tester","id":"mod0p7wxoo3f","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:40:23.576Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod0p7x3a1ns","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:40:27.758Z","event":"site-request.created","by":"Lai Wei Xiang","id":"mod0pbhqy94w","item":"SP400 FIXED","requestedBy":"Lai Wei Xiang","fabIdx":0}
+{"ts":"2026-04-24T14:41:15.416Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-21222-qa-ica-kallang","jobCode":"BD 21222 - QA (ICA Kallang)"}
+{"ts":"2026-04-24T14:41:25.673Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:41:25.684Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777041685392","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:41:25.708Z","event":"site-request.created","by":"Scenario Tester","id":"mod0qk7gnio4","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:41:25.786Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777041685392","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:41:25.838Z","event":"claim.created","by":"Scenario Tester","id":"mod0qkb2rbmp","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:41:25.856Z","event":"pr.created","by":"Scenario Tester","id":"mod0qkbkwa5z","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:41:26.081Z","event":"task.deleted","by":"Scenario Tester","id":"mod0qkhk01xr","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-24T14:41:26.104Z","event":"task.deleted","by":"Scenario Tester","id":"mod0qki71udn","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-24T14:41:26.114Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod0qkimn96n","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-24T14:41:26.127Z","event":"task.deleted","by":"Scenario Tester","id":"mod0qkixyv8c","title":"Proto test"}
+{"ts":"2026-04-24T14:41:26.226Z","event":"claim.deleted","by":"Scenario Tester","id":"mod0qkb2rbmp","claimNumber":"TEST-CLM","projectId":"x"}
+{"ts":"2026-04-24T14:41:26.303Z","event":"pr.deleted","by":"Scenario Tester","id":"mod0qkbkwa5z","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:41:26.309Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod0qkbpfvad","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-24T14:49:16.307Z","event":"project.updated","by":"Lai Wei Xiang","projectId":"bd-24025-chiong-de189","jobCode":"BD 24025- CHIONG (DE189)"}
+{"ts":"2026-04-24T14:52:00.621Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-24T14:52:00.632Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777042320267","jobCode":"TEST-SCN"}
+{"ts":"2026-04-24T14:52:00.674Z","event":"site-request.created","by":"Scenario Tester","id":"mod1465e2o0t","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-24T14:52:00.772Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777042320267","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-24T14:52:00.813Z","event":"claim.created","by":"Scenario Tester","id":"mod146999d7t","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-24T14:52:00.833Z","event":"pr.created","by":"Scenario Tester","id":"mod1469tndlq","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-24T14:52:01.083Z","event":"task.deleted","by":"Scenario Tester","id":"mod146gj56ta","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-24T14:52:01.115Z","event":"task.deleted","by":"Scenario Tester","id":"mod146hakxv3","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-24T14:52:01.132Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod146hwx7ba","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-24T14:52:01.149Z","event":"task.deleted","by":"Scenario Tester","id":"mod146icwepd","title":"Proto test"}
+{"ts":"2026-04-24T14:52:01.260Z","event":"claim.deleted","by":"Scenario Tester","id":"mod146999d7t","claimNumber":"TEST-CLM","projectId":"x"}
+{"ts":"2026-04-24T14:52:01.338Z","event":"pr.deleted","by":"Scenario Tester","id":"mod1469tndlq","prNumber":"PR26-001"}
+{"ts":"2026-04-24T14:52:01.352Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mod1469y80aw","title":"Test ticket","reason":"test"}

@@ -194,12 +194,8 @@
           "otHours": 2
         },
         "fri": {
-          "type": "Installation",
-          "projectId": "bd-25626",
-          "projectName": "China Con - Project Legend",
-          "location": "",
-          "notes": "",
-          "otHours": 2
+          "type": "MC",
+          "notes": "MC"
         }
       },
       "wi-rajagopal-mayakrishnan": {
@@ -216,6 +212,13 @@
           "projectName": "DE189",
           "location": "serangoon",
           "notes": ""
+        },
+        "fri": {
+          "type": "Installation",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": ""
         }
       },
       "wi-kannaiyan-jaishankar": {
@@ -230,6 +233,13 @@
           "type": "Installation",
           "projectId": "pj10025-ica-kallang",
           "projectName": "Column Jacketing / Stainless Steel Bench - ICA Kallang",
+          "location": "",
+          "notes": ""
+        },
+        "fri": {
+          "type": "Installation",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
           "location": "",
           "notes": ""
         }
@@ -264,6 +274,13 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "city gate"
+        },
+        "fri": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
         }
       },
       "wm-lin-chee-cheong": {
@@ -280,6 +297,13 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "Auto bollard"
+        },
+        "fri": {
+          "type": "Fabrication",
+          "projectId": "bd-19121-rbss-dnr",
+          "projectName": "Installation of Crash Rated Items - Deveploment @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
         }
       },
       "wi-palanisamy-manikandan": {
@@ -291,6 +315,13 @@
           "notes": ""
         },
         "thu": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        },
+        "fri": {
           "type": "Installation",
           "projectId": "bd-25225-nakano-st-eng-dc",
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
@@ -312,6 +343,13 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "Blocker"
+        },
+        "fri": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": ""
         }
       },
       "ss-tai-nyur-hing": {
@@ -344,6 +382,13 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "Blocker"
+        },
+        "fri": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
         }
       },
       "wi-natarasan-sivakumar": {
@@ -360,6 +405,13 @@
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
           "notes": ""
+        },
+        "fri": {
+          "type": "Driver",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": ""
         }
       },
       "wi-mariyappan-malayandi": {
@@ -374,6 +426,13 @@
           "type": "Driver",
           "projectId": "pj10025-ica-kallang",
           "projectName": "Column Jacketing / Stainless Steel Bench - ICA Kallang",
+          "location": "",
+          "notes": ""
+        },
+        "fri": {
+          "type": "Driver",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
           "notes": ""
         }
@@ -525,7 +584,7 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-23T05:01:15.954Z"
+    "savedAt": "2026-04-24T01:39:09.871Z"
   },
   {
     "weekStart": "2026-06-01",
