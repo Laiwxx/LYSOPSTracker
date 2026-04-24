@@ -520,25 +520,41 @@ function emailUrgentBox(text) {
 
 // ── Email helper ──────────────────────────────────────────────────────────────
 // cc may be a string, an array of strings, or omitted.
-async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
-  const senderEmail = process.env.SENDER_EMAIL;
-  if (!senderEmail) return;
+async function sendEmail(toEmail, toName, subject, htmlBody, cc, opts) {
+  const fallbackSender = process.env.SENDER_EMAIL;
+  if (!fallbackSender) return;
 
   // Suppress emails triggered by scenario test accounts
   const actor = getAuthUser();
   if (actor === 'Scenario Tester') return;
+
+  // Determine who this email is sent FROM:
+  // If the logged-in user has a mailbox, send from their email.
+  // Otherwise fall back to SENDER_EMAIL (boss).
+  const bossEmail = fallbackSender; // laiwx — always CC'd
+  let fromEmail = fallbackSender;
+  if (opts && opts.fromEmail) {
+    fromEmail = opts.fromEmail;
+  } else {
+    const actorEmail = actor ? getStaffEmail(actor) : null;
+    if (actorEmail && actorEmail.endsWith('@laiyewseng.com.sg')) {
+      fromEmail = actorEmail;
+    }
+  }
 
   // TEST MODE: override recipient so all emails go to Lai during testing
   const recipient = process.env.EMAIL_TEST_OVERRIDE || toEmail;
 
   // Normalize cc → array, de-dupe, drop self-cc and the recipient, drop falsy
   let ccList = Array.isArray(cc) ? cc.slice() : cc ? [cc] : [];
+  // Auto-CC boss on every email (non-negotiable) unless boss IS the sender AND recipient
+  if (bossEmail) ccList.push(bossEmail);
   ccList = ccList.filter(Boolean);
   if (process.env.EMAIL_TEST_OVERRIDE) {
     // In test mode every email is already redirected to Lai — no CC leak to staff.
     ccList = [];
   } else {
-    const seen = new Set([String(recipient).toLowerCase()]);
+    const seen = new Set([String(recipient).toLowerCase(), String(fromEmail).toLowerCase()]);
     ccList = ccList.filter(e => {
       const k = String(e).toLowerCase();
       if (seen.has(k)) return false;
@@ -566,7 +582,7 @@ async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
     let attempt = 0;
     const maxAttempts = 4;
     while (true) {
-      res = await fetch(`https://graph.microsoft.com/v1.0/users/${senderEmail}/sendMail`, {
+      res = await fetch(`https://graph.microsoft.com/v1.0/users/${fromEmail}/sendMail`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -574,6 +590,12 @@ async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
         },
         body: JSON.stringify({ message })
       });
+      // If sending from user's mailbox fails (403 = no permission), fall back to boss
+      if ((res.status === 403 || res.status === 404) && fromEmail !== fallbackSender) {
+        console.warn(`[EMAIL] Cannot send as ${fromEmail} (${res.status}), falling back to ${fallbackSender}`);
+        fromEmail = fallbackSender;
+        continue; // retry with fallback sender
+      }
       if (res.status !== 429 || attempt >= maxAttempts - 1) break;
       const retryAfterHeader = parseInt(res.headers.get('retry-after'), 10);
       const waitMs = (Number.isFinite(retryAfterHeader) ? retryAfterHeader : Math.pow(2, attempt + 1) - 1) * 1000;
@@ -585,14 +607,14 @@ async function sendEmail(toEmail, toName, subject, htmlBody, cc) {
       let errBody = '';
       try { errBody = await res.text(); } catch {}
       const msg = `Graph API ${res.status} ${res.statusText} — ${errBody}`;
-      console.error(`[EMAIL] Failed to send "${subject}" → ${recipient}: ${msg}`);
-      logError('email.send.graphapi', new Error(msg), { to: recipient, subject, status: res.status, attempts: attempt + 1 });
+      console.error(`[EMAIL] Failed to send "${subject}" → ${recipient} (from ${fromEmail}): ${msg}`);
+      logError('email.send.graphapi', new Error(msg), { from: fromEmail, to: recipient, subject, status: res.status, attempts: attempt + 1 });
       return;
     }
-    console.log(`[EMAIL] Sent "${subject}" → ${recipient}${attempt > 0 ? ` (after ${attempt} retries)` : ''}`);
+    console.log(`[EMAIL] Sent "${subject}" from ${fromEmail} → ${recipient}${ccList.length ? ' cc:' + ccList.join(',') : ''}${attempt > 0 ? ` (after ${attempt} retries)` : ''}`);
   } catch (e) {
     console.error('[EMAIL] Exception sending to', recipient, ':', e.message);
-    logError('email.send.exception', e, { to: recipient, subject });
+    logError('email.send.exception', e, { from: fromEmail, to: recipient, subject });
   }
 }
 
