@@ -330,6 +330,10 @@ async function run() {
   console.log('Security & Firewall');
   console.log('-------------------');
 
+  // 27a — Health check (no auth required)
+  { const r = await api('GET', '/api/health', null, { noAuth: true });
+    test('27a. GET /api/health → 200 (no auth)', r.status === 200 && r.data?.ok, `status=${r.status}`); }
+
   // 27 — Unauthenticated POST blocked
   { const r = await api('POST', '/api/tasks', { title: 'hack', assignedTo: 'X' }, { noAuth: true });
     test('27. Unauth POST /api/tasks → 401', r.status === 401, `status=${r.status}`); }

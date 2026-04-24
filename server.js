@@ -180,8 +180,19 @@ app.use(session({
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax', secure: 'auto' } // 7 days default; extended to 30 days with "remember me"
 }));
 
+// Health check — no auth required, for uptime monitors
+app.get('/api/health', (req, res) => {
+  try {
+    // Quick sanity: can we read a data file?
+    const projects = readProjects();
+    res.json({ ok: true, uptime: Math.floor(process.uptime()), projects: projects.length, ts: new Date().toISOString() });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 // Public paths that don't require auth
-const PUBLIC_PATHS = new Set(['/login', '/login.html', '/api/auth/login', '/api/auth/forgot-password']);
+const PUBLIC_PATHS = new Set(['/login', '/login.html', '/api/auth/login', '/api/auth/forgot-password', '/api/health']);
 
 app.use((req, res, next) => {
   // Allow public paths
@@ -205,9 +216,19 @@ app.use((req, res, next) => {
     const user = idx >= 0 ? decoded.slice(0, idx).toLowerCase().trim() : '';
     const pass = idx >= 0 ? decoded.slice(idx + 1) : '';
     const entry = creds[user];
-    if (entry && bcrypt.compareSync(pass, entry.hash)) {
-      req.authUser = entry.name;
-      _authStore.run(entry.name, () => next());
+    if (entry) {
+      bcrypt.compare(pass, entry.hash).then(ok => {
+        if (ok) {
+          req.authUser = entry.name;
+          _authStore.run(entry.name, () => next());
+        } else {
+          if (req.path.startsWith('/api/')) res.status(401).json({ error: 'Authentication required' });
+          else res.redirect('/login');
+        }
+      }).catch(() => {
+        if (req.path.startsWith('/api/')) res.status(401).json({ error: 'Authentication required' });
+        else res.redirect('/login');
+      });
       return;
     }
   }
@@ -242,13 +263,13 @@ function loginRateLimit(req, res, next) {
   next();
 }
 
-app.post('/api/auth/login', loginRateLimit, (req, res) => {
+app.post('/api/auth/login', loginRateLimit, async (req, res) => {
   const { username, password, rememberMe } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Email and password required' });
   const creds = readCredentials();
   const key = username.toLowerCase().trim();
   const entry = creds[key];
-  if (entry && bcrypt.compareSync(password, entry.hash)) {
+  if (entry && await bcrypt.compare(password, entry.hash)) {
     // Clear login attempts on success
     _loginAttempts.delete(req.ip || req.socket.remoteAddress || 'unknown');
     // Extend session to 30 days if "remember me" checked
@@ -424,7 +445,7 @@ app.post('/api/delivery-orders', uploadDO.single('file'), (req, res) => {
   } catch (e) { logError('route.post.delivery-orders', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-app.delete('/api/delivery-orders/:id', (req, res) => {
+app.delete('/api/delivery-orders/:id', postRateLimit, (req, res) => {
   try {
     const dos = readDOs();
     const idx = dos.findIndex(d => d.id === req.params.id);
@@ -799,11 +820,21 @@ function readProjects() {
   return projects;
 }
 // ── Atomic write: tmp + rename prevents corruption on crash ──────────────────
+// Write queue per file — prevents concurrent writes from corrupting data
+const _writeQueues = new Map();
 function safeWriteJSON(filePath, data) {
   const json = JSON.stringify(data, null, 2);
   const tmp = filePath + '.tmp';
-  fs.writeFileSync(tmp, json);
-  fs.renameSync(tmp, filePath);
+  // Acquire per-file lock (queues writes so they execute sequentially)
+  const absPath = path.resolve(filePath);
+  const pending = _writeQueues.get(absPath) || Promise.resolve();
+  const next = pending.then(() => {
+    fs.writeFileSync(tmp, json);
+    fs.renameSync(tmp, filePath);
+  }).catch(err => {
+    console.error('[safeWriteJSON] write failed:', absPath, err.message);
+  });
+  _writeQueues.set(absPath, next);
 }
 
 function writeProjects(projects) {
@@ -942,7 +973,7 @@ app.post('/api/tickets', postRateLimit, (req, res) => {
     };
     tickets.push(ticket);
     writeTickets(tickets);
-    res.json(ticket);
+    res.status(201).json(ticket);
 
     // Write feedback as MD file for Claude to pick up next session
     // Skip for test accounts to avoid polluting memory
@@ -1029,7 +1060,7 @@ app.post('/api/tickets/:id/comments', postRateLimit, (req, res) => {
     };
     tickets[idx].comments.push(comment);
     writeTickets(tickets);
-    res.json(comment);
+    res.status(201).json(comment);
   } catch (e) { logError('route.post.ticket-comment', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -1111,7 +1142,7 @@ app.post('/api/staff', async (req, res) => {
       const emailKey = email.toLowerCase().trim();
       if (!creds[emailKey]) {
         const newPass = crypto.randomBytes(4).toString('hex');
-        creds[emailKey] = { name, hash: bcrypt.hashSync(newPass, 10) };
+        creds[emailKey] = { name, hash: await bcrypt.hash(newPass, 10) };
         safeWriteJSON(CREDS_FILE, creds);
         _credsCache = null; _credsMtime = 0; // bust cache
         logActivity('auth.auto-created', { user: name, email: emailKey });
@@ -1134,7 +1165,7 @@ app.post('/api/staff', async (req, res) => {
       }
     }
 
-    res.json({ ...staff[name], welcomeSent });
+    res.status(isNew ? 201 : 200).json({ ...staff[name], welcomeSent });
   } catch (e) { logError('route.post.staff', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -1181,7 +1212,7 @@ app.get('/api/admin/pin', (req, res) => {
 });
 
 // ── Auth: change own password ─────────────────────────────────────────────────
-app.post('/api/auth/change-password', (req, res) => {
+app.post('/api/auth/change-password', async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) return res.status(400).json({ error: 'Both fields required' });
@@ -1190,10 +1221,10 @@ app.post('/api/auth/change-password', (req, res) => {
     // Find the current user's entry
     const username = Object.keys(creds).find(k => creds[k].name === req.authUser);
     if (!username) return res.status(403).json({ error: 'User not found' });
-    if (!bcrypt.compareSync(currentPassword, creds[username].hash)) {
+    if (!await bcrypt.compare(currentPassword, creds[username].hash)) {
       return res.status(403).json({ error: 'Current password is incorrect' });
     }
-    creds[username].hash = bcrypt.hashSync(newPassword, 10);
+    creds[username].hash = await bcrypt.hash(newPassword, 10);
     safeWriteJSON(CREDS_FILE, creds);
     _credsCache = null; _credsMtime = 0;
     logActivity('auth.password-changed', { user: req.authUser });
@@ -1217,7 +1248,7 @@ setInterval(() => {
     if (!_resetAttempts[k].length) delete _resetAttempts[k];
   }
 }, 600000).unref(); // prune every 10 minutes
-app.post('/api/auth/forgot-password', (req, res) => {
+app.post('/api/auth/forgot-password', async (req, res) => {
   try {
     const { username } = req.body;
     if (!username) return res.status(400).json({ error: 'Email required' });
@@ -1234,7 +1265,7 @@ app.post('/api/auth/forgot-password', (req, res) => {
 
     // Generate new password and save
     const newPass = crypto.randomBytes(4).toString('hex');
-    creds[key].hash = bcrypt.hashSync(newPass, 10);
+    creds[key].hash = await bcrypt.hash(newPass, 10);
     safeWriteJSON(CREDS_FILE, creds);
     _credsCache = null; _credsMtime = 0;
     _resetAttempts[key].push(now);
@@ -1269,7 +1300,7 @@ app.post('/api/auth/admin-reset', async (req, res) => {
     if (!creds[key]) return res.status(404).json({ error: 'Email not found' });
 
     const newPass = crypto.randomBytes(4).toString('hex');
-    creds[key].hash = bcrypt.hashSync(newPass, 10);
+    creds[key].hash = await bcrypt.hash(newPass, 10);
     safeWriteJSON(CREDS_FILE, creds);
     _credsCache = null; _credsMtime = 0;
 
@@ -1292,7 +1323,7 @@ app.post('/api/auth/send-welcome-emails', async (req, res) => {
 
       // For welcome emails we generate a fresh password so we have the plaintext
       const newPass = crypto.randomBytes(4).toString('hex');
-      creds[emailKey].hash = bcrypt.hashSync(newPass, 10);
+      creds[emailKey].hash = await bcrypt.hash(newPass, 10);
 
       try {
         await sendEmail(email, entry.name,
@@ -1476,7 +1507,7 @@ app.get('/api/summary', (req, res) => {
     : 0;
   // DLP projects approaching expiry (within 30 days)
   const dlpProjects = projects.filter(p => p.lifecycle === 'dlp');
-  const in30d = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+  const in30d = dateSGT(30);
   summary.dlpExpiringSoon = dlpProjects.filter(p => p.dlpEndDate && p.dlpEndDate <= in30d).length;
   summary.totalRetentionHeld = dlpProjects.reduce((s, p) => s + (p.retentionAmount || 0), 0);
   res.json(summary);
@@ -3274,7 +3305,7 @@ app.delete('/api/projects/:id/stages/:stageIdx/file', (req, res) => {
 });
 
 // --- API: Send Outlook reminder ---
-app.post('/api/remind', async (req, res) => {
+app.post('/api/remind', postRateLimit, async (req, res) => {
   const { projectId, stageNum, ownerName, ownerEmail, stageName, projectName, jobCode, daysInStatus } = req.body;
   if (!ownerEmail) return res.status(400).json({ error: 'ownerEmail required' });
 
@@ -3471,7 +3502,7 @@ app.post('/api/tasks', postRateLimit, (req, res) => {
   };
   tasks.push(task);
   writeTasks(tasks);
-  res.json(task);
+  res.status(201).json(task);
 
   // Trigger 1: Send assignment email if task is assigned to someone other than the creator
   // (Self Tasks where creator === assignee don't need a "you've been assigned" notification)
@@ -3722,9 +3753,10 @@ app.delete('/api/tasks/:id', (req, res) => {
   try {
     let tasks = readTasks();
     const gone = tasks.find(t => t.id === req.params.id);
+    if (!gone) return res.status(404).json({ error: 'Task not found' });
     tasks = tasks.filter(t => t.id !== req.params.id);
     writeTasks(tasks);
-    logActivity('task.deleted', { id: req.params.id, title: gone ? gone.title : '' });
+    logActivity('task.deleted', { id: req.params.id, title: gone.title });
     res.json({ ok: true });
     // Clean up the matching calendar event if one was created.
     if (gone && gone.calendarEventId && gone.calendarEventOwner) {
@@ -3918,7 +3950,7 @@ app.get('/api/projects/:id/install-progress', (req, res) => {
 });
 
 // POST create
-app.post('/api/claims', (req, res) => {
+app.post('/api/claims', postRateLimit, (req, res) => {
   try {
     const claims = readClaims();
     const b = req.body;
@@ -3957,12 +3989,12 @@ app.post('/api/claims', (req, res) => {
     claims.push(claim);
     writeClaims(claims);
     logActivity('claim.created', { id: claim.id, projectId: claim.projectId, claimNumber: claim.claimNumber, amount: claim.claimAmount });
-    res.json(claim);
+    res.status(201).json(claim);
   } catch (e) { logError('route.post.claims', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // PUT update
-app.put('/api/claims/:id', (req, res) => {
+app.put('/api/claims/:id', postRateLimit, (req, res) => {
   try {
     const claims = readClaims();
     const idx = claims.findIndex(c => c.id === req.params.id);
@@ -3992,8 +4024,11 @@ app.delete('/api/claims/:id', async (req, res) => {
   try {
     if (!await requireAdminAuth(req, res)) return;
     let claims = readClaims();
+    const removed = claims.find(c => c.id === req.params.id);
+    if (!removed) return res.status(404).json({ error: 'Claim not found' });
     claims = claims.filter(c => c.id !== req.params.id);
     writeClaims(claims);
+    logActivity('claim.deleted', { id: removed.id, claimNumber: removed.claimNumber, projectId: removed.projectId });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.claims', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -4375,7 +4410,7 @@ cron.schedule('0 9 * * 1-5', async () => {
     const allProjects = readProjects();
     const dlpProjects = allProjects.map(p => deriveFields(p)).filter(p => p.lifecycle === 'dlp');
     const today = todaySGT();
-    const in30d = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+    const in30d = dateSGT(30);
     let dlpDirty = false;
     for (const p of dlpProjects) {
       if (!p.dlpEndDate) continue;
@@ -4423,7 +4458,7 @@ cron.schedule('0 9 * * 1-5', async () => {
   try {
     console.log('[CRON] 9am auto-archive check...');
     const projects = readProjects();
-    const threeYearsAgo = new Date(Date.now() - 3 * 365.25 * 86400000).toISOString().slice(0, 10);
+    const threeYearsAgo = dateSGT(-1095); // ~3 years
     let archived = 0;
     for (const p of projects) {
       deriveFields(p);
@@ -4516,8 +4551,8 @@ cron.schedule('0 12 * * 1-5', async () => {
   try {
     console.log('[CRON] Noon site-request reminder check...');
     const srs = readSiteRequests();
-    const yesterday = new Date(Date.now() - 86400000).toISOString();
-    const stale = srs.filter(r => r.status === 'New' && r.createdAt && r.createdAt < yesterday);
+    const yesterdayISO = new Date(dateSGT(-1) + 'T23:59:59+08:00').toISOString();
+    const stale = srs.filter(r => r.status === 'New' && r.createdAt && r.createdAt < yesterdayISO);
     if (!stale.length) return;
     const byProject = {};
     stale.forEach(r => {
@@ -5093,7 +5128,7 @@ app.post('/api/site-requests', postRateLimit, (req, res) => {
     ).catch(() => {});
   }
 
-  res.json(record);
+  res.status(201).json(record);
   } catch (e) { logError('route.post.site-requests', e); if (!res.headersSent) res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -5354,7 +5389,7 @@ app.get('/api/monday-flags', (req, res) => {
 });
 
 // POST /api/monday-flags — add a flag for an engineer this week
-app.post('/api/monday-flags', (req, res) => {
+app.post('/api/monday-flags', postRateLimit, (req, res) => {
   try {
     const engineer  = String(req.body.engineer  || '').trim().slice(0, 100);
     const text      = String(req.body.text      || '').trim().slice(0, 200);
@@ -5364,7 +5399,7 @@ app.post('/api/monday-flags', (req, res) => {
     const flag = { id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), engineer, text, weekStart, createdAt: new Date().toISOString() };
     flags.push(flag);
     writeMondayFlags(flags);
-    res.json(flag);
+    res.status(201).json(flag);
   } catch (e) { logError('route.post.monday-flags', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -6135,7 +6170,7 @@ app.put('/api/sales/opportunities/:id', (req, res) => {
 
       // ── Auto-schedule first AFU when entering Tender Awarded ──
       if (b.stage === 'Tender Awarded' && !opps[idx].nextFollowUpDate) {
-        const afuDate = new Date(Date.now() + 25 * 86400000).toISOString().slice(0, 10);
+        const afuDate = dateSGT(25);
         opps[idx].nextFollowUpDate = afuDate;
         opps[idx].afuSequence = 0;
         opps[idx].activity.push({ ts: new Date().toISOString(), type: 'auto-fu', note: `AFU1 auto-scheduled for ${afuDate}` });
