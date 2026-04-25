@@ -2491,3 +2491,16 @@
 {"ts":"2026-04-25T13:49:49.432Z","event":"claim.deleted","by":"Scenario Tester","id":"moeec1fyk429","claimNumber":"TEST-CLM","projectId":"x"}
 {"ts":"2026-04-25T13:49:49.509Z","event":"pr.deleted","by":"Scenario Tester","id":"moeec1ggv6rx","prNumber":"PR26-001","filesUnlinked":0}
 {"ts":"2026-04-25T13:49:49.517Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moeec1gm3761","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-25T14:04:26.316Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-25T14:04:26.325Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777125866001","jobCode":"TEST-SCN"}
+{"ts":"2026-04-25T14:04:26.366Z","event":"site-request.created","by":"Scenario Tester","id":"moeeuuf2m0qh","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-25T14:04:26.450Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777125866001","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1}
+{"ts":"2026-04-25T14:04:26.487Z","event":"claim.created","by":"Scenario Tester","id":"moeeuuif2e37","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-25T14:04:26.506Z","event":"pr.created","by":"Scenario Tester","id":"moeeuuiyvzo3","prNumber":"PR26-001","projectCode":"TEST"}
+{"ts":"2026-04-25T14:04:26.763Z","event":"task.deleted","by":"Scenario Tester","id":"moeeuuptcgjr","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-25T14:04:26.784Z","event":"task.deleted","by":"Scenario Tester","id":"moeeuuqhcsd9","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-25T14:04:26.797Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moeeuuqvbsl4","title":"Test\r\nInjected-Header: evil","reason":"test"}
+{"ts":"2026-04-25T14:04:26.814Z","event":"task.deleted","by":"Scenario Tester","id":"moeeuurc0c9o","title":"Proto test"}
+{"ts":"2026-04-25T14:04:26.911Z","event":"claim.deleted","by":"Scenario Tester","id":"moeeuuif2e37","claimNumber":"TEST-CLM","projectId":"x"}
+{"ts":"2026-04-25T14:04:26.996Z","event":"pr.deleted","by":"Scenario Tester","id":"moeeuuiyvzo3","prNumber":"PR26-001","filesUnlinked":0}
+{"ts":"2026-04-25T14:04:27.006Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"moeeuuj4hvkz","title":"Test ticket","reason":"test"}

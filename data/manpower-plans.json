@@ -587,44 +587,6 @@
     "savedAt": "2026-04-24T01:39:09.871Z"
   },
   {
-    "weekStart": "2026-06-01",
-    "assignments": {
-      "wi-test-1": {
-        "mon": {
-          "type": "Fabrication",
-          "projectId": "__xtest_proj_1776784965600",
-          "projectName": "Extended Test",
-          "otHours": 2
-        },
-        "tue": {
-          "type": "Installation",
-          "projectId": "__xtest_proj_1776784965600",
-          "location": "Site A"
-        },
-        "wed": {
-          "type": "MC",
-          "notes": "MC"
-        },
-        "sat": {
-          "type": "Fabrication",
-          "projectId": "__xtest_proj_1776784965600",
-          "projectName": "Extended Test",
-          "otHours": 8
-        }
-      }
-    },
-    "supplyWorkers": [
-      {
-        "id": "supply-test-1",
-        "name": "Supply Test",
-        "company": "TestCo",
-        "role": "Worker",
-        "code": "EXT"
-      }
-    ],
-    "savedAt": "2026-04-21T15:22:45.951Z"
-  },
-  {
     "weekStart": "2026-07-06",
     "assignments": {
       "w2": {
