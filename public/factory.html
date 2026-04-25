@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777098114">
+  <link rel="stylesheet" href="/css/style.css?v=1777113692">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -2114,7 +2114,6 @@ function computeItemDeadline(item, proj, fp, srIndex) {
 }
 
 const COLOR_RANK = { red: 0, amber: 1, green: 2, grey: 3 };
-const COLOR_DOT  = { red: '🔴', amber: '🟡', green: '🟢', grey: '⚪' };
 
 function formatDueLabel(d) {
   if (!d.date) return '—';
@@ -2402,11 +2401,23 @@ function _buildQueueRowHtml(x, fp, opts) {
     actionBtn = `<button class="fx-btn-primary" data-pid="${escHtml(fp.id)}" data-idx="${it.idx}" data-name="${escHtml(it.description)}" data-job="${escHtml(fp.jobCode || fp.projectName || '')}" onclick="queueRowAction(this)">Log build</button>`;
   }
 
+  // History toggle — shows count of past log entries; tap to expand the
+  // inline panel beneath the row with all entries (date-grouped, edit/delete).
+  const logCount = Array.isArray(it.logs) ? it.logs.length : 0;
+  const histBtn = logCount > 0
+    ? `<button class="fx-btn-ghost" style="margin-right:6px;" onclick="toggleQueueRowHistory('${escHtml(fp.id)}',${it.idx})" title="Show ${logCount} past log entr${logCount === 1 ? 'y' : 'ies'}">History (${logCount})</button>`
+    : '';
+
   const rowClass = 'fx-row' + (opts.sub ? ' sub' : '') + (opts.last ? ' last-sub' : '');
   const barHtml = `<div class="fx-row-progress">` +
     `<div class="fx-bar ${barColor}"><span style="width:${pct}%"></span></div>` +
     `<span class="fx-pct">${pct}%</span>` +
   `</div>`;
+
+  // Inline history panel — hidden until toggled. Rendered once, lazy-filled on first open.
+  const histPanel = logCount > 0
+    ? `<div class="fab-today-logs-panel" id="fx-queue-hist-${escHtml(fp.id)}-${it.idx}" hidden style="grid-column:1/-1;margin-top:6px;"></div>`
+    : '';
 
   return (
     `<div class="${rowClass}" id="fx-queue-${escHtml(fp.id)}-${it.idx}">` +
@@ -2422,9 +2433,28 @@ function _buildQueueRowHtml(x, fp, opts) {
         `</div>` +
       `</div>` +
       barHtml +
-      `<div class="fx-row-right">${actionBtn}</div>` +
+      `<div class="fx-row-right">${histBtn}${actionBtn}</div>` +
+      histPanel +
     `</div>`
   );
+}
+
+// Toggle the inline history panel for a Priority Queue row. Lazy-fills on
+// first open by calling renderLogHistoryHtml with that fab item's logs.
+function toggleQueueRowHistory(projectId, idx) {
+  const panel = document.getElementById('fx-queue-hist-' + projectId + '-' + idx);
+  if (!panel) return;
+  if (panel.hidden) {
+    if (!panel.innerHTML.trim()) {
+      const fp = fabData[projectId];
+      const row = fp && fp.fabrication && fp.fabrication[idx];
+      const logs = (row && Array.isArray(row.logs)) ? row.logs : [];
+      panel.innerHTML = renderLogHistoryHtml(projectId, idx, logs);
+    }
+    panel.hidden = false;
+  } else {
+    panel.hidden = true;
+  }
 }
 
 // Action handler for the primary "Log build" / "Start" button on a queue row.
@@ -2435,6 +2465,24 @@ function queueRowAction(btn) {
   const name = btn.dataset.name || '';
   const job  = btn.dataset.job || '';
   if (typeof openLogModal === 'function') openLogModal(pid, idx, name, job);
+}
+
+// Refetch /api/factory-queue and rerender the Priority Queue + KPI strip.
+// Called after a log save / stage change so the visible fx-rows pick up the
+// new qtyDone, fabPct, and any rows that just hit 100% (which renderPriorityQueue
+// filters out). Best-effort — failure leaves the existing UI alone.
+async function refreshPriorityQueueData() {
+  try {
+    const queue = await fetch('/api/factory-queue').then(r => r.json()).catch(() => null);
+    if (!Array.isArray(queue)) return;
+    _queueCache = queue;
+    await renderPriorityQueue(queue, siteRequests);
+    renderKpiStrip();
+    renderAlertBanner();
+  } catch (e) {
+    // Non-fatal — KPIs and rows just won't refresh until next page load.
+    console.warn('refreshPriorityQueueData failed:', e);
+  }
 }
 
 function jumpToItem(pid, idx) {
@@ -3052,6 +3100,8 @@ async function updateFabItemStage(pid, idx, direction) {
     }
     const stageList = localRow.isMechanicalParent ? PARENT_STAGES : FAB_STAGES;
     if (backEl) backEl.disabled = stageList.indexOf(finalStage) === 0;
+    // Stage changes can flip queue color/status; refresh the visible row
+    refreshPriorityQueueData();
   } catch (e) {
     console.error('updateFabItemStage error:', e);
     if (chipEl) {
@@ -4072,22 +4122,14 @@ const logModalState = {
 // EXIF orientation is handled server-side by sharp.rotate() so we don't
 // need to parse EXIF in the browser.
 async function compressImage(file, maxEdge = 1600, quality = 0.85) {
-  // Fast path: createImageBitmap decodes off the main thread and can resize
-  // in one step. This is dramatically faster than <img>+canvas on iOS Safari
-  // for HEIC photos (which are the default on iPhones).
+  // Fast path: ONE createImageBitmap call with resize options upfront.
+  // Browsers cap resize at native resolution, so passing resizeWidth=maxEdge
+  // is safe for smaller images. Avoids the 2-decode pattern that was
+  // hammering desktops on big DSLR/screenshot photos.
   if (typeof createImageBitmap === 'function') {
     try {
-      const probe = await createImageBitmap(file);
-      const scale = Math.min(1, maxEdge / Math.max(probe.width, probe.height));
-      const w = Math.max(1, Math.round(probe.width * scale));
-      const h = Math.max(1, Math.round(probe.height * scale));
-      let bitmap = probe;
-      if (scale < 1) {
-        try {
-          bitmap = await createImageBitmap(file, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
-          probe.close && probe.close();
-        } catch { /* some browsers reject resize options — fall through to canvas */ }
-      }
+      const bitmap = await createImageBitmap(file, { resizeWidth: maxEdge, resizeQuality: 'medium' });
+      const w = bitmap.width, h = bitmap.height;
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
@@ -4100,6 +4142,10 @@ async function compressImage(file, maxEdge = 1600, quality = 0.85) {
       // Fall through to legacy path
       console.warn('[compressImage] createImageBitmap failed, falling back:', err && err.message);
     }
+  }
+  // Fail fast on HEIC for browsers without HEIC support (desktop Chrome/Firefox)
+  if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name || '')) {
+    throw new Error('HEIC photos aren\'t supported on this browser. Convert to JPEG, or open this page in Safari.');
   }
   // Legacy fallback for browsers without createImageBitmap
   return new Promise((resolve, reject) => {
@@ -4222,6 +4268,7 @@ function openLogEditModal(projectId, fabIdx, logId) {
     document.getElementById('log-modal-photo-preview').style.display = '';
     document.getElementById('log-modal-photo-zone').classList.add('filled');
     document.getElementById('log-modal-photo-status').textContent = 'Existing photo. Tap Retake to replace.';
+    const addMore = document.getElementById('log-modal-add-more'); if (addMore) addMore.style.display = 'flex';
   }
 
   // Show existing extra photos
@@ -4265,20 +4312,15 @@ function _resetLogModalState() {
 }
 
 function _bindLogModalInputs() {
-  const photoInput = document.getElementById('log-modal-photo-input');
-  photoInput.value = '';
-  if (!photoInput._logBound) {
-    photoInput.addEventListener('change', handleLogPhotoCapture);
-    photoInput._logBound = true;
-  }
-  const galleryInput = document.getElementById('log-modal-photo-input-gallery');
-  if (galleryInput) {
-    galleryInput.value = '';
-    if (!galleryInput._logBound) {
-      galleryInput.addEventListener('change', handleLogPhotoCapture);
-      galleryInput._logBound = true;
+  ['log-modal-photo-input', 'log-modal-photo-input-gallery', 'log-modal-photo-input-more-cam', 'log-modal-photo-input-more-gal'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = '';
+    if (!el._logBound) {
+      el.addEventListener('change', handleLogPhotoCapture);
+      el._logBound = true;
     }
-  }
+  });
   const deltaInput = document.getElementById('log-modal-delta');
   if (!deltaInput._logBound) {
     deltaInput.addEventListener('input', updateLogSaveButton);
@@ -4303,44 +4345,39 @@ async function handleLogPhotoCapture(e) {
   if (!files || !files.length) return;
   const status = document.getElementById('log-modal-photo-status');
   status.classList.remove('err');
-  const total = Math.min(files.length, 10);
-  status.textContent = 'Compressing ' + total + ' photo' + (total > 1 ? 's' : '') + '…';
+  // One file at a time — keeps iOS HEIC pre-decode fast. The "Add more"
+  // buttons let users add additional photos as separate quick interactions
+  // instead of one slow multi-select.
+  const file = files[0];
+  // Reset the input so picking the same file again still fires change.
+  e.target.value = '';
+  status.textContent = 'Compressing photo…';
   try {
-    // Compress all files in parallel (modern phones can decode multiple
-    // images concurrently; sequential await was the previous bottleneck).
-    const filesArr = Array.from(files).slice(0, total);
-    const blobs = await Promise.all(filesArr.map(f => compressImage(f)));
-
-    // First blob = primary photo
-    const primaryBlob = blobs[0];
-    logModalState.photoBlob = primaryBlob;
-    if (logModalState.photoPreviewUrl) URL.revokeObjectURL(logModalState.photoPreviewUrl);
-    logModalState.photoPreviewUrl = URL.createObjectURL(primaryBlob);
-    const img = document.getElementById('log-modal-photo-img');
-    img.src = logModalState.photoPreviewUrl;
-    document.getElementById('log-modal-photo-empty').style.display = 'none';
-    document.getElementById('log-modal-photo-preview').style.display = '';
-    document.getElementById('log-modal-photo-zone').classList.add('filled');
-
-    // Additional blobs = extra photos
-    logModalState.extraPreviewUrls.forEach(u => URL.revokeObjectURL(u));
-    logModalState.extraBlobs = [];
-    logModalState.extraPreviewUrls = [];
-    logModalState.existingExtraPhotos = []; // new selection replaces existing
-    for (let i = 1; i < blobs.length; i++) {
-      logModalState.extraBlobs.push(blobs[i]);
-      logModalState.extraPreviewUrls.push(URL.createObjectURL(blobs[i]));
+    const blob = await compressImage(file);
+    if (!logModalState.photoBlob) {
+      // First photo → primary
+      logModalState.photoBlob = blob;
+      if (logModalState.photoPreviewUrl) URL.revokeObjectURL(logModalState.photoPreviewUrl);
+      logModalState.photoPreviewUrl = URL.createObjectURL(blob);
+      document.getElementById('log-modal-photo-img').src = logModalState.photoPreviewUrl;
+      document.getElementById('log-modal-photo-empty').style.display = 'none';
+      document.getElementById('log-modal-photo-preview').style.display = '';
+      document.getElementById('log-modal-photo-zone').classList.add('filled');
+      document.getElementById('log-modal-add-more').style.display = 'flex';
+    } else {
+      // Subsequent photos → extras
+      logModalState.extraBlobs.push(blob);
+      logModalState.extraPreviewUrls.push(URL.createObjectURL(blob));
     }
-
     renderExtraPhotoPreviews();
-    const totalKb = Math.round((primaryBlob.size + logModalState.extraBlobs.reduce((a, b) => a + b.size, 0)) / 1024);
-    status.textContent = total + ' photo' + (total > 1 ? 's' : '') + ' ready (' + totalKb + ' KB total).';
+    const totalCount = 1 + logModalState.extraBlobs.length + logModalState.existingExtraPhotos.length;
+    const totalKb = Math.round((logModalState.photoBlob.size + logModalState.extraBlobs.reduce((a, b) => a + b.size, 0)) / 1024);
+    status.textContent = totalCount + ' photo' + (totalCount > 1 ? 's' : '') + ' ready (' + totalKb + ' KB).';
     updateLogSaveButton();
   } catch (err) {
     console.error('log photo compression failed:', err);
     status.classList.add('err');
     status.textContent = 'Photo failed: ' + (err.message || 'unknown error');
-    logModalState.photoBlob = null;
   }
 }
 
@@ -4388,6 +4425,7 @@ function retakeLogPhoto() {
   document.getElementById('log-modal-photo-preview').style.display = 'none';
   document.getElementById('log-modal-photo-zone').classList.remove('filled');
   document.getElementById('log-modal-photo-status').textContent = '';
+  const addMore = document.getElementById('log-modal-add-more'); if (addMore) addMore.style.display = 'none';
   document.getElementById('log-modal-photo-input').value = '';
   updateLogSaveButton();
 }
@@ -4529,6 +4567,8 @@ async function saveLogEntry() {
       renderFabItems(fp);
       updateCardPercent(pid);
     }
+    // Refresh the visible Priority Queue row (qty, %, status, history count)
+    refreshPriorityQueueData();
     factoryToast(isEdit ? 'Log entry updated ✓' : ('Logged ' + (delta > 0 ? '+' : '') + delta + ' with photo ✓'));
   } catch (e) {
     console.error('log save failed:', e);
@@ -4603,6 +4643,8 @@ function _applyLogDeletion(projectId, fabIdx, logId, result) {
     renderFabItems(fp);
     updateCardPercent(projectId);
   }
+  // Refresh the visible Priority Queue row
+  refreshPriorityQueueData();
 }
 
 // Toggle the inline "today's logs" panel for a row. The panel is rendered
@@ -4660,7 +4702,7 @@ init();
             </label>
             <label class="log-modal-photo-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);">
               Choose from gallery
-              <input type="file" accept="image/*" multiple id="log-modal-photo-input-gallery" style="display:none;">
+              <input type="file" accept="image/*" id="log-modal-photo-input-gallery" style="display:none;">
             </label>
           </div>
         </div>
@@ -4671,6 +4713,16 @@ init();
       </div>
       <div class="log-modal-photo-status" id="log-modal-photo-status"></div>
       <div id="log-modal-extra-photos" style="margin-top:4px;"></div>
+      <div id="log-modal-add-more" style="display:none;margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <label class="log-modal-photo-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);font-size:12px;padding:6px 12px;">
+          + Take another
+          <input type="file" accept="image/*" capture="environment" id="log-modal-photo-input-more-cam" style="display:none;">
+        </label>
+        <label class="log-modal-photo-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);font-size:12px;padding:6px 12px;">
+          + From gallery
+          <input type="file" accept="image/*" id="log-modal-photo-input-more-gal" style="display:none;">
+        </label>
+      </div>
       <div class="log-modal-field">
         <label for="log-modal-delta">How many did you build?</label>
         <input type="number" id="log-modal-delta" min="1" step="1" inputmode="numeric" placeholder="e.g. 3">

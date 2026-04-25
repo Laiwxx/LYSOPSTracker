@@ -2284,3 +2284,15 @@
 {"ts":"2026-04-25T06:22:39.985Z","event":"claim.deleted","by":"Scenario Tester","id":"modyczphs5fj","claimNumber":"TEST-CLM","projectId":"x"}
 {"ts":"2026-04-25T06:22:40.066Z","event":"pr.deleted","by":"Scenario Tester","id":"modyczq6mrv5","prNumber":"PR26-001"}
 {"ts":"2026-04-25T06:22:40.077Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"modyczqbz62d","title":"Test ticket","reason":"test"}
+{"ts":"2026-04-25T10:23:46.459Z","event":"fab.log.photo.uploaded","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":2,"logId":"log_moe6z29ruq8x","originalSize":63304,"originalMime":"image/jpeg"}
+{"ts":"2026-04-25T10:23:46.479Z","event":"fab.log.created","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":2,"item":"Cova Auto Bollards","logId":"log_moe6z29ruq8x","delta":3,"newTotal":3}
+{"ts":"2026-04-25T10:28:49.459Z","event":"fab.log.deleted","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":2,"item":"Cova Auto Bollards","logId":"log_moe6z29ruq8x","deletedDelta":3,"newTotal":0,"photoUnlinked":true}
+{"ts":"2026-04-25T10:31:59.226Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":1,"logId":"log_moe79mdju138","originalSize":140292,"originalMime":"image/jpeg"}
+{"ts":"2026-04-25T10:31:59.262Z","event":"fab.log.created","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":1,"item":"LTA Bollard","logId":"log_moe79mdju138","delta":3,"newTotal":3}
+{"ts":"2026-04-25T10:32:09.796Z","event":"fab.log.deleted","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":1,"item":"LTA Bollard","logId":"log_moe79mdju138","deletedDelta":3,"newTotal":0,"photoUnlinked":true}
+{"ts":"2026-04-25T10:41:59.237Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":3,"logId":"log_moe7mhcusdfs","originalSize":159143,"originalMime":"image/jpeg"}
+{"ts":"2026-04-25T10:42:03.945Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":3,"logId":"log_moe7mkzw31r9","originalSize":159143,"originalMime":"image/jpeg"}
+{"ts":"2026-04-25T10:42:03.972Z","event":"fab.log.created","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":3,"item":"Bus Stop LTA Bollard","logId":"log_moe7mkzw31r9","delta":6,"newTotal":6}
+{"ts":"2026-04-25T10:42:31.353Z","event":"fab.log.photo.uploaded","by":"System","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":1,"logId":"log_moe7n63u6049","originalSize":159143,"originalMime":"image/jpeg"}
+{"ts":"2026-04-25T10:42:31.382Z","event":"fab.log.created","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":1,"item":"LTA Bollard","logId":"log_moe7n63u6049","delta":5,"newTotal":5}
+{"ts":"2026-04-25T10:42:35.776Z","event":"fab.log.deleted","by":"Lai Wei Xiang","projectId":"bd-25626","jobCode":"BD 25626","fabIdx":1,"item":"LTA Bollard","logId":"log_moe7n63u6049","deletedDelta":5,"newTotal":0,"photoUnlinked":true}

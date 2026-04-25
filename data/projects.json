@@ -6350,7 +6350,7 @@
     "status": "On Track",
     "currentStage": "Production / Fabrication",
     "actionBy": "Factory Manager",
-    "fabPercent": 29,
+    "fabPercent": 34,
     "installPercent": 0,
     "paidAmount": 0,
     "latestNotes": "",
@@ -6668,7 +6668,7 @@
         "started": "",
         "done": "",
         "logs": [],
-        "fab_started_at": null,
+        "fab_started_at": "2026-04-25T10:31:59.261Z",
         "fab_completed_at": null,
         "doneQty": 0,
         "fabDeadline": "2026-04-28"
@@ -6691,7 +6691,7 @@
           }
         ],
         "logs": [],
-        "fab_started_at": null,
+        "fab_started_at": "2026-04-25T10:23:46.478Z",
         "fab_completed_at": null,
         "partsProgress": {
           "done": 0,
@@ -6703,15 +6703,29 @@
         "item": "Bus Stop LTA Bollard",
         "totalQty": 6,
         "unit": "units",
-        "qtyDone": 0,
+        "qtyDone": 6,
         "qtySent": 0,
-        "status": "Not Started",
+        "status": "QC Check",
         "started": "",
         "done": "",
-        "logs": [],
-        "fab_started_at": null,
-        "fab_completed_at": null,
-        "doneQty": 0
+        "logs": [
+          {
+            "id": "log_moe7mkzw31r9",
+            "loggedAt": "2026-04-25T10:42:03.971Z",
+            "loggedBy": "Chris",
+            "delta": 6,
+            "photoPath": "/uploads/fab-logs/bd-25626/log_moe7mkzw31r9.jpg",
+            "extraPhotos": [],
+            "note": "",
+            "editedAt": null,
+            "editedBy": null,
+            "editHistory": []
+          }
+        ],
+        "fab_started_at": "2026-04-25T10:42:03.971Z",
+        "fab_completed_at": "2026-04-25T10:42:03.971Z",
+        "doneQty": 6,
+        "cycle_days": 0
       }
     ],
     "installation": [
