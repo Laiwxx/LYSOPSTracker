@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777124000">
+  <link rel="stylesheet" href="/css/style.css?v=1777125500">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -237,10 +237,68 @@
       font-weight: 400;
     }
 
-    /* ── Job card — wrapper exists for collapse state; visually a hairline divider, NOT a card ── */
-    .fx-job-card { border-bottom: 1px solid var(--border); }
-    .fx-job-card:last-child { border-bottom: none; }
+    /* ── Job card — wrapper exists for collapse state; gap between jobs is the separator ── */
+    .fx-job-card {
+      margin: 0 0 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .fx-job-card:last-child { margin-bottom: 0; border-bottom: none; }
     .fx-job-card .fx-row:last-child { border-bottom: none; }
+    /* Tighter top padding for the first card so the section header doesn't feel disconnected */
+    #section-pq.fx-rows > .fx-job-card:first-child,
+    #section-pq.fx-rows > .fx-stage-group:first-child { margin-top: 4px; }
+
+    /* ── Stage-grouped view (View: Stage) ── */
+    .fx-stage-group { margin-bottom: 14px; }
+    .fx-stage-group:last-child { margin-bottom: 0; }
+    .fx-stage-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .fx-stage-hdr .fx-stage-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    /* ── View toggle (Urgency / Stage) — segmented in section header ── */
+    .fx-view-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .fx-view-toggle button {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+    }
+    .fx-view-toggle button + button { border-left: 1px solid var(--border); }
+    .fx-view-toggle button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .fx-view-toggle button:hover:not(.active) { color: var(--text); }
     /* Collapse: hide sub-rows when card is collapsed; chevron rotates */
     .fx-job-card.collapsed .fx-row.sub { display: none; }
     .fx-job-card.collapsed .fx-group-hdr { border-bottom: none; }
@@ -1662,6 +1720,10 @@
       <h2 class="fx-section-title">Priority Queue</h2>
       <span id="pq-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
       <div class="fx-section-actions">
+        <div class="fx-view-toggle" role="tablist" aria-label="Group queue by">
+          <button id="pq-view-urgency" class="active" onclick="setPqViewMode('urgency')" type="button">Urgency</button>
+          <button id="pq-view-stage" onclick="setPqViewMode('stage')" type="button">Stage</button>
+        </div>
         <span id="pq-collapse-all" class="fx-toggle-all" onclick="toggleAllJobCards()" style="display:none;">Collapse all</span>
       </div>
     </header>
@@ -2232,12 +2294,44 @@ function toggleAllJobCards(forceState) {
 function _refreshCollapseAllLabel() {
   const link = document.getElementById('pq-collapse-all');
   if (!link) return;
+  // Collapse-all only meaningful in Urgency mode (stage mode has no job cards to collapse)
+  if (_pqViewMode !== 'urgency') { link.style.display = 'none'; return; }
   const cardsWithChildren = document.querySelectorAll('#section-pq .fx-job-card:not(.single)');
   if (cardsWithChildren.length === 0) { link.style.display = 'none'; return; }
   link.style.display = '';
   const anyExpanded = [...cardsWithChildren].some(c => !c.classList.contains('collapsed'));
   link.textContent = anyExpanded ? 'Collapse all' : 'Expand all';
 }
+
+// Priority Queue view mode: 'urgency' (default) groups by job card,
+// 'stage' regroups all items under stage headers (Not Started / In Progress / QC / Ready).
+const _PQ_VIEW_KEY = 'factory.pqViewMode.v1';
+let _pqViewMode;
+try { _pqViewMode = localStorage.getItem(_PQ_VIEW_KEY) === 'stage' ? 'stage' : 'urgency'; }
+catch (_) { _pqViewMode = 'urgency'; }
+
+function setPqViewMode(mode) {
+  if (mode !== 'urgency' && mode !== 'stage') return;
+  if (_pqViewMode === mode) return;
+  _pqViewMode = mode;
+  try { localStorage.setItem(_PQ_VIEW_KEY, mode); } catch (_) {}
+  _syncPqViewToggleUI();
+  // Re-render from cached queue data so the switch is instant
+  if (Array.isArray(_queueCache)) {
+    renderPriorityQueue(_queueCache, siteRequests);
+  }
+}
+
+function _syncPqViewToggleUI() {
+  const u = document.getElementById('pq-view-urgency');
+  const s = document.getElementById('pq-view-stage');
+  if (u) u.classList.toggle('active', _pqViewMode === 'urgency');
+  if (s) s.classList.toggle('active', _pqViewMode === 'stage');
+}
+
+// Stage display order, combining FAB and PARENT stages. Delivered is excluded
+// (those items are already filtered out as 100% complete before reaching here).
+const _STAGE_DISPLAY_ORDER = ['Not Started', 'In Progress', 'Assembly', 'QC Check', 'Ready for Delivery'];
 
 function formatDueLabel(d) {
   if (!d.date) return '—';
@@ -2431,9 +2525,57 @@ async function renderPriorityQueue(queue, srAll) {
   }
 
   // ── Render queue rows ──────────────────────────────────────────────────
-  // Multi-product jobs get a fx-group-hdr + indented fx-row sub children.
-  // Single-product jobs render as a flat fx-row with the jobcode pill on the row.
+  // View mode switches between two layouts of the SAME data:
+  //   urgency → grouped by job (multi-product cards + single-row cards)
+  //   stage   → grouped by fab stage (Not Started / In Progress / QC Check / etc.)
   container.innerHTML = '';
+  _syncPqViewToggleUI();
+
+  if (_pqViewMode === 'stage') {
+    // Stage-grouped view: every visible item rendered as a flat row under a stage header.
+    const visible = flat.filter(x => !x.item.isPartRow);
+    const byStage = new Map();
+    for (const stage of _STAGE_DISPLAY_ORDER) byStage.set(stage, []);
+    visible.forEach(x => {
+      const stage = x.item.status || 'Not Started';
+      const bucket = byStage.has(stage) ? stage : 'Not Started';
+      byStage.get(bucket).push(x);
+    });
+    let rendered = 0;
+    for (const stage of _STAGE_DISPLAY_ORDER) {
+      const items = byStage.get(stage) || [];
+      if (!items.length) continue;
+      rendered++;
+      const stageRows = items.map(x => {
+        const fp = x.fp;
+        return _buildQueueRowHtml(x, fp, { includeJobcode: true, jobcodeColor: classifyItem(x.item) });
+      }).join('');
+      container.insertAdjacentHTML('beforeend',
+        `<div class="fx-stage-group">` +
+          `<div class="fx-stage-hdr">${escHtml(stage)} <span class="fx-stage-count">· ${items.length}</span></div>` +
+          stageRows +
+        `</div>`
+      );
+    }
+    if (!rendered) {
+      container.innerHTML = '<div class="fx-empty">Nothing in the queue.</div>';
+    }
+    // Legacy hidden containers still need to exist so log-modal handlers work
+    projMeta.forEach(m => {
+      if (!document.getElementById('pq-items-' + m.fp.id)) {
+        const legacy = document.createElement('div');
+        legacy.id = 'pq-items-' + m.fp.id;
+        legacy.style.display = 'none';
+        legacy.className = 'pq-items-legacy';
+        container.appendChild(legacy);
+        renderFabItems(m.fp);
+      }
+    });
+    _refreshCollapseAllLabel();
+    return;
+  }
+
+  // Urgency view (default): job-card grouping
   projMeta.forEach(m => {
     const projItems = flat.filter(x => x.proj.projectId === m.proj.projectId);
     // Hide child part rows from the list — they render inside parent expansions
