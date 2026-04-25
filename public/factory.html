@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777119800">
+  <link rel="stylesheet" href="/css/style.css?v=1777121200">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -116,10 +116,9 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(26,29,46,0.04);
-      margin-bottom: 28px;
+      margin-bottom: 16px;
       overflow: hidden;
     }
-    .fx-section + .fx-section { margin-top: 0; }
     .fx-section-hdr {
       display: flex;
       align-items: center;
@@ -203,53 +202,33 @@
     .fx-chip.red   { background: rgba(220,38,38,0.10);  color: #b91c1c; }
     .fx-chip.grey  { background: rgba(107,114,148,0.10);color: var(--text-muted); }
 
-    /* ── Job Code pill ── (Chris-visibility pass: bumped scale + weight) */
+    /* ── Job Code pill ── small, contained — status carried by the section/header bar */
     .fx-jobcode {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
       color: var(--accent);
-      background: rgba(51,102,255,0.10);
-      border: 1px solid rgba(51,102,255,0.30);
-      padding: 4px 10px;
-      border-radius: 6px;
+      background: rgba(51,102,255,0.08);
+      border: 1px solid rgba(51,102,255,0.25);
+      padding: 3px 8px;
+      border-radius: 5px;
       white-space: nowrap;
       flex-shrink: 0;
-      min-width: 78px;
+      min-width: 62px;
       text-align: center;
     }
-    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.10); border-color: rgba(220,38,38,0.30); }
-    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.12); border-color: rgba(217,119,6,0.32); }
-    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.10); border-color: rgba(22,163,74,0.28); }
-    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.10); border-color: rgba(107,114,148,0.24); }
-    /* Mobile-only repeat on sub-rows: hidden on desktop, shown ≤768px at 80% scale */
-    .fx-jobcode.fx-jobcode-mobile { display: none; }
-    @media (max-width: 768px) {
-      .fx-jobcode.fx-jobcode-mobile {
-        display: inline-flex;
-        font-size: 11px;
-        padding: 2px 7px;
-        min-width: 64px;
-        opacity: 0.85;
-      }
-    }
+    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); }
+    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.10); border-color: rgba(217,119,6,0.28); }
+    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
+    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
 
-    /* ── Job card (one per job in Priority Queue — wraps single row OR group + sub-rows) ── */
-    .fx-job-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 1px 2px rgba(26,29,46,0.05);
-      margin: 8px 10px;
-      overflow: hidden;
-    }
-    .fx-job-card.red   { border-color: rgba(220,38,38,0.30); box-shadow: 0 1px 3px rgba(220,38,38,0.08); }
-    .fx-job-card.amber { border-color: rgba(217,119,6,0.30); }
-    .fx-job-card.green { border-color: rgba(22,163,74,0.22); }
+    /* ── Job card — wrapper exists for collapse state; visually a hairline divider, NOT a card ── */
+    .fx-job-card { border-bottom: 1px solid var(--border); }
+    .fx-job-card:last-child { border-bottom: none; }
     .fx-job-card .fx-row:last-child { border-bottom: none; }
     /* Collapse: hide sub-rows when card is collapsed; chevron rotates */
     .fx-job-card.collapsed .fx-row.sub { display: none; }
@@ -289,17 +268,17 @@
       align-items: center;
       gap: 10px;
       padding: 9px 16px 9px 13px;
-      background: linear-gradient(to right, rgba(51,102,255,0.04), transparent 60%);
+      background: transparent;
       border-bottom: 1px solid var(--border);
       border-left: 3px solid var(--accent);
       cursor: pointer;
       user-select: none;
     }
-    .fx-group-hdr:hover { background: linear-gradient(to right, rgba(51,102,255,0.07), transparent 60%); }
-    .fx-group-hdr.red   { border-left-color: #dc2626; background: linear-gradient(to right, rgba(220,38,38,0.05), transparent 60%); }
-    .fx-group-hdr.amber { border-left-color: #d97706; background: linear-gradient(to right, rgba(217,119,6,0.05), transparent 60%); }
-    .fx-group-hdr.green { border-left-color: #16a34a; background: linear-gradient(to right, rgba(22,163,74,0.04), transparent 60%); }
-    .fx-group-hdr.grey  { border-left-color: #9ca3af; background: linear-gradient(to right, rgba(107,114,148,0.04), transparent 60%); }
+    .fx-group-hdr:hover { background: rgba(0,0,0,0.025); }
+    .fx-group-hdr.red   { border-left-color: #dc2626; }
+    .fx-group-hdr.amber { border-left-color: #d97706; }
+    .fx-group-hdr.green { border-left-color: #16a34a; }
+    .fx-group-hdr.grey  { border-left-color: #9ca3af; }
     .fx-group-client {
       font-size: 13px;
       font-weight: 700;
@@ -2438,13 +2417,13 @@ async function renderPriorityQueue(queue, srAll) {
     const srCount = srNewByProject[m.proj.projectId] || 0;
 
     if (visibleItems.length === 1) {
-      // Single-product job → flat row inside a single-mode card
+      // Single-product job → flat row inside a hairline-divided wrapper (no tint, no border, no shadow)
       const row = _buildQueueRowHtml(visibleItems[0], m.fp, { includeJobcode: true, jobcodeColor: groupColor, srCount });
       container.insertAdjacentHTML('beforeend',
-        `<div class="fx-job-card single ${groupColor}">${row}</div>`
+        `<div class="fx-job-card single">${row}</div>`
       );
     } else {
-      // Multi-product job → card with group header + sub rows
+      // Multi-product job → hairline-divided wrapper holding group header + sub rows
       const groupMeta = [];
       const localRed   = visibleItems.filter(x => classifyItem(x.item) === 'red').length;
       const localAmber = visibleItems.filter(x => classifyItem(x.item) === 'amber').length;
@@ -2456,11 +2435,11 @@ async function renderPriorityQueue(queue, srAll) {
 
       const subRows = visibleItems.map((x, i) => {
         const last = (i === visibleItems.length - 1);
-        return _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false, jobcodeColor: classifyItem(x.item) });
+        return _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false });
       }).join('');
 
       const isCollapsed = _collapsedJobs.has(jobCode);
-      const cardClass = 'fx-job-card ' + groupColor + (isCollapsed ? ' collapsed' : '');
+      const cardClass = 'fx-job-card' + (isCollapsed ? ' collapsed' : '');
       const chevronSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
       container.insertAdjacentHTML('beforeend',
@@ -2513,17 +2492,11 @@ function _buildQueueRowHtml(x, fp, opts) {
   const qcName = project.siteEngineer || project.factoryManager || '';
   const qcBit = qcName ? `<span class="sep">·</span><span>QC: ${escHtml(qcName)}</span>` : '';
 
-  // Jobcode pill — full-size on top-level/single rows, mobile-only repeat on sub-rows.
-  // Desktop sub-rows stay clean (job code shown once on the group header); on phones
-  // Chris's scrolled-into-view sub-row still answers "which job is this?" at a glance.
-  let jobcodeHtml;
-  if (opts.includeJobcode) {
-    jobcodeHtml = `<span class="fx-jobcode ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`;
-  } else if (opts.sub) {
-    jobcodeHtml = `<span class="fx-jobcode fx-jobcode-mobile ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`;
-  } else {
-    jobcodeHtml = '';
-  }
+  // Jobcode pill — only on top-level/single rows. Sub-rows under a group header
+  // don't repeat the pill; the header above them carries the job identity.
+  const jobcodeHtml = opts.includeJobcode
+    ? `<span class="fx-jobcode ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`
+    : '';
   const srBadge = opts.srCount
     ? `<span class="fx-chip red" style="margin-left:6px;"><span class="fx-dot red"></span>${opts.srCount} new</span>`
     : '';
