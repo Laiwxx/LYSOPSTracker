@@ -4,8 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Sales Pipeline — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777037426">
+  <link rel="stylesheet" href="/css/style.css?v=1777098114">
   <style>
+    /* ══════════════════════════════════════════════════════
+       SALES PALETTE — scoped to this page only.
+       Salesforce Lightning-inspired: deep navy-blue sidebar,
+       bright SF blue accent (#1B96FF). Distinct from ops navy.
+       ══════════════════════════════════════════════════════ */
+    :root {
+      --sidebar-bg: #032d5c;
+      --accent: #1B96FF;
+      --accent-dim: #cfe7ff;
+      --accent-soft: rgba(27,150,255,0.10);
+    }
+    /* Topbar a notch darker than the sidebar for depth */
+    body > .topbar { background: #021f42; }
+    .topbar-title { letter-spacing: 0.3px; }
+    .topbar-title span { color: #79C9F2; }
+
+    /* ── Sales sidebar — trimmed down, no ops clutter ──── */
+    .sales-sidebar { padding-top: 10px; }
+    .sales-sidebar .back-to-ops {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 14px;
+      font-weight: 600;
+      font-size: 11px;
+      padding: 8px 12px;
+    }
+    .sales-sidebar .back-to-ops:hover {
+      background: rgba(255,255,255,0.10);
+      color: #fff;
+    }
+    .sales-sidebar .back-to-ops .staff-initial {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+    }
+    .sales-sidebar-brand {
+      padding: 2px 4px 14px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sales-sidebar-brand .mark {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 6px;
+      background: linear-gradient(135deg, #1B96FF, #0176D3);
+      color: #fff; font-weight: 700; font-size: 14px;
+      box-shadow: 0 2px 6px rgba(27,150,255,0.40);
+      margin-right: 8px; vertical-align: middle;
+    }
+    .sales-sidebar-brand .label {
+      display: inline-block; vertical-align: middle;
+      color: #fff; font-weight: 700; font-size: 13px; letter-spacing: 0.3px;
+    }
+    .sales-sidebar-brand .sub {
+      display: block; margin-top: 6px;
+      color: rgba(255,255,255,0.45); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+    }
+    .sales-sidebar .staff-nav-btn.coming-soon {
+      opacity: 0.45; cursor: not-allowed;
+    }
+    .sales-sidebar .staff-nav-btn .tag-soon {
+      margin-left: auto; font-size: 9px; font-weight: 700;
+      padding: 2px 6px; border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.5px;
+    }
+
     /* ── Salesforce-style KPI Bar ─────────────────────── */
     .kpi-bar {
       display: flex; gap: 1px; background: var(--border); border-radius: var(--radius);
@@ -60,10 +130,67 @@
     }
     .btn-new-opp:hover { filter: brightness(1.08); }
 
+    /* ── Salesforce-style Pipeline Path (chevron bar) ──── */
+    .sf-pipeline-path {
+      display: flex;
+      margin-bottom: 16px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      user-select: none;
+    }
+    .sf-pipeline-path .pp-item {
+      flex: 1;
+      position: relative;
+      padding: 10px 16px 10px 24px;
+      background: #f3f6fc;
+      color: #3e4452;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%);
+      margin-right: -10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      white-space: nowrap;
+    }
+    .sf-pipeline-path .pp-item:first-child {
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+      padding-left: 16px;
+    }
+    .sf-pipeline-path .pp-item:last-child {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 12px 50%);
+      margin-right: 0;
+    }
+    .sf-pipeline-path .pp-item:hover { background: #e5eefc; color: #0176D3; }
+    .sf-pipeline-path .pp-item.active {
+      background: var(--accent); color: #fff;
+    }
+    .sf-pipeline-path .pp-item.terminal-won:not(.active) { background: #e6f6ec; color: #03894f; }
+    .sf-pipeline-path .pp-item.terminal-lost:not(.active) { background: #eef0f5; color: #6b7294; }
+    .sf-pipeline-path .pp-name {
+      flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sf-pipeline-path .pp-count {
+      background: rgba(0,0,0,0.08); color: inherit;
+      border-radius: 10px; padding: 1px 7px;
+      font-size: 10px; font-weight: 700;
+      min-width: 18px; text-align: center; flex-shrink: 0;
+    }
+    .sf-pipeline-path .pp-item.active .pp-count {
+      background: rgba(255,255,255,0.28); color: #fff;
+    }
+
     /* ── Kanban Board ─────────────────────────────────── */
     .sf-board {
-      display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+      display: grid; grid-template-columns: repeat(9, minmax(150px, 1fr)); gap: 8px;
       align-items: start; min-height: calc(100vh - 280px);
+      overflow-x: auto; padding-bottom: 6px;
     }
     .sf-col {
       background: var(--bg3); border-radius: 8px; min-height: 200px;
@@ -400,13 +527,11 @@
     .sf-empty-state p { font-size: 13px; color: var(--text-muted); max-width: 360px; margin: 0 auto; }
 
     /* ── Responsive ───────────────────────────────────── */
-    @media (max-width: 1200px) {
-      .sf-board { grid-template-columns: repeat(3, 1fr); }
-    }
     @media (max-width: 768px) {
       .kpi-bar { flex-wrap: wrap; }
       .kpi-item { min-width: 48%; }
       .sf-board { display: none !important; }
+      .sf-pipeline-path { display: none; }
       .sf-mobile-tabs { display: flex !important; }
       .sf-mobile-list { display: block !important; }
       .sf-fields { grid-template-columns: 1fr; }
@@ -448,40 +573,42 @@
 <body>
 
 <div class="topbar">
-  <div class="topbar-title"><span>LYS</span> OPS . Sales Pipeline</div>
+  <div class="topbar-title"><span>LYS</span> SALES</div>
   <div style="display:flex;gap:8px;align-items:center;">
     <button class="btn-new-opp" id="btn-new" style="display:none;">+ New Opportunity</button>
   </div>
 </div>
 
 <div class="tasks-layout">
-  <!-- Sidebar -->
-  <div class="tasks-sidebar">
-    <a href="/" class="staff-nav-btn" style="text-decoration:none;">
-      <span class="staff-initial" style="font-size:13px;">D</span><span>Dashboard</span>
+  <!-- Sidebar (Sales-only) -->
+  <div class="tasks-sidebar sales-sidebar">
+    <a href="/" class="staff-nav-btn back-to-ops" style="text-decoration:none;" title="Return to Operations">
+      <span class="staff-initial">←</span><span>Back to Ops</span>
     </a>
-    <div class="tasks-sidebar-label">Operations</div>
-    <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
-      <span class="staff-initial" style="font-size:13px;">T</span><span>Team</span>
+    <div class="sales-sidebar-brand">
+      <span class="mark">S</span><span class="label">Sales CRM</span>
+      <span class="sub">Pipeline &amp; Follow-ups</span>
+    </div>
+    <div class="tasks-sidebar-label">Workspace</div>
+    <a href="#pipeline" class="staff-nav-btn active" data-sales-section="pipeline" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">◧</span><span>Pipeline</span>
     </a>
-    <a href="/factory" class="staff-nav-btn" style="text-decoration:none;">
-      <span class="staff-initial" style="font-size:13px;">F</span><span>Factory</span>
+    <a href="#inbox" class="staff-nav-btn" data-sales-section="inbox" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">✉</span><span>Leads Inbox</span>
     </a>
-    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
-      <span class="staff-initial" style="font-size:13px;">I</span><span>Installation</span>
+    <a href="#activity" class="staff-nav-btn coming-soon" style="text-decoration:none;" onclick="event.preventDefault();">
+      <span class="staff-initial" style="font-size:13px;">⏱</span><span>Activity</span>
+      <span class="tag-soon">SOON</span>
     </a>
-    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
-      <span class="staff-initial" style="font-size:13px;">P</span><span>Procurement</span>
+    <a href="#templates" class="staff-nav-btn coming-soon" style="text-decoration:none;" onclick="event.preventDefault();">
+      <span class="staff-initial" style="font-size:13px;">✎</span><span>Templates</span>
+      <span class="tag-soon">SOON</span>
     </a>
-    <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
-      <span class="staff-initial" style="font-size:13px;">M</span><span>Manpower</span>
+    <div class="tasks-sidebar-label" style="margin-top:16px;">Handoff</div>
+    <a href="new-project.html" class="staff-nav-btn" style="text-decoration:none;" title="Open New Project wizard">
+      <span class="staff-initial" style="font-size:13px;">+</span><span>Convert to Project</span>
     </a>
-    <div class="tasks-sidebar-label">Sales</div>
-    <a href="/sales" class="staff-nav-btn active" style="text-decoration:none;">
-      <span class="staff-initial" style="font-size:13px;">S</span><span>Pipeline</span>
-    </a>
-    <div class="tasks-sidebar-label">Other</div>
-    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;">
       <span class="staff-initial" style="font-size:13px;">?</span><span>Feedback</span>
     </a>
   </div>
@@ -519,6 +646,9 @@
         </div>
         <div id="inbox-list" style="padding:0 16px 12px;display:none;"></div>
       </div>
+
+      <!-- Salesforce Pipeline Path (chevron bar — click to filter) -->
+      <div class="sf-pipeline-path" id="pipeline-path"></div>
 
       <!-- Toolbar -->
       <div class="sf-toolbar">
@@ -632,7 +762,7 @@
   </div>
 </div>
 
-<script src="/js/utils.js?v=1777037426"></script>
+<script src="/js/utils.js?v=1777098114"></script>
 <script>
 // ── Constants & State ────────────────────────────────
 const STAGES = ['New Lead', 'Discovery', 'Tender Review', 'Quotation', 'Presentation', 'Pending Tender', 'Tender Awarded', 'Won', 'Lost'];
@@ -811,6 +941,14 @@ function bindEvents() {
   document.getElementById('filter-owner').addEventListener('change', render);
   document.getElementById('filter-stage').addEventListener('change', render);
   document.getElementById('search-input').addEventListener('input', render);
+  document.getElementById('pipeline-path').addEventListener('click', (e) => {
+    const item = e.target.closest('.pp-item');
+    if (!item) return;
+    const stage = item.dataset.stage;
+    const sel = document.getElementById('filter-stage');
+    sel.value = (sel.value === stage) ? '' : stage;
+    sel.dispatchEvent(new Event('change'));
+  });
   document.getElementById('panel-close').addEventListener('click', closePanel);
   document.getElementById('sf-overlay').addEventListener('click', closePanel);
   document.getElementById('panel-cancel').addEventListener('click', closePanel);
@@ -859,6 +997,7 @@ let mobileStageFilter = '';
 
 function render() {
   renderKPIs();
+  renderPipelinePath();
   const filtered = getFiltered();
   renderBoard(filtered);
   renderTable(filtered);
@@ -869,6 +1008,38 @@ function render() {
   const hasOpps = opps.length > 0;
   document.getElementById('sf-empty').style.display = (!hasOpps && viewMode === 'board') ? '' : 'none';
   document.getElementById('sf-board').style.display = (hasOpps && viewMode === 'board') ? 'grid' : 'none';
+}
+
+// Salesforce Pipeline Path — chevron bar with per-stage counts; click toggles stage filter
+function renderPipelinePath() {
+  const path = document.getElementById('pipeline-path');
+  if (!path) return;
+  const fp = document.getElementById('filter-product').value;
+  const fo = document.getElementById('filter-owner').value;
+  const sq = document.getElementById('search-input').value.trim().toLowerCase();
+  const contextList = opps.filter(o => {
+    if (fp && o.productType !== fp) return false;
+    if (fo && o.assignedTo !== fo) return false;
+    if (sq && !(
+      (o.clientName||'').toLowerCase().includes(sq) ||
+      (o.contactPerson||'').toLowerCase().includes(sq) ||
+      (o.productType||'').toLowerCase().includes(sq) ||
+      (o.quotationNo||'').toLowerCase().includes(sq)
+    )) return false;
+    return true;
+  });
+  const counts = {};
+  STAGES.forEach(s => counts[s] = 0);
+  contextList.forEach(o => { counts[o.stage] = (counts[o.stage] || 0) + 1; });
+  const active = document.getElementById('filter-stage').value;
+  path.innerHTML = STAGES.map(s => {
+    const isActive = active === s;
+    const terminal = s === 'Won' ? ' terminal-won' : (s === 'Lost' ? ' terminal-lost' : '');
+    return `<div class="pp-item${isActive ? ' active' : ''}${terminal}" data-stage="${esc(s)}" title="${esc(s)}${isActive ? ' — click to clear' : ' — click to filter'}">
+      <span class="pp-name">${esc(s)}</span>
+      <span class="pp-count">${counts[s]}</span>
+    </div>`;
+  }).join('');
 }
 
 function renderMobile(filtered) {
@@ -1727,6 +1898,35 @@ document.getElementById('inbox-header')?.addEventListener('click', () => {
   const chev = document.getElementById('inbox-chevron');
   if (list.style.display === 'none') { list.style.display = ''; chev.textContent = '▲'; }
   else { list.style.display = 'none'; chev.textContent = '▼'; }
+});
+
+// Sidebar section nav — 'pipeline' scrolls to top, 'inbox' opens & scrolls to inbox panel
+document.querySelectorAll('.sales-sidebar [data-sales-section]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const section = link.dataset.salesSection;
+    document.querySelectorAll('.sales-sidebar [data-sales-section]').forEach(a => a.classList.remove('active'));
+    link.classList.add('active');
+    if (section === 'pipeline') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (section === 'inbox') {
+      e.preventDefault();
+      const panel = document.getElementById('inbox-panel');
+      const list  = document.getElementById('inbox-list');
+      const chev  = document.getElementById('inbox-chevron');
+      if (panel) {
+        panel.style.display = '';
+        if (list) {
+          list.style.display = '';
+          if (!list.innerHTML.trim()) {
+            list.innerHTML = '<div style="padding:16px 0;color:var(--text-muted);font-size:12px;text-align:center;">No incoming leads right now. Check back after the next inbox scan.</div>';
+          }
+        }
+        if (chev) chev.textContent = '▲';
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  });
 });
 
 init();

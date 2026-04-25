@@ -4,153 +4,537 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777037426">
+  <link rel="stylesheet" href="/css/style.css?v=1777098114">
   <style>
     body { background: var(--bg); }
-    .factory-page { max-width: 960px; margin: 0 auto; padding: 16px; }
+    .tasks-main { padding: 18px 20px 40px !important; }
+    .factory-page { max-width: 1280px; margin: 0 auto; }
 
-    /* ── Section headers ── */
-    .factory-section-hdr {
+    /* ══════════════════════════════════════════════════════
+       FACTORY redesign — ported from approved preview.
+       Stays in ops palette (navy + electric blue).
+       Dense, professional. See factory-preview.html. */
+
+    /* ── Critical Alert Banner (shown only when overdue items exist) ─ */
+    .fx-alert {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin: 24px 0 12px;
+      gap: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      background: linear-gradient(to right, rgba(220,38,38,0.08), rgba(220,38,38,0.02));
+      border: 1px solid rgba(220,38,38,0.25);
+      border-left: 3px solid #dc2626;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(220,38,38,0.08);
     }
-    .factory-section-hdr:first-child { margin-top: 4px; }
-    .factory-section-title {
-      font-size: 13px;
-      font-weight: 800;
+    .fx-alert-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(220,38,38,0.14);
+      color: #b91c1c;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .fx-alert-body { flex: 1; min-width: 0; }
+    .fx-alert-title {
+      font-size: 13px; font-weight: 700; color: #7f1d1d;
+      margin-bottom: 2px;
+    }
+    .fx-alert-sub {
+      font-size: 12px; color: #991b1b;
+    }
+    .fx-kpi.critical {
+      background: linear-gradient(135deg, rgba(220,38,38,0.05), var(--bg2) 70%);
+      position: relative;
+    }
+    .fx-kpi.critical::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: #dc2626;
+    }
+
+    /* ── KPI Strip ────────────────────────────────────── */
+    .fx-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 3px rgba(26,29,46,0.04);
+    }
+    .fx-kpi {
+      background: var(--bg2);
+      padding: 12px 16px;
+      min-width: 0;
+    }
+    .fx-kpi-label {
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.7px;
-      color: var(--text);
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
     }
-    .factory-section-sub {
+    .fx-kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+    .fx-kpi-value.blue  { color: var(--accent); }
+    .fx-kpi-value.red   { color: #dc2626; }
+    .fx-kpi-sub {
       font-size: 11px;
       color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
-    /* ── Priority banner ── */
-    /* ── Priority queue grid ── */
-    #section-pq {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
+    /* ── Status Dots (single visual vocabulary) ────────── */
+    .fx-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
-    @media (min-width: 640px) {
-      #section-pq { grid-template-columns: 1fr 1fr; }
-      .pq-card.expanded { grid-column: 1 / -1; }
-    }
+    .fx-dot.green { background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+    .fx-dot.amber { background: #d97706; box-shadow: 0 0 0 3px rgba(217,119,6,0.12); }
+    .fx-dot.red   { background: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.14); }
+    .fx-dot.grey  { background: #9ca3af; box-shadow: 0 0 0 3px rgba(156,163,175,0.14); }
+    .fx-dot.blue  { background: var(--accent); box-shadow: 0 0 0 3px rgba(51,102,255,0.14); }
 
-    /* ── Timeline band headers ── */
-    .pq-band-header {
-      grid-column: 1 / -1;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      padding: 8px 10px 4px;
-      color: var(--text-muted);
-      border-radius: var(--radius-sm);
-    }
-    .pq-band-header:not(:first-child) { margin-top: 12px; }
-    .pq-band-overdue {
-      color: var(--red);
-      background: rgba(226,68,92,0.08);
-      border-left: 3px solid var(--red);
-      padding: 10px 10px 6px;
-    }
-    .pq-band-due-soon { color: var(--amber); }
-    .pq-band-no-deadline {
-      color: var(--amber);
-      background: rgba(255,171,0,0.06);
-      border-left: 3px solid var(--amber);
-      padding: 10px 10px 6px;
-    }
-
-    /* ── Priority queue cards ── */
-    .pq-card {
+    /* ── Section ──────────────────────────────────────── */
+    .fx-section {
       background: var(--bg2);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(26,29,46,0.04);
+      margin-bottom: 14px;
       overflow: hidden;
-      border-left: 3px solid var(--border);
     }
-    .pq-card.pri-red   { border-left-color: var(--red); }
-    .pq-card.pri-amber { border-left-color: var(--amber); }
-    .pq-card.pri-green { border-left-color: var(--green); }
-    .pq-card.pri-grey  { border-left-color: var(--border); }
-    .pq-card-header {
-      padding: 12px 14px;
-      cursor: pointer;
-      user-select: none;
+    .fx-section-hdr {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, #fcfdff, var(--bg2));
+      flex-wrap: wrap;
     }
-    .pq-card-header:active { background: var(--bg3); }
-    .pq-header-info { flex: 1; min-width: 0; }
-    .pq-project-name {
+    .fx-section-bar {
+      width: 3px;
+      height: 20px;
+      border-radius: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .fx-section-bar.red   { background: #dc2626; }
+    .fx-section-bar.amber { background: #d97706; }
+    .fx-section-bar.green { background: #16a34a; }
+    .fx-section-bar.grey  { background: #9ca3af; }
+    .fx-section-icon {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .fx-section-title {
       font-size: 14px;
       font-weight: 700;
+      color: var(--text);
+      margin: 0;
+      letter-spacing: 0.1px;
+    }
+    .fx-section-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .fx-btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .fx-btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+    .fx-btn-primary {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .fx-btn-primary:hover { filter: brightness(1.08); }
+
+    /* ── Chips ─────────────── */
+    .fx-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .fx-chip.blue  { background: rgba(51,102,255,0.10); color: var(--accent); }
+    .fx-chip.green { background: rgba(22,163,74,0.10);  color: #15803d; }
+    .fx-chip.amber { background: rgba(217,119,6,0.12);  color: #b45309; }
+    .fx-chip.red   { background: rgba(220,38,38,0.10);  color: #b91c1c; }
+    .fx-chip.grey  { background: rgba(107,114,148,0.10);color: var(--text-muted); }
+
+    /* ── Job Code pill ── */
+    .fx-jobcode {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--accent);
+      background: rgba(51,102,255,0.08);
+      border: 1px solid rgba(51,102,255,0.25);
+      padding: 3px 8px;
+      border-radius: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 62px;
+      text-align: center;
+    }
+    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); }
+    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.10); border-color: rgba(217,119,6,0.28); }
+    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
+    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
+
+    /* ── Group header (multi-product jobs) ── */
+    .fx-group-hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px 9px 13px;
+      background: linear-gradient(to right, rgba(51,102,255,0.04), transparent 60%);
+      border-bottom: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      cursor: pointer;
+      user-select: none;
+    }
+    .fx-group-hdr:hover { background: linear-gradient(to right, rgba(51,102,255,0.07), transparent 60%); }
+    .fx-group-hdr.red   { border-left-color: #dc2626; background: linear-gradient(to right, rgba(220,38,38,0.05), transparent 60%); }
+    .fx-group-hdr.amber { border-left-color: #d97706; background: linear-gradient(to right, rgba(217,119,6,0.05), transparent 60%); }
+    .fx-group-hdr.green { border-left-color: #16a34a; background: linear-gradient(to right, rgba(22,163,74,0.04), transparent 60%); }
+    .fx-group-hdr.grey  { border-left-color: #9ca3af; background: linear-gradient(to right, rgba(107,114,148,0.04), transparent 60%); }
+    .fx-group-client {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .fx-group-meta {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    /* ── Sub-row (indented) ── */
+    .fx-row.sub {
+      padding-left: 44px;
+      position: relative;
+    }
+    .fx-row.sub::before {
+      content: '';
+      position: absolute;
+      left: 22px;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .fx-row.sub.last-sub::before {
+      bottom: 50%;
+    }
+    .fx-row.sub::after {
+      content: '';
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      width: 10px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Rows (queue / requests / PRs) ──────────────── */
+    .fx-rows { }
+    .fx-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    .fx-row:last-child { border-bottom: none; }
+    .fx-row:hover { background: #fafbfe; }
+    .fx-row-main { flex: 1; min-width: 0; }
+    .fx-row-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .fx-row-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .fx-row-meta .sep { opacity: 0.5; }
+
+    /* ── Progress Bar ───────────────────────────────── */
+    .fx-row-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      min-width: 140px;
+    }
+    .fx-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg3);
+      border-radius: 3px;
+      overflow: hidden;
+      min-width: 70px;
+    }
+    .fx-bar > span {
+      display: block;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.25s;
+    }
+    .fx-bar.red   > span { background: #dc2626; }
+    .fx-bar.amber > span { background: #d97706; }
+    .fx-bar.green > span { background: #16a34a; }
+    .fx-pct {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 34px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .fx-row-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ── Manpower Cards ─────────────────────────────── */
+    .fx-mp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      padding: 14px;
+    }
+    .fx-mp-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .fx-mp-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .fx-mp-main { flex: 1; min-width: 0; }
+    .fx-mp-name {
+      font-size: 12px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .fx-mp-role {
+      font-size: 10px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.4px;
+      margin-top: 1px;
+    }
+    .fx-mp-ot {
+      font-size: 10px; font-weight: 700;
+      color: #b45309;
+      background: rgba(217,119,6,0.10);
+      padding: 2px 7px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .fx-empty {
+      padding: 28px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    .fx-empty a { color: var(--accent); font-weight: 600; }
+
+    /* ── DO Gallery ─────────────────────────────────── */
+    .fx-do-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+    .fx-do-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg2);
+      transition: box-shadow 0.15s, transform 0.15s;
+      position: relative;
+    }
+    .fx-do-card:hover {
+      box-shadow: 0 4px 12px rgba(26,29,46,0.08);
+      transform: translateY(-1px);
+    }
+    .fx-do-thumb {
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7294;
+      overflow: hidden;
+    }
+    .fx-do-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .fx-do-thumb::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.12));
+      pointer-events: none;
+    }
+    .fx-do-badge {
+      position: absolute; top: 8px; left: 8px;
+      z-index: 1;
+    }
+    .fx-do-del {
+      position: absolute; top: 6px; right: 6px;
+      z-index: 2;
+      width: 22px; height: 22px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 13px;
+      line-height: 22px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .fx-do-card:hover .fx-do-del { opacity: 1; }
+    .fx-do-body { padding: 8px 10px; }
+    .fx-do-body a { color: var(--text); text-decoration: none; }
+    .fx-do-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .pq-project-meta {
-      font-size: 11px;
+    .fx-do-sub {
+      font-size: 10px;
       color: var(--text-muted);
-      margin-top: 3px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .pq-due-badge {
-      flex-shrink: 0;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      white-space: nowrap;
-      line-height: 1.3;
-      text-align: center;
-      align-self: center;
-    }
-    .pq-due-badge.due-red   { background: rgba(226,68,92,0.15); color: var(--red); }
-    .pq-due-badge.due-amber { background: rgba(255,171,0,0.15); color: var(--amber); }
-    .pq-due-badge.due-green { background: rgba(0,200,117,0.12); color: var(--green); }
-    .pq-due-badge.due-grey  { background: var(--bg3); color: var(--text-muted); }
-    .pq-sr-badge {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--red);
-    }
-    .pq-expand-icon {
-      font-size: 18px;
-      color: var(--text-muted);
-      flex-shrink: 0;
-      transition: transform 0.2s;
-      line-height: 1;
       margin-top: 2px;
     }
-    .pq-card.expanded .pq-expand-icon { transform: rotate(90deg); }
-    .pq-progress-bar {
-      height: 4px;
-      background: var(--bg3);
-      border-radius: 2px;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-    .pq-progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      transition: width 0.3s;
-    }
-    .pq-progress-fill.complete { background: var(--green); }
 
-    /* FAB item rows inside expanded card */
-    .pq-items { display: none; border-top: 1px solid var(--border); }
-    .pq-card.expanded .pq-items { display: block; }
+    /* ── Upload zone ────────────────────────────────── */
+    .fx-upload-zone {
+      margin: 14px;
+      padding: 20px;
+      border: 1.5px dashed var(--border);
+      border-radius: 8px;
+      text-align: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: block;
+    }
+    .fx-upload-zone:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(51,102,255,0.03);
+    }
+    .fx-upload-icon { margin-bottom: 6px; }
+    .fx-upload-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .fx-upload-sub   { font-size: 11px; }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .fx-kpi-strip { grid-template-columns: repeat(2, 1fr); }
+      .fx-row-progress { display: none; }
+    }
+    @media (max-width: 600px) {
+      .tasks-main { padding: 12px !important; }
+      .fx-kpi { padding: 10px 12px; }
+      .fx-kpi-value { font-size: 20px; }
+      .fx-row { flex-wrap: wrap; padding: 10px 12px; }
+      .fx-row-right { width: 100%; justify-content: flex-end; }
+      .fx-section-actions .fx-btn-ghost { display: none; }
+    }
+
+    /* ── Expanded fab items (inside priority queue rows) ───────── */
+    .fx-fab-expand {
+      display: none;
+      border-top: 1px dashed var(--border);
+      background: var(--bg);
+      padding: 10px 16px 14px;
+    }
+    .fx-row.expanded + .fx-fab-expand,
+    .fx-group-hdr.expanded + .fx-fab-expand { display: block; }
+    .fx-expand-chevron {
+      font-size: 14px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: transform 0.15s;
+      line-height: 1;
+    }
+    .fx-row.expanded .fx-expand-chevron,
+    .fx-group-hdr.expanded .fx-expand-chevron { transform: rotate(90deg); }
 
     /* ── FAB item row (compact, strict one-line) ── */
     .factory-item {
@@ -1156,9 +1540,6 @@
   <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
     <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
   </a>
-  <a href="/sales" class="staff-nav-btn" id="nav-sales" style="text-decoration:none;display:none;">
-    <span class="staff-initial" style="font-size:13px;">S</span><span>Sales</span>
-  </a>
   <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
     <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
   </a>
@@ -1168,60 +1549,117 @@
   <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
     <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
   </a>
+  <a href="/sales" class="staff-nav-btn" id="nav-sales" style="text-decoration:none;display:none;">
+    <span class="staff-initial" style="font-size:13px;">S</span><span>Sales</span>
+  </a>
 </div>
 
-<div class="tasks-main" style="overflow-y:auto;padding:0;">
+<div class="tasks-main">
 <div class="factory-page">
 
-  <!-- ── SECTION A: Today's Priority Queue ── -->
-  <div class="factory-section-hdr">
-    <div>
-      <div class="factory-section-title">🏗 Today's Priority Queue</div>
-      <div id="pq-summary" class="factory-section-sub"></div>
+  <!-- ── Critical alert banner (conditional; populated by renderAlertBanner) ─ -->
+  <div id="fx-alert-banner"></div>
+
+  <!-- ── KPI strip (populated by renderKpiStrip) ─────────────── -->
+  <div class="fx-kpi-strip" id="fx-kpi-strip">
+    <div class="fx-kpi">
+      <div class="fx-kpi-label">Site Requests</div>
+      <div class="fx-kpi-value" id="kpi-sr-value">—</div>
+      <div class="fx-kpi-sub" id="kpi-sr-sub">Loading…</div>
     </div>
-  </div>
-  <div id="section-pq">
-    <div class="empty-state">Loading…</div>
+    <div class="fx-kpi">
+      <div class="fx-kpi-label">In Queue</div>
+      <div class="fx-kpi-value blue" id="kpi-queue-value">—</div>
+      <div class="fx-kpi-sub" id="kpi-queue-sub">Loading…</div>
+    </div>
+    <div class="fx-kpi">
+      <div class="fx-kpi-label">Workers Today</div>
+      <div class="fx-kpi-value" id="kpi-workers-value">—</div>
+      <div class="fx-kpi-sub" id="kpi-workers-sub">Loading…</div>
+    </div>
+    <div class="fx-kpi">
+      <div class="fx-kpi-label">Open DOs</div>
+      <div class="fx-kpi-value" id="kpi-do-value">—</div>
+      <div class="fx-kpi-sub" id="kpi-do-sub">Loading…</div>
+    </div>
+    <div class="fx-kpi">
+      <div class="fx-kpi-label">Material Reqs</div>
+      <div class="fx-kpi-value" id="kpi-pr-value">—</div>
+      <div class="fx-kpi-sub" id="kpi-pr-sub">Loading…</div>
+    </div>
   </div>
 
-  <!-- ── SECTION B: Today's Manpower ── -->
-  <div class="factory-section-hdr">
-    <div>
-      <div class="factory-section-title">👷 Today's Manpower</div>
-      <div class="factory-section-sub" id="mp-subtitle">Workers assigned to factory today</div>
+  <!-- ── SECTION A: Priority Queue ──────────────────── -->
+  <section class="fx-section" id="fx-section-queue">
+    <header class="fx-section-hdr">
+      <div class="fx-section-bar"></div>
+      <div class="fx-section-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6-4v4l6-4v16"/><path d="M3 21h18"/><path d="M7 17h2"/><path d="M13 17h2"/></svg>
+      </div>
+      <h2 class="fx-section-title">Priority Queue</h2>
+      <span id="pq-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
+      <div class="fx-section-actions"></div>
+    </header>
+    <div id="section-pq" class="fx-rows">
+      <div class="fx-empty">Loading…</div>
     </div>
-    <a href="/planning" style="font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;">Manage →</a>
-  </div>
-  <div id="section-manpower">
-    <div class="empty-state">Loading…</div>
-  </div>
+  </section>
 
-  <!-- ── SECTION C: Site Requests ── -->
-  <div class="factory-section-hdr">
-    <div>
-      <div class="factory-section-title">📥 Site Requests</div>
-      <div class="factory-section-sub">Pending requests from site team</div>
+  <!-- ── SECTION B: Site Requests ─────────────────── -->
+  <section class="fx-section" id="fx-section-sr">
+    <header class="fx-section-hdr">
+      <div class="fx-section-bar red"></div>
+      <div class="fx-section-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+      </div>
+      <h2 class="fx-section-title">Site Requests</h2>
+      <span id="sr-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
+      <div class="fx-section-actions"></div>
+    </header>
+    <div id="section-sr" class="fx-rows">
+      <div class="fx-empty">Loading…</div>
     </div>
-    <span id="sr-count-badge" style="display:none;background:var(--red);color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:2px 8px;"></span>
-  </div>
-  <div id="section-sr">
-    <div class="empty-state">Loading…</div>
-  </div>
+  </section>
 
-  <!-- ── SECTION D: Delivery Orders ── -->
-  <div class="factory-section-hdr">
-    <div>
-      <div class="factory-section-title">📸 Delivery Orders</div>
-      <div class="factory-section-sub">Photo a DO when you receive one</div>
+  <!-- ── SECTION C: Today's Manpower ──────────────── -->
+  <section class="fx-section" id="fx-section-manpower">
+    <header class="fx-section-hdr">
+      <div class="fx-section-bar grey"></div>
+      <div class="fx-section-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h2 class="fx-section-title">Today's Manpower</h2>
+      <span id="mp-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
+      <div class="fx-section-actions">
+        <a href="/planning" class="fx-btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;">Manage →</a>
+      </div>
+    </header>
+    <div id="section-manpower">
+      <div class="fx-empty">Loading…</div>
     </div>
-  </div>
-  <div style="margin-bottom:16px;">
-    <label class="do-upload-btn">
-      📸 Photo a DO (tap to upload)
+  </section>
+
+  <!-- ── SECTION D: Delivery Orders ─────────────── -->
+  <section class="fx-section" id="fx-section-do">
+    <header class="fx-section-hdr">
+      <div class="fx-section-bar amber"></div>
+      <div class="fx-section-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <h2 class="fx-section-title">Delivery Orders</h2>
+      <span id="do-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
+      <div class="fx-section-actions"></div>
+    </header>
+    <label class="fx-upload-zone" for="do-file-input" id="do-upload-label">
+      <div class="fx-upload-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+      <div class="fx-upload-title">Tap to photograph a DO</div>
+      <div class="fx-upload-sub">Auto-links to a pending Purchase Requisition</div>
       <input type="file" accept="image/*,application/pdf" capture="environment" id="do-file-input" style="display:none;">
     </label>
-    <!-- Upload form shown after photo is taken -->
-    <div id="do-upload-form" style="display:none;margin-top:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;">
+    <!-- Upload form shown after photo is taken (preserved unchanged) -->
+    <div id="do-upload-form" style="display:none;margin:0 14px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px;">
       <div style="font-size:12px;font-weight:600;margin-bottom:8px;" id="do-upload-filename"></div>
       <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Link to PR</label>
       <select id="do-pr-select" class="fpr-input" style="width:100%;margin-bottom:8px;" onchange="onDOPRChange()">
@@ -1234,24 +1672,37 @@
       <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Notes (optional)</label>
       <input type="text" id="do-notes" class="fpr-input" placeholder="e.g. supplier name, PO ref" style="width:100%;margin-bottom:10px;">
       <div style="display:flex;gap:8px;">
-        <button onclick="cancelDOUpload()" class="sr-admin-btn" style="flex:1;padding:8px;">Cancel</button>
-        <button onclick="submitDOUpload()" class="sr-admin-btn" style="flex:1;padding:8px;background:var(--accent);color:#fff;border-color:var(--accent);">Save DO</button>
+        <button onclick="cancelDOUpload()" class="fx-btn-ghost" style="flex:1;padding:8px;">Cancel</button>
+        <button onclick="submitDOUpload()" class="fx-btn-primary" style="flex:1;padding:8px;">Save DO</button>
       </div>
     </div>
     <div id="do-list"></div>
-  </div>
+  </section>
 
-  <!-- ── Request Materials ── -->
-  <div class="factory-section-hdr" style="margin-top:16px;">
-    <div>
-      <div class="factory-section-title">📋 Material Requests</div>
-      <div class="factory-section-sub">Purchase requisitions sent to procurement</div>
+  <!-- ── SECTION E: Material Requests ─────────────── -->
+  <section class="fx-section" id="fx-section-prs">
+    <header class="fx-section-hdr">
+      <div class="fx-section-bar"></div>
+      <div class="fx-section-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a2 2 0 0 1 2 2v2H7V4a2 2 0 0 1 2-2z"/><rect x="4" y="6" width="16" height="16" rx="2"/><path d="M9 12h6M9 16h6"/></svg>
+      </div>
+      <h2 class="fx-section-title">Material Requests</h2>
+      <span id="pr-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
+      <div class="fx-section-actions">
+        <button onclick="openFactoryPRModal()" class="fx-btn-primary">+ New PR</button>
+      </div>
+    </header>
+    <div id="section-prs" class="fx-rows">
+      <div class="fx-empty">Loading…</div>
     </div>
-    <button onclick="openFactoryPRModal()" class="sr-admin-btn" style="font-size:12px;padding:5px 12px;background:var(--accent);color:#fff;border-color:var(--accent);">+ New Request</button>
-  </div>
-  <div id="section-prs">
-    <div class="empty-state">Loading…</div>
-  </div>
+  </section>
+
+  <!-- Hidden legacy container kept for backward-compat with sr-count-badge refs -->
+  <span id="sr-count-badge" style="display:none;"></span>
+  <!-- Hidden summary element kept for backward-compat -->
+  <span id="pq-summary" style="display:none;"></span>
+  <!-- Hidden mp-subtitle kept for backward-compat -->
+  <span id="mp-subtitle" style="display:none;"></span>
 
   <div style="height:40px;"></div>
 </div><!-- /factory-page -->
@@ -1277,7 +1728,7 @@
         <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;">Urgency</label>
         <select id="fpr-urgency" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-size:13px;">
           <option value="Normal">Normal</option>
-          <option value="Urgent">🚨 Urgent</option>
+          <option value="Urgent">Urgent</option>
         </select>
       </div>
     </div>
@@ -1392,6 +1843,8 @@ async function init() {
 
   siteRequests = srAll;
   _allPRs = allPRs;
+  _queueCache = Array.isArray(queue) ? queue : [];
+  _mpCache = { plan: mpPlan, workers, dayKey };
   updateSRBadge();
 
   try {
@@ -1406,6 +1859,207 @@ async function init() {
     console.error('init render failed:', e);
     factoryToast('Page failed to load fully — please refresh', false);
   }
+
+  // KPI strip + alert banner depend on everything above; draw last.
+  renderKpiStrip();
+  renderAlertBanner();
+}
+
+// ── KPI strip ─────────────────────────────────────────────────────────────────
+// Recomputed after any data change. Values are read from module-level caches
+// populated by init() / individual render functions so we never refetch.
+let _queueCache = [];
+let _mpCache = null;
+let _dosCache = [];
+function renderKpiStrip() {
+  const queue = _queueCache || [];
+  const srs   = siteRequests || [];
+
+  // Site Requests (promoted to first position, with critical highlight if any are overdue)
+  const srOpen    = srs.filter(r => r.status !== 'Delivered');
+  const srOverdue = srOpen.filter(r => r.neededByDate && r.neededByDate < today);
+  const srNew     = srOpen.filter(r => r.status === 'New').length;
+  const srAck     = srOpen.filter(r => r.status === 'Acknowledged' || r.status === 'In Fabrication' || r.status === 'Ready').length;
+  const srKpi     = document.querySelector('#fx-kpi-strip .fx-kpi:first-child');
+  if (srKpi) srKpi.classList.toggle('critical', srOverdue.length > 0);
+  const srVal = document.getElementById('kpi-sr-value');
+  if (srVal) {
+    srVal.textContent = srOpen.length;
+    srVal.classList.toggle('red', srOverdue.length > 0);
+  }
+  const srSub = document.getElementById('kpi-sr-sub');
+  if (srSub) {
+    if (srOpen.length === 0) {
+      srSub.innerHTML = '<span class="fx-dot grey"></span>No pending requests';
+    } else {
+      const parts = [];
+      if (srOverdue.length) parts.push('<span class="fx-dot red"></span>' + srOverdue.length + ' overdue');
+      if (srNew)            parts.push((parts.length ? '<span class="sep">·</span>' : '') + srNew + ' new');
+      if (srAck)            parts.push((parts.length ? '<span class="sep">·</span>' : '') + srAck + ' in progress');
+      srSub.innerHTML = parts.join('');
+    }
+  }
+
+  // In Queue
+  let queueItems = 0, queueOnTrack = 0, queueOverdue = 0, queueDueToday = 0;
+  queue.forEach(proj => {
+    (proj.items || []).forEach(it => {
+      const total = parseFloat(it.totalQty) || 0;
+      const done  = parseFloat(it.doneQty)  || 0;
+      if (total > 0 && done >= total) return; // complete
+      queueItems++;
+      const classif = classifyItem(it);
+      if (classif === 'red')   queueOverdue++;
+      else if (classif === 'amber') queueDueToday++;
+      else if (classif === 'green') queueOnTrack++;
+    });
+  });
+  const qVal = document.getElementById('kpi-queue-value');
+  if (qVal) qVal.textContent = queueItems;
+  const qSub = document.getElementById('kpi-queue-sub');
+  if (qSub) {
+    const parts = [];
+    if (queueOnTrack) parts.push('<span class="fx-dot green"></span>' + queueOnTrack + ' on track');
+    if (queueOverdue) parts.push((parts.length ? '<span class="sep">·</span>' : '') + '<span class="fx-dot red"></span>' + queueOverdue + ' overdue');
+    if (queueDueToday) parts.push((parts.length ? '<span class="sep">·</span>' : '') + '<span class="fx-dot amber"></span>' + queueDueToday + ' due soon');
+    qSub.innerHTML = parts.length ? parts.join('') : '<span class="fx-dot grey"></span>Queue clear';
+  }
+
+  // Workers today
+  let wOwn = 0, wSupply = 0, wOt = 0;
+  if (_mpCache && _mpCache.plan && _mpCache.plan.assignments) {
+    const workerMap = {};
+    (_mpCache.workers || []).forEach(w => workerMap[w.id] = w);
+    if (Array.isArray(_mpCache.plan.supplyWorkers)) {
+      _mpCache.plan.supplyWorkers.forEach(w => { if (w.id) workerMap[w.id] = { ...w, supply: true }; });
+    }
+    for (const [wid, dayAssigns] of Object.entries(_mpCache.plan.assignments)) {
+      const a = dayAssigns[_mpCache.dayKey];
+      if (!a) continue;
+      if (!(String(a.type || '').toLowerCase().includes('fabrication') || a.type === 'Factory')) continue;
+      const w = workerMap[wid] || {};
+      if (w.supply) wSupply++; else wOwn++;
+      if (a.otHours && parseFloat(a.otHours) > 0) wOt++;
+    }
+  }
+  const wVal = document.getElementById('kpi-workers-value');
+  if (wVal) wVal.textContent = wOwn + wSupply;
+  const wSub = document.getElementById('kpi-workers-sub');
+  if (wSub) {
+    if (wOwn + wSupply === 0) wSub.textContent = 'No one assigned';
+    else wSub.textContent = wOwn + ' own · ' + wSupply + ' supply' + (wOt ? ' · ' + wOt + ' on OT' : '');
+  }
+
+  // Open DOs
+  const dos = _dosCache || [];
+  const weekAgo = Date.now() - 7 * 86400000;
+  const thisWeek = dos.filter(d => d.uploadedAt && new Date(d.uploadedAt).getTime() >= weekAgo).length;
+  const pending = dos.filter(d => !d.prId).length;
+  const doVal = document.getElementById('kpi-do-value');
+  if (doVal) doVal.textContent = pending;
+  const doSub = document.getElementById('kpi-do-sub');
+  if (doSub) doSub.textContent = thisWeek + ' this week';
+
+  // Material Reqs
+  const prs = _allPRs || [];
+  const prPending = prs.filter(p => p.status === 'Pending');
+  const prAwaiting = prPending.filter(p => !p.quotedAt && !p.approvedAt).length;
+  const prVal = document.getElementById('kpi-pr-value');
+  if (prVal) prVal.textContent = prPending.length;
+  const prSub = document.getElementById('kpi-pr-sub');
+  if (prSub) prSub.textContent = prAwaiting ? prAwaiting + ' awaiting quote' : 'None awaiting quote';
+}
+
+function renderAlertBanner() {
+  const banner = document.getElementById('fx-alert-banner');
+  if (!banner) return;
+  const queue = _queueCache || [];
+  const srs   = siteRequests || [];
+
+  const buildOverdueRows = [];
+  queue.forEach(proj => {
+    (proj.items || []).forEach(it => {
+      const total = parseFloat(it.totalQty) || 0;
+      const done  = parseFloat(it.doneQty)  || 0;
+      if (total > 0 && done >= total) return;
+      if (classifyItem(it) === 'red') {
+        buildOverdueRows.push({ proj, it });
+      }
+    });
+  });
+  const srOverdue = srs.filter(r =>
+    r.neededByDate && r.neededByDate < today &&
+    (r.status === 'New' || r.status === 'Acknowledged' || r.status === 'In Fabrication')
+  );
+
+  if (!buildOverdueRows.length && !srOverdue.length) {
+    banner.innerHTML = '';
+    return;
+  }
+
+  const titleBits = [];
+  if (srOverdue.length) titleBits.push(srOverdue.length + ' site request' + (srOverdue.length !== 1 ? 's' : '') + ' overdue');
+  if (buildOverdueRows.length) titleBits.push(buildOverdueRows.length + ' build' + (buildOverdueRows.length !== 1 ? 's' : '') + ' overdue');
+
+  const subBits = [];
+  if (srOverdue.length) {
+    const s = srOverdue[0];
+    subBits.push('<strong>' + escHtml(s.projectJobCode || '—') + '</strong> — ' + escHtml(s.item));
+  }
+  if (buildOverdueRows.length) {
+    const b = buildOverdueRows[0];
+    subBits.push('<strong>' + escHtml(b.proj.jobCode || '—') + '</strong> — ' +
+      escHtml(b.it.description) + ' ' + (b.it.doneQty || 0) + '/' + (b.it.totalQty || 0));
+  }
+
+  const scrollTarget = srOverdue.length ? 'fx-section-sr' : 'fx-section-queue';
+
+  banner.innerHTML =
+    '<div class="fx-alert">' +
+      '<div class="fx-alert-icon">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
+      '</div>' +
+      '<div class="fx-alert-body">' +
+        '<div class="fx-alert-title">' + escHtml(titleBits.join(' · ')) + '</div>' +
+        '<div class="fx-alert-sub">' + subBits.join(' · ') + '</div>' +
+      '</div>' +
+      '<button class="fx-btn-primary" style="background:#dc2626;" onclick="document.getElementById(\'' + scrollTarget + '\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">Review now</button>' +
+    '</div>';
+}
+
+// Single source of truth for per-item urgency color. Used by KPI counts, dots,
+// progress bar tint, and jobcode-pill color aggregation.
+function classifyItem(it) {
+  const total = parseFloat(it.totalQty) || 0;
+  const done  = parseFloat(it.doneQty)  || 0;
+  if (total > 0 && done >= total) return 'grey'; // complete
+  if (it.status === 'Delivered') return 'grey';
+  // Overdue takes precedence (target date passed and not done)
+  const tdd = it.targetDeliveryDate || '';
+  if (it.isOverdue) return 'red';
+  if (tdd && tdd < today && (parseFloat(it.fabPct) || 0) < 100) return 'red';
+  if (tdd && (tdd === today || tdd === addDays(today, 1))) return 'amber';
+  if ((parseFloat(it.fabPct) || 0) === 0) return 'blue';
+  if ((parseFloat(it.fabPct) || 0) >= 75) return 'green';
+  return 'blue';
+}
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+// Human-friendly due label for a row (based on targetDeliveryDate).
+function humanDue(dateStr) {
+  if (!dateStr) return 'No target date';
+  const delta = daysUntil(dateStr);
+  if (delta === null) return formatDate(dateStr);
+  if (delta < 0)  return 'Due ' + Math.abs(delta) + 'd ago';
+  if (delta === 0) return 'Due today';
+  if (delta === 1) return 'Due tomorrow';
+  if (delta <= 7)  return 'Due in ' + delta + ' days';
+  return 'Due ' + formatDate(dateStr);
 }
 
 // ── SECTION A: Priority Queue ─────────────────────────────────────────────────
@@ -1474,14 +2128,21 @@ function formatDueLabel(d) {
 async function renderPriorityQueue(queue, srAll) {
   const container = document.getElementById('section-pq');
   const summaryEl = document.getElementById('pq-summary');
+  const chipsEl   = document.getElementById('pq-chips');
 
   const active = queue.filter(proj =>
     proj.items && proj.items.some(it => it.doneQty < it.totalQty)
   );
 
   if (!active.length) {
-    container.innerHTML = '<div class="empty-state">All fabrication items complete</div>';
+    container.innerHTML =
+      '<div class="fx-empty">' +
+        '<div style="font-size:24px;margin-bottom:6px;">✓</div>' +
+        '<div style="font-weight:600;color:var(--text);margin-bottom:2px;">Queue is clear</div>' +
+        'No items in queue today — nice work.' +
+      '</div>';
     if (summaryEl) summaryEl.textContent = '';
+    if (chipsEl) chipsEl.innerHTML = '';
     return;
   }
 
@@ -1634,52 +2295,146 @@ async function renderPriorityQueue(queue, srAll) {
     summaryEl.textContent = parts.join(' · ');
   }
 
-  // ── Render by timeline band ────────────────────────────────────────────
-  const BANDS = [
-    { key: 'overdue',     label: 'Overdue — needs attention now' },
-    { key: 'due-soon',    label: 'Due within 7 days — finishing / QC' },
-    { key: 'in-fab',      label: 'Due 8–21 days — active fabrication' },
-    { key: 'planning',    label: 'Due 22+ days — planning phase' },
-    { key: 'no-deadline', label: 'No deadline set — needs a date' },
-  ];
+  // ── Header chips (counts) ──────────────────────────────────────────────
+  if (chipsEl) {
+    const totalItems = flat.length;
+    const greenCount = flat.filter(x => classifyItem(x.item) === 'green').length;
+    const chips = [];
+    chips.push(`<span class="fx-chip blue">${totalItems} item${totalItems!==1?'s':''}</span>`);
+    if (greenCount) chips.push(`<span class="fx-chip green">${greenCount} on track</span>`);
+    if (amberCount) chips.push(`<span class="fx-chip amber">${amberCount} due soon</span>`);
+    if (redCount)   chips.push(`<span class="fx-chip red">${redCount} overdue</span>`);
+    chipsEl.innerHTML = chips.join('');
+  }
 
+  // ── Render queue rows ──────────────────────────────────────────────────
+  // Multi-product jobs get a fx-group-hdr + indented fx-row sub children.
+  // Single-product jobs render as a flat fx-row with the jobcode pill on the row.
   container.innerHTML = '';
-  BANDS.forEach(band => {
-    const items = projMeta.filter(m => m.band === band.key);
-    if (!items.length) return;
+  projMeta.forEach(m => {
+    const projItems = flat.filter(x => x.proj.projectId === m.proj.projectId);
+    // Hide child part rows from the list — they render inside parent expansions
+    const visibleItems = projItems.filter(x => !x.item.isPartRow);
+    if (!visibleItems.length) return;
 
-    const hdr = document.createElement('div');
-    hdr.className = 'pq-band-header pq-band-' + band.key;
-    hdr.textContent = `${band.label} (${items.length})`;
-    container.appendChild(hdr);
+    const jobCode = m.fp.jobCode || '—';
+    const clientName = m.fp.projectName || '';
+    const groupColor = m.cardColor;  // 'red'|'amber'|'green'|'grey'
+    const srCount = srNewByProject[m.proj.projectId] || 0;
 
-    items.forEach(m => {
-      const srCount = srNewByProject[m.proj.projectId] || 0;
-      const srBadgeHtml = srCount > 0
-        ? `<span class="pq-sr-badge">🚨 ${srCount} new request${srCount > 1 ? 's' : ''}</span>` : '';
+    if (visibleItems.length === 1) {
+      // Single-product job → flat row with jobcode pill
+      const row = _buildQueueRowHtml(visibleItems[0], m.fp, { includeJobcode: true, jobcodeColor: groupColor, srCount });
+      container.insertAdjacentHTML('beforeend', row);
+    } else {
+      // Multi-product job → group header + sub rows
+      const groupMeta = [];
+      const localRed   = visibleItems.filter(x => classifyItem(x.item) === 'red').length;
+      const localAmber = visibleItems.filter(x => classifyItem(x.item) === 'amber').length;
+      const localGreen = visibleItems.filter(x => classifyItem(x.item) === 'green').length;
+      if (localRed)   groupMeta.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${localRed} overdue</span>`);
+      if (localAmber) groupMeta.push(`<span class="fx-chip amber">${localAmber} due soon</span>`);
+      if (localGreen) groupMeta.push(`<span class="fx-chip green">${localGreen} on track</span>`);
+      if (srCount)    groupMeta.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${srCount} new request${srCount!==1?'s':''}</span>`);
 
-      const card = document.createElement('div');
-      card.className = 'pq-card pri-' + m.cardColor;
-      card.id = 'pq-card-' + escHtml(m.fp.id);
-      card.innerHTML =
-        `<div class="pq-card-header" onclick="togglePQCard('${escHtml(m.fp.id)}')">` +
-          `<div class="pq-header-info">` +
-            `<div class="pq-project-name">${escHtml(m.fp.jobCode || '')} · ${escHtml(m.fp.projectName || '')}</div>` +
-            `<div class="pq-project-meta">` +
-              `<span>${m.itemsLeft} item${m.itemsLeft !== 1 ? 's' : ''} · ${m.pct}%</span>` +
-              srBadgeHtml +
-            `</div>` +
-            `<div class="pq-progress-bar"><div class="pq-progress-fill${m.pct >= 100 ? ' complete' : ''}" style="width:${m.pct}%"></div></div>` +
-          `</div>` +
-          `<div class="pq-due-badge due-${m.dueColor}">${escHtml(m.dueLabel)}</div>` +
-          `<div class="pq-expand-icon">›</div>` +
-        `</div>` +
-        `<div class="pq-items" id="pq-items-${escHtml(m.fp.id)}"></div>`;
+      container.insertAdjacentHTML('beforeend',
+        `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}">` +
+          `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
+          `<span class="fx-group-client">${escHtml(clientName)}</span>` +
+          `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
+        `</div>`
+      );
+      visibleItems.forEach((x, i) => {
+        const last = (i === visibleItems.length - 1);
+        const row = _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false });
+        container.insertAdjacentHTML('beforeend', row);
+      });
+    }
 
-      container.appendChild(card);
+    // Also create hidden legacy card container so renderFabItems can still render into it.
+    // This lets the detailed log-modal / stage advance / upload log keep working through
+    // the existing DOM structure. The container is NOT shown — the fx-row is the visible UI.
+    if (!document.getElementById('pq-items-' + m.fp.id)) {
+      const legacy = document.createElement('div');
+      legacy.id = 'pq-items-' + m.fp.id;
+      legacy.style.display = 'none';
+      legacy.className = 'pq-items-legacy';
+      container.appendChild(legacy);
       renderFabItems(m.fp);
-    });
+    }
   });
+}
+
+// Build one fx-row for a queue item. Returns HTML string.
+// opts: { sub, last, includeJobcode, jobcodeColor, srCount }
+function _buildQueueRowHtml(x, fp, opts) {
+  opts = opts || {};
+  const it = x.item;
+  const color = classifyItem(it);
+  const pct   = parseFloat(it.fabPct) || 0;
+  const barColor = color === 'grey' ? '' : color;
+  const dueText  = humanDue(it.targetDeliveryDate || x.d.date);
+
+  // Parts indicator (only if partsProgress present)
+  const pp = it.partsProgress;
+  const partsBit = (pp && pp.total > 0)
+    ? `<span class="sep">·</span><span>Parts ${pp.done} of ${pp.total}</span>`
+    : '';
+
+  // QC line: siteEngineer from project, fallback to factoryManager, else blank
+  const project = fp || {};
+  const qcName = project.siteEngineer || project.factoryManager || '';
+  const qcBit = qcName ? `<span class="sep">·</span><span>QC: ${escHtml(qcName)}</span>` : '';
+
+  // Jobcode pill for single-product rows or top-level (not shown on sub rows)
+  const jobcodeHtml = opts.includeJobcode
+    ? `<span class="fx-jobcode ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`
+    : '';
+  const srBadge = opts.srCount
+    ? `<span class="fx-chip red" style="margin-left:6px;"><span class="fx-dot red"></span>${opts.srCount} new</span>`
+    : '';
+
+  // Action button: "Log build" if has progress or started; "Start" if 0% and not started yet
+  let actionBtn;
+  if (pct === 0 && it.status === 'Not Started' && !it.isMechanicalParent) {
+    actionBtn = `<button class="fx-btn-ghost" data-pid="${escHtml(fp.id)}" data-idx="${it.idx}" data-name="${escHtml(it.description)}" data-job="${escHtml(fp.jobCode || fp.projectName || '')}" onclick="queueRowAction(this)">Start</button>`;
+  } else {
+    actionBtn = `<button class="fx-btn-primary" data-pid="${escHtml(fp.id)}" data-idx="${it.idx}" data-name="${escHtml(it.description)}" data-job="${escHtml(fp.jobCode || fp.projectName || '')}" onclick="queueRowAction(this)">Log build</button>`;
+  }
+
+  const rowClass = 'fx-row' + (opts.sub ? ' sub' : '') + (opts.last ? ' last-sub' : '');
+  const barHtml = `<div class="fx-row-progress">` +
+    `<div class="fx-bar ${barColor}"><span style="width:${pct}%"></span></div>` +
+    `<span class="fx-pct">${pct}%</span>` +
+  `</div>`;
+
+  return (
+    `<div class="${rowClass}" id="fx-queue-${escHtml(fp.id)}-${it.idx}">` +
+      `<span class="fx-dot ${color}"></span>` +
+      jobcodeHtml +
+      `<div class="fx-row-main">` +
+        `<div class="fx-row-title">${escHtml(it.description || ('Item ' + (it.idx + 1)))}${srBadge}</div>` +
+        `<div class="fx-row-meta">` +
+          `<span>${escHtml(dueText)}</span>` +
+          `<span class="sep">·</span>` +
+          `<span>${it.doneQty || 0} of ${it.totalQty || 0} units</span>` +
+          partsBit + qcBit +
+        `</div>` +
+      `</div>` +
+      barHtml +
+      `<div class="fx-row-right">${actionBtn}</div>` +
+    `</div>`
+  );
+}
+
+// Action handler for the primary "Log build" / "Start" button on a queue row.
+// Opens the existing log modal with the row's project + fab index.
+function queueRowAction(btn) {
+  const pid = btn.dataset.pid;
+  const idx = parseInt(btn.dataset.idx, 10);
+  const name = btn.dataset.name || '';
+  const job  = btn.dataset.job || '';
+  if (typeof openLogModal === 'function') openLogModal(pid, idx, name, job);
 }
 
 function jumpToItem(pid, idx) {
@@ -1914,7 +2669,7 @@ function renderFabItems(fp) {
 
       item.innerHTML = `
         <div class="fab-row-head">
-          <div class="fab-row-name" title="${escHtml(itemName)}">🔧 ${escHtml(itemName)}</div>
+          <div class="fab-row-name" title="${escHtml(itemName)}">${escHtml(itemName)}</div>
           <span style="font-size:11px;color:var(--text-muted);font-weight:600;">${pp.done}/${pp.total} parts ready</span>
         </div>
         <div style="padding:4px 0 0 12px;">
@@ -2313,10 +3068,12 @@ async function updateFabItemStage(pid, idx, direction) {
 // ── SECTION B: Today's Manpower ───────────────────────────────────────────────
 async function renderManpower(mpPlan, workers, dayKey) {
   const container = document.getElementById('section-manpower');
+  const chipsEl   = document.getElementById('mp-chips');
+  if (chipsEl) chipsEl.innerHTML = '';
 
   if (!mpPlan || !mpPlan.assignments) {
     container.innerHTML =
-      '<div class="mp-empty">No manpower planned — <a href="/planning" style="color:var(--accent);">go to Manpower page to assign</a></div>';
+      '<div class="fx-empty">No manpower planned — <a href="/planning">go to Manpower to assign</a></div>';
     return;
   }
 
@@ -2324,7 +3081,7 @@ async function renderManpower(mpPlan, workers, dayKey) {
   const workerMap = {};
   workers.forEach(w => { workerMap[w.id] = w; });
   if (Array.isArray(mpPlan.supplyWorkers)) {
-    mpPlan.supplyWorkers.forEach(w => { if (w.id && w.name) workerMap[w.id] = w; });
+    mpPlan.supplyWorkers.forEach(w => { if (w.id && w.name) workerMap[w.id] = { ...w, _supply: true }; });
   }
 
   // Find workers assigned today to factory (Fabrication type only)
@@ -2338,7 +3095,10 @@ async function renderManpower(mpPlan, workers, dayKey) {
         name:     w ? w.name : wid,
         project:  assign.projectName || '',
         type:     assign.type || '',
-        notes:    assign.notes || ''
+        notes:    assign.notes || '',
+        otHours:  assign.otHours || 0,
+        supply:   w && w._supply,
+        role:     w && w.role || ''
       });
     }
   }
@@ -2347,35 +3107,55 @@ async function renderManpower(mpPlan, workers, dayKey) {
     const anyToday = Object.values(mpPlan.assignments).some(d => d[dayKey]);
     if (anyToday) {
       container.innerHTML =
-        '<div class="mp-empty">No workers assigned to factory today — others are on site</div>';
+        '<div class="fx-empty">No workers assigned to factory today — others are on site</div>';
     } else {
       container.innerHTML =
-        '<div class="mp-empty">No manpower planned for today — <a href="/planning" style="color:var(--accent);">go to Manpower page to assign</a></div>';
+        '<div class="fx-empty">No manpower planned for today — <a href="/planning">go to Manpower to assign</a></div>';
     }
-    document.getElementById('mp-subtitle').textContent = 'No factory workers today';
+    const sub = document.getElementById('mp-subtitle');
+    if (sub) sub.textContent = 'No factory workers today';
     return;
   }
 
-  document.getElementById('mp-subtitle').textContent = todayFactory.length + ' worker' + (todayFactory.length !== 1 ? 's' : '') + ' in factory today';
-  container.innerHTML = '';
+  const ownCount    = todayFactory.filter(w => !w.supply).length;
+  const supplyCount = todayFactory.filter(w =>  w.supply).length;
+  const otCount     = todayFactory.filter(w => parseFloat(w.otHours) > 0).length;
 
+  const sub = document.getElementById('mp-subtitle');
+  if (sub) sub.textContent = todayFactory.length + ' worker' + (todayFactory.length !== 1 ? 's' : '') + ' in factory today';
+
+  if (chipsEl) {
+    const chips = [`<span class="fx-chip blue">${todayFactory.length} worker${todayFactory.length!==1?'s':''}</span>`];
+    chips.push(`<span class="fx-chip grey">${ownCount} own · ${supplyCount} supply</span>`);
+    if (otCount) chips.push(`<span class="fx-chip amber">${otCount} on OT</span>`);
+    chipsEl.innerHTML = chips.join('');
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'fx-mp-grid';
   const AVATAR_COLORS = ['#3366ff','#a25ddc','#00c875','#fdab3d','#e2445c','#00d4c8'];
   todayFactory.forEach(w => {
     let h = 0;
     for (let i = 0; i < w.name.length; i++) h = (h * 31 + w.name.charCodeAt(i)) & 0xffffffff;
-    const color = AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+    const color = w.supply ? '#6b7294' : AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
     const init  = w.name.split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+    const roleLabel = (w.role || (w.supply ? 'Supply' : 'Fabricator')).toUpperCase();
+    const otPill = parseFloat(w.otHours) > 0
+      ? `<span class="fx-mp-ot">+${parseFloat(w.otHours)}h OT</span>` : '';
     const card  = document.createElement('div');
-    card.className = 'mp-card';
+    card.className = 'fx-mp-card';
     card.innerHTML =
-      `<div class="mp-avatar" style="background:${color};">${escHtml(init)}</div>` +
-      `<div style="flex:1;min-width:0;">` +
-        `<div class="mp-name">${escHtml(w.name)}</div>` +
-        `<div class="mp-project">${escHtml(w.project || 'Fabrication')}</div>` +
-        (w.notes ? `<div class="mp-notes">${escHtml(w.notes)}</div>` : '') +
-      `</div>`;
-    container.appendChild(card);
+      `<div class="fx-mp-avatar" style="background:${color};">${escHtml(init)}</div>` +
+      `<div class="fx-mp-main">` +
+        `<div class="fx-mp-name">${escHtml(w.name)}${w.supply ? ' <span style="color:var(--text-muted);font-weight:400;">(supply)</span>' : ''}</div>` +
+        `<div class="fx-mp-role">${escHtml(roleLabel)}</div>` +
+        (w.notes ? `<div class="fx-mp-role" style="text-transform:none;letter-spacing:0;font-style:italic;">${escHtml(w.notes)}</div>` : '') +
+      `</div>` +
+      otPill;
+    grid.appendChild(card);
   });
+  container.innerHTML = '';
+  container.appendChild(grid);
 }
 
 // ── SECTION C: Site Requests ──────────────────────────────────────────────────
@@ -2395,6 +3175,7 @@ function updateSRBadge() {
 
 async function renderSiteRequests() {
   const container = document.getElementById('section-sr');
+  const chipsEl   = document.getElementById('sr-chips');
 
   // Show active (non-Delivered) only, sorted: New first (most urgent), then by neededByDate
   const active = siteRequests
@@ -2419,18 +3200,26 @@ async function renderSiteRequests() {
     .slice()
     .sort((a, b) => (b.deliveredAt || '').localeCompare(a.deliveredAt || ''));
 
+  const overdueCount = active.filter(r => r.neededByDate && r.neededByDate < today).length;
+  const newCount     = active.filter(r => r.status === 'New').length;
+
+  if (chipsEl) {
+    const chips = [];
+    if (active.length)  chips.push(`<span class="fx-chip amber">${active.length} pending</span>`);
+    if (overdueCount)   chips.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${overdueCount} overdue</span>`);
+    if (newCount)       chips.push(`<span class="fx-chip blue">${newCount} new</span>`);
+    chipsEl.innerHTML = chips.join('');
+  }
+
   if (!active.length && !delivered.length) {
-    container.innerHTML = '<div class="empty-state">No pending site requests</div>';
+    container.innerHTML = '<div class="fx-empty">No pending requests.</div>';
     return;
   }
 
   container.innerHTML = '';
 
   if (!active.length) {
-    const empty = document.createElement('div');
-    empty.className = 'empty-state';
-    empty.textContent = 'No pending site requests';
-    container.appendChild(empty);
+    container.insertAdjacentHTML('beforeend', '<div class="fx-empty">No pending requests.</div>');
   }
 
   active.forEach(req => {
@@ -2438,10 +3227,11 @@ async function renderSiteRequests() {
     renderSRActions(req);
   });
 
-  // Collapsible "Recently Delivered" section
+  // Collapsible "Recently Delivered" section — keep existing UX
   if (delivered.length) {
     const section = document.createElement('div');
     section.className = 'sr-delivered-section';
+    section.style.margin = '10px 12px 12px';
     const wasOpen = _srDeliveredOpen;
     section.innerHTML =
       `<button class="sr-delivered-toggle${wasOpen ? ' open' : ''}" onclick="_srDeliveredOpen=!_srDeliveredOpen;this.classList.toggle('open');this.nextElementSibling.style.display=this.classList.contains('open')?'block':'none'">` +
@@ -2458,73 +3248,131 @@ async function renderSiteRequests() {
       const deliveredMs = new Date(req.deliveredAt).getTime();
       const canUndo = (now - deliveredMs) < UNDO_WINDOW;
       const timeAgo = _formatTimeAgo(deliveredMs, now);
-      const card = document.createElement('div');
-      card.className = 'sr-card sr-card-delivered';
-      card.innerHTML =
-        `<div class="sr-card-header">` +
-          `<div class="sr-item-name">` +
-            `${escHtml(req.item)} ` +
-            `<span class="sr-status-badge sr-status-Delivered">Delivered</span>` +
+      const jobCode = req.projectJobCode || req.projectName || '—';
+      list.insertAdjacentHTML('beforeend',
+        `<div class="fx-row" style="opacity:0.7;">` +
+          `<span class="fx-dot grey"></span>` +
+          `<span class="fx-jobcode grey">${escHtml(jobCode)}</span>` +
+          `<div class="fx-row-main">` +
+            `<div class="fx-row-title">${escHtml(req.item)} <span class="fx-chip green" style="margin-left:6px;">Delivered</span></div>` +
+            `<div class="fx-row-meta">` +
+              `<span>${escHtml(String(req.quantity || ''))} ${escHtml(req.unit || '')}</span><span class="sep">·</span>` +
+              `<span>by ${escHtml(req.requestedBy || '—')}</span><span class="sep">·</span>` +
+              `<span>Delivered ${escHtml(timeAgo)}</span>` +
+            `</div>` +
           `</div>` +
-          `<div class="sr-meta">` +
-            `<span>📦 ${escHtml(String(req.quantity || ''))} ${escHtml(req.unit || '')}</span>` +
-            `<span>📋 ${escHtml(req.projectJobCode || req.projectName || '—')}</span>` +
-            `<span>👷 ${escHtml(req.requestedBy || '—')}</span>` +
-            `<span>🚚 Delivered ${timeAgo}</span>` +
-          `</div>` +
-        `</div>` +
-        (canUndo
-          ? `<div class="sr-actions"><button class="sr-btn sr-btn-grey" onclick="undoDelivery('${escHtml(req.id)}')">↩ Undo delivery</button></div>`
-          : '');
-      list.appendChild(card);
+          (canUndo
+            ? `<div class="fx-row-right"><button class="fx-btn-ghost" onclick="undoDelivery('${escHtml(req.id)}')">↩ Undo</button></div>`
+            : '') +
+        `</div>`
+      );
     });
   }
 }
 
+// Compute how long ago (human) the request was created.
+function _srTimeAgo(iso) {
+  if (!iso) return '';
+  const ms = Date.now() - new Date(iso).getTime();
+  if (isNaN(ms)) return '';
+  return _formatTimeAgo(Date.now() - ms, Date.now());
+}
+
 function _buildSRCard(req) {
   const overdue   = req.neededByDate && req.neededByDate < today && req.status !== 'Delivered';
+  const amber     = req.neededByDate && (req.neededByDate === today || req.neededByDate === addDays(today, 1));
+  const dotColor  = overdue ? 'red' : amber ? 'amber' : (req.status === 'New' ? 'blue' : 'green');
+  const jobColor  = overdue ? 'red' : amber ? 'amber' : '';
+  const jobCode   = req.projectJobCode || req.projectName || '—';
   const statusKey = req.status.replace(/ /g, '-');
-  const card      = document.createElement('div');
-  card.className  = 'sr-card' + (overdue ? ' overdue' : '');
 
-  card.innerHTML =
-    `<div class="sr-card-header">` +
-      `<div class="sr-item-name">` +
-        `${escHtml(req.item)} ` +
-        `<span class="sr-status-badge sr-status-${statusKey}">${escHtml(req.status)}</span>` +
-        (overdue ? ' <span style="color:var(--red);font-weight:700;font-size:11px;">⚠ OVERDUE</span>' : '') +
+  const tmp = document.createElement('div');
+
+  // Needed-by human label
+  let neededLabel = 'No date';
+  if (req.neededByDate) {
+    const delta = daysUntil(req.neededByDate);
+    if      (delta === 0) neededLabel = 'Needed today';
+    else if (delta === 1) neededLabel = 'Needed tomorrow';
+    else if (delta < 0)   neededLabel = 'Needed ' + Math.abs(delta) + 'd ago';
+    else if (delta <= 7)  neededLabel = 'Needed in ' + delta + 'd';
+    else                  neededLabel = 'Needed ' + formatDate(req.neededByDate);
+  }
+
+  const requestedAgo = req.createdAt ? _formatTimeAgo(new Date(req.createdAt).getTime(), Date.now()) : '';
+  const requestedBit = (req.requestedBy && requestedAgo)
+    ? `Requested ${escHtml(requestedAgo)} by ${escHtml(req.requestedBy)}`
+    : (req.requestedBy ? `Requested by ${escHtml(req.requestedBy)}` : '');
+
+  const statusChipClass = {
+    'New': 'blue',
+    'Acknowledged': 'amber',
+    'In Fabrication': 'amber',
+    'Ready': 'green',
+    'Issue': 'red',
+  }[req.status] || 'grey';
+
+  // Row-level HTML
+  tmp.innerHTML =
+    `<div class="fx-row" id="sr-row-${escHtml(req.id)}">` +
+      `<span class="fx-dot ${dotColor}"></span>` +
+      `<span class="fx-jobcode ${jobColor}">${escHtml(jobCode)}</span>` +
+      `<div class="fx-row-main">` +
+        `<div class="fx-row-title">` +
+          escHtml(req.item) +
+          ` <span class="fx-chip ${statusChipClass}" style="margin-left:6px;">${escHtml(req.status)}</span>` +
+          (overdue ? ' <span class="fx-chip red" style="margin-left:4px;">OVERDUE</span>' : '') +
+        `</div>` +
+        `<div class="fx-row-meta">` +
+          (requestedBit ? `<span>${requestedBit}</span><span class="sep">·</span>` : '') +
+          `<span>${escHtml(neededLabel)}</span>` +
+          (req.quantity ? `<span class="sep">·</span><span>${escHtml(String(req.quantity))} ${escHtml(req.unit || '')}</span>` : '') +
+          (req.acknowledgedAt ? `<span class="sep">·</span><span>Ack ${escHtml(formatDate(req.acknowledgedAt.slice(0,10)))}</span>` : '') +
+          (req.estimatedReadyDate ? `<span class="sep">·</span><span>Est ready ${escHtml(formatDate(req.estimatedReadyDate))}</span>` : '') +
+        `</div>` +
+        (req.notes ? `<div class="fx-row-meta" style="margin-top:3px;">Note: ${escHtml(req.notes)}</div>` : '') +
+        (req.factoryNotes ? `<div class="fx-row-meta" style="margin-top:3px;font-style:italic;">${escHtml(_factoryManagerName)}: ${escHtml(req.factoryNotes)}</div>` : '') +
+        (req.issueReason ? `<div class="fx-row-meta" style="color:var(--red);margin-top:3px;">Issue: ${escHtml(req.issueReason)}</div>` : '') +
       `</div>` +
-      `<div class="sr-meta">` +
-        `<span>📦 ${escHtml(String(req.quantity || ''))} ${escHtml(req.unit || '')}</span>` +
-        `<span>📋 ${escHtml(req.projectJobCode || req.projectName || '—')}</span>` +
-        `<span>👷 ${escHtml(req.requestedBy || '—')}</span>` +
-        `<span>📅 Needed: <strong>${escHtml(formatDate(req.neededByDate))}</strong></span>` +
-        (req.acknowledgedAt ? `<span>✅ Acknowledged ${formatDate(req.acknowledgedAt.slice(0,10))}</span>` : '') +
-        (req.estimatedReadyDate ? `<span>🏭 Est. ready: ${formatDate(req.estimatedReadyDate)}</span>` : '') +
+      `<div class="fx-row-right">` +
+        `<button class="fx-btn-ghost" onclick="toggleSRDrawer('${escHtml(req.id)}')" id="sr-toggle-${escHtml(req.id)}">Details ▾</button>` +
       `</div>` +
-      (req.notes ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Note: ${escHtml(req.notes)}</div>` : '') +
-      (req.factoryNotes ? `<div class="sr-factory-notes">${escHtml(_factoryManagerName)}: ${escHtml(req.factoryNotes)}</div>` : '') +
-      (req.issueReason ? `<div style="font-size:11px;color:var(--red);margin-top:4px;">Issue: ${escHtml(req.issueReason)}</div>` : '') +
     `</div>` +
-    `<div class="sr-actions" id="sr-actions-${escHtml(req.id)}"></div>` +
-    `<div class="sr-admin-row">` +
-      `<button class="sr-admin-btn" onclick="toggleSREdit('${escHtml(req.id)}')">✏️ Edit</button>` +
-      `<button class="sr-admin-btn danger" onclick="deleteSR('${escHtml(req.id)}')">🗑 Delete</button>` +
-    `</div>` +
-    `<div class="sr-edit-panel" id="sr-edit-${escHtml(req.id)}">` +
-      `<label>Item</label>` +
-      `<input class="sr-inline-input" id="sred-item-${escHtml(req.id)}" value="${escHtml(req.item || '')}">` +
-      `<label>Quantity</label>` +
-      `<input class="sr-inline-input" type="number" id="sred-qty-${escHtml(req.id)}" value="${escHtml(String(req.quantity || 0))}" min="0">` +
-      `<label>Needed by</label>` +
-      `<input class="sr-inline-input" type="date" id="sred-date-${escHtml(req.id)}" value="${escHtml(req.neededByDate || '')}">` +
-      `<label>Notes</label>` +
-      `<textarea class="sr-inline-input" id="sred-notes-${escHtml(req.id)}" rows="2" style="resize:none;">${escHtml(req.notes || '')}</textarea>` +
-      `<button class="sr-btn sr-btn-primary" onclick="saveSREdit('${escHtml(req.id)}')">Save changes</button>` +
-      `<button class="sr-btn sr-btn-grey" style="margin-left:6px;" onclick="toggleSREdit('${escHtml(req.id)}')">Cancel</button>` +
+    `<div id="sr-drawer-${escHtml(req.id)}" hidden style="border-bottom:1px solid var(--border);background:var(--bg);padding:10px 16px 12px;">` +
+      `<div class="sr-actions" id="sr-actions-${escHtml(req.id)}"></div>` +
+      `<div class="sr-admin-row" style="padding:0;margin-top:8px;border-top:none;">` +
+        `<button class="sr-admin-btn" onclick="toggleSREdit('${escHtml(req.id)}')">Edit</button>` +
+        `<button class="sr-admin-btn danger" onclick="deleteSR('${escHtml(req.id)}')">Delete</button>` +
+      `</div>` +
+      `<div class="sr-edit-panel" id="sr-edit-${escHtml(req.id)}">` +
+        `<label>Item</label>` +
+        `<input class="sr-inline-input" id="sred-item-${escHtml(req.id)}" value="${escHtml(req.item || '')}">` +
+        `<label>Quantity</label>` +
+        `<input class="sr-inline-input" type="number" id="sred-qty-${escHtml(req.id)}" value="${escHtml(String(req.quantity || 0))}" min="0">` +
+        `<label>Needed by</label>` +
+        `<input class="sr-inline-input" type="date" id="sred-date-${escHtml(req.id)}" value="${escHtml(req.neededByDate || '')}">` +
+        `<label>Notes</label>` +
+        `<textarea class="sr-inline-input" id="sred-notes-${escHtml(req.id)}" rows="2" style="resize:none;">${escHtml(req.notes || '')}</textarea>` +
+        `<button class="sr-btn sr-btn-primary" onclick="saveSREdit('${escHtml(req.id)}')">Save changes</button>` +
+        `<button class="sr-btn sr-btn-grey" style="margin-left:6px;" onclick="toggleSREdit('${escHtml(req.id)}')">Cancel</button>` +
+      `</div>` +
     `</div>`;
 
-  return card;
+  // Also surface the primary action (Acknowledge / Mark Ready / etc.) on the row itself
+  // so Chris can act without opening the drawer. Inserted by renderSRActions below too.
+  // Return a fragment containing the row + drawer so the caller can append both without
+  // an extra wrapping div that would break the .fx-row:last-child border collapse.
+  const frag = document.createDocumentFragment();
+  while (tmp.firstChild) frag.appendChild(tmp.firstChild);
+  return frag;
+}
+
+function toggleSRDrawer(id) {
+  const d = document.getElementById('sr-drawer-' + id);
+  const t = document.getElementById('sr-toggle-' + id);
+  if (!d) return;
+  d.hidden = !d.hidden;
+  if (t) t.textContent = d.hidden ? 'Details ▾' : 'Hide ▴';
 }
 
 function _formatTimeAgo(ms, now) {
@@ -2596,26 +3444,48 @@ function renderSRActions(req) {
         `<label style="font-size:12px;color:var(--text-muted);margin-bottom:2px;">Estimated ready date (optional)</label>` +
         `<input type="date" class="sr-inline-input" id="erd-${escHtml(req.id)}">` +
         `<textarea class="sr-inline-input" id="cn-${escHtml(req.id)}" placeholder="Notes for site engineer (optional)" rows="2" style="resize:none;"></textarea>` +
-        `<button class="sr-btn sr-btn-primary" onclick="acknowledgeRequest('${escHtml(req.id)}')">✅ Acknowledge</button>` +
-        `<button class="sr-btn sr-btn-red" style="margin-left:8px;" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>` +
+        `<button class="sr-btn sr-btn-primary" onclick="acknowledgeRequest('${escHtml(req.id)}')">Acknowledge</button>` +
+        `<button class="sr-btn sr-btn-red" style="margin-left:8px;" onclick="showFlagIssue('${escHtml(req.id)}')">Flag Issue</button>` +
       `</div>`;
   } else if (req.status === 'Acknowledged') {
     el.innerHTML =
-      `<button class="sr-btn sr-btn-amber" onclick="updateSRStatus('${escHtml(req.id)}','In Fabrication')">🔧 Mark In Fabrication</button>` +
-      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>` +
-      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','New')" style="margin-left:8px;">↩ Undo</button>`;
+      `<button class="sr-btn sr-btn-amber" onclick="updateSRStatus('${escHtml(req.id)}','In Fabrication')">Mark In Fabrication</button>` +
+      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">Flag Issue</button>` +
+      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','New')" style="margin-left:8px;">Undo</button>`;
   } else if (req.status === 'In Fabrication') {
     el.innerHTML =
-      `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Ready')">📦 Mark Ready</button>` +
-      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">🚩 Flag Issue</button>` +
-      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','Acknowledged')" style="margin-left:8px;">↩ Back</button>`;
+      `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Ready')">Mark Ready</button>` +
+      `<button class="sr-btn sr-btn-red" onclick="showFlagIssue('${escHtml(req.id)}')">Flag Issue</button>` +
+      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','Acknowledged')" style="margin-left:8px;">Back</button>`;
   } else if (req.status === 'Ready') {
     el.innerHTML =
-      `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Delivered')">🚚 Mark Delivered</button>` +
-      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','In Fabrication')" style="margin-left:8px;">↩ Back</button>`;
+      `<button class="sr-btn sr-btn-green" onclick="updateSRStatus('${escHtml(req.id)}','Delivered')">Mark Delivered</button>` +
+      `<button class="sr-btn sr-btn-grey" onclick="updateSRStatus('${escHtml(req.id)}','In Fabrication')" style="margin-left:8px;">Back</button>`;
   } else if (req.status === 'Issue') {
     el.innerHTML =
-      `<button class="sr-btn sr-btn-primary" onclick="updateSRStatus('${escHtml(req.id)}','Acknowledged')">↩ Resume</button>`;
+      `<button class="sr-btn sr-btn-primary" onclick="updateSRStatus('${escHtml(req.id)}','Acknowledged')">Resume</button>`;
+  }
+
+  // Also surface a primary action button inline on the row (before "Details ▾")
+  const row = document.getElementById('sr-row-' + req.id);
+  if (row) {
+    const right = row.querySelector('.fx-row-right');
+    if (right && !right.querySelector('[data-sr-primary]')) {
+      let label = '', handler = '';
+      if (req.status === 'New')            { label = 'Acknowledge';   handler = `toggleSRDrawer('${escHtml(req.id)}')`; }
+      else if (req.status === 'Acknowledged')  { label = 'Start fab'; handler = `updateSRStatus('${escHtml(req.id)}','In Fabrication')`; }
+      else if (req.status === 'In Fabrication'){ label = 'Mark ready'; handler = `updateSRStatus('${escHtml(req.id)}','Ready')`; }
+      else if (req.status === 'Ready')     { label = 'Mark delivered'; handler = `updateSRStatus('${escHtml(req.id)}','Delivered')`; }
+      else if (req.status === 'Issue')     { label = 'Resume';        handler = `updateSRStatus('${escHtml(req.id)}','Acknowledged')`; }
+      if (label) {
+        const btn = document.createElement('button');
+        btn.className = 'fx-btn-primary';
+        btn.textContent = label;
+        btn.dataset.srPrimary = '1';
+        btn.setAttribute('onclick', handler);
+        right.insertBefore(btn, right.firstChild);
+      }
+    }
   }
 }
 
@@ -2625,7 +3495,7 @@ function showFlagIssue(id) {
   el.innerHTML =
     `<div style="width:100%;">` +
       `<textarea class="sr-inline-input" id="issue-${escHtml(id)}" placeholder="Describe the issue…" rows="2" style="resize:none;"></textarea>` +
-      `<button class="sr-btn sr-btn-red" onclick="flagIssue('${escHtml(id)}')">🚩 Confirm Flag Issue</button>` +
+      `<button class="sr-btn sr-btn-red" onclick="flagIssue('${escHtml(id)}')">Confirm Flag Issue</button>` +
       `<button class="sr-btn sr-btn-grey" style="margin-left:8px;" onclick="renderSiteRequests()">Cancel</button>` +
     `</div>`;
 }
@@ -2700,7 +3570,7 @@ document.getElementById('do-file-input').addEventListener('change', async functi
   this.value = '';
 
   // Show the upload form with PR dropdown
-  document.getElementById('do-upload-filename').textContent = '📄 ' + file.name;
+  document.getElementById('do-upload-filename').textContent = file.name;
   const sel = document.getElementById('do-pr-select');
   sel.innerHTML = '<option value="">— No PR / General —</option>';
   // Populate with open PRs from cached data
@@ -2804,25 +3674,70 @@ async function submitDOUpload() {
 
 async function loadDOList() {
   const container = document.getElementById('do-list');
+  const chipsEl   = document.getElementById('do-chips');
   try {
-    const dos = await fetch('/api/delivery-orders').then(r => r.json());
-    // Show last 10, newest first
-    const recent = dos.slice().reverse().slice(0, 10);
-    if (!recent.length) { container.innerHTML = ''; return; }
-    container.innerHTML = recent.map(d =>
-      `<div class="do-card">` +
-        `<div class="do-card-top">` +
-          `<a href="/uploads/${escHtml(d.filename)}" target="_blank" class="do-card-file">📄 ${escHtml(d.originalName || d.filename)}</a>` +
-          `<button class="sr-admin-btn danger" onclick="deleteDO('${escHtml(d.id)}')" style="font-size:10px;padding:2px 6px;">🗑</button>` +
-        `</div>` +
-        `<div class="do-card-meta">` +
-          (d.prNumber ? `<span>🔗 ${escHtml(d.prNumber)}</span>` : '') +
-          (d.projectCode ? `<span>${escHtml(d.projectCode)}</span>` : '') +
-          `<span>${formatDate(d.uploadedAt ? d.uploadedAt.slice(0,10) : '')}</span>` +
-          (d.notes ? `<span>${escHtml(d.notes)}</span>` : '') +
-        `</div>` +
-      `</div>`
-    ).join('');
+    const dos = await fetch('/api/delivery-orders').then(r => r.json()).catch(() => []);
+    _dosCache = Array.isArray(dos) ? dos : [];
+    const weekAgo = Date.now() - 7 * 86400000;
+    const pending  = _dosCache.filter(d => !d.prId);
+    const thisWeek = _dosCache.filter(d => d.uploadedAt && new Date(d.uploadedAt).getTime() >= weekAgo);
+
+    if (chipsEl) {
+      const chips = [];
+      if (pending.length)  chips.push(`<span class="fx-chip amber">${pending.length} pending review</span>`);
+      if (thisWeek.length) chips.push(`<span class="fx-chip green">${thisWeek.length} this week</span>`);
+      chipsEl.innerHTML = chips.join('');
+    }
+
+    const recent = _dosCache.slice().reverse().slice(0, 12);
+    if (!recent.length) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'fx-do-grid';
+    grid.innerHTML = recent.map(d => {
+      const fn = escHtml(d.filename || '');
+      const src = '/uploads/' + fn;
+      const isImg = /\.(jpe?g|png|gif|webp|bmp|heic)$/i.test(fn);
+      const badgeCls = d.prId ? 'green' : 'amber';
+      const badgeText = d.prId ? 'MATCHED' : 'PENDING';
+      const jobPill = d.projectCode
+        ? `<span class="fx-jobcode ${d.prId ? 'green' : ''}" style="min-width:auto;font-size:10px;padding:2px 6px;">${escHtml(d.projectCode)}</span>`
+        : '';
+      const title = d.prNumber ? escHtml(d.prNumber) : escHtml(d.originalName || d.filename || 'DO');
+      const subParts = [];
+      if (d.notes) subParts.push(escHtml(d.notes));
+      if (d.uploadedAt) subParts.push(escHtml(formatDate(d.uploadedAt.slice(0, 10))));
+      const sub = subParts.join(' · ');
+      const thumb = isImg
+        ? `<img src="${src}" alt="">`
+        : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+      return (
+        `<div class="fx-do-card">` +
+          `<button class="fx-do-del" title="Delete DO" onclick="deleteDO('${escHtml(d.id)}')">✕</button>` +
+          `<a href="${src}" target="_blank" rel="noopener" style="display:block;color:inherit;text-decoration:none;">` +
+            `<div class="fx-do-thumb">` +
+              `<span class="fx-do-badge fx-chip ${badgeCls}">${badgeText}</span>` +
+              thumb +
+            `</div>` +
+            `<div class="fx-do-body">` +
+              `<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">` +
+                jobPill +
+                `<div class="fx-do-title" style="flex:1;min-width:0;">${title}</div>` +
+              `</div>` +
+              (sub ? `<div class="fx-do-sub">${sub}</div>` : '') +
+            `</div>` +
+          `</a>` +
+        `</div>`
+      );
+    }).join('');
+    container.innerHTML = '';
+    container.appendChild(grid);
+
+    // KPI strip relies on _dosCache; refresh the totals.
+    if (typeof renderKpiStrip === 'function') renderKpiStrip();
   } catch { container.innerHTML = ''; }
 }
 
@@ -2962,16 +3877,26 @@ const PR_SHOW_LIMIT = 5;
 
 function renderPRList(prs) {
   const container = document.getElementById('section-prs');
-  const pending = (prs || []).filter(pr => pr.status === 'Pending');
+  const chipsEl   = document.getElementById('pr-chips');
+  const pending   = (prs || []).filter(pr => pr.status === 'Pending');
+  const approved  = (prs || []).filter(pr => pr.status === 'Approved');
+
+  if (chipsEl) {
+    const chips = [];
+    if (pending.length)  chips.push(`<span class="fx-chip blue">${pending.length} active</span>`);
+    const urgent = pending.filter(p => p.urgency === 'Urgent').length;
+    if (urgent) chips.push(`<span class="fx-chip red">${urgent} urgent</span>`);
+    if (approved.length) chips.push(`<span class="fx-chip green">${approved.length} approved</span>`);
+    chipsEl.innerHTML = chips.join('');
+  }
 
   if (!pending.length) {
-    container.innerHTML = '<div class="empty-state">No pending requests</div>';
+    container.innerHTML = '<div class="fx-empty">No pending requests. Tap <strong>+ New PR</strong> to raise one.</div>';
     return;
   }
 
   container.innerHTML = '';
 
-  // Show only the most recent N, with expand option
   const showAll = container.dataset.showAll === 'true';
   const visible = showAll ? pending : pending.slice(0, PR_SHOW_LIMIT);
 
@@ -2979,37 +3904,48 @@ function renderPRList(prs) {
     const itemsSummary = (pr.items || []).map(i =>
       `${i.description || '—'} (${i.qty}${i.unit ? ' ' + i.unit : ''})`
     ).join(', ');
-    const card = document.createElement('div');
-    card.className = 'pr-card';
-    card.innerHTML =
-      `<div class="pr-card-top">` +
-        `<span class="pr-number">${escHtml(pr.prNumber)}</span>` +
-        `<span class="pr-status" style="background:var(--amber);">Pending</span>` +
-      `</div>` +
-      `<div class="pr-card-meta">` +
-        `<span>${escHtml(pr.projectCode || '—')}</span>` +
-        `<span>Submitted ${formatDate(pr.requestDate)}</span>` +
-        (pr.urgency === 'Urgent' ? '<span style="color:var(--red);font-weight:600;">🚨 Urgent</span>' : '') +
-      `</div>` +
-      `<div class="pr-card-items">${escHtml(itemsSummary)}</div>` +
-      `<div class="sr-admin-row">` +
-        `<button class="sr-admin-btn" onclick="editPR('${escHtml(pr.id)}')">✏️ Edit</button>` +
-        `<button class="sr-admin-btn danger" onclick="deletePR('${escHtml(pr.id)}')">🗑 Delete</button>` +
-      `</div>`;
-    container.appendChild(card);
+    const isUrgent = pr.urgency === 'Urgent';
+    const dotColor = isUrgent ? 'red' : 'amber';
+    const jobColor = isUrgent ? 'red' : '';
+    const project  = pr.projectCode || '—';
+    const supplier = pr.supplier || pr.supplierName || 'Pending';
+    const site     = pr.site || '';
+
+    container.insertAdjacentHTML('beforeend',
+      `<div class="fx-row">` +
+        `<span class="fx-dot ${dotColor}"></span>` +
+        `<span class="fx-jobcode ${jobColor}">${escHtml(project)}</span>` +
+        `<div class="fx-row-main">` +
+          `<div class="fx-row-title">` +
+            escHtml(itemsSummary || 'Request') +
+            ` <span style="color:var(--text-muted);font-weight:400;">· ${escHtml(pr.prNumber || '')}</span>` +
+            (isUrgent ? ' <span class="fx-chip red" style="margin-left:4px;">Urgent</span>' : '') +
+          `</div>` +
+          `<div class="fx-row-meta">` +
+            `<span>Submitted ${escHtml(formatDate(pr.requestDate))}</span>` +
+            (supplier ? `<span class="sep">·</span><span>Supplier: ${escHtml(supplier)}</span>` : '') +
+            (site ? `<span class="sep">·</span><span>For: ${escHtml(site)}</span>` : '') +
+          `</div>` +
+        `</div>` +
+        `<div class="fx-row-right">` +
+          `<button class="fx-btn-ghost" onclick="editPR('${escHtml(pr.id)}')">Edit</button>` +
+          `<button class="fx-btn-ghost" onclick="deletePR('${escHtml(pr.id)}')" style="color:var(--red);">Delete</button>` +
+        `</div>` +
+      `</div>`
+    );
   });
 
   // Show more / collapse toggle + link to procurement
   if (pending.length > PR_SHOW_LIMIT) {
     const footer = document.createElement('div');
-    footer.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 0;';
+    footer.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-top:1px solid var(--border);background:var(--bg);';
     if (!showAll) {
       footer.innerHTML =
-        `<button onclick="document.getElementById('section-prs').dataset.showAll='true';renderPRList(_allPRs.length?_allPRs:null)" class="sr-admin-btn" style="font-size:11px;">Show all ${pending.length} pending</button>` +
+        `<button onclick="document.getElementById('section-prs').dataset.showAll='true';renderPRList(_allPRs.length?_allPRs:null)" class="fx-btn-ghost">Show all ${pending.length} pending</button>` +
         `<a href="/procurement" style="font-size:11px;color:var(--accent);text-decoration:none;">View in Procurement →</a>`;
     } else {
       footer.innerHTML =
-        `<button onclick="document.getElementById('section-prs').dataset.showAll='false';renderPRList(_allPRs.length?_allPRs:null)" class="sr-admin-btn" style="font-size:11px;">Show less</button>` +
+        `<button onclick="document.getElementById('section-prs').dataset.showAll='false';renderPRList(_allPRs.length?_allPRs:null)" class="fx-btn-ghost">Show less</button>` +
         `<a href="/procurement" style="font-size:11px;color:var(--accent);text-decoration:none;">View in Procurement →</a>`;
     }
     container.appendChild(footer);
@@ -3136,29 +4072,59 @@ const logModalState = {
 // EXIF orientation is handled server-side by sharp.rotate() so we don't
 // need to parse EXIF in the browser.
 async function compressImage(file, maxEdge = 1600, quality = 0.85) {
+  // Fast path: createImageBitmap decodes off the main thread and can resize
+  // in one step. This is dramatically faster than <img>+canvas on iOS Safari
+  // for HEIC photos (which are the default on iPhones).
+  if (typeof createImageBitmap === 'function') {
+    try {
+      const probe = await createImageBitmap(file);
+      const scale = Math.min(1, maxEdge / Math.max(probe.width, probe.height));
+      const w = Math.max(1, Math.round(probe.width * scale));
+      const h = Math.max(1, Math.round(probe.height * scale));
+      let bitmap = probe;
+      if (scale < 1) {
+        try {
+          bitmap = await createImageBitmap(file, { resizeWidth: w, resizeHeight: h, resizeQuality: 'medium' });
+          probe.close && probe.close();
+        } catch { /* some browsers reject resize options — fall through to canvas */ }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+      bitmap.close && bitmap.close();
+      const blob = await new Promise((res, rej) =>
+        canvas.toBlob(b => b ? res(b) : rej(new Error('Compression failed')), 'image/jpeg', quality)
+      );
+      return blob;
+    } catch (err) {
+      // Fall through to legacy path
+      console.warn('[compressImage] createImageBitmap failed, falling back:', err && err.message);
+    }
+  }
+  // Legacy fallback for browsers without createImageBitmap
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('Could not read file'));
-    reader.onload = e => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('Could not decode image'));
-      img.onload = () => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not decode image')); };
+    img.onload = () => {
+      try {
         const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
         const w = Math.round(img.width * scale);
         const h = Math.round(img.height * scale);
         const canvas = document.createElement('canvas');
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         canvas.toBlob(blob => {
+          URL.revokeObjectURL(url);
           if (!blob) return reject(new Error('Compression failed'));
           resolve(blob);
         }, 'image/jpeg', quality);
-      };
-      img.src = e.target.result;
+      } catch (err) {
+        URL.revokeObjectURL(url);
+        reject(err);
+      }
     };
-    reader.readAsDataURL(file);
+    img.src = url;
   });
 }
 
@@ -3305,6 +4271,14 @@ function _bindLogModalInputs() {
     photoInput.addEventListener('change', handleLogPhotoCapture);
     photoInput._logBound = true;
   }
+  const galleryInput = document.getElementById('log-modal-photo-input-gallery');
+  if (galleryInput) {
+    galleryInput.value = '';
+    if (!galleryInput._logBound) {
+      galleryInput.addEventListener('change', handleLogPhotoCapture);
+      galleryInput._logBound = true;
+    }
+  }
   const deltaInput = document.getElementById('log-modal-delta');
   if (!deltaInput._logBound) {
     deltaInput.addEventListener('input', updateLogSaveButton);
@@ -3332,8 +4306,13 @@ async function handleLogPhotoCapture(e) {
   const total = Math.min(files.length, 10);
   status.textContent = 'Compressing ' + total + ' photo' + (total > 1 ? 's' : '') + '…';
   try {
-    // First file = primary photo
-    const primaryBlob = await compressImage(files[0]);
+    // Compress all files in parallel (modern phones can decode multiple
+    // images concurrently; sequential await was the previous bottleneck).
+    const filesArr = Array.from(files).slice(0, total);
+    const blobs = await Promise.all(filesArr.map(f => compressImage(f)));
+
+    // First blob = primary photo
+    const primaryBlob = blobs[0];
     logModalState.photoBlob = primaryBlob;
     if (logModalState.photoPreviewUrl) URL.revokeObjectURL(logModalState.photoPreviewUrl);
     logModalState.photoPreviewUrl = URL.createObjectURL(primaryBlob);
@@ -3343,16 +4322,14 @@ async function handleLogPhotoCapture(e) {
     document.getElementById('log-modal-photo-preview').style.display = '';
     document.getElementById('log-modal-photo-zone').classList.add('filled');
 
-    // Additional files = extra photos (max 9 extras)
-    // Clear previous extras from this selection
+    // Additional blobs = extra photos
     logModalState.extraPreviewUrls.forEach(u => URL.revokeObjectURL(u));
     logModalState.extraBlobs = [];
     logModalState.extraPreviewUrls = [];
     logModalState.existingExtraPhotos = []; // new selection replaces existing
-    for (let i = 1; i < total; i++) {
-      const blob = await compressImage(files[i]);
-      logModalState.extraBlobs.push(blob);
-      logModalState.extraPreviewUrls.push(URL.createObjectURL(blob));
+    for (let i = 1; i < blobs.length; i++) {
+      logModalState.extraBlobs.push(blobs[i]);
+      logModalState.extraPreviewUrls.push(URL.createObjectURL(blobs[i]));
     }
 
     renderExtraPhotoPreviews();
@@ -3676,10 +4653,16 @@ init();
         <div class="log-modal-photo-empty" id="log-modal-photo-empty">
           <div class="log-modal-photo-icon">📷</div>
           <div class="log-modal-photo-hint">Take or select photos of the built item.<br>Photo is required — it's your evidence log.</div>
-          <label class="log-modal-photo-btn">
-            Capture photo(s)
-            <input type="file" accept="image/*" multiple id="log-modal-photo-input" style="display:none;">
-          </label>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <label class="log-modal-photo-btn">
+              Take photo
+              <input type="file" accept="image/*" capture="environment" id="log-modal-photo-input" style="display:none;">
+            </label>
+            <label class="log-modal-photo-btn" style="background:transparent;border:1px solid var(--border);color:var(--text);">
+              Choose from gallery
+              <input type="file" accept="image/*" multiple id="log-modal-photo-input-gallery" style="display:none;">
+            </label>
+          </div>
         </div>
         <div class="log-modal-photo-preview" id="log-modal-photo-preview" style="display:none;">
           <img id="log-modal-photo-img" alt="">

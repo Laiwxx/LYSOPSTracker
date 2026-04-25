@@ -4,6 +4,7 @@
 - [Page-by-page workflow](feedback_workflow.md) — scopes work by page, not by feature.
 - [Visual style](feedback_visual_style.md) — plain/professional, consistent across pages; no themed aesthetics.
 - [Use agents for validation](feedback_use_agents_for_validation.md) — sub-agents for audits; trivial edits stay direct.
+- [Sidebar labels in conversation](feedback_use_sidebar_labels.md) — say "Manpower" not "planning page"; user navigates by sidebar label.
 
 ## People & Roles
 - [People and roles](people.md) — Chris/Teo/Jun Jie/Rena/Alex Chew/Salve/Alex Mac/Janessa/Murugan. Two QSs, Alex Chew = finance only.
@@ -24,6 +25,7 @@
 - [Factory DO-PR workflow](project_factory_do_pr_workflow.md) — DO uploads link to PRs; PRs editable while Pending.
 - [Parts/BOM design](project_parts_bom_design.md) — Mechanical items have sub-parts; parent auto-derives status.
 - [Manpower OT and supply](project_manpower_ot.md) — Mon-Fri 8-5:30, after = OT. Saturday = full OT. Supply workers 10h/day no OT. 72h MOM cap.
+- [Manpower Maintenance type](project_manpower_maintenance_type.md) — 5th worker-type added 2026-04-24 (purple, 🛠); dedicated page queued after Sales CRM.
 - [Team page model](team_page_model.md) — 3 task types, mark-as-seen (no In Progress), ack ladder, calendar events.
 - [Recurring tasks v2](project_recurring_tasks_v2.md) — revised task defs with GM + Finance roles.
 - [New project template](project_new_project_template.md) — 20-stage lifecycle, role-based team defaults.
@@ -38,6 +40,7 @@
 - [Suppress test emails](feedback_test_email_suppression.md) — sendEmail/calendar bail for Scenario Tester actor.
 
 ## Sales CRM (next major build)
+- [Sales UI identity](project_sales_ui_identity.md) — Sales has its own SF-blue palette (#1B96FF) + dedicated sidebar + Pipeline Path chevron bar; do NOT revert to ops styling.
 - [Sales pipeline page](project_sales_page.md) — current state: kanban + list view; convert-to-project bridge.
 - [Sales CRM full spec](project_sales_crm_spec.md) — Janessa's framework: 9 stages, FU/AFU engine, email compose, QS handoff.
 - [Sales CRM architecture](project_sales_crm_architecture.md) — 4-phase build plan (8-12 days), data model, FU state machine, existing bugs to fix.
@@ -46,4 +49,5 @@
 ## Open Items
 - [Known data issues](known_data_issues.md) — 15/17 projects missing endDate + siteEngineer.
 - [Feedback: EOD edit feature](feedback_mo9cothqexv8.md) — Feature Request by Salve, Medium priority, In Review.
+- [Factory redesign WIP](project_factory_redesign.md) — preview at /factory-preview.html approved; ui-designer port to live page incomplete (usage cap hit 2026-04-24, resets 5:40pm UTC). Re-dispatch when user resumes.
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.

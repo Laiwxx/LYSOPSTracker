@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Manpower Plan — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777037426">
+  <link rel="stylesheet" href="/css/style.css?v=1777098114">
   <style>
     body { background: var(--bg); }
     .tasks-layout { overflow: hidden; }
@@ -116,6 +116,7 @@
     .dot-fab  { background: #3b82f6; }
     .dot-inst { background: #22c55e; }
     .dot-maint{ background: #f97316; }
+    .dot-maintenance { background: #a855f7; }
     .dot-mc   { background: #ef4444; }
     .dot-off  { background: #9ca3af; }
 
@@ -215,6 +216,7 @@
     .chip-fab   { background: rgba(59,130,246,0.13); border: 1px solid rgba(59,130,246,0.28); color: #3b82f6; }
     .chip-inst  { background: rgba(34,197,94,0.12);  border: 1px solid rgba(34,197,94,0.28);  color: #16a34a; }
     .chip-driver { background: rgba(249,115,22,0.13); border: 1px solid rgba(249,115,22,0.28); color: #ea580c; }
+    .chip-maintenance { background: rgba(168,85,247,0.13); border: 1px solid rgba(168,85,247,0.28); color: #9333ea; }
     .chip-mc    {
       background: repeating-linear-gradient(
         45deg,
@@ -307,6 +309,7 @@
     .type-btn.sel-fab   { color: #3b82f6; border-color: #3b82f6; background: rgba(59,130,246,0.12); }
     .type-btn.sel-inst  { color: #22c55e; border-color: #22c55e; background: rgba(34,197,94,0.12); }
     .type-btn.sel-maint { color: #f97316; border-color: #f97316; background: rgba(249,115,22,0.12); }
+    .type-btn.sel-maintenance { color: #a855f7; border-color: #a855f7; background: rgba(168,85,247,0.12); }
     .type-btn.sel-mc    { color: #dc2626; border-color: #ef4444; background: rgba(239,68,68,0.12); }
     .type-btn.sel-clear { color: var(--text-muted); border-color: var(--border); }
     .popup-fields { display: none; flex-direction: column; gap: 8px; margin-bottom: 14px; }
@@ -539,9 +542,6 @@
     <a href="/planning" class="staff-nav-btn active" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">📅</span><span>Manpower</span>
     </a>
-    <a href="/sales" class="staff-nav-btn" id="nav-sales" style="text-decoration:none;display:none;">
-      <span class="staff-initial" style="font-size:13px;">S</span><span>Sales</span>
-    </a>
     <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
       <span class="staff-initial" style="font-size:13px;">💬</span><span>Feedback</span>
     </a>
@@ -550,6 +550,9 @@
     </a>
     <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
       <span class="staff-initial" style="font-size:13px;">⚙️</span><span>Admin</span>
+    </a>
+    <a href="/sales" class="staff-nav-btn" id="nav-sales" style="text-decoration:none;display:none;">
+      <span class="staff-initial" style="font-size:13px;">S</span><span>Sales</span>
     </a>
   </div>
 
@@ -566,6 +569,7 @@
         <span class="sum-stat"><span class="sum-dot dot-fab"></span> <span id="stat-fab">0</span> Factory</span>
         <span class="sum-stat"><span class="sum-dot dot-inst"></span> <span id="stat-inst">0</span> Site</span>
         <span class="sum-stat"><span class="sum-dot dot-maint"></span> <span id="stat-maint">0</span> Driver</span>
+        <span class="sum-stat"><span class="sum-dot dot-maintenance"></span> <span id="stat-maintenance">0</span> Maintenance</span>
         <span class="sum-stat"><span class="sum-dot dot-mc"></span> <span id="stat-mc">0</span> MC/Off</span>
       </div>
 
@@ -617,6 +621,7 @@
       <button class="type-btn" data-type="Fabrication">🏭 Fabrication</button>
       <button class="type-btn" data-type="Installation">🔧 Installation</button>
       <button class="type-btn" data-type="Driver">🚚 Driver</button>
+      <button class="type-btn" data-type="Maintenance">🛠 Maintenance</button>
       <button class="type-btn" data-type="MC">🤒 MC</button>
       <button class="type-btn" data-type="">✕ Clear</button>
     </div>
@@ -659,6 +664,7 @@
           <option value="Fabrication">🏭 Fabrication</option>
           <option value="Installation">🔧 Installation</option>
           <option value="Driver">🚚 Driver</option>
+          <option value="Maintenance">🛠 Maintenance</option>
           <option value="MC">🤒 MC</option>
           <option value="Off">🏠 Off</option>
         </select>
@@ -687,7 +693,7 @@
   </div>
 </div>
 
-<script src="/js/utils.js?v=1777037426"></script>
+<script src="/js/utils.js?v=1777098114"></script>
 <script>
 // ── Constants ──────────────────────────────────────────
 const DAYS      = ['mon','tue','wed','thu','fri','sat'];
@@ -1066,10 +1072,11 @@ function buildChip(data, workerId, day) {
   if (t === 'Fabrication') cls += 'chip-fab';
   else if (t === 'Installation') cls += 'chip-inst';
   else if (t === 'Driver') cls += 'chip-driver';
+  else if (t === 'Maintenance') cls += 'chip-maintenance';
   else if (t === 'MC')  cls += 'chip-mc';
   else if (t === 'Off') cls += 'chip-off';
   div.className = cls;
-  const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Driver:'🚚 Driver', MC:'🤒 MC', Off:'🏠 Off' }[t] || t;
+  const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Driver:'🚚 Driver', Maintenance:'🛠 Maint', MC:'🤒 MC', Off:'🏠 Off' }[t] || t;
   const sub = data._auto ? 'from attendance' : (data.projectName || data.location || data.notes || '');
   const otBadge = data.otHours ? `<span class="chip-ot">+${data.otHours}h OT</span>` : '';
   div.innerHTML =
@@ -1119,7 +1126,7 @@ function openPopup(worker, day) {
 }
 
 function applyTypeStyle(btn, type) {
-  const map = { Fabrication:'sel-fab', Installation:'sel-inst', Maintenance:'sel-driver', Driver:'sel-driver', MC:'sel-mc', '':'sel-clear' };
+  const map = { Fabrication:'sel-fab', Installation:'sel-inst', Driver:'sel-maint', Maintenance:'sel-maintenance', MC:'sel-mc', '':'sel-clear' };
   btn.classList.add(map[type] || 'sel-clear');
 }
 
@@ -1139,7 +1146,7 @@ function showFields(type) {
   fields.classList.add('vis');
   projW.style.display = (type === 'Installation' || type === 'Fabrication' || type === 'Driver') ? '' : 'none';
   const isSupplyWorker = popupWorker && String(popupWorker.id).startsWith('supply-');
-  const showOT = !isSupplyWorker && (type === 'Fabrication' || type === 'Installation' || type === 'Driver');
+  const showOT = !isSupplyWorker && (type === 'Fabrication' || type === 'Installation' || type === 'Driver' || type === 'Maintenance');
   otW.style.display = showOT ? '' : 'none';
   if (showOT && popupDay === 'sat') {
     otW.querySelector('.pop-label').textContent = 'Saturday OT Hours (full day is OT)';
@@ -1150,6 +1157,7 @@ function showFields(type) {
     type === 'Installation' ? 'Location / Notes'
     : type === 'Driver' ? 'Destination / Purpose (e.g. Changi T5 — worker transport)'
     : type === 'Fabrication' ? 'Notes (optional)'
+    : type === 'Maintenance' ? 'Maintenance details (e.g. workshop cleanup, tool servicing)'
     : 'Notes';
 }
 
@@ -1268,7 +1276,7 @@ async function removeSupplyWorker(id) {
 
 // ── Summary ────────────────────────────────────────────
 function updateSummary() {
-  let fab=0, inst=0, maint=0, mc=0;
+  let fab=0, inst=0, maint=0, maintenance=0, mc=0;
   [...workers.map(w=>w.id), ...supplyWorkers.map(w=>w.id)].forEach(wid => {
     DAYS.forEach(day => {
       const d = (plan[wid] || {})[day];
@@ -1276,14 +1284,16 @@ function updateSummary() {
       if (d.type === 'Fabrication')  fab++;
       else if (d.type === 'Installation') inst++;
       else if (d.type === 'Driver')  maint++;
+      else if (d.type === 'Maintenance') maintenance++;
       else if (d.type === 'MC' || d.type === 'Off') mc++;
     });
   });
   document.getElementById('stat-total').textContent = (workers.length + supplyWorkers.length) + ' workers';
-  document.getElementById('stat-fab').textContent   = fab;
-  document.getElementById('stat-inst').textContent  = inst;
-  document.getElementById('stat-maint').textContent = maint;
-  document.getElementById('stat-mc').textContent    = mc;
+  document.getElementById('stat-fab').textContent         = fab;
+  document.getElementById('stat-inst').textContent        = inst;
+  document.getElementById('stat-maint').textContent       = maint;
+  document.getElementById('stat-maintenance').textContent = maintenance;
+  document.getElementById('stat-mc').textContent          = mc;
 }
 
 // ── Save ───────────────────────────────────────────────

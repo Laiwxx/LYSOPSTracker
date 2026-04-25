@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔵 PREVIEW — Factory redesign</title>
+  <link rel="stylesheet" href="/css/style.css?v=1777098114">
+  <style>
+    /* ══════════════════════════════════════════════════════
+       FACTORY PREVIEW — visual redesign proposal.
+       Stays in ops palette (navy + electric blue).
+       No emoji. Dense, Salesforce-like but restrained.
+       ══════════════════════════════════════════════════════ */
+
+    body { background: var(--bg); }
+    .tasks-main { padding: 18px 20px 40px !important; }
+
+    /* ── Critical Alert Banner (only renders when something needs attention) ─ */
+    .fx-alert {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      background: linear-gradient(to right, rgba(220,38,38,0.08), rgba(220,38,38,0.02));
+      border: 1px solid rgba(220,38,38,0.25);
+      border-left: 3px solid #dc2626;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(220,38,38,0.08);
+    }
+    .fx-alert-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(220,38,38,0.14);
+      color: #b91c1c;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .fx-alert-body { flex: 1; min-width: 0; }
+    .fx-alert-title {
+      font-size: 13px; font-weight: 700; color: #7f1d1d;
+      margin-bottom: 2px;
+    }
+    .fx-alert-sub {
+      font-size: 12px; color: #991b1b;
+    }
+
+    /* KPI card when elevated as "critical" */
+    .fx-kpi.critical {
+      background: linear-gradient(135deg, rgba(220,38,38,0.05), var(--bg2) 70%);
+      position: relative;
+    }
+    .fx-kpi.critical::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: #dc2626;
+    }
+
+    /* Preview banner */
+    .fx-preview-pill {
+      display: inline-block;
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-left: 10px;
+    }
+
+    /* ── KPI Strip ────────────────────────────────────── */
+    .fx-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 3px rgba(26,29,46,0.04);
+    }
+    .fx-kpi {
+      background: var(--bg2);
+      padding: 12px 16px;
+      min-width: 0;
+    }
+    .fx-kpi-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .fx-kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+    .fx-kpi-value.blue  { color: var(--accent); }
+    .fx-kpi-value.red   { color: #dc2626; }
+    .fx-kpi-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Status Dots (single visual vocabulary) ────────── */
+    .fx-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .fx-dot.green { background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.12); }
+    .fx-dot.amber { background: #d97706; box-shadow: 0 0 0 3px rgba(217,119,6,0.12); }
+    .fx-dot.red   { background: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.14); }
+    .fx-dot.grey  { background: #9ca3af; box-shadow: 0 0 0 3px rgba(156,163,175,0.14); }
+    .fx-dot.blue  { background: var(--accent); box-shadow: 0 0 0 3px rgba(51,102,255,0.14); }
+
+    /* ── Section ──────────────────────────────────────── */
+    .fx-section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(26,29,46,0.04);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .fx-section-hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(to bottom, #fcfdff, var(--bg2));
+    }
+    .fx-section-bar {
+      width: 3px;
+      height: 20px;
+      border-radius: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .fx-section-bar.red   { background: #dc2626; }
+    .fx-section-bar.amber { background: #d97706; }
+    .fx-section-bar.green { background: #16a34a; }
+    .fx-section-bar.grey  { background: #9ca3af; }
+    .fx-section-icon {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .fx-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+      letter-spacing: 0.1px;
+    }
+    .fx-section-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .fx-btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .fx-btn-ghost:hover { color: var(--text); border-color: var(--text-muted); }
+    .fx-btn-primary {
+      background: var(--accent);
+      border: none;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .fx-btn-primary:hover { filter: brightness(1.08); }
+
+    /* ── Chips (section header + inline) ─────────────── */
+    .fx-chip {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .fx-chip.blue  { background: rgba(51,102,255,0.10); color: var(--accent); }
+    .fx-chip.green { background: rgba(22,163,74,0.10);  color: #15803d; }
+    .fx-chip.amber { background: rgba(217,119,6,0.12);  color: #b45309; }
+    .fx-chip.red   { background: rgba(220,38,38,0.10);  color: #b91c1c; }
+    .fx-chip.grey  { background: rgba(107,114,148,0.10);color: var(--text-muted); }
+
+    /* ── Job Code pill — distinct, scannable identifier ── */
+    .fx-jobcode {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--accent);
+      background: rgba(51,102,255,0.08);
+      border: 1px solid rgba(51,102,255,0.25);
+      padding: 3px 8px;
+      border-radius: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 62px;
+      text-align: center;
+    }
+    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); }
+    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.10); border-color: rgba(217,119,6,0.28); }
+    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
+    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
+
+    /* ── Group header (job header above multi-product rows) ── */
+    .fx-group-hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px 9px 13px;
+      background: linear-gradient(to right, rgba(51,102,255,0.04), transparent 60%);
+      border-bottom: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+    }
+    .fx-group-hdr.red   { border-left-color: #dc2626; background: linear-gradient(to right, rgba(220,38,38,0.05), transparent 60%); }
+    .fx-group-hdr.amber { border-left-color: #d97706; background: linear-gradient(to right, rgba(217,119,6,0.05), transparent 60%); }
+    .fx-group-hdr.green { border-left-color: #16a34a; background: linear-gradient(to right, rgba(22,163,74,0.04), transparent 60%); }
+    .fx-group-client {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .fx-group-meta {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    /* Sub-row: indented, tree-line connector, no repeating job code */
+    .fx-row.sub {
+      padding-left: 44px;
+      position: relative;
+    }
+    .fx-row.sub::before {
+      content: '';
+      position: absolute;
+      left: 22px;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .fx-row.sub.last-sub::before {
+      bottom: 50%;
+    }
+    .fx-row.sub::after {
+      content: '';
+      position: absolute;
+      left: 22px;
+      top: 50%;
+      width: 10px;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Rows (queue / requests / PRs) ──────────────── */
+    .fx-rows { }
+    .fx-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    .fx-row:last-child { border-bottom: none; }
+    .fx-row:hover { background: #fafbfe; }
+    .fx-row-main { flex: 1; min-width: 0; }
+    .fx-row-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .fx-row-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .fx-row-meta .sep { opacity: 0.5; }
+
+    /* ── Progress Bar ───────────────────────────────── */
+    .fx-row-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      min-width: 140px;
+    }
+    .fx-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg3);
+      border-radius: 3px;
+      overflow: hidden;
+      min-width: 70px;
+    }
+    .fx-bar > span {
+      display: block;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.25s;
+    }
+    .fx-bar.red   > span { background: #dc2626; }
+    .fx-bar.amber > span { background: #d97706; }
+    .fx-bar.green > span { background: #16a34a; }
+    .fx-pct {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 34px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .fx-row-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ── Manpower Cards ─────────────────────────────── */
+    .fx-mp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      padding: 14px;
+    }
+    .fx-mp-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .fx-mp-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .fx-mp-main { flex: 1; min-width: 0; }
+    .fx-mp-name {
+      font-size: 12px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .fx-mp-role {
+      font-size: 10px; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.4px;
+      margin-top: 1px;
+    }
+    .fx-mp-ot {
+      font-size: 10px; font-weight: 700;
+      color: #b45309;
+      background: rgba(217,119,6,0.10);
+      padding: 2px 7px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── DO Gallery ─────────────────────────────────── */
+    .fx-do-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px;
+      padding: 14px;
+    }
+    .fx-do-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg2);
+      transition: box-shadow 0.15s, transform 0.15s;
+      cursor: pointer;
+    }
+    .fx-do-card:hover {
+      box-shadow: 0 4px 12px rgba(26,29,46,0.08);
+      transform: translateY(-1px);
+    }
+    .fx-do-thumb {
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7294;
+    }
+    .fx-do-thumb::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.35));
+    }
+    .fx-do-badge {
+      position: absolute; top: 8px; left: 8px;
+      z-index: 1;
+    }
+    .fx-do-body { padding: 8px 10px; }
+    .fx-do-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .fx-do-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Upload zone ────────────────────────────────── */
+    .fx-upload-zone {
+      margin: 14px;
+      padding: 20px;
+      border: 1.5px dashed var(--border);
+      border-radius: 8px;
+      text-align: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fx-upload-zone:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(51,102,255,0.03);
+    }
+    .fx-upload-icon { margin-bottom: 6px; }
+    .fx-upload-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .fx-upload-sub   { font-size: 11px; }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 900px) {
+      .fx-kpi-strip { grid-template-columns: repeat(2, 1fr); }
+      .fx-row-progress { display: none; }
+    }
+    @media (max-width: 600px) {
+      .tasks-main { padding: 12px !important; }
+      .fx-kpi { padding: 10px 12px; }
+      .fx-kpi-value { font-size: 20px; }
+      .fx-row { flex-wrap: wrap; padding: 10px 12px; }
+      .fx-row-right { width: 100%; justify-content: flex-end; }
+      .fx-section-actions .fx-btn-ghost { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Preview ribbon — unmistakable marker so you know you're on the redesign -->
+<div style="background:linear-gradient(90deg,#1e40af,#3366ff);color:#fff;padding:8px 20px;text-align:center;font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">
+  Preview mockup — redesign proposal · <a href="/factory" style="color:#cfe7ff;text-decoration:underline;">open live factory page</a> · All data below is illustrative
+</div>
+
+<div class="topbar">
+  <div class="topbar-title"><span>LYS</span> OPS · Factory</div>
+  <span class="fx-preview-pill">Preview</span>
+  <div style="flex:1;"></div>
+  <a href="/factory" style="font-size:12px;color:var(--text-muted);text-decoration:none;">← Back to live page</a>
+</div>
+
+<div class="tasks-layout">
+  <!-- Sidebar (unchanged) -->
+  <div class="tasks-sidebar">
+    <a href="/" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">D</span><span>Dashboard</span>
+    </a>
+    <div class="tasks-sidebar-label">Views</div>
+    <a href="/my-tasks" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">T</span><span>Team</span>
+    </a>
+    <a href="/factory" class="staff-nav-btn active" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">F</span><span>Factory</span>
+    </a>
+    <a href="/installation" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">I</span><span>Installation</span>
+    </a>
+    <a href="/procurement" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">P</span><span>Procurement</span>
+    </a>
+    <a href="/planning" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">M</span><span>Manpower</span>
+    </a>
+    <a href="/feedback" class="staff-nav-btn" style="text-decoration:none;">
+      <span class="staff-initial" style="font-size:13px;">?</span><span>Feedback</span>
+    </a>
+    <a href="new-project.html" class="staff-nav-btn" style="background:var(--accent);color:#fff;margin-top:8px;border-radius:var(--radius);text-decoration:none;">
+      <span class="staff-initial" style="font-size:16px;background:rgba(255,255,255,0.2);">+</span><span>New Project</span>
+    </a>
+    <a href="admin.html" class="staff-nav-btn" style="text-decoration:none;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;flex-shrink:0;">
+      <span class="staff-initial" style="font-size:13px;">A</span><span>Admin</span>
+    </a>
+  </div>
+
+  <!-- Main -->
+  <div class="tasks-main">
+
+    <!-- ── CRITICAL ALERT BANNER (shown only when overdue items exist) ──── -->
+    <div class="fx-alert">
+      <div class="fx-alert-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="fx-alert-body">
+        <div class="fx-alert-title">1 site request overdue · 1 build overdue</div>
+        <div class="fx-alert-sub"><strong>BD-21923</strong> (Keppel) site request overdue · <strong>SP400</strong> (Shimizu) glass panel 4/12 units, due yesterday</div>
+      </div>
+      <button class="fx-btn-primary" style="background:#dc2626;">Review now</button>
+    </div>
+
+    <!-- ── KPI STRIP (Site Requests promoted to position 1) ──────────── -->
+    <div class="fx-kpi-strip">
+      <div class="fx-kpi critical">
+        <div class="fx-kpi-label">Site Requests</div>
+        <div class="fx-kpi-value red">3</div>
+        <div class="fx-kpi-sub"><span class="fx-dot red"></span>1 overdue<span class="sep">·</span>2 pending</div>
+      </div>
+      <div class="fx-kpi">
+        <div class="fx-kpi-label">In Queue</div>
+        <div class="fx-kpi-value blue">12</div>
+        <div class="fx-kpi-sub"><span class="fx-dot green"></span>8 on track<span class="sep">·</span><span class="fx-dot red"></span>1 overdue</div>
+      </div>
+      <div class="fx-kpi">
+        <div class="fx-kpi-label">Workers Today</div>
+        <div class="fx-kpi-value">6</div>
+        <div class="fx-kpi-sub">4 own · 2 supply</div>
+      </div>
+      <div class="fx-kpi">
+        <div class="fx-kpi-label">Open DOs</div>
+        <div class="fx-kpi-value">2</div>
+        <div class="fx-kpi-sub">5 delivered this week</div>
+      </div>
+      <div class="fx-kpi">
+        <div class="fx-kpi-label">Material Reqs</div>
+        <div class="fx-kpi-value">4</div>
+        <div class="fx-kpi-sub">2 pending quote</div>
+      </div>
+    </div>
+
+    <!-- ── SECTION A: Priority Queue ──────────────────────── -->
+    <section class="fx-section">
+      <header class="fx-section-hdr">
+        <div class="fx-section-bar"></div>
+        <div class="fx-section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6-4v4l6-4v16"/><path d="M3 21h18"/><path d="M7 17h2"/><path d="M13 17h2"/></svg>
+        </div>
+        <h2 class="fx-section-title">Priority Queue</h2>
+        <span class="fx-chip blue">12 items</span>
+        <span class="fx-chip green">8 on track</span>
+        <span class="fx-chip amber">3 due today</span>
+        <span class="fx-chip red">1 overdue</span>
+        <div class="fx-section-actions">
+          <button class="fx-btn-ghost">Filter</button>
+          <button class="fx-btn-ghost">View all</button>
+        </div>
+      </header>
+      <div class="fx-rows">
+        <!-- ── Multi-product job: SP400 Shimizu (3 products) ── -->
+        <div class="fx-group-hdr red">
+          <span class="fx-jobcode red">SP400</span>
+          <span class="fx-group-client">Shimizu (DNR)</span>
+          <div class="fx-group-meta">
+            <span class="fx-chip red"><span class="fx-dot red"></span>1 overdue</span>
+            <span class="fx-chip amber">1 due today</span>
+            <span class="fx-chip green">1 on track</span>
+          </div>
+        </div>
+        <div class="fx-row sub">
+          <span class="fx-dot red"></span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Glass panel</div>
+            <div class="fx-row-meta">
+              <span>Due yesterday</span><span class="sep">·</span>
+              <span>4 of 12 units</span><span class="sep">·</span>
+              <span>QC: Teo</span>
+            </div>
+          </div>
+          <div class="fx-row-progress">
+            <div class="fx-bar red"><span style="width:33%"></span></div>
+            <span class="fx-pct">33%</span>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-primary">Log build</button>
+          </div>
+        </div>
+        <div class="fx-row sub">
+          <span class="fx-dot amber"></span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Louvre insert</div>
+            <div class="fx-row-meta">
+              <span>Due today</span><span class="sep">·</span>
+              <span>6 of 10 units</span><span class="sep">·</span>
+              <span>QC: Jun Jie</span>
+            </div>
+          </div>
+          <div class="fx-row-progress">
+            <div class="fx-bar amber"><span style="width:60%"></span></div>
+            <span class="fx-pct">60%</span>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-primary">Log build</button>
+          </div>
+        </div>
+        <div class="fx-row sub last-sub">
+          <span class="fx-dot green"></span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Steel bracket</div>
+            <div class="fx-row-meta">
+              <span>Due in 2 days</span><span class="sep">·</span>
+              <span>14 of 16 units</span><span class="sep">·</span>
+              <span>QC: Teo</span>
+            </div>
+          </div>
+          <div class="fx-row-progress">
+            <div class="fx-bar green"><span style="width:87%"></span></div>
+            <span class="fx-pct">87%</span>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-primary">Log build</button>
+          </div>
+        </div>
+
+        <!-- ── Multi-product job: BD-21923 Keppel (2 products) ── -->
+        <div class="fx-group-hdr amber">
+          <span class="fx-jobcode amber">BD-21923</span>
+          <span class="fx-group-client">Keppel Tower</span>
+          <div class="fx-group-meta">
+            <span class="fx-chip amber">2 due today</span>
+          </div>
+        </div>
+        <div class="fx-row sub">
+          <span class="fx-dot amber"></span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Frame assembly</div>
+            <div class="fx-row-meta">
+              <span>Due today</span><span class="sep">·</span>
+              <span>7 of 10 units</span><span class="sep">·</span>
+              <span>QC: Jun Jie</span>
+            </div>
+          </div>
+          <div class="fx-row-progress">
+            <div class="fx-bar amber"><span style="width:70%"></span></div>
+            <span class="fx-pct">70%</span>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-primary">Log build</button>
+          </div>
+        </div>
+        <div class="fx-row sub last-sub">
+          <span class="fx-dot amber"></span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Railing panel</div>
+            <div class="fx-row-meta">
+              <span>Due today</span><span class="sep">·</span>
+              <span>22 of 30 units</span><span class="sep">·</span>
+              <span>QC: Teo</span>
+            </div>
+          </div>
+          <div class="fx-row-progress">
+            <div class="fx-bar amber"><span style="width:73%"></span></div>
+            <span class="fx-pct">73%</span>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-primary">Log build</button>
+          </div>
+        </div>
+
+        <!-- ── Single-product job: CHN-12 ── -->
+        <div class="fx-row">
+          <span class="fx-dot green"></span>
+          <span class="fx-jobcode green">CHN-12</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Bracket set — Marina One</div>
+            <div class="fx-row-meta">
+              <span>Due in 3 days</span><span class="sep">·</span>
+              <span>18 of 20 units</span><span class="sep">·</span>
+              <span>QC: Teo</span>
+            </div>
+          </div>
+          <div class="fx-row-progress">
+            <div class="fx-bar green"><span style="width:90%"></span></div>
+            <span class="fx-pct">90%</span>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-primary">Log build</button>
+          </div>
+        </div>
+
+        <!-- ── Single-product job: SP2 ── -->
+        <div class="fx-row">
+          <span class="fx-dot blue"></span>
+          <span class="fx-jobcode">SP2</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Louvre panel — Temasek</div>
+            <div class="fx-row-meta">
+              <span>Due in 5 days</span><span class="sep">·</span>
+              <span>0 of 8 units</span><span class="sep">·</span>
+              <span>Parts: 3 of 5 received</span>
+            </div>
+          </div>
+          <div class="fx-row-progress">
+            <div class="fx-bar"><span style="width:0%"></span></div>
+            <span class="fx-pct">0%</span>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">Start</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION B: Site Requests (promoted up) ──────────────────── -->
+    <section class="fx-section">
+      <header class="fx-section-hdr">
+        <div class="fx-section-bar red"></div>
+        <div class="fx-section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        </div>
+        <h2 class="fx-section-title">Site Requests</h2>
+        <span class="fx-chip amber">3 pending</span>
+        <span class="fx-chip red">1 overdue</span>
+        <div class="fx-section-actions">
+          <button class="fx-btn-ghost">View all</button>
+        </div>
+      </header>
+      <div class="fx-rows">
+        <div class="fx-row">
+          <span class="fx-dot red"></span>
+          <span class="fx-jobcode red">BD-21923</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">SP400 FIXED — Keppel</div>
+            <div class="fx-row-meta">
+              <span>Requested 2 days ago by Teo</span><span class="sep">·</span>
+              <span>Needed by: Tomorrow</span>
+            </div>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">View</button>
+            <button class="fx-btn-primary">Acknowledge</button>
+          </div>
+        </div>
+        <div class="fx-row">
+          <span class="fx-dot amber"></span>
+          <span class="fx-jobcode amber">CHN-12</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Additional brackets — Marina</div>
+            <div class="fx-row-meta">
+              <span>Requested today by Jun Jie</span><span class="sep">·</span>
+              <span>Needed by: Fri</span>
+            </div>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">View</button>
+            <button class="fx-btn-primary">Acknowledge</button>
+          </div>
+        </div>
+        <div class="fx-row">
+          <span class="fx-dot amber"></span>
+          <span class="fx-jobcode amber">SP2</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Louvre panel variant — Temasek</div>
+            <div class="fx-row-meta">
+              <span>Requested today by Teo</span><span class="sep">·</span>
+              <span>Needed by: Next week</span>
+            </div>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">View</button>
+            <button class="fx-btn-primary">Acknowledge</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION C: Today's Manpower ────────────────────── -->
+    <section class="fx-section">
+      <header class="fx-section-hdr">
+        <div class="fx-section-bar grey"></div>
+        <div class="fx-section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h2 class="fx-section-title">Today's Manpower</h2>
+        <span class="fx-chip blue">6 workers</span>
+        <span class="fx-chip grey">4 own · 2 supply</span>
+        <span class="fx-chip amber">3 on OT</span>
+        <div class="fx-section-actions">
+          <a href="/planning" class="fx-btn-ghost" style="text-decoration:none;display:inline-flex;align-items:center;">Manage →</a>
+        </div>
+      </header>
+      <div class="fx-mp-grid">
+        <div class="fx-mp-card">
+          <div class="fx-mp-avatar" style="background:#3366ff;">MS</div>
+          <div class="fx-mp-main">
+            <div class="fx-mp-name">Murugan Senthil</div>
+            <div class="fx-mp-role">Fabricator</div>
+          </div>
+          <span class="fx-mp-ot">+2h OT</span>
+        </div>
+        <div class="fx-mp-card">
+          <div class="fx-mp-avatar" style="background:#16a34a;">RK</div>
+          <div class="fx-mp-main">
+            <div class="fx-mp-name">Raj Kumar</div>
+            <div class="fx-mp-role">Fabricator</div>
+          </div>
+        </div>
+        <div class="fx-mp-card">
+          <div class="fx-mp-avatar" style="background:#d97706;">AK</div>
+          <div class="fx-mp-main">
+            <div class="fx-mp-name">Ahmad Khan</div>
+            <div class="fx-mp-role">Welder</div>
+          </div>
+          <span class="fx-mp-ot">+4h OT</span>
+        </div>
+        <div class="fx-mp-card">
+          <div class="fx-mp-avatar" style="background:#9333ea;">SG</div>
+          <div class="fx-mp-main">
+            <div class="fx-mp-name">Siva Ganesh</div>
+            <div class="fx-mp-role">Welder</div>
+          </div>
+        </div>
+        <div class="fx-mp-card">
+          <div class="fx-mp-avatar" style="background:#6b7294;">RV</div>
+          <div class="fx-mp-main">
+            <div class="fx-mp-name">Rajan (Supply)</div>
+            <div class="fx-mp-role">General</div>
+          </div>
+        </div>
+        <div class="fx-mp-card">
+          <div class="fx-mp-avatar" style="background:#6b7294;">PS</div>
+          <div class="fx-mp-main">
+            <div class="fx-mp-name">Prakash (Supply)</div>
+            <div class="fx-mp-role">General</div>
+          </div>
+          <span class="fx-mp-ot">+2h OT</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION D: Delivery Orders ─────────────────────── -->
+    <section class="fx-section">
+      <header class="fx-section-hdr">
+        <div class="fx-section-bar amber"></div>
+        <div class="fx-section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h2 class="fx-section-title">Delivery Orders</h2>
+        <span class="fx-chip amber">2 pending review</span>
+        <span class="fx-chip green">5 this week</span>
+        <div class="fx-section-actions">
+          <button class="fx-btn-primary">+ Photo a DO</button>
+        </div>
+      </header>
+      <div class="fx-upload-zone">
+        <div class="fx-upload-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div class="fx-upload-title">Tap to photograph a DO</div>
+        <div class="fx-upload-sub">Auto-links to a pending Purchase Requisition</div>
+      </div>
+      <div class="fx-do-grid">
+        <div class="fx-do-card">
+          <div class="fx-do-thumb">
+            <span class="fx-do-badge fx-chip amber">PENDING</span>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="fx-do-body">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="fx-jobcode" style="min-width:auto;font-size:10px;padding:2px 6px;">SP400</span>
+              <div class="fx-do-title" style="flex:1;min-width:0;">DO-2026-0412</div>
+            </div>
+            <div class="fx-do-sub">Hong Seh Glass · 2h ago</div>
+          </div>
+        </div>
+        <div class="fx-do-card">
+          <div class="fx-do-thumb">
+            <span class="fx-do-badge fx-chip amber">PENDING</span>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="fx-do-body">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="fx-jobcode" style="min-width:auto;font-size:10px;padding:2px 6px;">BD-21923</span>
+              <div class="fx-do-title" style="flex:1;min-width:0;">DO-2026-0411</div>
+            </div>
+            <div class="fx-do-sub">Eastern Hardware · Yesterday</div>
+          </div>
+        </div>
+        <div class="fx-do-card">
+          <div class="fx-do-thumb">
+            <span class="fx-do-badge fx-chip green">MATCHED</span>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div class="fx-do-body">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="fx-jobcode green" style="min-width:auto;font-size:10px;padding:2px 6px;">CHN-12</span>
+              <div class="fx-do-title" style="flex:1;min-width:0;">DO-2026-0410</div>
+            </div>
+            <div class="fx-do-sub">Soon Lee · 2 days ago</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION E: Material Requests ───────────────────── -->
+    <section class="fx-section">
+      <header class="fx-section-hdr">
+        <div class="fx-section-bar"></div>
+        <div class="fx-section-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6a2 2 0 0 1 2 2v2H7V4a2 2 0 0 1 2-2z"/><rect x="4" y="6" width="16" height="16" rx="2"/><path d="M9 12h6M9 16h6"/></svg>
+        </div>
+        <h2 class="fx-section-title">Material Requests</h2>
+        <span class="fx-chip blue">4 active</span>
+        <span class="fx-chip amber">2 awaiting quote</span>
+        <span class="fx-chip green">7 approved this week</span>
+        <div class="fx-section-actions">
+          <button class="fx-btn-primary">+ New PR</button>
+        </div>
+      </header>
+      <div class="fx-rows">
+        <div class="fx-row">
+          <span class="fx-dot amber"></span>
+          <span class="fx-jobcode">SP400</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">12mm tempered glass · 20 sheets <span style="color:var(--text-muted);font-weight:400;">· PR-2026-0087</span></div>
+            <div class="fx-row-meta">
+              <span>Awaiting quote</span><span class="sep">·</span>
+              <span>Supplier: Hong Seh</span><span class="sep">·</span>
+              <span>For: Shimizu</span>
+            </div>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">Edit</button>
+          </div>
+        </div>
+        <div class="fx-row">
+          <span class="fx-dot blue"></span>
+          <span class="fx-jobcode">BD-21923</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">M10 stainless bolts · 500 pcs <span style="color:var(--text-muted);font-weight:400;">· PR-2026-0086</span></div>
+            <div class="fx-row-meta">
+              <span>Approved · expecting 2 days</span><span class="sep">·</span>
+              <span>Supplier: Eastern</span><span class="sep">·</span>
+              <span>For: Keppel</span>
+            </div>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">View</button>
+          </div>
+        </div>
+        <div class="fx-row">
+          <span class="fx-dot green"></span>
+          <span class="fx-jobcode green">CHN-12</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Aluminium extrusion 6063-T5 <span style="color:var(--text-muted);font-weight:400;">· PR-2026-0085</span></div>
+            <div class="fx-row-meta">
+              <span>Delivered today</span><span class="sep">·</span>
+              <span>Supplier: Soon Lee</span><span class="sep">·</span>
+              <span>DO-2026-0410</span>
+            </div>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">View DO</button>
+          </div>
+        </div>
+        <div class="fx-row">
+          <span class="fx-dot amber"></span>
+          <span class="fx-jobcode amber">CHN-12</span>
+          <div class="fx-row-main">
+            <div class="fx-row-title">Powder coating service <span style="color:var(--text-muted);font-weight:400;">· PR-2026-0084</span></div>
+            <div class="fx-row-meta">
+              <span>Awaiting quote</span><span class="sep">·</span>
+              <span>Supplier: Pending</span><span class="sep">·</span>
+              <span>For: Marina</span>
+            </div>
+          </div>
+          <div class="fx-row-right">
+            <button class="fx-btn-ghost">Edit</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="/js/nav.js"></script>
+</body>
+</html>
