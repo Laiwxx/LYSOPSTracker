@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777131500">
+  <link rel="stylesheet" href="/css/style.css?v=1777135000">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -2333,8 +2333,9 @@ async function renderPriorityQueue(queue, srAll) {
   }
 
   // ── Render queue rows ──────────────────────────────────────────────────
-  // Multi-product jobs get a fx-group-hdr + indented fx-row sub children.
-  // Single-product jobs render as a flat fx-row with the jobcode pill on the row.
+  // Every job — single OR multi-product — renders as fx-group-hdr + indented
+  // fx-row.sub children. This unifies the visual pattern so each new job is
+  // unambiguous: header bar (jobcode + client + chips) followed by item rows.
   container.innerHTML = '';
   projMeta.forEach(m => {
     const projItems = flat.filter(x => x.proj.projectId === m.proj.projectId);
@@ -2347,34 +2348,31 @@ async function renderPriorityQueue(queue, srAll) {
     const groupColor = m.cardColor;  // 'red'|'amber'|'green'|'grey'
     const srCount = srNewByProject[m.proj.projectId] || 0;
 
-    if (visibleItems.length === 1) {
-      // Single-product job → flat row with jobcode pill
-      const row = _buildQueueRowHtml(visibleItems[0], m.fp, { includeJobcode: true, jobcodeColor: groupColor, srCount });
-      container.insertAdjacentHTML('beforeend', row);
-    } else {
-      // Multi-product job → group header + sub rows
-      const groupMeta = [];
+    // Build header chips. For single-item jobs, skip the count-by-status chips
+    // (the dot on the sub-row already says everything).
+    const groupMeta = [];
+    if (visibleItems.length > 1) {
       const localRed   = visibleItems.filter(x => classifyItem(x.item) === 'red').length;
       const localAmber = visibleItems.filter(x => classifyItem(x.item) === 'amber').length;
       const localGreen = visibleItems.filter(x => classifyItem(x.item) === 'green').length;
       if (localRed)   groupMeta.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${localRed} overdue</span>`);
       if (localAmber) groupMeta.push(`<span class="fx-chip amber">${localAmber} due soon</span>`);
       if (localGreen) groupMeta.push(`<span class="fx-chip green">${localGreen} on track</span>`);
-      if (srCount)    groupMeta.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${srCount} new request${srCount!==1?'s':''}</span>`);
-
-      container.insertAdjacentHTML('beforeend',
-        `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}">` +
-          `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
-          `<span class="fx-group-client">${escHtml(clientName)}</span>` +
-          `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
-        `</div>`
-      );
-      visibleItems.forEach((x, i) => {
-        const last = (i === visibleItems.length - 1);
-        const row = _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false });
-        container.insertAdjacentHTML('beforeend', row);
-      });
     }
+    if (srCount) groupMeta.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${srCount} new request${srCount!==1?'s':''}</span>`);
+
+    container.insertAdjacentHTML('beforeend',
+      `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}">` +
+        `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
+        `<span class="fx-group-client">${escHtml(clientName)}</span>` +
+        `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
+      `</div>`
+    );
+    visibleItems.forEach((x, i) => {
+      const last = (i === visibleItems.length - 1);
+      const row = _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false });
+      container.insertAdjacentHTML('beforeend', row);
+    });
 
     // Also create hidden legacy card container so renderFabItems can still render into it.
     // This lets the detailed log-modal / stage advance / upload log keep working through

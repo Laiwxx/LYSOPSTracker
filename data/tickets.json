@@ -42,5 +42,25 @@
     "status": "Done",
     "priority": "Medium",
     "notes": ""
+  },
+  {
+    "id": "moeg0d5q06zq",
+    "title": "project in factory page issue",
+    "type": "Bug",
+    "description": "",
+    "submittedBy": "Lai Wei Xiang",
+    "submittedAt": "2026-04-25T14:36:43.550Z",
+    "status": "New",
+    "priority": "Medium",
+    "notes": "",
+    "attachments": [
+      {
+        "filename": "moeg0d5o-kx27-Screenshot_2026-04-25_223119.png",
+        "originalName": "Screenshot 2026-04-25 223119.png",
+        "mimetype": "image/png",
+        "size": 73542,
+        "url": "/uploads/tickets/moeg0d5q06zq/moeg0d5o-kx27-Screenshot_2026-04-25_223119.png"
+      }
+    ]
   }
 ]
