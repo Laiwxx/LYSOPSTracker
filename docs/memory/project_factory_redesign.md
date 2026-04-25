@@ -1,15 +1,14 @@
 ---
-name: Factory page redesign in progress (preview approved, port pending)
-description: WIP visual redesign of /factory — Salesforce-inspired layout with no emoji, KPI strip, alert banner, multi-product job grouping. Preview at public/factory-preview.html approved by user. ui-designer port to live page incomplete (ran out of usage 2026-04-24).
+name: Factory page redesign — port complete, follow-ups deferred
+description: Salesforce-inspired Factory page redesign. Preview at public/factory-preview.html; port to live factory.html complete as of 2026-04-25. 5 follow-up enhancements proposed but not built.
 type: project
 originSessionId: 820a213b-31d4-4e6d-998f-274d758a9c5e
 ---
-As of 2026-04-24, a Salesforce-inspired visual redesign of the Factory page (`public/factory.html`) is in progress.
+**Status as of 2026-04-25: port complete and live.** Earlier memory said the port was incomplete — that was stale. Verification on 2026-04-25 confirmed live `public/factory.html` has 47 of 48 `fx-*` classes from the preview, with KPI strip, alert banner, multi-product job grouping, section accent bars, and one-status-vocabulary dots all in place.
 
-**Current state — not yet ported to live:**
-- Mockup lives at `public/factory-preview.html` (standalone, mock data, blue PREVIEW ribbon at top)
-- Live `/factory` is **untouched** — only diff on it is cache-bust version + Sales-below-Admin sidebar move
-- ui-designer agent was dispatched to port preview → live but **exhausted usage during the run** (Anthropic usage cap hit, resets 5:40pm UTC). Port is incomplete and needs re-dispatch after reset.
+**Reference files:**
+- `public/factory-preview.html` (1040 lines, mock data, blue PREVIEW ribbon) — kept as design reference / staging ground for future iterations. Do not delete.
+- `public/factory.html` (~4750 lines, live).
 
 **User approved the preview.** Key design choices already committed in the preview file:
 - **No emoji anywhere.** Replaced with monotone Lucide-style SVG icons + 3px colored vertical accent bars per section.

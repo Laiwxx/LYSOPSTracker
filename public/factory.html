@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777136500">
+  <link rel="stylesheet" href="/css/style.css?v=1777138000">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -3654,7 +3654,13 @@ document.getElementById('do-file-input').addEventListener('change', async functi
   sel.innerHTML = '<option value="">— No PR / General —</option>';
   // Populate with open PRs from cached data
   try {
-    const prs = _allPRs.length ? _allPRs : await fetch('/api/purchase-requisitions').then(r => r.json());
+    let prs = _allPRs;
+    if (!prs.length) {
+      const r = await fetch('/api/purchase-requisitions');
+      if (r.status === 401) { window.location.href = '/login'; return; }
+      if (!r.ok) throw new Error('PRs fetch failed');
+      prs = await r.json();
+    }
     prs.filter(p => p.status !== 'Delivered').forEach(pr => {
       const opt = document.createElement('option');
       opt.value = pr.id;
@@ -4045,14 +4051,23 @@ let _allPRs = [];
 
 async function editPR(id) {
   if (!_allPRs.length) {
-    try { _allPRs = await fetch('/api/purchase-requisitions').then(r => r.json()); } catch { return; }
+    try {
+      const r = await fetch('/api/purchase-requisitions');
+      if (r.status === 401) { window.location.href = '/login'; return; }
+      if (!r.ok) throw new Error('PRs fetch failed');
+      _allPRs = await r.json();
+    } catch (e) { factoryToast('Could not load PRs', false); return; }
   }
   const pr = _allPRs.find(p => p.id === id);
   if (!pr) { factoryToast('PR not found', false); return; }
 
   // Load projects for dropdown
   if (!_fprProjects.length) {
-    try { _fprProjects = await fetch('/api/projects?lifecycle=active').then(r => r.json()); } catch {}
+    try {
+      const r = await fetch('/api/projects?lifecycle=active');
+      if (r.status === 401) { window.location.href = '/login'; return; }
+      if (r.ok) _fprProjects = await r.json();
+    } catch (_) { /* tolerate — modal still opens, dropdown just empty */ }
   }
   const sel = document.getElementById('fpr-project');
   sel.innerHTML = '<option value="">— Select Project —</option>';

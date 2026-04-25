@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LYS OPS · Procurement</title>
   <meta name="theme-color" content="#1a1d2e">
-  <link rel="stylesheet" href="css/style.css?v=1777113692">
+  <link rel="stylesheet" href="css/style.css?v=1777138000">
   <style>
     /* ── Tabs ──────────────────────────────────────────────────────────────── */
     .proc-tabs {
@@ -847,20 +847,36 @@ function confirmDelete(title, itemName) {
   let _purchaserName = 'Purchaser';
   let allDOs = [];
 
+  // Wrap each fetch with auth-redirect on 401 + safe parse on non-OK so a
+  // session-timeout doesn't silently render the page with empty arrays.
+  async function _safeJson(url) {
+    const r = await fetch(url);
+    if (r.status === 401) { window.location.href = '/login'; throw new Error('auth'); }
+    if (!r.ok) throw new Error(url + ' → ' + r.status);
+    return r.json();
+  }
   async function loadAll() {
-    [allPRs, allProjects, allSuppliers, allPrices, allDOs] = await Promise.all([
-      fetch('/api/purchase-requisitions').then(r => r.json()).catch(() => []),
-      fetch('/api/projects?lifecycle=active').then(r => r.json()).catch(() => []),
-      fetch('/api/suppliers').then(r => r.json()).catch(() => []),
-      fetch('/api/prices').then(r => r.json()).catch(() => []),
-      fetch('/api/delivery-orders').then(r => r.json()).catch(() => [])
-    ]);
+    try {
+      [allPRs, allProjects, allSuppliers, allPrices, allDOs] = await Promise.all([
+        _safeJson('/api/purchase-requisitions'),
+        _safeJson('/api/projects?lifecycle=active'),
+        _safeJson('/api/suppliers'),
+        _safeJson('/api/prices'),
+        _safeJson('/api/delivery-orders')
+      ]);
+    } catch (e) {
+      if (e.message === 'auth') return;
+      console.error('[procurement] loadAll failed:', e);
+      // Fall back to empty arrays so the page still renders something
+      allPRs = allPRs || []; allProjects = allProjects || []; allSuppliers = allSuppliers || [];
+      allPrices = allPrices || []; allDOs = allDOs || [];
+    }
     // Resolve Factory Manager name
     try {
-      const staff = await fetch('/api/staff').then(r => r.json());
+      const staff = await _safeJson('/api/staff');
       if (staff['Factory Manager']) _factoryManagerName = staff['Factory Manager'].name || _factoryManagerName;
       if (staff['Purchaser']) _purchaserName = staff['Purchaser'].name || _purchaserName;
-    } catch {}
+    } catch (_) { /* tolerate — falls back to default names */ }
   }
 
   // ── Tab switching ──────────────────────────────────────────────────────────

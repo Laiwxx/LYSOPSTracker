@@ -2,6 +2,29 @@
 // Must be loaded before dashboard.js and project.js
 
 // ---------------------------------------------------------------------------
+// safeFetchJson — guards every page against silent auth-timeout failures.
+// Without this, expired sessions return the login HTML, JSON.parse() throws,
+// and the caller's catch is invisible to the user (blank panels, missing
+// dropdowns, etc.). On 401, redirects to /login. On other non-OK responses,
+// throws a descriptive Error so the caller can surface a toast.
+// ---------------------------------------------------------------------------
+async function safeFetchJson(url, opts) {
+  const res = await fetch(url, opts);
+  if (res.status === 401) {
+    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+    throw new Error('Auth required');
+  }
+  if (!res.ok) {
+    let msg = url + ' → HTTP ' + res.status;
+    try { const d = await res.json(); if (d && d.error) msg = d.error; } catch (_) {}
+    throw new Error(msg);
+  }
+  return res.json();
+}
+
+// ---------------------------------------------------------------------------
 // API fetch wrapper
 // ---------------------------------------------------------------------------
 async function api(method, path, body) {

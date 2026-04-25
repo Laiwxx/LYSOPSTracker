@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Team Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777136500">
+  <link rel="stylesheet" href="/css/style.css?v=1777138000">
   <style>
     /* ── Type-grouped sections (Mandatory / Requests / Personal) ── */
     .mc-type-group {
@@ -705,11 +705,14 @@ async function renderTeamGrid() {
   root.appendChild(hdr);
   hdr.querySelector('#new-task-btn').onclick = () => openNewTaskModal('');
 
-  // Fetch EOD status for all staff in parallel
+  // Fetch EOD status for all staff in parallel. Guard against session-timeout
+  // returning the login HTML (would set false for everyone and show wrong UI).
   const eodMap = {};
   await Promise.all(staffList.map(async name => {
     try {
       const res = await fetch('/api/eod-log?staffName=' + encodeURIComponent(name) + '&date=' + todayStr);
+      if (res.status === 401) { window.location.href = '/login'; throw new Error('auth'); }
+      if (!res.ok) { eodMap[name] = false; return; }
       const data = await res.json();
       eodMap[name] = Array.isArray(data) && data.length > 0;
     } catch (e) {

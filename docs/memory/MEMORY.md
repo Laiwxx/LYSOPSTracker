@@ -49,5 +49,6 @@
 ## Open Items
 - [Known data issues](known_data_issues.md) — 15/17 projects missing endDate + siteEngineer.
 - [Feedback: EOD edit feature](feedback_mo9cothqexv8.md) — Feature Request by Salve, Medium priority, In Review.
-- [Factory redesign WIP](project_factory_redesign.md) — preview at /factory-preview.html approved; ui-designer port to live page incomplete (usage cap hit 2026-04-24, resets 5:40pm UTC). Re-dispatch when user resumes.
+- [Factory redesign done](project_factory_redesign.md) — preview ported to live as of 2026-04-25. 5 follow-up enhancements (item drawer, camera-first mobile, forecast strip, search/filter, skeletons) deferred.
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
+- [Feedback: project in factory page issue](feedback_moeg0d5q06zq.md) — Bug by Lai Wei Xiang, Medium priority
