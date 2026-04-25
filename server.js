@@ -2120,10 +2120,17 @@ app.delete('/api/projects/:id', async (req, res) => {
       const filteredTasks = tasks.filter(t => t.projectId !== pid);
       if (filteredTasks.length < tasks.length) writeTasks(filteredTasks);
 
-      // Upload files on disk
-      const projUploadDir = path.join(UPLOADS_DIR, 'projects', path.basename(pid));
-      if (fs.existsSync(projUploadDir) && projUploadDir.startsWith(path.resolve(UPLOADS_DIR))) {
-        fs.rmSync(projUploadDir, { recursive: true, force: true });
+      // Upload files on disk — project docs, fab-log photos, install-log photos
+      const safePid = path.basename(pid);
+      const dirsToWipe = [
+        path.join(UPLOADS_DIR, 'projects', safePid),
+        path.join(FAB_LOGS_DIR, safePid),
+        path.join(INSTALL_LOGS_DIR, safePid)
+      ];
+      for (const dir of dirsToWipe) {
+        if (fs.existsSync(dir) && path.resolve(dir).startsWith(path.resolve(UPLOADS_DIR))) {
+          fs.rmSync(dir, { recursive: true, force: true });
+        }
       }
 
       logActivity('project.deleted.cascade', {
@@ -3317,8 +3324,10 @@ app.delete('/api/projects/:id/stages/:stageIdx/file', (req, res) => {
     const stage = (project.stages || [])[parseInt(req.params.stageIdx, 10)];
     if (!stage) return res.status(404).json({ error: 'Stage not found' });
     if (stage.fileName) {
-      const filePath = path.join(UPLOADS_DIR, path.basename(stage.fileName));
-      try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
+      const filePath = path.resolve(path.join(UPLOADS_DIR, path.basename(stage.fileName)));
+      if (filePath.startsWith(path.resolve(UPLOADS_DIR) + path.sep)) {
+        try { if (fs.existsSync(filePath)) fs.unlinkSync(filePath); } catch {}
+      }
       stage.fileName = '';
     }
     writeProjects(projects);
@@ -5791,9 +5800,6 @@ app.post('/api/admin/seed-recurring-tasks', async (req, res) => {
   }
 });
 
-// ── Procurement Route ─────────────────────────────────────────────────────────
-app.get('/procurement', (req, res) => res.sendFile(path.join(__dirname, 'public', 'procurement.html')));
-
 // ── Procurement Helpers ───────────────────────────────────────────────────────
 function readSuppliers()    { try { if (!fs.existsSync(SUPPLIERS_FILE)) return []; return safeReadJSON(SUPPLIERS_FILE); } catch { return []; } }
 function writeSuppliers(d)  { safeWriteJSON(SUPPLIERS_FILE, d); }
@@ -6301,7 +6307,19 @@ app.delete('/api/sales/opportunities/:id', (req, res) => {
     if (idx === -1) return res.status(404).json({ error: 'Not found' });
     const removed = opps.splice(idx, 1)[0];
     writeOpps(opps);
-    logActivity('sales.opportunity.deleted', { id: removed.id, client: removed.clientName, reason: sanitizeStr(req.query?.reason, 500) });
+
+    // Clean up the opportunity's upload folder if it exists
+    let filesUnlinked = 0;
+    try {
+      const safeId = path.basename(removed.id);
+      const oppDir = path.join(SALES_UPLOADS_DIR, safeId);
+      if (path.resolve(oppDir).startsWith(path.resolve(SALES_UPLOADS_DIR) + path.sep) && fs.existsSync(oppDir)) {
+        filesUnlinked = fs.readdirSync(oppDir).length;
+        fs.rmSync(oppDir, { recursive: true, force: true });
+      }
+    } catch (cleanupErr) { logError('sales.opportunity.delete.cleanup', cleanupErr); }
+
+    logActivity('sales.opportunity.deleted', { id: removed.id, client: removed.clientName, reason: sanitizeStr(req.query?.reason, 500), filesUnlinked });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.sales.opportunity', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -6660,9 +6678,11 @@ app.post('/api/sales/opportunities/:id/upload', uploadImageOrPdf.single('file'),
     const oppDir = path.join(SALES_UPLOADS_DIR, opp.id);
     if (!fs.existsSync(oppDir)) fs.mkdirSync(oppDir, { recursive: true });
 
-    const safeName = req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const safeBase = req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+    // Prefix timestamp+random so re-uploads of the same filename don't clobber
+    const safeName = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}-${safeBase}`;
     const destPath = path.join(oppDir, safeName);
-    if (!path.resolve(destPath).startsWith(path.resolve(SALES_UPLOADS_DIR))) {
+    if (!path.resolve(destPath).startsWith(path.resolve(SALES_UPLOADS_DIR) + path.sep)) {
       return res.status(400).json({ error: 'Invalid filename' });
     }
     fs.renameSync(req.file.path, destPath);
@@ -7032,7 +7052,26 @@ app.delete('/api/purchase-requisitions/:id', async (req, res) => {
     if (idx === -1) return res.status(404).json({ error: 'PR not found' });
     const removed = prs.splice(idx, 1)[0];
     writePRs(prs);
-    logActivity('pr.deleted', { id: removed.id, prNumber: removed.prNumber });
+
+    // Unlink any uploaded PDFs attached to this PR
+    const candidates = [];
+    if (removed.poDocPath) candidates.push(removed.poDocPath);
+    if (removed.quotationFileUrl) candidates.push(removed.quotationFileUrl);
+    if (Array.isArray(removed.documents)) {
+      for (const d of removed.documents) {
+        if (d && typeof d.filename === 'string') candidates.push('/uploads/' + d.filename);
+      }
+    }
+    let filesUnlinked = 0;
+    for (const publicPath of candidates) {
+      if (typeof publicPath !== 'string' || !publicPath.startsWith('/uploads/')) continue;
+      const abs = path.resolve(path.join(__dirname, 'public', publicPath));
+      if (!abs.startsWith(path.resolve(UPLOADS_DIR) + path.sep)) continue;
+      if (fs.existsSync(abs)) {
+        try { fs.unlinkSync(abs); filesUnlinked++; } catch (_) { /* tolerate */ }
+      }
+    }
+    logActivity('pr.deleted', { id: removed.id, prNumber: removed.prNumber, filesUnlinked });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.purchase-requisitions', e); res.status(500).json({ error: 'Internal server error' }); }
 });
