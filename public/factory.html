@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777130000">
+  <link rel="stylesheet" href="/css/style.css?v=1777131500">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -226,13 +226,26 @@
     .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
     .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
 
-    /* ── Job-start separator: 10px breath before every new job in the queue.
-       Applies to multi-product group headers AND flat single-product rows
-       (tagged with .fx-job-start in the renderer). The first one in the
-       section gets no top margin so the queue doesn't start with a gap. */
+    /* ── Job-start treatment: hard 1px top rule + 3px colored left bar on every
+       new job in the queue (multi-product group headers AND single-product
+       flat rows). A border reads as a boundary much faster than a gap; the
+       3px left bar gives flat single-product rows the same "I am a job head"
+       affordance the group header already has. Sub-rows (no bar, indented
+       with tree connector) read as clearly subordinate. */
     .fx-group-hdr,
-    #section-pq.fx-rows > .fx-row.fx-job-start { margin-top: 10px; }
-    #section-pq.fx-rows > :first-child { margin-top: 0; }
+    #section-pq.fx-rows > .fx-row.fx-job-start {
+      border-top: 1px solid var(--border);
+    }
+    #section-pq.fx-rows > .fx-row.fx-job-start {
+      border-left: 3px solid var(--accent);
+      padding-left: 13px;
+    }
+    #section-pq.fx-rows > .fx-row.fx-job-start.red    { border-left-color: #dc2626; }
+    #section-pq.fx-rows > .fx-row.fx-job-start.amber  { border-left-color: #d97706; }
+    #section-pq.fx-rows > .fx-row.fx-job-start.green  { border-left-color: #16a34a; }
+    #section-pq.fx-rows > .fx-row.fx-job-start.grey   { border-left-color: #9ca3af; }
+    /* First job in the section sits flush against the section header — no extra rule */
+    #section-pq.fx-rows > :first-child { border-top: none; }
 
     /* ── Group header (multi-product jobs) ── */
     .fx-group-hdr {
@@ -2421,10 +2434,12 @@ function _buildQueueRowHtml(x, fp, opts) {
     ? `<button class="fx-btn-ghost" style="margin-right:6px;" onclick="toggleQueueRowHistory('${escHtml(fp.id)}',${it.idx})" title="Show ${logCount} past log entr${logCount === 1 ? 'y' : 'ies'}">History (${logCount})</button>`
     : '';
 
-  // Tag non-sub rows with fx-job-start so CSS can add a breathing gap before
-  // each new job in the queue. Without this, a single-product flat row sits
-  // flush against the previous job's last sub-row and reads as the same job.
-  const rowClass = 'fx-row' + (opts.sub ? ' sub' : ' fx-job-start') + (opts.last ? ' last-sub' : '');
+  // Tag non-sub rows with fx-job-start + status color class so they get the
+  // 1px top rule + 3px colored left bar treatment that group headers have.
+  // Without this, a single-product flat row sits flush against the previous
+  // job's last sub-row and reads as a continuation of that job.
+  const jobStartCls = opts.sub ? ' sub' : (' fx-job-start ' + (opts.jobcodeColor || ''));
+  const rowClass = ('fx-row' + jobStartCls + (opts.last ? ' last-sub' : '')).trim();
   const barHtml = `<div class="fx-row-progress">` +
     `<div class="fx-bar ${barColor}"><span style="width:${pct}%"></span></div>` +
     `<span class="fx-pct">${pct}%</span>` +
