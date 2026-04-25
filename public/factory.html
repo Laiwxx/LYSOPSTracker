@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777122500">
+  <link rel="stylesheet" href="/css/style.css?v=1777124000">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -202,21 +202,35 @@
     .fx-chip.red   { background: rgba(220,38,38,0.10);  color: #b91c1c; }
     .fx-chip.grey  { background: rgba(107,114,148,0.10);color: var(--text-muted); }
 
-    /* ── Job code ── bold mono inline text; status comes from color, not chrome.
-       Status chrome is already carried by the 3px section/group-header bar + the row dot. */
+    /* ── Job code ── prefix is muted context; number is the dominant identifier.
+       Tabular figures so digits line up vertically across stacked rows.
+       Status carried by the 3px group-header bar + the row dot. */
     .fx-jobcode {
       display: inline;
       font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      color: var(--accent);
       white-space: nowrap;
+      font-feature-settings: "tnum" 1;
     }
-    .fx-jobcode.red    { color: #b91c1c; }
-    .fx-jobcode.amber  { color: #b45309; }
-    .fx-jobcode.green  { color: #15803d; }
-    .fx-jobcode.grey   { color: var(--text-muted); }
+    .fx-jobcode .fx-jc-prefix {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      margin-right: 4px;
+    }
+    .fx-jobcode .fx-jc-num {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 0.2px;
+    }
+    .fx-jobcode.red   .fx-jc-num { color: #b91c1c; }
+    .fx-jobcode.amber .fx-jc-num { color: #b45309; }
+    .fx-jobcode.green .fx-jc-num { color: #15803d; }
+    .fx-jobcode.grey  .fx-jc-num { color: var(--text-muted); }
+    /* Compact variant for small surfaces (DO thumbnails etc.) */
+    .fx-jobcode.small .fx-jc-prefix { font-size: 9px; margin-right: 3px; }
+    .fx-jobcode.small .fx-jc-num    { font-size: 11px; }
     /* Separator that visually links the job code with the client name */
     .fx-jobcode-sep {
       color: var(--text-muted);
@@ -2150,6 +2164,24 @@ function computeItemDeadline(item, proj, fp, srIndex) {
 
 const COLOR_RANK = { red: 0, amber: 1, green: 2, grey: 3 };
 
+// Render a job code as muted prefix + bold number for at-a-glance differentiation
+// when many job codes are stacked together. Falls back to whole-string bold if
+// no clean prefix/number split exists. NOT a generic identifier renderer — only
+// for fab/factory queue contexts where job codes follow the "<letters> <digits>"
+// or "<letters>-<digits>" pattern.
+function renderJobCodePill(rawCode, colorClass) {
+  const code = String(rawCode || '—');
+  const m = code.match(/^([A-Za-z]+)[\s\-_]*([\d].*)$/);
+  let inner;
+  if (m) {
+    inner = `<span class="fx-jc-prefix">${escHtml(m[1])}</span>` +
+            `<span class="fx-jc-num">${escHtml(m[2])}</span>`;
+  } else {
+    inner = `<span class="fx-jc-num">${escHtml(code)}</span>`;
+  }
+  return `<span class="fx-jobcode ${colorClass || ''}">${inner}</span>`;
+}
+
 // Collapsed-job-card state — persists across page loads so Chris's "I've
 // finished thinking about this job, get it out of my way" choice survives
 // a refresh. Stores jobCodes (strings) in localStorage.
@@ -2442,7 +2474,7 @@ async function renderPriorityQueue(queue, srAll) {
       container.insertAdjacentHTML('beforeend',
         `<div class="${cardClass}" data-jobcode="${escHtml(jobCode)}">` +
           `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}" onclick="toggleJobCardCollapse(this, event)">` +
-            `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
+            renderJobCodePill(jobCode, groupColor) +
             (clientName ? `<span class="fx-jobcode-sep">·</span><span class="fx-group-client">${escHtml(clientName)}</span>` : '') +
             `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
             `<button class="fx-collapse-btn" title="Collapse / expand items" aria-label="Toggle items">${chevronSvg}</button>` +
@@ -2492,7 +2524,7 @@ function _buildQueueRowHtml(x, fp, opts) {
   // Jobcode pill — only on top-level/single rows. Sub-rows under a group header
   // don't repeat the pill; the header above them carries the job identity.
   const jobcodeHtml = opts.includeJobcode
-    ? `<span class="fx-jobcode ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`
+    ? renderJobCodePill(fp.jobCode || '—', opts.jobcodeColor || '')
     : '';
   const srBadge = opts.srCount
     ? `<span class="fx-chip red" style="margin-left:6px;"><span class="fx-dot red"></span>${opts.srCount} new</span>`
@@ -3407,7 +3439,7 @@ async function renderSiteRequests() {
       list.insertAdjacentHTML('beforeend',
         `<div class="fx-row" style="opacity:0.7;">` +
           `<span class="fx-dot grey"></span>` +
-          `<span class="fx-jobcode grey">${escHtml(jobCode)}</span>` +
+          renderJobCodePill(jobCode, 'grey') +
           `<div class="fx-row-main">` +
             `<div class="fx-row-title">${escHtml(req.item)} <span class="fx-chip green" style="margin-left:6px;">Delivered</span></div>` +
             `<div class="fx-row-meta">` +
@@ -3471,7 +3503,7 @@ function _buildSRCard(req) {
   tmp.innerHTML =
     `<div class="fx-row" id="sr-row-${escHtml(req.id)}">` +
       `<span class="fx-dot ${dotColor}"></span>` +
-      `<span class="fx-jobcode ${jobColor}">${escHtml(jobCode)}</span>` +
+      renderJobCodePill(jobCode, jobColor) +
       `<div class="fx-row-main">` +
         `<div class="fx-row-title">` +
           escHtml(req.item) +
@@ -3859,7 +3891,7 @@ async function loadDOList() {
       const badgeCls = d.prId ? 'green' : 'amber';
       const badgeText = d.prId ? 'MATCHED' : 'PENDING';
       const jobPill = d.projectCode
-        ? `<span class="fx-jobcode ${d.prId ? 'green' : ''}" style="min-width:auto;font-size:10px;padding:2px 6px;">${escHtml(d.projectCode)}</span>`
+        ? renderJobCodePill(d.projectCode, (d.prId ? 'green' : '') + ' small').trim()
         : '';
       const title = d.prNumber ? escHtml(d.prNumber) : escHtml(d.originalName || d.filename || 'DO');
       const subParts = [];
@@ -4069,7 +4101,7 @@ function renderPRList(prs) {
     container.insertAdjacentHTML('beforeend',
       `<div class="fx-row">` +
         `<span class="fx-dot ${dotColor}"></span>` +
-        `<span class="fx-jobcode ${jobColor}">${escHtml(project)}</span>` +
+        renderJobCodePill(project, jobColor) +
         `<div class="fx-row-main">` +
           `<div class="fx-row-title">` +
             escHtml(itemsSummary || 'Request') +
