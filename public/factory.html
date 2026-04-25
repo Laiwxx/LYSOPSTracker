@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777118400">
+  <link rel="stylesheet" href="/css/style.css?v=1777119800">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -251,6 +251,35 @@
     .fx-job-card.amber { border-color: rgba(217,119,6,0.30); }
     .fx-job-card.green { border-color: rgba(22,163,74,0.22); }
     .fx-job-card .fx-row:last-child { border-bottom: none; }
+    /* Collapse: hide sub-rows when card is collapsed; chevron rotates */
+    .fx-job-card.collapsed .fx-row.sub { display: none; }
+    .fx-job-card.collapsed .fx-group-hdr { border-bottom: none; }
+    .fx-collapse-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      margin-left: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      flex-shrink: 0;
+      transition: transform 0.15s, background 0.12s;
+    }
+    .fx-collapse-btn:hover { background: rgba(0,0,0,0.05); color: var(--text); }
+    .fx-job-card.collapsed .fx-collapse-btn { transform: rotate(-90deg); }
+    /* Section-level collapse-all toggle */
+    .fx-section-actions .fx-toggle-all {
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .fx-section-actions .fx-toggle-all:hover { background: rgba(0,0,0,0.05); color: var(--text); }
     /* Tighter rules so cards visually sit on the section bg */
     #section-pq.fx-rows { padding: 4px 0 8px; background: linear-gradient(to bottom, rgba(0,0,0,0.015), transparent 24px); }
 
@@ -1642,7 +1671,9 @@
       </div>
       <h2 class="fx-section-title">Priority Queue</h2>
       <span id="pq-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
-      <div class="fx-section-actions"></div>
+      <div class="fx-section-actions">
+        <span id="pq-collapse-all" class="fx-toggle-all" onclick="toggleAllJobCards()" style="display:none;">Collapse all</span>
+      </div>
     </header>
     <div id="section-pq" class="fx-rows">
       <div class="fx-empty">Loading…</div>
@@ -2143,6 +2174,63 @@ function computeItemDeadline(item, proj, fp, srIndex) {
 
 const COLOR_RANK = { red: 0, amber: 1, green: 2, grey: 3 };
 
+// Collapsed-job-card state — persists across page loads so Chris's "I've
+// finished thinking about this job, get it out of my way" choice survives
+// a refresh. Stores jobCodes (strings) in localStorage.
+const _COLLAPSE_KEY = 'factory.collapsedJobs.v1';
+let _collapsedJobs;
+try {
+  _collapsedJobs = new Set(JSON.parse(localStorage.getItem(_COLLAPSE_KEY) || '[]'));
+} catch (_) { _collapsedJobs = new Set(); }
+function _persistCollapsedJobs() {
+  try { localStorage.setItem(_COLLAPSE_KEY, JSON.stringify([..._collapsedJobs])); } catch (_) {}
+}
+
+function toggleJobCardCollapse(headerEl, ev) {
+  // Don't fire when clicking interactive children (chips, buttons inside the header)
+  if (ev && ev.target.closest('button.fx-btn-primary, button.fx-btn-ghost, a')) return;
+  if (ev) ev.stopPropagation();
+  const card = headerEl.closest('.fx-job-card');
+  if (!card) return;
+  const jobCode = card.dataset.jobcode;
+  const willCollapse = !card.classList.contains('collapsed');
+  card.classList.toggle('collapsed', willCollapse);
+  if (jobCode) {
+    if (willCollapse) _collapsedJobs.add(jobCode);
+    else _collapsedJobs.delete(jobCode);
+    _persistCollapsedJobs();
+  }
+}
+
+function toggleAllJobCards(forceState) {
+  const cards = document.querySelectorAll('#section-pq .fx-job-card');
+  // If any card has multi rows AND is currently expanded → collapse all; else expand all.
+  // forceState overrides: true=collapse, false=expand
+  const cardsWithChildren = [...cards].filter(c => !c.classList.contains('single'));
+  const anyExpanded = cardsWithChildren.some(c => !c.classList.contains('collapsed'));
+  const collapse = (typeof forceState === 'boolean') ? forceState : anyExpanded;
+  cardsWithChildren.forEach(card => {
+    const jobCode = card.dataset.jobcode;
+    card.classList.toggle('collapsed', collapse);
+    if (jobCode) {
+      if (collapse) _collapsedJobs.add(jobCode);
+      else _collapsedJobs.delete(jobCode);
+    }
+  });
+  _persistCollapsedJobs();
+  _refreshCollapseAllLabel();
+}
+
+function _refreshCollapseAllLabel() {
+  const link = document.getElementById('pq-collapse-all');
+  if (!link) return;
+  const cardsWithChildren = document.querySelectorAll('#section-pq .fx-job-card:not(.single)');
+  if (cardsWithChildren.length === 0) { link.style.display = 'none'; return; }
+  link.style.display = '';
+  const anyExpanded = [...cardsWithChildren].some(c => !c.classList.contains('collapsed'));
+  link.textContent = anyExpanded ? 'Collapse all' : 'Expand all';
+}
+
 function formatDueLabel(d) {
   if (!d.date) return '—';
   if (d.daysLeft == null) return formatDate(d.date);
@@ -2371,12 +2459,17 @@ async function renderPriorityQueue(queue, srAll) {
         return _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false, jobcodeColor: classifyItem(x.item) });
       }).join('');
 
+      const isCollapsed = _collapsedJobs.has(jobCode);
+      const cardClass = 'fx-job-card ' + groupColor + (isCollapsed ? ' collapsed' : '');
+      const chevronSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+
       container.insertAdjacentHTML('beforeend',
-        `<div class="fx-job-card ${groupColor}">` +
-          `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}">` +
+        `<div class="${cardClass}" data-jobcode="${escHtml(jobCode)}">` +
+          `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}" onclick="toggleJobCardCollapse(this, event)">` +
             `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
             `<span class="fx-group-client">${escHtml(clientName)}</span>` +
             `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
+            `<button class="fx-collapse-btn" title="Collapse / expand items" aria-label="Toggle items">${chevronSvg}</button>` +
           `</div>` +
           subRows +
         `</div>`
@@ -2395,6 +2488,8 @@ async function renderPriorityQueue(queue, srAll) {
       renderFabItems(m.fp);
     }
   });
+
+  _refreshCollapseAllLabel();
 }
 
 // Build one fx-row for a queue item. Returns HTML string.
