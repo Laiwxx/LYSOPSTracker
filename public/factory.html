@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777125500">
+  <link rel="stylesheet" href="/css/style.css?v=1777127200">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -116,7 +116,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(26,29,46,0.04);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       overflow: hidden;
     }
     .fx-section-hdr {
@@ -202,134 +202,29 @@
     .fx-chip.red   { background: rgba(220,38,38,0.10);  color: #b91c1c; }
     .fx-chip.grey  { background: rgba(107,114,148,0.10);color: var(--text-muted); }
 
-    /* ── Job code ── prefix is muted context; number is the dominant identifier.
-       Tabular figures so digits line up vertically across stacked rows.
-       Status carried by the 3px group-header bar + the row dot. */
+    /* ── Job Code pill ── */
     .fx-jobcode {
-      display: inline;
-      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      white-space: nowrap;
-      font-feature-settings: "tnum" 1;
-    }
-    .fx-jobcode .fx-jc-prefix {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: 0.3px;
-      margin-right: 4px;
-    }
-    .fx-jobcode .fx-jc-num {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--accent);
-      letter-spacing: 0.2px;
-    }
-    .fx-jobcode.red   .fx-jc-num { color: #b91c1c; }
-    .fx-jobcode.amber .fx-jc-num { color: #b45309; }
-    .fx-jobcode.green .fx-jc-num { color: #15803d; }
-    .fx-jobcode.grey  .fx-jc-num { color: var(--text-muted); }
-    /* Compact variant for small surfaces (DO thumbnails etc.) */
-    .fx-jobcode.small .fx-jc-prefix { font-size: 9px; margin-right: 3px; }
-    .fx-jobcode.small .fx-jc-num    { font-size: 11px; }
-    /* Separator that visually links the job code with the client name */
-    .fx-jobcode-sep {
-      color: var(--text-muted);
-      font-weight: 400;
-    }
-
-    /* ── Job card — wrapper exists for collapse state; gap between jobs is the separator ── */
-    .fx-job-card {
-      margin: 0 0 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .fx-job-card:last-child { margin-bottom: 0; border-bottom: none; }
-    .fx-job-card .fx-row:last-child { border-bottom: none; }
-    /* Tighter top padding for the first card so the section header doesn't feel disconnected */
-    #section-pq.fx-rows > .fx-job-card:first-child,
-    #section-pq.fx-rows > .fx-stage-group:first-child { margin-top: 4px; }
-
-    /* ── Stage-grouped view (View: Stage) ── */
-    .fx-stage-group { margin-bottom: 14px; }
-    .fx-stage-group:last-child { margin-bottom: 0; }
-    .fx-stage-hdr {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-    .fx-stage-hdr .fx-stage-count {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      letter-spacing: 0;
-      text-transform: none;
-    }
-
-    /* ── View toggle (Urgency / Stage) — segmented in section header ── */
-    .fx-view-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 0;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      overflow: hidden;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .fx-view-toggle button {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 4px 10px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-    }
-    .fx-view-toggle button + button { border-left: 1px solid var(--border); }
-    .fx-view-toggle button.active {
-      background: var(--accent);
-      color: #fff;
-    }
-    .fx-view-toggle button:hover:not(.active) { color: var(--text); }
-    /* Collapse: hide sub-rows when card is collapsed; chevron rotates */
-    .fx-job-card.collapsed .fx-row.sub { display: none; }
-    .fx-job-card.collapsed .fx-group-hdr { border-bottom: none; }
-    .fx-collapse-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 4px;
-      margin-left: 4px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 4px;
-      flex-shrink: 0;
-      transition: transform 0.15s, background 0.12s;
-    }
-    .fx-collapse-btn:hover { background: rgba(0,0,0,0.05); color: var(--text); }
-    .fx-job-card.collapsed .fx-collapse-btn { transform: rotate(-90deg); }
-    /* Section-level collapse-all toggle */
-    .fx-section-actions .fx-toggle-all {
+      font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
       font-size: 11px;
-      color: var(--text-muted);
-      cursor: pointer;
-      user-select: none;
-      padding: 4px 8px;
-      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: var(--accent);
+      background: rgba(51,102,255,0.08);
+      border: 1px solid rgba(51,102,255,0.25);
+      padding: 3px 8px;
+      border-radius: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 62px;
+      text-align: center;
     }
-    .fx-section-actions .fx-toggle-all:hover { background: rgba(0,0,0,0.05); color: var(--text); }
-    /* Tighter rules so cards visually sit on the section bg */
-    #section-pq.fx-rows { padding: 4px 0 8px; background: linear-gradient(to bottom, rgba(0,0,0,0.015), transparent 24px); }
+    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); }
+    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.10); border-color: rgba(217,119,6,0.28); }
+    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
+    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
 
     /* ── Group header (multi-product jobs) ── */
     .fx-group-hdr {
@@ -337,17 +232,17 @@
       align-items: center;
       gap: 10px;
       padding: 9px 16px 9px 13px;
-      background: transparent;
+      background: linear-gradient(to right, rgba(51,102,255,0.04), transparent 60%);
       border-bottom: 1px solid var(--border);
       border-left: 3px solid var(--accent);
       cursor: pointer;
       user-select: none;
     }
-    .fx-group-hdr:hover { background: rgba(0,0,0,0.025); }
-    .fx-group-hdr.red   { border-left-color: #dc2626; }
-    .fx-group-hdr.amber { border-left-color: #d97706; }
-    .fx-group-hdr.green { border-left-color: #16a34a; }
-    .fx-group-hdr.grey  { border-left-color: #9ca3af; }
+    .fx-group-hdr:hover { background: linear-gradient(to right, rgba(51,102,255,0.07), transparent 60%); }
+    .fx-group-hdr.red   { border-left-color: #dc2626; background: linear-gradient(to right, rgba(220,38,38,0.05), transparent 60%); }
+    .fx-group-hdr.amber { border-left-color: #d97706; background: linear-gradient(to right, rgba(217,119,6,0.05), transparent 60%); }
+    .fx-group-hdr.green { border-left-color: #16a34a; background: linear-gradient(to right, rgba(22,163,74,0.04), transparent 60%); }
+    .fx-group-hdr.grey  { border-left-color: #9ca3af; background: linear-gradient(to right, rgba(107,114,148,0.04), transparent 60%); }
     .fx-group-client {
       font-size: 13px;
       font-weight: 700;
@@ -1694,7 +1589,7 @@
     </div>
   </div>
 
-  <!-- ── SECTION A: Site Requests (promoted to top so Chris sees site escalations first) ─ -->
+  <!-- ── SECTION A: Site Requests (promoted to top so site escalations hit Chris first) ─ -->
   <section class="fx-section" id="fx-section-sr">
     <header class="fx-section-hdr">
       <div class="fx-section-bar red"></div>
@@ -1719,13 +1614,7 @@
       </div>
       <h2 class="fx-section-title">Priority Queue</h2>
       <span id="pq-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
-      <div class="fx-section-actions">
-        <div class="fx-view-toggle" role="tablist" aria-label="Group queue by">
-          <button id="pq-view-urgency" class="active" onclick="setPqViewMode('urgency')" type="button">Urgency</button>
-          <button id="pq-view-stage" onclick="setPqViewMode('stage')" type="button">Stage</button>
-        </div>
-        <span id="pq-collapse-all" class="fx-toggle-all" onclick="toggleAllJobCards()" style="display:none;">Collapse all</span>
-      </div>
+      <div class="fx-section-actions"></div>
     </header>
     <div id="section-pq" class="fx-rows">
       <div class="fx-empty">Loading…</div>
@@ -2226,113 +2115,6 @@ function computeItemDeadline(item, proj, fp, srIndex) {
 
 const COLOR_RANK = { red: 0, amber: 1, green: 2, grey: 3 };
 
-// Render a job code as muted prefix + bold number for at-a-glance differentiation
-// when many job codes are stacked together. Falls back to whole-string bold if
-// no clean prefix/number split exists. NOT a generic identifier renderer — only
-// for fab/factory queue contexts where job codes follow the "<letters> <digits>"
-// or "<letters>-<digits>" pattern.
-function renderJobCodePill(rawCode, colorClass) {
-  const code = String(rawCode || '—');
-  const m = code.match(/^([A-Za-z]+)[\s\-_]*([\d].*)$/);
-  let inner;
-  if (m) {
-    inner = `<span class="fx-jc-prefix">${escHtml(m[1])}</span>` +
-            `<span class="fx-jc-num">${escHtml(m[2])}</span>`;
-  } else {
-    inner = `<span class="fx-jc-num">${escHtml(code)}</span>`;
-  }
-  return `<span class="fx-jobcode ${colorClass || ''}">${inner}</span>`;
-}
-
-// Collapsed-job-card state — persists across page loads so Chris's "I've
-// finished thinking about this job, get it out of my way" choice survives
-// a refresh. Stores jobCodes (strings) in localStorage.
-const _COLLAPSE_KEY = 'factory.collapsedJobs.v1';
-let _collapsedJobs;
-try {
-  _collapsedJobs = new Set(JSON.parse(localStorage.getItem(_COLLAPSE_KEY) || '[]'));
-} catch (_) { _collapsedJobs = new Set(); }
-function _persistCollapsedJobs() {
-  try { localStorage.setItem(_COLLAPSE_KEY, JSON.stringify([..._collapsedJobs])); } catch (_) {}
-}
-
-function toggleJobCardCollapse(headerEl, ev) {
-  // Don't fire when clicking interactive children (chips, buttons inside the header)
-  if (ev && ev.target.closest('button.fx-btn-primary, button.fx-btn-ghost, a')) return;
-  if (ev) ev.stopPropagation();
-  const card = headerEl.closest('.fx-job-card');
-  if (!card) return;
-  const jobCode = card.dataset.jobcode;
-  const willCollapse = !card.classList.contains('collapsed');
-  card.classList.toggle('collapsed', willCollapse);
-  if (jobCode) {
-    if (willCollapse) _collapsedJobs.add(jobCode);
-    else _collapsedJobs.delete(jobCode);
-    _persistCollapsedJobs();
-  }
-}
-
-function toggleAllJobCards(forceState) {
-  const cards = document.querySelectorAll('#section-pq .fx-job-card');
-  // If any card has multi rows AND is currently expanded → collapse all; else expand all.
-  // forceState overrides: true=collapse, false=expand
-  const cardsWithChildren = [...cards].filter(c => !c.classList.contains('single'));
-  const anyExpanded = cardsWithChildren.some(c => !c.classList.contains('collapsed'));
-  const collapse = (typeof forceState === 'boolean') ? forceState : anyExpanded;
-  cardsWithChildren.forEach(card => {
-    const jobCode = card.dataset.jobcode;
-    card.classList.toggle('collapsed', collapse);
-    if (jobCode) {
-      if (collapse) _collapsedJobs.add(jobCode);
-      else _collapsedJobs.delete(jobCode);
-    }
-  });
-  _persistCollapsedJobs();
-  _refreshCollapseAllLabel();
-}
-
-function _refreshCollapseAllLabel() {
-  const link = document.getElementById('pq-collapse-all');
-  if (!link) return;
-  // Collapse-all only meaningful in Urgency mode (stage mode has no job cards to collapse)
-  if (_pqViewMode !== 'urgency') { link.style.display = 'none'; return; }
-  const cardsWithChildren = document.querySelectorAll('#section-pq .fx-job-card:not(.single)');
-  if (cardsWithChildren.length === 0) { link.style.display = 'none'; return; }
-  link.style.display = '';
-  const anyExpanded = [...cardsWithChildren].some(c => !c.classList.contains('collapsed'));
-  link.textContent = anyExpanded ? 'Collapse all' : 'Expand all';
-}
-
-// Priority Queue view mode: 'urgency' (default) groups by job card,
-// 'stage' regroups all items under stage headers (Not Started / In Progress / QC / Ready).
-const _PQ_VIEW_KEY = 'factory.pqViewMode.v1';
-let _pqViewMode;
-try { _pqViewMode = localStorage.getItem(_PQ_VIEW_KEY) === 'stage' ? 'stage' : 'urgency'; }
-catch (_) { _pqViewMode = 'urgency'; }
-
-function setPqViewMode(mode) {
-  if (mode !== 'urgency' && mode !== 'stage') return;
-  if (_pqViewMode === mode) return;
-  _pqViewMode = mode;
-  try { localStorage.setItem(_PQ_VIEW_KEY, mode); } catch (_) {}
-  _syncPqViewToggleUI();
-  // Re-render from cached queue data so the switch is instant
-  if (Array.isArray(_queueCache)) {
-    renderPriorityQueue(_queueCache, siteRequests);
-  }
-}
-
-function _syncPqViewToggleUI() {
-  const u = document.getElementById('pq-view-urgency');
-  const s = document.getElementById('pq-view-stage');
-  if (u) u.classList.toggle('active', _pqViewMode === 'urgency');
-  if (s) s.classList.toggle('active', _pqViewMode === 'stage');
-}
-
-// Stage display order, combining FAB and PARENT stages. Delivered is excluded
-// (those items are already filtered out as 100% complete before reaching here).
-const _STAGE_DISPLAY_ORDER = ['Not Started', 'In Progress', 'Assembly', 'QC Check', 'Ready for Delivery'];
-
 function formatDueLabel(d) {
   if (!d.date) return '—';
   if (d.daysLeft == null) return formatDate(d.date);
@@ -2525,57 +2307,9 @@ async function renderPriorityQueue(queue, srAll) {
   }
 
   // ── Render queue rows ──────────────────────────────────────────────────
-  // View mode switches between two layouts of the SAME data:
-  //   urgency → grouped by job (multi-product cards + single-row cards)
-  //   stage   → grouped by fab stage (Not Started / In Progress / QC Check / etc.)
+  // Multi-product jobs get a fx-group-hdr + indented fx-row sub children.
+  // Single-product jobs render as a flat fx-row with the jobcode pill on the row.
   container.innerHTML = '';
-  _syncPqViewToggleUI();
-
-  if (_pqViewMode === 'stage') {
-    // Stage-grouped view: every visible item rendered as a flat row under a stage header.
-    const visible = flat.filter(x => !x.item.isPartRow);
-    const byStage = new Map();
-    for (const stage of _STAGE_DISPLAY_ORDER) byStage.set(stage, []);
-    visible.forEach(x => {
-      const stage = x.item.status || 'Not Started';
-      const bucket = byStage.has(stage) ? stage : 'Not Started';
-      byStage.get(bucket).push(x);
-    });
-    let rendered = 0;
-    for (const stage of _STAGE_DISPLAY_ORDER) {
-      const items = byStage.get(stage) || [];
-      if (!items.length) continue;
-      rendered++;
-      const stageRows = items.map(x => {
-        const fp = x.fp;
-        return _buildQueueRowHtml(x, fp, { includeJobcode: true, jobcodeColor: classifyItem(x.item) });
-      }).join('');
-      container.insertAdjacentHTML('beforeend',
-        `<div class="fx-stage-group">` +
-          `<div class="fx-stage-hdr">${escHtml(stage)} <span class="fx-stage-count">· ${items.length}</span></div>` +
-          stageRows +
-        `</div>`
-      );
-    }
-    if (!rendered) {
-      container.innerHTML = '<div class="fx-empty">Nothing in the queue.</div>';
-    }
-    // Legacy hidden containers still need to exist so log-modal handlers work
-    projMeta.forEach(m => {
-      if (!document.getElementById('pq-items-' + m.fp.id)) {
-        const legacy = document.createElement('div');
-        legacy.id = 'pq-items-' + m.fp.id;
-        legacy.style.display = 'none';
-        legacy.className = 'pq-items-legacy';
-        container.appendChild(legacy);
-        renderFabItems(m.fp);
-      }
-    });
-    _refreshCollapseAllLabel();
-    return;
-  }
-
-  // Urgency view (default): job-card grouping
   projMeta.forEach(m => {
     const projItems = flat.filter(x => x.proj.projectId === m.proj.projectId);
     // Hide child part rows from the list — they render inside parent expansions
@@ -2588,13 +2322,11 @@ async function renderPriorityQueue(queue, srAll) {
     const srCount = srNewByProject[m.proj.projectId] || 0;
 
     if (visibleItems.length === 1) {
-      // Single-product job → flat row inside a hairline-divided wrapper (no tint, no border, no shadow)
+      // Single-product job → flat row with jobcode pill
       const row = _buildQueueRowHtml(visibleItems[0], m.fp, { includeJobcode: true, jobcodeColor: groupColor, srCount });
-      container.insertAdjacentHTML('beforeend',
-        `<div class="fx-job-card single">${row}</div>`
-      );
+      container.insertAdjacentHTML('beforeend', row);
     } else {
-      // Multi-product job → hairline-divided wrapper holding group header + sub rows
+      // Multi-product job → group header + sub rows
       const groupMeta = [];
       const localRed   = visibleItems.filter(x => classifyItem(x.item) === 'red').length;
       const localAmber = visibleItems.filter(x => classifyItem(x.item) === 'amber').length;
@@ -2604,26 +2336,18 @@ async function renderPriorityQueue(queue, srAll) {
       if (localGreen) groupMeta.push(`<span class="fx-chip green">${localGreen} on track</span>`);
       if (srCount)    groupMeta.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${srCount} new request${srCount!==1?'s':''}</span>`);
 
-      const subRows = visibleItems.map((x, i) => {
-        const last = (i === visibleItems.length - 1);
-        return _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false });
-      }).join('');
-
-      const isCollapsed = _collapsedJobs.has(jobCode);
-      const cardClass = 'fx-job-card' + (isCollapsed ? ' collapsed' : '');
-      const chevronSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
-
       container.insertAdjacentHTML('beforeend',
-        `<div class="${cardClass}" data-jobcode="${escHtml(jobCode)}">` +
-          `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}" onclick="toggleJobCardCollapse(this, event)">` +
-            renderJobCodePill(jobCode, groupColor) +
-            (clientName ? `<span class="fx-jobcode-sep">·</span><span class="fx-group-client">${escHtml(clientName)}</span>` : '') +
-            `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
-            `<button class="fx-collapse-btn" title="Collapse / expand items" aria-label="Toggle items">${chevronSvg}</button>` +
-          `</div>` +
-          subRows +
+        `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}">` +
+          `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
+          `<span class="fx-group-client">${escHtml(clientName)}</span>` +
+          `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
         `</div>`
       );
+      visibleItems.forEach((x, i) => {
+        const last = (i === visibleItems.length - 1);
+        const row = _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false });
+        container.insertAdjacentHTML('beforeend', row);
+      });
     }
 
     // Also create hidden legacy card container so renderFabItems can still render into it.
@@ -2638,8 +2362,6 @@ async function renderPriorityQueue(queue, srAll) {
       renderFabItems(m.fp);
     }
   });
-
-  _refreshCollapseAllLabel();
 }
 
 // Build one fx-row for a queue item. Returns HTML string.
@@ -2663,10 +2385,9 @@ function _buildQueueRowHtml(x, fp, opts) {
   const qcName = project.siteEngineer || project.factoryManager || '';
   const qcBit = qcName ? `<span class="sep">·</span><span>QC: ${escHtml(qcName)}</span>` : '';
 
-  // Jobcode pill — only on top-level/single rows. Sub-rows under a group header
-  // don't repeat the pill; the header above them carries the job identity.
+  // Jobcode pill for single-product rows or top-level (not shown on sub rows)
   const jobcodeHtml = opts.includeJobcode
-    ? renderJobCodePill(fp.jobCode || '—', opts.jobcodeColor || '')
+    ? `<span class="fx-jobcode ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`
     : '';
   const srBadge = opts.srCount
     ? `<span class="fx-chip red" style="margin-left:6px;"><span class="fx-dot red"></span>${opts.srCount} new</span>`
@@ -3581,7 +3302,7 @@ async function renderSiteRequests() {
       list.insertAdjacentHTML('beforeend',
         `<div class="fx-row" style="opacity:0.7;">` +
           `<span class="fx-dot grey"></span>` +
-          renderJobCodePill(jobCode, 'grey') +
+          `<span class="fx-jobcode grey">${escHtml(jobCode)}</span>` +
           `<div class="fx-row-main">` +
             `<div class="fx-row-title">${escHtml(req.item)} <span class="fx-chip green" style="margin-left:6px;">Delivered</span></div>` +
             `<div class="fx-row-meta">` +
@@ -3645,7 +3366,7 @@ function _buildSRCard(req) {
   tmp.innerHTML =
     `<div class="fx-row" id="sr-row-${escHtml(req.id)}">` +
       `<span class="fx-dot ${dotColor}"></span>` +
-      renderJobCodePill(jobCode, jobColor) +
+      `<span class="fx-jobcode ${jobColor}">${escHtml(jobCode)}</span>` +
       `<div class="fx-row-main">` +
         `<div class="fx-row-title">` +
           escHtml(req.item) +
@@ -4033,7 +3754,7 @@ async function loadDOList() {
       const badgeCls = d.prId ? 'green' : 'amber';
       const badgeText = d.prId ? 'MATCHED' : 'PENDING';
       const jobPill = d.projectCode
-        ? renderJobCodePill(d.projectCode, (d.prId ? 'green' : '') + ' small').trim()
+        ? `<span class="fx-jobcode ${d.prId ? 'green' : ''}" style="min-width:auto;font-size:10px;padding:2px 6px;">${escHtml(d.projectCode)}</span>`
         : '';
       const title = d.prNumber ? escHtml(d.prNumber) : escHtml(d.originalName || d.filename || 'DO');
       const subParts = [];
@@ -4243,7 +3964,7 @@ function renderPRList(prs) {
     container.insertAdjacentHTML('beforeend',
       `<div class="fx-row">` +
         `<span class="fx-dot ${dotColor}"></span>` +
-        renderJobCodePill(project, jobColor) +
+        `<span class="fx-jobcode ${jobColor}">${escHtml(project)}</span>` +
         `<div class="fx-row-main">` +
           `<div class="fx-row-title">` +
             escHtml(itemsSummary || 'Request') +
