@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777128500">
+  <link rel="stylesheet" href="/css/style.css?v=1777130000">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -225,6 +225,14 @@
     .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.10); border-color: rgba(217,119,6,0.28); }
     .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
     .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
+
+    /* ── Job-start separator: 10px breath before every new job in the queue.
+       Applies to multi-product group headers AND flat single-product rows
+       (tagged with .fx-job-start in the renderer). The first one in the
+       section gets no top margin so the queue doesn't start with a gap. */
+    .fx-group-hdr,
+    #section-pq.fx-rows > .fx-row.fx-job-start { margin-top: 10px; }
+    #section-pq.fx-rows > :first-child { margin-top: 0; }
 
     /* ── Group header (multi-product jobs) ── */
     .fx-group-hdr {
@@ -2413,7 +2421,10 @@ function _buildQueueRowHtml(x, fp, opts) {
     ? `<button class="fx-btn-ghost" style="margin-right:6px;" onclick="toggleQueueRowHistory('${escHtml(fp.id)}',${it.idx})" title="Show ${logCount} past log entr${logCount === 1 ? 'y' : 'ies'}">History (${logCount})</button>`
     : '';
 
-  const rowClass = 'fx-row' + (opts.sub ? ' sub' : '') + (opts.last ? ' last-sub' : '');
+  // Tag non-sub rows with fx-job-start so CSS can add a breathing gap before
+  // each new job in the queue. Without this, a single-product flat row sits
+  // flush against the previous job's last sub-row and reads as the same job.
+  const rowClass = 'fx-row' + (opts.sub ? ' sub' : ' fx-job-start') + (opts.last ? ' last-sub' : '');
   const barHtml = `<div class="fx-row-progress">` +
     `<div class="fx-bar ${barColor}"><span style="width:${pct}%"></span></div>` +
     `<span class="fx-pct">${pct}%</span>` +
