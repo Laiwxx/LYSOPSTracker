@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777121200">
+  <link rel="stylesheet" href="/css/style.css?v=1777122500">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -202,29 +202,26 @@
     .fx-chip.red   { background: rgba(220,38,38,0.10);  color: #b91c1c; }
     .fx-chip.grey  { background: rgba(107,114,148,0.10);color: var(--text-muted); }
 
-    /* ── Job Code pill ── small, contained — status carried by the section/header bar */
+    /* ── Job code ── bold mono inline text; status comes from color, not chrome.
+       Status chrome is already carried by the 3px section/group-header bar + the row dot. */
     .fx-jobcode {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      display: inline;
       font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 700;
       letter-spacing: 0.3px;
       color: var(--accent);
-      background: rgba(51,102,255,0.08);
-      border: 1px solid rgba(51,102,255,0.25);
-      padding: 3px 8px;
-      border-radius: 5px;
       white-space: nowrap;
-      flex-shrink: 0;
-      min-width: 62px;
-      text-align: center;
     }
-    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); }
-    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.10); border-color: rgba(217,119,6,0.28); }
-    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
-    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
+    .fx-jobcode.red    { color: #b91c1c; }
+    .fx-jobcode.amber  { color: #b45309; }
+    .fx-jobcode.green  { color: #15803d; }
+    .fx-jobcode.grey   { color: var(--text-muted); }
+    /* Separator that visually links the job code with the client name */
+    .fx-jobcode-sep {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
 
     /* ── Job card — wrapper exists for collapse state; visually a hairline divider, NOT a card ── */
     .fx-job-card { border-bottom: 1px solid var(--border); }
@@ -2446,7 +2443,7 @@ async function renderPriorityQueue(queue, srAll) {
         `<div class="${cardClass}" data-jobcode="${escHtml(jobCode)}">` +
           `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}" onclick="toggleJobCardCollapse(this, event)">` +
             `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
-            `<span class="fx-group-client">${escHtml(clientName)}</span>` +
+            (clientName ? `<span class="fx-jobcode-sep">·</span><span class="fx-group-client">${escHtml(clientName)}</span>` : '') +
             `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
             `<button class="fx-collapse-btn" title="Collapse / expand items" aria-label="Toggle items">${chevronSvg}</button>` +
           `</div>` +
