@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777117500">
+  <link rel="stylesheet" href="/css/style.css?v=1777118400">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -116,9 +116,10 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(26,29,46,0.04);
-      margin-bottom: 14px;
+      margin-bottom: 28px;
       overflow: hidden;
     }
+    .fx-section + .fx-section { margin-top: 0; }
     .fx-section-hdr {
       display: flex;
       align-items: center;
@@ -236,6 +237,22 @@
         opacity: 0.85;
       }
     }
+
+    /* ── Job card (one per job in Priority Queue — wraps single row OR group + sub-rows) ── */
+    .fx-job-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 1px 2px rgba(26,29,46,0.05);
+      margin: 8px 10px;
+      overflow: hidden;
+    }
+    .fx-job-card.red   { border-color: rgba(220,38,38,0.30); box-shadow: 0 1px 3px rgba(220,38,38,0.08); }
+    .fx-job-card.amber { border-color: rgba(217,119,6,0.30); }
+    .fx-job-card.green { border-color: rgba(22,163,74,0.22); }
+    .fx-job-card .fx-row:last-child { border-bottom: none; }
+    /* Tighter rules so cards visually sit on the section bg */
+    #section-pq.fx-rows { padding: 4px 0 8px; background: linear-gradient(to bottom, rgba(0,0,0,0.015), transparent 24px); }
 
     /* ── Group header (multi-product jobs) ── */
     .fx-group-hdr {
@@ -1600,23 +1617,7 @@
     </div>
   </div>
 
-  <!-- ── SECTION A: Priority Queue ──────────────────── -->
-  <section class="fx-section" id="fx-section-queue">
-    <header class="fx-section-hdr">
-      <div class="fx-section-bar"></div>
-      <div class="fx-section-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6-4v4l6-4v16"/><path d="M3 21h18"/><path d="M7 17h2"/><path d="M13 17h2"/></svg>
-      </div>
-      <h2 class="fx-section-title">Priority Queue</h2>
-      <span id="pq-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
-      <div class="fx-section-actions"></div>
-    </header>
-    <div id="section-pq" class="fx-rows">
-      <div class="fx-empty">Loading…</div>
-    </div>
-  </section>
-
-  <!-- ── SECTION B: Site Requests ─────────────────── -->
+  <!-- ── SECTION A: Site Requests (promoted to top so Chris sees site escalations first) ─ -->
   <section class="fx-section" id="fx-section-sr">
     <header class="fx-section-hdr">
       <div class="fx-section-bar red"></div>
@@ -1628,6 +1629,22 @@
       <div class="fx-section-actions"></div>
     </header>
     <div id="section-sr" class="fx-rows">
+      <div class="fx-empty">Loading…</div>
+    </div>
+  </section>
+
+  <!-- ── SECTION B: Priority Queue ──────────────────── -->
+  <section class="fx-section" id="fx-section-queue">
+    <header class="fx-section-hdr">
+      <div class="fx-section-bar"></div>
+      <div class="fx-section-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l6-4v4l6-4v16"/><path d="M3 21h18"/><path d="M7 17h2"/><path d="M13 17h2"/></svg>
+      </div>
+      <h2 class="fx-section-title">Priority Queue</h2>
+      <span id="pq-chips" style="display:inline-flex;gap:6px;flex-wrap:wrap;"></span>
+      <div class="fx-section-actions"></div>
+    </header>
+    <div id="section-pq" class="fx-rows">
       <div class="fx-empty">Loading…</div>
     </div>
   </section>
@@ -2333,11 +2350,13 @@ async function renderPriorityQueue(queue, srAll) {
     const srCount = srNewByProject[m.proj.projectId] || 0;
 
     if (visibleItems.length === 1) {
-      // Single-product job → flat row with jobcode pill
+      // Single-product job → flat row inside a single-mode card
       const row = _buildQueueRowHtml(visibleItems[0], m.fp, { includeJobcode: true, jobcodeColor: groupColor, srCount });
-      container.insertAdjacentHTML('beforeend', row);
+      container.insertAdjacentHTML('beforeend',
+        `<div class="fx-job-card single ${groupColor}">${row}</div>`
+      );
     } else {
-      // Multi-product job → group header + sub rows
+      // Multi-product job → card with group header + sub rows
       const groupMeta = [];
       const localRed   = visibleItems.filter(x => classifyItem(x.item) === 'red').length;
       const localAmber = visibleItems.filter(x => classifyItem(x.item) === 'amber').length;
@@ -2347,18 +2366,21 @@ async function renderPriorityQueue(queue, srAll) {
       if (localGreen) groupMeta.push(`<span class="fx-chip green">${localGreen} on track</span>`);
       if (srCount)    groupMeta.push(`<span class="fx-chip red"><span class="fx-dot red"></span>${srCount} new request${srCount!==1?'s':''}</span>`);
 
+      const subRows = visibleItems.map((x, i) => {
+        const last = (i === visibleItems.length - 1);
+        return _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false, jobcodeColor: classifyItem(x.item) });
+      }).join('');
+
       container.insertAdjacentHTML('beforeend',
-        `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}">` +
-          `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
-          `<span class="fx-group-client">${escHtml(clientName)}</span>` +
-          `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
+        `<div class="fx-job-card ${groupColor}">` +
+          `<div class="fx-group-hdr ${groupColor}" data-pid="${escHtml(m.fp.id)}">` +
+            `<span class="fx-jobcode ${groupColor}">${escHtml(jobCode)}</span>` +
+            `<span class="fx-group-client">${escHtml(clientName)}</span>` +
+            `<div class="fx-group-meta">${groupMeta.join('')}</div>` +
+          `</div>` +
+          subRows +
         `</div>`
       );
-      visibleItems.forEach((x, i) => {
-        const last = (i === visibleItems.length - 1);
-        const row = _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false, jobcodeColor: classifyItem(x.item) });
-        container.insertAdjacentHTML('beforeend', row);
-      });
     }
 
     // Also create hidden legacy card container so renderFabItems can still render into it.
