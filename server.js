@@ -4273,9 +4273,17 @@ cron.schedule('0 9 * * 1-5', async () => {
   const overdue = tasks.filter(t =>
     t.status !== 'Done' && t.dueDate && t.dueDate < today && !t.overdueEmailSent
   );
+  // Per-task try/catch + write after each successful flag flip. Without this,
+  // a single Graph 429 throw in the middle of the loop would skip the final
+  // writeTasks() and re-email everyone tomorrow.
+  let sentCount = 0;
   for (const task of overdue) {
     const assigneeEmail = getStaffEmail(task.assignedTo);
-    if (assigneeEmail) {
+    if (!assigneeEmail) {
+      console.warn('[EMAIL SKIP] No email for:', task.assignedTo);
+      continue;
+    }
+    try {
       await sendEmail(assigneeEmail, task.assignedTo,
         `[Overdue] ${task.title} — ${task.projectJobCode || 'General Task'}`,
         emailWrap(`Hi ${escHtml(task.assignedTo)},`,
@@ -4288,13 +4296,15 @@ cron.schedule('0 9 * * 1-5', async () => {
           'View My Tasks', `${APP_URL}/my-tasks`)
       );
       task.overdueEmailSent = true;
+      writeTasks(tasks);  // Persist after every successful send so a later throw doesn't lose progress
+      sentCount++;
       await new Promise(r => setTimeout(r, 2000));
-    } else {
-      console.warn('[EMAIL SKIP] No email for:', task.assignedTo);
+    } catch (sendErr) {
+      logError('cron.overdue-task.send', sendErr, { taskId: task.id, assignee: task.assignedTo });
+      // Don't break — keep trying remaining tasks
     }
   }
-  writeTasks(tasks);
-  console.log(`[CRON] Overdue task emails sent: ${overdue.length}`);
+  console.log(`[CRON] Overdue task emails sent: ${sentCount}/${overdue.length}`);
 
   // ── Check 2: SOP claims deadline alerts ───────────────────────────────────
   // Spec: fire 1 week and 3 days before certificationDue, plus on the day

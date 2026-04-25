@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Team Tasks — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777113692">
+  <link rel="stylesheet" href="/css/style.css?v=1777136500">
   <style>
     /* ── Type-grouped sections (Mandatory / Requests / Personal) ── */
     .mc-type-group {
@@ -620,36 +620,57 @@ function applyHashView() {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
+// Wrapper that throws on non-OK responses so a session-timeout HTML body
+// doesn't get fed into JSON.parse and silently leave the page blank.
+async function _safeFetchJson(url) {
+  const res = await fetch(url);
+  if (res.status === 401) { window.location.href = '/login'; throw new Error('Auth required'); }
+  if (!res.ok) throw new Error(url + ' → ' + res.status);
+  return res.json();
+}
+
 async function init() {
-  const [staffRaw, tasks, projects] = await Promise.all([
-    fetch('/api/staff').then(r => r.json()),
-    fetch('/api/tasks').then(r => r.json()),
-    fetch('/api/projects').then(r => r.json())
-  ]);
+  try {
+    const [staffRaw, tasks, projects] = await Promise.all([
+      _safeFetchJson('/api/staff'),
+      _safeFetchJson('/api/tasks'),
+      _safeFetchJson('/api/projects')
+    ]);
 
-  const seen = new Set();
-  const staffArr = Array.isArray(staffRaw) ? staffRaw : Object.values(staffRaw);
-  staffList = staffArr
-    .filter(s => s && s.name && !seen.has(s.name) && seen.add(s.name))
-    .map(s => s.name)
-    .sort();
+    const seen = new Set();
+    const staffArr = Array.isArray(staffRaw) ? staffRaw : Object.values(staffRaw);
+    staffList = staffArr
+      .filter(s => s && s.name && !seen.has(s.name) && seen.add(s.name))
+      .map(s => s.name)
+      .sort();
 
-  allTasks    = tasks;
-  projectsList = projects;
+    allTasks    = tasks;
+    projectsList = projects;
 
-  buildSidebarProjects(projects);
+    buildSidebarProjects(projects);
 
-  // Bind FIRST so hash navigation works regardless of what follows
-  window.addEventListener('popstate',   applyHashView);
-  window.addEventListener('hashchange', applyHashView);
+    // Bind FIRST so hash navigation works regardless of what follows
+    window.addEventListener('popstate',   applyHashView);
+    window.addEventListener('hashchange', applyHashView);
 
-  applyHashView();
-  setupModalHandlers();
+    applyHashView();
+    setupModalHandlers();
+  } catch (e) {
+    console.error('[my-tasks] init failed:', e);
+    const root = document.getElementById('view-root');
+    if (root) root.innerHTML = '<div style="padding:24px;color:var(--red);">Could not load tasks. <a href="javascript:location.reload()">Reload</a> or sign in again.</div>';
+    if (typeof toast === 'function') toast('Could not load tasks — please reload', 'error');
+  }
 }
 
 async function reloadAndRender() {
-  allTasks = await fetch('/api/tasks').then(r => r.json());
-  applyHashView();
+  try {
+    allTasks = await _safeFetchJson('/api/tasks');
+    applyHashView();
+  } catch (e) {
+    console.error('[my-tasks] reload failed:', e);
+    if (typeof toast === 'function') toast('Could not refresh tasks', 'error');
+  }
 }
 
 // ── MODE 1: Team Overview Grid ────────────────────────────────────────────

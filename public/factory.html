@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777135000">
+  <link rel="stylesheet" href="/css/style.css?v=1777136500">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -3717,7 +3717,10 @@ async function submitDOUpload() {
     const res = await fetch('/api/delivery-orders', { method: 'POST', body: formData });
     if (!res.ok) throw new Error('Upload failed');
 
-    // If a PR was selected with arrival qty, update the PR delivery
+    // If a PR was selected with arrival qty, update the PR delivery.
+    // Failure here means qtyArrived didn't save — surface it so the user
+    // doesn't see "delivery recorded" when nothing was recorded.
+    let prSaveFailed = false;
     if (prId) {
       const arrivalInputs = document.querySelectorAll('.do-arrival-qty');
       if (arrivalInputs.length) {
@@ -3728,11 +3731,14 @@ async function submitDOUpload() {
             const arrived = inp ? parseFloat(inp.value) || 0 : 0;
             return { qtyArrived: arrived };
           });
-          await fetch('/api/purchase-requisitions/' + prId, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items })
-          }).catch(() => {});
+          try {
+            const prRes = await fetch('/api/purchase-requisitions/' + prId, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ items })
+            });
+            if (!prRes.ok) prSaveFailed = true;
+          } catch (_) { prSaveFailed = true; }
         }
       }
     }
@@ -3740,7 +3746,11 @@ async function submitDOUpload() {
     _doFile = null;
     document.getElementById('do-upload-form').style.display = 'none';
     document.getElementById('do-arrival-section').style.display = 'none';
-    factoryToast('DO uploaded' + (prNumber ? ' — delivery recorded for ' + prNumber : ''));
+    if (prSaveFailed) {
+      factoryToast('DO uploaded — but arrival qty save failed. Re-open ' + (prNumber || 'the PR') + ' to verify.', false);
+    } else {
+      factoryToast('DO uploaded' + (prNumber ? ' — delivery recorded for ' + prNumber : ''));
+    }
     loadDOList();
     // Refresh PR list
     fetch('/api/purchase-requisitions').then(r => r.json()).then(prs => { _allPRs = prs; renderPRList(prs); }).catch(() => {});
