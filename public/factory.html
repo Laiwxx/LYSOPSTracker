@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777114998">
+  <link rel="stylesheet" href="/css/style.css?v=1777117500">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -202,29 +202,40 @@
     .fx-chip.red   { background: rgba(220,38,38,0.10);  color: #b91c1c; }
     .fx-chip.grey  { background: rgba(107,114,148,0.10);color: var(--text-muted); }
 
-    /* ── Job Code pill ── */
+    /* ── Job Code pill ── (Chris-visibility pass: bumped scale + weight) */
     .fx-jobcode {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
       color: var(--accent);
-      background: rgba(51,102,255,0.08);
-      border: 1px solid rgba(51,102,255,0.25);
-      padding: 3px 8px;
-      border-radius: 5px;
+      background: rgba(51,102,255,0.10);
+      border: 1px solid rgba(51,102,255,0.30);
+      padding: 4px 10px;
+      border-radius: 6px;
       white-space: nowrap;
       flex-shrink: 0;
-      min-width: 62px;
+      min-width: 78px;
       text-align: center;
     }
-    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); }
-    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.10); border-color: rgba(217,119,6,0.28); }
-    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); }
-    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.08); border-color: rgba(107,114,148,0.20); }
+    .fx-jobcode.red    { color: #b91c1c; background: rgba(220,38,38,0.10); border-color: rgba(220,38,38,0.30); }
+    .fx-jobcode.amber  { color: #b45309; background: rgba(217,119,6,0.12); border-color: rgba(217,119,6,0.32); }
+    .fx-jobcode.green  { color: #15803d; background: rgba(22,163,74,0.10); border-color: rgba(22,163,74,0.28); }
+    .fx-jobcode.grey   { color: var(--text-muted); background: rgba(107,114,148,0.10); border-color: rgba(107,114,148,0.24); }
+    /* Mobile-only repeat on sub-rows: hidden on desktop, shown ≤768px at 80% scale */
+    .fx-jobcode.fx-jobcode-mobile { display: none; }
+    @media (max-width: 768px) {
+      .fx-jobcode.fx-jobcode-mobile {
+        display: inline-flex;
+        font-size: 11px;
+        padding: 2px 7px;
+        min-width: 64px;
+        opacity: 0.85;
+      }
+    }
 
     /* ── Group header (multi-product jobs) ── */
     .fx-group-hdr {
@@ -2345,7 +2356,7 @@ async function renderPriorityQueue(queue, srAll) {
       );
       visibleItems.forEach((x, i) => {
         const last = (i === visibleItems.length - 1);
-        const row = _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false });
+        const row = _buildQueueRowHtml(x, m.fp, { sub: true, last, includeJobcode: false, jobcodeColor: classifyItem(x.item) });
         container.insertAdjacentHTML('beforeend', row);
       });
     }
@@ -2385,10 +2396,17 @@ function _buildQueueRowHtml(x, fp, opts) {
   const qcName = project.siteEngineer || project.factoryManager || '';
   const qcBit = qcName ? `<span class="sep">·</span><span>QC: ${escHtml(qcName)}</span>` : '';
 
-  // Jobcode pill for single-product rows or top-level (not shown on sub rows)
-  const jobcodeHtml = opts.includeJobcode
-    ? `<span class="fx-jobcode ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`
-    : '';
+  // Jobcode pill — full-size on top-level/single rows, mobile-only repeat on sub-rows.
+  // Desktop sub-rows stay clean (job code shown once on the group header); on phones
+  // Chris's scrolled-into-view sub-row still answers "which job is this?" at a glance.
+  let jobcodeHtml;
+  if (opts.includeJobcode) {
+    jobcodeHtml = `<span class="fx-jobcode ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`;
+  } else if (opts.sub) {
+    jobcodeHtml = `<span class="fx-jobcode fx-jobcode-mobile ${opts.jobcodeColor || ''}">${escHtml(fp.jobCode || '—')}</span>`;
+  } else {
+    jobcodeHtml = '';
+  }
   const srBadge = opts.srCount
     ? `<span class="fx-chip red" style="margin-left:6px;"><span class="fx-dot red"></span>${opts.srCount} new</span>`
     : '';
