@@ -756,8 +756,32 @@ function getStaffNames() {
 }
 
 // ── Activity / Error logging helpers ─────────────────────────────────────────
+// Size-based log rotation. Activity log grows unbounded — at 500 projects it
+// would be 10–50 MB/year. When the active file exceeds LOG_ROTATE_BYTES,
+// rename to .1 (and shift .1→.2, .2→.3) keeping LOG_ROTATE_KEEP archives.
+// Cheap and stateless; runs inline on each write but bails fast when the file
+// is below the threshold (the common case).
+const LOG_ROTATE_BYTES = 10 * 1024 * 1024;  // 10 MB
+const LOG_ROTATE_KEEP  = 5;                 // keep up to 5 rotated archives
+
+function _rotateLogIfNeeded(file) {
+  try {
+    if (!fs.existsSync(file)) return;
+    const stat = fs.statSync(file);
+    if (stat.size < LOG_ROTATE_BYTES) return;
+    // Drop the oldest, shift others up by one
+    for (let i = LOG_ROTATE_KEEP; i >= 1; i--) {
+      const src = i === 1 ? file : `${file}.${i - 1}`;
+      const dst = `${file}.${i}`;
+      if (i === LOG_ROTATE_KEEP && fs.existsSync(dst)) { try { fs.unlinkSync(dst); } catch {} }
+      if (fs.existsSync(src)) { try { fs.renameSync(src, dst); } catch {} }
+    }
+  } catch (_) { /* tolerate — logging must never crash the request */ }
+}
+
 function logActivity(event, details = {}) {
   try {
+    _rotateLogIfNeeded(ACTIVITY_LOG_FILE);
     const by = details.by || getAuthUser();
     const line = JSON.stringify({ ts: new Date().toISOString(), event, by, ...details }) + '\n';
     fs.appendFileSync(ACTIVITY_LOG_FILE, line);
@@ -765,6 +789,7 @@ function logActivity(event, details = {}) {
 }
 function logError(event, err, details = {}) {
   try {
+    _rotateLogIfNeeded(ERRORS_LOG_FILE);
     const line = JSON.stringify({ ts: new Date().toISOString(), event, error: err && err.message ? err.message : String(err), ...details }) + '\n';
     fs.appendFileSync(ERRORS_LOG_FILE, line);
   } catch {}
@@ -1604,6 +1629,28 @@ app.get('/api/projects', (req, res) => {
     }));
     res.json(summary);
   } catch (e) { logError('route.get.projects', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// --- API: Batch fetch full project records by id ---
+// Replaces an N+1 fetch storm on Factory page (one /projects/:id call per active
+// project on every page load). At 17 projects today that's already 17 file reads;
+// at 500 projects it would be 500. This endpoint reads projects.json once and
+// filters server-side. Declared BEFORE /api/projects/:id so Express doesn't
+// route "/api/projects/batch" into the :id handler.
+app.get('/api/projects/batch', (req, res) => {
+  try {
+    const idsParam = String(req.query.ids || '').trim();
+    if (!idsParam) return res.json({});
+    const ids = idsParam.split(',').map(s => s.trim()).filter(Boolean);
+    if (ids.length > 1000) return res.status(400).json({ error: 'Too many ids (max 1000)' });
+    const idSet = new Set(ids);
+    const projects = readProjects();
+    const result = {};
+    for (const p of projects) {
+      if (idSet.has(p.id)) result[p.id] = deriveFields(p);
+    }
+    res.json(result);
+  } catch (e) { logError('route.get.projects.batch', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
 // --- API: Get single project ---

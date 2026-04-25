@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Factory — LYS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777127200">
+  <link rel="stylesheet" href="/css/style.css?v=1777128500">
   <style>
     body { background: var(--bg); }
     .tasks-main { padding: 18px 20px 40px !important; }
@@ -2157,12 +2157,17 @@ async function renderPriorityQueue(queue, srAll) {
   });
 
   // Pre-load full project data (needed for fabLeadTimeDays, counters, etc.)
-  const fullProjects = await Promise.all(
-    active.map(p => fetch('/api/projects/' + p.projectId).then(r => r.json()).catch(() => null))
-  );
-  fullProjects.forEach(fp => {
-    if (fp) { fabData[fp.id] = fp; }
-  });
+  // Single batch request — one /projects.json read on the server instead of one
+  // per active project. Scales cleanly when the active list grows.
+  const idList = active.map(p => p.projectId).filter(Boolean).join(',');
+  if (idList) {
+    try {
+      const fullMap = await fetch('/api/projects/batch?ids=' + encodeURIComponent(idList))
+        .then(r => r.ok ? r.json() : {})
+        .catch(() => ({}));
+      Object.assign(fabData, fullMap);
+    } catch (_) { /* tolerate — page still renders from queue payload */ }
+  }
 
   // Seed fabrication rows from queue items if project has none, and stamp
   // server-derived shipment counts (qtyShipped / qtyOnFloor) onto fabrication
@@ -2588,10 +2593,10 @@ function renderLogHistoryHtml(projectId, fabIdx, allLogs) {
       const deltaStr = (delta > 0 ? '+' : '') + delta;
       const deltaClass = delta < 0 ? ' neg' : '';
       const thumb = entry.photoPath
-        ? `<img class="fab-today-log-thumb" src="${escHtml(entry.photoPath)}" alt="" onclick="openPhotoViewer('${escHtml(entry.photoPath)}')">`
+        ? `<img class="fab-today-log-thumb" src="${escHtml(entry.photoPath)}" alt="" loading="lazy" onclick="openPhotoViewer('${escHtml(entry.photoPath)}')">`
         : `<div class="fab-today-log-thumb" title="No photo (baseline migration)"></div>`;
       const extraThumbs = Array.isArray(entry.extraPhotos) && entry.extraPhotos.length
-        ? entry.extraPhotos.map(p => `<img class="fab-today-log-thumb" src="${escHtml(p)}" alt="" style="margin-left:2px;" onclick="openPhotoViewer('${escHtml(p)}')">`).join('')
+        ? entry.extraPhotos.map(p => `<img class="fab-today-log-thumb" src="${escHtml(p)}" alt="" loading="lazy" style="margin-left:2px;" onclick="openPhotoViewer('${escHtml(p)}')">`).join('')
         : '';
       const editedBadge = entry.editedAt
         ? ` <span class="fab-today-log-edited" title="Edited by ${escHtml(entry.editedBy || '')}">edited</span>`
@@ -3023,7 +3028,7 @@ function renderItemThumbHtml(p) {
   const fn = escHtml(p.filename);
   return (
     `<div class="item-thumb" data-filename="${fn}">` +
-      `<a href="${src}" target="_blank" rel="noopener" title="${title}" style="display:block;width:100%;height:100%;"><img src="${src}" alt="${title}"></a>` +
+      `<a href="${src}" target="_blank" rel="noopener" title="${title}" style="display:block;width:100%;height:100%;"><img src="${src}" alt="${title}" loading="lazy"></a>` +
       `<button class="item-thumb-del" data-filename="${fn}" title="Delete photo">✕</button>` +
     `</div>`
   );

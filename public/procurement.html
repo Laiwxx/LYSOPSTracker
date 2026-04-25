@@ -965,7 +965,7 @@ function confirmDelete(title, itemName) {
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Delivery Orders (${linked.length})</div>
       <div class="pr-do-list">${linked.map(d =>
         `<a href="/uploads/${escHtml(d.filename)}" target="_blank" class="pr-do-thumb" title="${escHtml(d.originalName || d.filename)}">
-          ${/\.(jpg|jpeg|png|gif|webp)$/i.test(d.filename) ? `<img src="/uploads/${escHtml(d.filename)}" alt="DO">` : `<span class="pr-do-file">📄</span>`}
+          ${/\.(jpg|jpeg|png|gif|webp)$/i.test(d.filename) ? `<img src="/uploads/${escHtml(d.filename)}" alt="DO" loading="lazy">` : `<span class="pr-do-file">📄</span>`}
           <span class="pr-do-date">${fmtDateShort(d.uploadedAt ? d.uploadedAt.slice(0,10) : '')}</span>
         </a>`
       ).join('')}</div>
@@ -1186,7 +1186,7 @@ function confirmDelete(title, itemName) {
       <div class="pr-do-list" style="margin-top:6px;">
         ${linked.map(d =>
           `<a href="/uploads/${escHtml(d.filename)}" target="_blank" class="pr-do-thumb" title="${escHtml(d.originalName || d.filename)}">
-            ${/\.(jpg|jpeg|png|gif|webp)$/i.test(d.filename) ? `<img src="/uploads/${escHtml(d.filename)}" alt="DO">` : `<span class="pr-do-file">📄</span>`}
+            ${/\.(jpg|jpeg|png|gif|webp)$/i.test(d.filename) ? `<img src="/uploads/${escHtml(d.filename)}" alt="DO" loading="lazy">` : `<span class="pr-do-file">📄</span>`}
             <span class="pr-do-date">${fmtDateShort(d.uploadedAt ? d.uploadedAt.slice(0,10) : '')}</span>
           </a>`
         ).join('')}

@@ -1310,7 +1310,7 @@ document.getElementById('ilog-photo').addEventListener('change', function() {
   const preview = document.getElementById('ilog-photo-preview');
   preview.innerHTML = files.map(f => {
     const url = URL.createObjectURL(f);
-    return `<img src="${url}" style="max-width:80px;max-height:80px;border-radius:6px;margin:2px;object-fit:cover;">`;
+    return `<img src="${url}" loading="lazy" style="max-width:80px;max-height:80px;border-radius:6px;margin:2px;object-fit:cover;">`;
   }).join('');
 });
 
@@ -1456,7 +1456,7 @@ function renderInstallLogHistory(pid, idx, logs) {
     const deltaStr = (entry.delta > 0 ? '+' : '') + entry.delta;
     html += `
       <div class="install-log-entry">
-        ${entry.photoPath ? `<img class="install-log-thumb" src="${esc(entry.photoPath)}" alt="photo" onclick="openPhotoViewer('${esc(entry.photoPath)}')">` : ''}${Array.isArray(entry.extraPhotos) ? entry.extraPhotos.map(p => `<img class="install-log-thumb" src="${esc(p)}" alt="photo" style="margin-left:2px;" onclick="openPhotoViewer('${esc(p)}')">`).join('') : ''}
+        ${entry.photoPath ? `<img class="install-log-thumb" src="${esc(entry.photoPath)}" alt="photo" loading="lazy" onclick="openPhotoViewer('${esc(entry.photoPath)}')">` : ''}${Array.isArray(entry.extraPhotos) ? entry.extraPhotos.map(p => `<img class="install-log-thumb" src="${esc(p)}" alt="photo" loading="lazy" style="margin-left:2px;" onclick="openPhotoViewer('${esc(p)}')">`).join('') : ''}
         <div class="install-log-meta">
           <div><strong>${esc(deltaStr)}</strong>${entry.step ? ' · ' + esc(entry.step) : ''} · ${esc(time)} · ${esc(entry.loggedBy || '')}</div>
           ${entry.location ? `<div>📍 ${esc(entry.location)}</div>` : ''}
