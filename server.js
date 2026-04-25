@@ -356,6 +356,25 @@ const PO_DOCS_DIR = path.join(UPLOADS_DIR, 'po-docs');
 if (!fs.existsSync(PO_DOCS_DIR)) fs.mkdirSync(PO_DOCS_DIR, { recursive: true });
 const SALES_UPLOADS_DIR = path.join(UPLOADS_DIR, 'sales');
 if (!fs.existsSync(SALES_UPLOADS_DIR)) fs.mkdirSync(SALES_UPLOADS_DIR, { recursive: true });
+const TICKETS_UPLOADS_DIR = path.join(UPLOADS_DIR, 'tickets');
+if (!fs.existsSync(TICKETS_UPLOADS_DIR)) fs.mkdirSync(TICKETS_UPLOADS_DIR, { recursive: true });
+// Multer for feedback ticket attachments. Files land in TICKETS_UPLOADS_DIR
+// with a timestamp+random prefix; route handler moves them into a per-ticket
+// subfolder once the ticket id is known.
+const uploadTicketAttachment = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, TICKETS_UPLOADS_DIR),
+    filename: (req, file, cb) => {
+      const safe = (file.originalname || 'file').replace(/[^a-zA-Z0-9._-]/g, '_');
+      cb(null, `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}-${safe}`);
+    }
+  }),
+  fileFilter: (req, file, cb) => {
+    const ok = /^image\//.test(file.mimetype) || file.mimetype === 'application/pdf';
+    cb(ok ? null : new Error('Only images and PDFs allowed'), ok);
+  },
+  limits: { fileSize: 10 * 1024 * 1024, files: 5 }
+});
 const uploadPODoc = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
@@ -995,8 +1014,10 @@ app.get('/api/tickets', (req, res) => {
   } catch (e) { logError('route.get.tickets', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// POST /api/tickets — create a new ticket
-app.post('/api/tickets', postRateLimit, (req, res) => {
+// POST /api/tickets — create a new ticket. Accepts multipart with up to 5
+// image/PDF attachments under the `attachments` field. Falls back gracefully
+// to JSON-only requests (no Content-Type guard) so older clients still work.
+app.post('/api/tickets', postRateLimit, uploadTicketAttachment.array('attachments', 5), (req, res) => {
   try {
     const title       = sanitizeStr(req.body.title, 200);
     const type        = sanitizeStr(req.body.type, 50);
@@ -1016,8 +1037,32 @@ app.post('/api/tickets', postRateLimit, (req, res) => {
       submittedAt: new Date().toISOString(),
       status: 'New',
       priority,
-      notes: ''
+      notes: '',
+      attachments: []
     };
+
+    // Move any uploaded attachments into a per-ticket subfolder
+    if (Array.isArray(req.files) && req.files.length) {
+      const ticketDir = path.join(TICKETS_UPLOADS_DIR, ticket.id);
+      if (!path.resolve(ticketDir).startsWith(path.resolve(TICKETS_UPLOADS_DIR) + path.sep)) {
+        return res.status(400).json({ error: 'Invalid ticket id' });
+      }
+      if (!fs.existsSync(ticketDir)) fs.mkdirSync(ticketDir, { recursive: true });
+      for (const f of req.files) {
+        try {
+          const dest = path.join(ticketDir, f.filename);
+          fs.renameSync(f.path, dest);
+          ticket.attachments.push({
+            filename: f.filename,
+            originalName: f.originalname || '',
+            mimetype: f.mimetype,
+            size: f.size,
+            url: `/uploads/tickets/${ticket.id}/${f.filename}`
+          });
+        } catch (mvErr) { logError('ticket.attachment.move', mvErr); }
+      }
+    }
+
     tickets.push(ticket);
     writeTickets(tickets);
     res.status(201).json(ticket);
@@ -1131,7 +1176,7 @@ app.delete('/api/tickets/:id/comments/:commentId', (req, res) => {
   } catch (e) { logError('route.delete.ticket-comment', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
-// DELETE /api/tickets/:id — remove a ticket
+// DELETE /api/tickets/:id — remove a ticket and its attachment folder
 app.delete('/api/tickets/:id', (req, res) => {
   try {
     const tickets = readTickets();
@@ -1139,7 +1184,19 @@ app.delete('/api/tickets/:id', (req, res) => {
     if (idx === -1) return res.status(404).json({ error: 'Ticket not found' });
     const removed = tickets.splice(idx, 1)[0];
     writeTickets(tickets);
-    logActivity('ticket.deleted', { ticketId: removed.id, title: removed.title, reason: sanitizeStr(req.body?.reason, 500) || '' });
+
+    // Clean up attachments folder if any (cascade rule)
+    let filesUnlinked = 0;
+    try {
+      const safeId = path.basename(removed.id);
+      const ticketDir = path.join(TICKETS_UPLOADS_DIR, safeId);
+      if (path.resolve(ticketDir).startsWith(path.resolve(TICKETS_UPLOADS_DIR) + path.sep) && fs.existsSync(ticketDir)) {
+        filesUnlinked = fs.readdirSync(ticketDir).length;
+        fs.rmSync(ticketDir, { recursive: true, force: true });
+      }
+    } catch (cleanupErr) { logError('ticket.delete.cleanup', cleanupErr); }
+
+    logActivity('ticket.deleted', { ticketId: removed.id, title: removed.title, reason: sanitizeStr(req.body?.reason, 500) || '', filesUnlinked });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.tickets', e); res.status(500).json({ error: 'Internal server error' }); }
 });

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feedback — LYS OPS</title>
-  <link rel="stylesheet" href="/css/style.css?v=1777113692">
+  <link rel="stylesheet" href="/css/style.css?v=1777133000">
   <style>
     .fb-form {
       background: var(--bg2);
@@ -345,7 +345,12 @@
         </div>
         <div class="fb-field full">
           <label>Description</label>
-          <textarea id="fb-desc" class="tbl-input" rows="4" placeholder="Steps to reproduce, expected behaviour, screenshots description…" style="resize:vertical;"></textarea>
+          <textarea id="fb-desc" class="tbl-input" rows="4" placeholder="Steps to reproduce, expected behaviour…" style="resize:vertical;"></textarea>
+        </div>
+        <div class="fb-field full">
+          <label>Attachments <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">(optional — up to 5 images or PDFs, 10 MB each)</span></label>
+          <input type="file" id="fb-files" multiple accept="image/*,application/pdf" style="font-size:13px;color:var(--text);">
+          <div id="fb-files-preview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"></div>
         </div>
         <div class="fb-field">
           <label>Your Name <span>*</span></label>
@@ -371,7 +376,7 @@
 
 <div id="fb-toast"></div>
 
-<script src="/js/utils.js?v=1777113692"></script>
+<script src="/js/utils.js?v=1777133000"></script>
 <script>
 function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -468,6 +473,16 @@ function renderTickets(tickets) {
         ${t.notes ? ` · <em>${esc(t.notes)}</em>` : ''}
       </div>
       ${t.description ? `<div class="ticket-desc">${esc(t.description)}</div>` : ''}
+      ${(Array.isArray(t.attachments) && t.attachments.length) ? `
+        <div class="ticket-attachments" style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;">
+          ${t.attachments.map(a => {
+            const isImg = (a.mimetype || '').startsWith('image/');
+            return isImg
+              ? `<a href="${esc(a.url)}" target="_blank" rel="noopener" title="${esc(a.originalName || a.filename)}" style="display:inline-block;"><img src="${esc(a.url)}" loading="lazy" style="width:96px;height:96px;object-fit:cover;border:1px solid var(--border);border-radius:6px;"></a>`
+              : `<a href="${esc(a.url)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;width:96px;height:96px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:11px;text-decoration:none;text-align:center;padding:4px;" title="${esc(a.originalName || a.filename)}">📄 PDF</a>`;
+          }).join('')}
+        </div>
+      ` : ''}
       <div class="ticket-admin-row">
         <label>Status:</label>
         <select class="status-select" data-id="${esc(t.id)}">
@@ -602,12 +617,39 @@ async function loadTickets() {
 }
 
 // ── Submit handler ─────────────────────────────────────
+// Live preview of selected attachments before submit
+document.getElementById('fb-files').addEventListener('change', (e) => {
+  const preview = document.getElementById('fb-files-preview');
+  preview.innerHTML = '';
+  const files = Array.from(e.target.files || []).slice(0, 5);
+  files.forEach(f => {
+    const isImg = /^image\//.test(f.type);
+    const tile = document.createElement('div');
+    tile.style.cssText = 'border:1px solid var(--border);border-radius:6px;padding:4px;font-size:11px;color:var(--text-muted);max-width:120px;';
+    if (isImg) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(f);
+      img.style.cssText = 'width:100px;height:100px;object-fit:cover;border-radius:4px;display:block;margin-bottom:4px;';
+      img.onload = () => URL.revokeObjectURL(img.src);
+      tile.appendChild(img);
+    } else {
+      tile.innerHTML = '<div style="width:100px;height:100px;display:flex;align-items:center;justify-content:center;background:var(--bg);border-radius:4px;margin-bottom:4px;">PDF</div>';
+    }
+    const name = document.createElement('div');
+    name.textContent = f.name;
+    name.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    tile.appendChild(name);
+    preview.appendChild(tile);
+  });
+});
+
 document.getElementById('fb-submit').addEventListener('click', async () => {
   const title       = document.getElementById('fb-title').value.trim();
   const type        = document.getElementById('fb-type').value;
   const description = document.getElementById('fb-desc').value.trim();
   const submittedBy = document.getElementById('fb-name').value;
   const priority    = document.getElementById('fb-priority').value;
+  const files       = Array.from(document.getElementById('fb-files').files || []).slice(0, 5);
 
   if (!title)       { document.getElementById('fb-title').focus(); showToast('Title is required', 'var(--red)'); return; }
   if (!type)        { document.getElementById('fb-type').focus();  showToast('Select a type', 'var(--red)'); return; }
@@ -615,24 +657,32 @@ document.getElementById('fb-submit').addEventListener('click', async () => {
 
   const btn = document.getElementById('fb-submit');
   btn.disabled = true;
-  btn.textContent = 'Submitting…';
+  btn.textContent = files.length ? 'Uploading…' : 'Submitting…';
 
   try {
-    const res = await fetch('/api/tickets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, type, description, submittedBy, priority })
-    });
-    if (!res.ok) throw new Error('Failed');
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('type', type);
+    fd.append('description', description);
+    fd.append('submittedBy', submittedBy);
+    fd.append('priority', priority);
+    files.forEach(f => fd.append('attachments', f));
+    const res = await fetch('/api/tickets', { method: 'POST', body: fd });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || 'Failed');
+    }
     document.getElementById('fb-title').value = '';
     document.getElementById('fb-type').value = '';
     document.getElementById('fb-desc').value = '';
     document.getElementById('fb-name').value = '';
     document.getElementById('fb-priority').value = 'Medium';
+    document.getElementById('fb-files').value = '';
+    document.getElementById('fb-files-preview').innerHTML = '';
     showToast('Ticket submitted!');
     loadTickets();
-  } catch {
-    showToast('Submit failed — please try again', 'var(--red)');
+  } catch (err) {
+    showToast('Submit failed — ' + (err.message || 'please try again'), 'var(--red)');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Submit';
