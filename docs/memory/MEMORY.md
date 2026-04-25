@@ -32,6 +32,8 @@
 
 ## Code Standards
 - [Bug patterns to prevent](feedback_bug_patterns.md) — 16 patterns: _busy locks, safeWriteJSON, race conditions, path traversal, sendEmail, auth, todaySGT, cascades, etc.
+- [Visual overshoot lesson](feedback_visual_overshoot_lesson.md) — cap status carriers at 2/row; don't restyle without user hard-refresh; consult ui-designer before iterating.
+- [Batch endpoint pattern](project_batch_endpoint_pattern.md) — `/api/<entity>/batch?ids=a,b,c` to kill N+1 fetches; declare before `/:id` route.
 - [Delete actions require reason](feedback_delete_reason.md) — every delete uses confirmDelete() with reason dropdown.
 - [Role-based notifications](feedback_role_based_notifications.md) — never hardcode names; use staff.json role aliases.
 - [Legible metrics](feedback_legible_metrics.md) — if a KPI needs a tooltip, delete it or relabel.
