@@ -538,7 +538,7 @@
         "parts": []
       },
       {
-        "item": "CityScape Gate ",
+        "item": "CityScape Gate",
         "qty": 4,
         "unit": "Meter",
         "type": "Local Fabrication",
@@ -1996,16 +1996,7 @@
       }
     ],
     "drawings": [],
-    "productScope": [
-      {
-        "item": "",
-        "qty": 1,
-        "unit": "units",
-        "type": "Local Fabrication",
-        "itemType": "Fixed",
-        "partsRequired": false
-      }
-    ],
+    "productScope": [],
     "scopeNotes": "",
     "drawingFolders": [
       "General"
@@ -2571,10 +2562,18 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "ATG SP400 - 18 No's\r\nSS Safety Bollard - 32 No's ( B1 & B2 )",
-        "qty": 1,
+        "item": "ATG SP400",
+        "qty": 18,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "SS Safety Bollard",
+        "qty": 32,
+        "unit": "units",
+        "zoneLabel": "B1 & B2",
+        "type": "Local Fabrication"
       }
     ],
     "scopeNotes": "",
@@ -3431,10 +3430,25 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "SP 30 Fixed Bollard - 12 No's\r\nSP30 Sleeve - 12 No's\r\nRemovable SS Bollard - 8 No's ( KAVASS )",
-        "qty": 1,
+        "item": "SP 30 Fixed Bollard",
+        "qty": 12,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "SP30 Sleeve",
+        "qty": 12,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "Removable SS Bollard",
+        "qty": 8,
+        "unit": "units",
+        "zoneLabel": "KAVASS",
+        "type": "Local Fabrication"
       }
     ],
     "scopeNotes": "",
@@ -4363,10 +4377,11 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "Supply, deliver, and install K4 Rated EL-08-1 High-Security Manually Operated Arm Barrier - 1 No's",
+        "item": "K4 Rated EL-08-1 High-Security Manually Operated Arm Barrier",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication"
       }
     ],
     "scopeNotes": "",
@@ -6027,10 +6042,46 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "Blast Coat Prime\r\nColumn Type 1 : 1150 x 1150 x 7.2m high with 12mm Thk Plate - 5 No's\r\nColumn Type 2 : 1150 x 900 x 7.2m high with 12mm Thk Plate - 5 No's\r\nColumn Type 3 : 600 x 900 x 7.2m high with 6mm Thk Plate - 2 Np's \r\nColumn Type 4 : 1150dia x 7.2m high with 12mm Thk Plate - 2 No's \r\n\r\n\r\nBlast Coat Prime\r\n\r\nWall Type 1 - Using 3mm thk plate C75*40*5mm thk for lift shaft wall - 1 No's\r\nWall Type 2 - Using 10mm thk plate C75*40*5mm thk for wall external - 1 No's",
+        "item": "Column Type 1 : 1150 x 1150 x 7.2m high with 12mm Thk Plate",
+        "qty": 5,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "Column Type 2 : 1150 x 900 x 7.2m high with 12mm Thk Plate",
+        "qty": 5,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "Column Type 3 : 600 x 900 x 7.2m high with 6mm Thk Plate",
+        "qty": 2,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "Column Type 4 : 1150dia x 7.2m high with 12mm Thk Plate",
+        "qty": 2,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "Wall Type 1 - Using 3mm thk plate C75*40*5mm thk for lift shaft wall",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "zoneLabel": "",
+        "type": "Local Fabrication"
+      },
+      {
+        "item": "Wall Type 2 - Using 10mm thk plate C75*40*5mm thk for wall external",
+        "qty": 1,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication"
       }
     ],
     "scopeNotes": "",
