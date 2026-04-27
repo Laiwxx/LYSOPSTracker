@@ -4646,22 +4646,24 @@ async function deleteLogEntry(projectId, fabIdx, logId) {
   try {
     const res = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/logs/' + logId, {
       method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason: result.reason }),
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       // Server says this delete is blocked but can be force-overridden
       if (err.canForce) {
-        const reason = prompt(
+        const forceReason = prompt(
           'This log cannot be deleted because the built qty would drop below the shipped total.\n\n' +
           'To override, provide a reason (this will be logged for audit):');
-        if (!reason || !reason.trim()) {
+        if (!forceReason || !forceReason.trim()) {
           factoryToast('Delete cancelled — no reason provided', false);
           return;
         }
         const forceRes = await fetch('/api/projects/' + encodeURIComponent(projectId) + '/fabrication/' + fabIdx + '/logs/' + logId, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ force: true, reason: reason.trim() }),
+          body: JSON.stringify({ force: true, reason: forceReason.trim() }),
         });
         if (!forceRes.ok) {
           const forceErr = await forceRes.json().catch(() => ({}));
@@ -4674,8 +4676,8 @@ async function deleteLogEntry(projectId, fabIdx, logId) {
       }
       throw new Error(err.error || ('Delete failed (' + res.status + ')'));
     }
-    const result = await res.json();
-    _applyLogDeletion(projectId, fabIdx, logId, result);
+    const responseData = await res.json();
+    _applyLogDeletion(projectId, fabIdx, logId, responseData);
     factoryToast('Log entry deleted ✓');
   } catch (e) {
     console.error('delete log failed:', e);

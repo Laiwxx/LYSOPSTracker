@@ -350,7 +350,7 @@
     var chipStyle = 'display:inline-flex;align-items:center;gap:6px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.4);border-radius:8px;padding:5px 10px;margin:3px 4px 3px 0;font-size:12px;color:#fca5a5;font-weight:600;';
     listEl.innerHTML = '<div style="display:flex;flex-wrap:wrap;">' +
       entries.map(function(e) {
-        var icon = e.type === 'MC' ? '🤒' : '🌴';
+        var icon = e.type === 'MC' ? '🤒' : (e.type === 'Leave' ? '🏖' : '🌴');
         var note = e.notes ? ' <span style="opacity:0.65;font-weight:400;">· ' + esc(e.notes) + '</span>' : '';
         return '<span style="' + chipStyle + '">' + icon + ' ' + esc(e.name) + ' <span style="opacity:0.7;font-weight:500;">(' + esc(e.type) + ')</span>' + note + '</span>';
       }).join('') + '</div>';
@@ -364,7 +364,7 @@
       var row = assignments[wId];
       var a = row && row[todayKey];
       if (!a || !a.type) return;
-      if (a.type !== 'MC' && a.type !== 'Off') return;
+      if (a.type !== 'MC' && a.type !== 'Off' && a.type !== 'Leave') return;
       if (seen[wId]) return;
       seen[wId] = true;
       var name = (workerMap[wId] && workerMap[wId].name) || wId;
@@ -381,7 +381,7 @@
       var entries = [];
       var seen = {};
       records.forEach(function(r) {
-        if (r.status !== 'MC' && r.status !== 'Absent' && r.status !== 'Off') return;
+        if (r.status !== 'MC' && r.status !== 'Absent' && r.status !== 'Off' && r.status !== 'On Leave') return;
         if (seen[r.workerId]) return;
         seen[r.workerId] = true;
         entries.push({ name: r.workerName || r.workerId, type: r.status, notes: r.notes || '' });
@@ -410,8 +410,10 @@
       Fabrication:  { icon:'\uD83C\uDFED', color:'#93c5fd', bg:'rgba(59,130,246,0.15)',  border:'rgba(59,130,246,0.4)'  },
       Installation: { icon:'\uD83D\uDD27', color:'#86efac', bg:'rgba(34,197,94,0.15)',   border:'rgba(34,197,94,0.4)'   },
       Driver:       { icon:'\uD83D\uDE9A', color:'#fdba74', bg:'rgba(249,115,22,0.15)',  border:'rgba(249,115,22,0.4)'  },
+      Maintenance:  { icon:'\uD83D\uDEE0', color:'#d8b4fe', bg:'rgba(168,85,247,0.15)',  border:'rgba(168,85,247,0.4)'  },
       MC:           { icon:'\uD83E\uDD12', color:'#fca5a5', bg:'rgba(239,68,68,0.12)',   border:'rgba(239,68,68,0.35)'  },
       Off:          { icon:'\uD83C\uDFE0', color:'#d1d5db', bg:'rgba(156,163,175,0.12)', border:'rgba(156,163,175,0.35)' },
+      Leave:        { icon:'\uD83C\uDFD6', color:'#67e8f9', bg:'rgba(6,182,212,0.13)',   border:'rgba(6,182,212,0.4)'   },
     };
 
     try {
@@ -464,17 +466,23 @@
       var supplyWorkers = (plan && plan.supplyWorkers) || [];
       supplyWorkers.forEach(function(sw) { workerMap[sw.id] = sw; });
 
+      // Format: "BD22724 - T232 Woodland" (BD number + parens content from jobCode)
+      function formatJobCodeWithSite(rawJobCode) {
+        if (!rawJobCode) return '';
+        var bdMatch = rawJobCode.match(/BD\s*(\d+)/i);
+        var bdPart = bdMatch ? 'BD' + bdMatch[1] : rawJobCode.split('-')[0].trim();
+        var siteMatch = rawJobCode.match(/\(([^)]+)\)/);
+        var sitePart = siteMatch ? siteMatch[1].trim() : '';
+        return sitePart ? bdPart + ' - ' + sitePart : bdPart;
+      }
       var jobCodeMap = {};
       allProjects.forEach(function(p) {
-        if (p.id) {
-          var code = (p.jobCode || '').split(' ').slice(0,2).join(' ').replace(/[-\s]+$/, '');
-          jobCodeMap[p.id] = code;
-        }
+        if (p.id) jobCodeMap[p.id] = formatJobCodeWithSite(p.jobCode || '');
       });
 
       // Build per-day summaries
       var summary = {};
-      DAY_KEYS.forEach(function(d) { summary[d] = { Fabrication:[], Installation:[], Driver:[], MC:[], Off:[] }; });
+      DAY_KEYS.forEach(function(d) { summary[d] = { Fabrication:[], Installation:[], Driver:[], Maintenance:[], MC:[], Off:[], Leave:[] }; });
 
       // Build project name map for clarity
       var projectNameMap = {};
@@ -493,14 +501,23 @@
           var a = assignments[wId][d];
           var dedupeKey = wId + '|' + d;
           if (a && a.type && summary[d][a.type] !== undefined && !seenWorkerDay[dedupeKey]) {
-            // MC/Off in the stored plan can be stale — only show them when
-            // today's attendance actually records the worker as MC/Off.
-            if (a.type === 'MC' || a.type === 'Off') {
-              var attStatus = (weekAttendance[d] || {})[wId];
-              var isMC  = attStatus === 'MC';
-              var isOff = attStatus === 'Absent' || attStatus === 'Off' || attStatus === 'On Leave';
-              if (a.type === 'MC' && !isMC) return;
-              if (a.type === 'Off' && !isOff) return;
+            // MC/Off/Leave in the stored plan can be stale — when attendance
+            // for that day exists, treat it as authoritative; otherwise trust
+            // the plan (relevant for future-dated leave / planned absences).
+            if (a.type === 'MC' || a.type === 'Off' || a.type === 'Leave') {
+              var dayAtt = weekAttendance[d];
+              var attStatus = dayAtt ? dayAtt[wId] : undefined;
+              // Only reconcile when this specific worker has an attendance
+              // record for the day. If undefined, trust the plan (covers
+              // future-dated leave + workers not yet checked in).
+              if (attStatus !== undefined) {
+                var isMC    = attStatus === 'MC';
+                var isOff   = attStatus === 'Absent' || attStatus === 'Off';
+                var isLeave = attStatus === 'On Leave';
+                if (a.type === 'MC' && !isMC) return;
+                if (a.type === 'Off' && !isOff) return;
+                if (a.type === 'Leave' && !isLeave) return;
+              }
             }
             seenWorkerDay[dedupeKey] = true;
             summary[d][a.type].push({
@@ -508,6 +525,7 @@
               jobCode:     jobCodeMap[a.projectId] || '',
               projectName: projectNameMap[a.projectId] || '',
               projectId:   a.projectId || '',
+              location:    a.location || '',
               notes:       a.notes || '',
             });
           }
@@ -521,7 +539,7 @@
       renderTodayMC(assignments, workerMap, todayKey);
 
       var hasAny = DAY_KEYS.some(function(d) {
-        return summary[d].Fabrication.length + summary[d].Installation.length + summary[d].Driver.length + summary[d].MC.length + summary[d].Off.length > 0;
+        return summary[d].Fabrication.length + summary[d].Installation.length + summary[d].Driver.length + summary[d].Maintenance.length + summary[d].MC.length + summary[d].Off.length + summary[d].Leave.length > 0;
       });
 
       if (!hasAny) {
@@ -533,129 +551,95 @@
         return;
       }
 
-      // ── Worker chip ──────────────────────────────────────────────────────
-      function chip(w, cfg) {
-        // Show project label: prefer "JobCode · ProjectName", fallback to whichever exists
-        var proj = '';
-        if (w.jobCode && w.projectName) {
-          proj = esc(w.jobCode) + ' \u00b7 ' + esc(w.projectName);
-        } else if (w.jobCode) {
-          proj = esc(w.jobCode);
-        } else if (w.projectName) {
-          proj = esc(w.projectName);
-        }
-        var notesHtml = w.notes
-          ? '<div style="font-size:9px;opacity:0.55;margin-top:1px;font-style:italic;">' + esc(w.notes) + '</div>'
-          : '';
+      // ── Worker row (name on top, "BD#### - Site" below) ──────────────────────
+      function workerRow(w) {
+        var hover = w.name + (w.projectName ? ' — ' + w.projectName : '') + (w.location ? ' @ ' + w.location : '') + (w.notes ? ' · ' + w.notes : '');
+        var titleAttr = ' title="' + esc(hover) + '"';
         var href = w.projectId ? '/project.html?id=' + encodeURIComponent(w.projectId) : null;
-        var inner =
-          '<span style="font-weight:700;font-size:12px;color:' + cfg.color + ';line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">' +
-            esc(w.name) +
-          '</span>' +
-          (proj
-            ? '<span style="font-size:10px;color:' + cfg.color + ';opacity:0.65;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">' +
-                proj +
-              '</span>'
-            : '') +
-          notesHtml;
-        var baseStyle =
-          'display:inline-flex;flex-direction:column;' +
-          'background:' + cfg.bg + ';border:1px solid ' + cfg.border + ';' +
-          'border-radius:8px;padding:5px 9px;margin:3px 3px 3px 0;' +
-          'min-width:90px;max-width:190px;vertical-align:top;text-decoration:none;';
+        var nameLine = '<div style="font-size:12px;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(w.name) + '</div>';
+        var subLine = w.jobCode
+          ? '<div style="font-size:11px;font-weight:500;color:var(--text-muted);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(w.jobCode) + '</div>'
+          : '';
+        var wrapStyle = 'display:block;padding:3px 4px;margin-bottom:3px;text-decoration:none;';
         if (href) {
-          return '<a href="' + href + '" style="' + baseStyle + 'cursor:pointer;transition:opacity 0.15s;" ' +
-            'onmouseover="this.style.opacity=\'0.8\'" onmouseout="this.style.opacity=\'1\'">' +
-            inner + '</a>';
+          return '<a href="' + href + '" style="' + wrapStyle + '"' + titleAttr + '>' + nameLine + subLine + '</a>';
         }
-        return '<div style="' + baseStyle + '">' + inner + '</div>';
+        return '<div style="' + wrapStyle + '"' + titleAttr + '>' + nameLine + subLine + '</div>';
       }
 
-      // ── Type group ───────────────────────────────────────────────────────
-      function typeGroup(list, type) {
+      // ── Section block (label + worker rows, color-coded) ─────────────────────
+      function sectionBlock(label, list, color, bg) {
         if (!list.length) return '';
-        var cfg = TYPE_CFG[type];
-        return '<div style="margin-bottom:7px;">' +
-          '<div style="font-size:10px;font-weight:700;text-transform:uppercase;' +
-            'letter-spacing:0.5px;color:' + cfg.color + ';margin-bottom:3px;">' +
-            cfg.icon + '\u2002' + type +
+        var sortedList = list.slice().sort(function(a, b) { return a.name.localeCompare(b.name); });
+        return '<div style="margin-bottom:6px;background:' + bg + ';border-left:3px solid ' + color + ';border-radius:3px;padding:3px 4px 3px 6px;">' +
+          '<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:' + color + ';margin-bottom:2px;">' +
+            esc(label) + ' <span style="opacity:0.7;font-weight:700;">(' + list.length + ')</span>' +
           '</div>' +
-          '<div style="display:flex;flex-wrap:wrap;">' +
-            list.map(function(w) { return chip(w, cfg); }).join('') +
-          '</div>' +
+          sortedList.map(workerRow).join('') +
         '</div>';
       }
 
-      // ── Day card ─────────────────────────────────────────────────────────
+      // ── Day card (segregated: Factory / Site / Other) ────────────────────────
       function dayCard(d) {
-        var dc    = DAY_CFG[d];
-        var fab   = summary[d].Fabrication;
-        var inst  = summary[d].Installation;
-        var drv   = summary[d].Driver;
-        var mc    = summary[d].MC;
-        var off   = summary[d].Off;
-        var total = fab.length + inst.length + drv.length + mc.length + off.length;
+        var dc = DAY_CFG[d];
+        var factoryList = (summary[d].Fabrication || []).filter(function(w) { return w && w.name; });
+        var siteList    = (summary[d].Installation || []).filter(function(w) { return w && w.name; });
+        var otherList   = []
+          .concat(summary[d].Driver, summary[d].Maintenance, summary[d].MC, summary[d].Off, summary[d].Leave)
+          .filter(function(w) { return w && w.name; });
+        var total = factoryList.length + siteList.length + otherList.length;
         var today = (d === todayKey);
 
-        // Empty day → compact single-line row (no big coloured block)
+        // Empty day → ultra-compact label only
         if (total === 0) {
           return '<div style="' +
-              'flex:0 0 auto;' +
+              'flex:1 1 0;min-width:160px;' +
               'background:rgba(255,255,255,0.015);' +
               'border:1px solid ' + (today ? dc.border + '55' : 'rgba(255,255,255,0.06)') + ';' +
-              'border-radius:8px;overflow:hidden;' +
+              'border-radius:7px;' +
               (today ? 'box-shadow:0 0 0 2px ' + dc.border + '22;' : '') +
+              'padding:5px 8px;' +
+              'display:flex;align-items:center;justify-content:space-between;gap:6px;' +
+              'opacity:0.55;' +
             '">' +
-            '<div style="' +
-              'background:' + dc.bg + ';opacity:0.65;' +
-              'padding:7px 12px;' +
-              'display:flex;align-items:center;gap:12px;' +
-            '">' +
-              '<span style="font-size:12px;font-weight:800;letter-spacing:0.3px;color:' + dc.text + ';min-width:28px;">' +
-                dc.label.slice(0,3).toUpperCase() +
-                (today ? '\u00a0<span style="font-size:9px;vertical-align:middle;opacity:0.8;">TODAY</span>' : '') +
-              '</span>' +
-              '<span style="font-size:11px;color:rgba(255,255,255,0.22);font-style:italic;">No assignments</span>' +
-            '</div>' +
+            '<span style="font-size:11px;font-weight:800;letter-spacing:0.3px;color:' + dc.text + ';">' +
+              dc.label.slice(0,3).toUpperCase() +
+              (today ? ' <span style="font-size:9px;opacity:0.8;">·NOW</span>' : '') +
+            '</span>' +
+            '<span style="font-size:10px;color:rgba(255,255,255,0.3);">—</span>' +
           '</div>';
         }
 
         var header =
           '<div style="' +
             'background:' + dc.bg + ';' +
-            'border-bottom:2px solid ' + dc.border + ';' +
-            'padding:9px 12px;' +
-            'display:flex;align-items:center;justify-content:space-between;' +
+            'border-bottom:1px solid ' + dc.border + ';' +
+            'padding:5px 8px;' +
+            'display:flex;align-items:center;justify-content:space-between;gap:6px;' +
           '">' +
-            '<div>' +
-              '<div style="font-size:14px;font-weight:800;letter-spacing:0.3px;color:' + dc.text + ';">' +
-                dc.label.slice(0,3).toUpperCase() +
-                (today ? ' <span style="font-size:9px;vertical-align:middle;opacity:0.75;">TODAY</span>' : '') +
-              '</div>' +
-              '<div style="font-size:10px;color:' + dc.text + ';opacity:0.55;margin-top:1px;">' +
-                dc.label +
-              '</div>' +
-            '</div>' +
-            '<span style="background:' + dc.border + ';color:#fff;border-radius:50%;' +
-                'width:22px;height:22px;display:flex;align-items:center;justify-content:center;' +
-                'font-size:11px;font-weight:800;flex-shrink:0;">' + total + '</span>' +
+            '<span style="font-size:11px;font-weight:800;letter-spacing:0.3px;color:' + dc.text + ';">' +
+              dc.label.slice(0,3).toUpperCase() +
+              (today ? ' <span style="font-size:9px;opacity:0.8;">·NOW</span>' : '') +
+            '</span>' +
+            '<span style="background:' + dc.border + ';color:#fff;border-radius:10px;' +
+                'padding:1px 7px;' +
+                'font-size:10px;font-weight:800;flex-shrink:0;">' + total + '</span>' +
           '</div>';
 
-        var body = typeGroup(fab, 'Fabrication') +
-                   typeGroup(inst, 'Installation') +
-                   typeGroup(drv, 'Driver') +
-                   typeGroup(mc, 'MC') +
-                   typeGroup(off, 'Off');
+        var body =
+          sectionBlock('Factory', factoryList, '#3b82f6', 'rgba(59,130,246,0.08)') +
+          sectionBlock('Site',    siteList,    '#22c55e', 'rgba(34,197,94,0.08)') +
+          sectionBlock('Other',   otherList,   '#f97316', 'rgba(249,115,22,0.06)');
 
         return '<div style="' +
-            'flex:0 0 210px;min-width:210px;' +
+            'flex:1 1 0;min-width:160px;' +
             'background:rgba(255,255,255,0.03);' +
             'border:1px solid ' + (today ? dc.border : 'rgba(255,255,255,0.09)') + ';' +
-            'border-radius:10px;overflow:hidden;' +
+            'border-radius:7px;overflow:hidden;' +
             (today ? 'box-shadow:0 0 0 2px ' + dc.border + '44;' : '') +
           '">' +
           header +
-          '<div style="padding:10px 12px;">' + body + '</div>' +
+          '<div style="padding:5px 6px;">' + body + '</div>' +
         '</div>';
       }
 
@@ -672,10 +656,8 @@
       if (wml) wml.textContent = weekLabel;
 
       el.innerHTML =
-        '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;">' +
-          '<div id="wm-cards-row" style="display:flex;gap:10px;min-width:max-content;">' +
-            DAY_KEYS.map(dayCard).join('') +
-          '</div>' +
+        '<div id="wm-cards-row" style="display:flex;gap:6px;flex-wrap:wrap;">' +
+          DAY_KEYS.map(dayCard).join('') +
         '</div>';
 
       // Mobile: stack cards vertically

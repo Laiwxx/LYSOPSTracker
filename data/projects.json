@@ -4554,10 +4554,10 @@
     "id": "bd-25426-woh-hup-wcp",
     "jobCode": "BD 25426- WOH HUP (WCP)",
     "projectName": "Woodlands Check Point",
-    "product": "254x CSG10840 Fixed Bollard, 254x 273.1mm dia x 3.4mmT SS Sleeve, 238x ATG SPK12 Fixed Bollard, 238x 323.9mm dia x 3.96mmT SS Sleeve, 3x Cova Auto Bollard (1set of 3), 4x Cova Auto Bollard (1set of 4), 5x Cova Auto Bollard (1set of 5), 6x Cova Auto Bollard (1set of 6), 24x Cova Auto Bollard (3sets of 8), 42x 235mm dia x 2mmT SS Sleeve, 2x ATG SP1000 Auto Bollard (1set of 2), 20x ATG SP1000 Auto Bollard (5sets of 4), 5x ATG SP1000 Auto Bollard (1set of 5), 6x ATG SP1000 Auto Bollard (1set of 6), 14x ATG SP1000 Auto Bollard (2sets of 7), 8x ATG SP1000 Auto Bollard (1set of 8)) 2, 18x ATG SP1000 Auto Bollard (2sets of 9), 10x ATG SP1000 Auto Bollard (1set of 10), 83x 323mm dia x 3.96mm T SS Sleeve, 1x Cova Road Blocker (1set of 1), 16x Cova Road Blocker (8sets of 2), 12x Cova Road Blocker (4sets of 3), 8x Cova Road Blocker (2sets of 4), 4x 4m wide 30Ton Road Blocker at 80kph, 2282x Type D1 fence, 578x Type D2 fence, 1147x Type D3 fence, 474x Type D4 fence, 608x Type D5 fence, 1x Type G1 DL Swing Gate 3.6mW x 3mH, 1x Type G1 DL Swing Gate 4.7mW x 3mH, 5x Type G1 DL Swing Gate 6.6mW x 3mH, 1x Type G1 DL Swing Gate 7mW x 3mH, 1x Type G1 DL Swing Gate 7.6mW x 3mH, 1x Type G2 DL Swing Gate 3mW x 3mH , 2x Type G2 DL Swing Gate 5.4mW x 3mH , 4x Type G2 DL Swing Gate 6.1mW x 3mH , 2x Type G2 DL Swing Gate 6.3mW x 3mH , 2x Type G2 DL Swing Gate 6.65mW x 3mH , 2x Type G2 DL Swing Gate 7mW x 3mH ",
+    "product": "254x CSG10840 Fixed Bollard, 254x 273.1mm dia x 3.4mmT SS Sleeve, 238x ATG SPK12 Fixed Bollard, 238x 323.9mm dia x 3.96mmT SS Sleeve, 3x Cova Auto Bollard (1set of 3), 4x Cova Auto Bollard (1set of 4), 5x Cova Auto Bollard (1set of 5), 6x Cova Auto Bollard (1set of 6), 24x Cova Auto Bollard (3sets of 8), 42x 235mm dia x 2mmT SS Sleeve, 2x ATG SP1000 Auto Bollard (1set of 2), 20x ATG SP1000 Auto Bollard (5sets of 4), 5x ATG SP1000 Auto Bollard (1set of 5), 6x ATG SP1000 Auto Bollard (1set of 6), 14x ATG SP1000 Auto Bollard (2sets of 7), 8x ATG SP1000 Auto Bollard (1set of 8)) 2, 18x ATG SP1000 Auto Bollard (2sets of 9), 10x ATG SP1000 Auto Bollard (1set of 10), 83x 323mm dia x 3.96mm T SS Sleeve, 1x Cova Road Blocker (1set of 1), 16x Cova Road Blocker (8sets of 2), 12x Cova Road Blocker (4sets of 3), 8x Cova Road Blocker (2sets of 4), 4x 4m wide 30Ton Road Blocker at 80kph, 2282x Type D1 fence, 578x Type D2 fence, 1147x Type D3 fence, 474x Type D4 fence, 608x Type D5 fence, 1x Type G1 DL Swing Gate 3.6mW x 3mH, 1x Type G1 DL Swing Gate 4.7mW x 3mH, 5x Type G1 DL Swing Gate 6.6mW x 3mH, 1x Type G1 DL Swing Gate 7mW x 3mH, 1x Type G1 DL Swing Gate 7.6mW x 3mH, 1x Type G2 DL Swing Gate 3mW x 3mH , 2x Type G2 DL Swing Gate 5.4mW x 3mH , 4x Type G2 DL Swing Gate 6.1mW x 3mH , 2x Type G2 DL Swing Gate 6.3mW x 3mH , 2x Type G2 DL Swing Gate 6.65mW x 3mH , 2x Type G2 DL Swing Gate 7mW x 3mH , 1x Type G2 DL Swing Gate 7.4mW x 3mH , 1x Type G2 DL Swing Gate 8mW x 3mH , 1x Type G2 DL Swing Gate 8.35mW x 3mH , 1x Type G2 DL Swing Gate 8.5mW x 3mH , 4x Type G3 SL Sliding Gate 4.95mW x 3mH, 2x Type G3 SL Sliding Gate 6.2mW x 3mH, 11x Staff Access SL Gate",
     "contractValue": 7042720,
     "voValue": 0,
-    "client": "",
+    "client": "Immigration and Checkpoints Authority",
     "contact": "",
     "mainCon": "",
     "consultant": "",
@@ -5041,7 +5041,7 @@
         "item": "4m wide 30Ton Road Blocker at 80kph",
         "qty": 4,
         "unit": "units",
-        "type": "Local Fabrication",
+        "type": "Purchase Item",
         "itemType": "Fixed",
         "partsRequired": false,
         "parts": []
@@ -5184,6 +5184,69 @@
       {
         "item": "Type G2 DL Swing Gate 7mW x 3mH ",
         "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 7.4mW x 3mH ",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 8mW x 3mH ",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 8.35mW x 3mH ",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 8.5mW x 3mH ",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G3 SL Sliding Gate 4.95mW x 3mH",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G3 SL Sliding Gate 6.2mW x 3mH",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Staff Access SL Gate",
+        "qty": 11,
         "unit": "units",
         "type": "Local Fabrication",
         "itemType": "Fixed",
@@ -6633,7 +6696,7 @@
     "id": "pj10726-clementi-close-metal",
     "jobCode": "PJ10726 - Clementi Close Metal",
     "projectName": "Installation of Metal Works @ Clemeti Close Polyclinic",
-    "product": "Railing / Cat Walk Metal Works",
+    "product": "4.2x Railing RL01 SS316, 54.5x Railing RL04 SS316, 47.8x Railing RL05 SS316, 4.4x Railing RL08 HDG, 16.2x Railing RL10 SS316, 4.1x Railing RL10 SS316 (raking), 1.3x Railing RL10 SS316 (horizontal), 3.6x Railing RL11 SS316 (raking), 0.4x Railing RL11 SS316 (horizontal fixed), 1.8x Railing RL11 SS316 (horizontal removable), 216.9x Grating Type D1 HDG, 19.2x Grating Type D3 HDG, 16x Grating Type D3A HDG, 1x Vertical Grating HDG, 45.9x 150mmW SS316 Scupper drain grating, 1x 2m x 1.5m sump grating at domestic water overflow sump, 1x 2m x 1.5m sump grating at new water overflow sump, 1x 1.5m x 1.5m sump grating at seepage drainage sump, 1x 1.5m x 1.5m sump grating at seepage drainage sump 2, 1x 2m x 1.5m sump grating at sprinkler & hydrant overflow sump, 1x 2m x 1.5m sump grating at sump pit, 9x 800x800 perforated grating over landscape sump, 21x 400x400 SS316 drain grating, 2x 800x800 maintenance hatch door, 2x 2500x1000 maintenance hatch door, 2x SS316 Maintenance Access Door 1.2x1.2, 4x SS316 Maintenance Access Door 1x1, 1x SS316 watertight access hatch 1.5x1.5, 19.4x 3mH Anti-Climb Fence, 1x 1.8x3mH DL Swing Gate, 28.2x 2.5mH Anti-Climb Fence, 1x 1.8x1mH SL Swing Gate, 1x .65x.65 SL gate, 12x 1.2x1.2 metal platform, 28.8x 1mH HDG Catwalk Railing, 24.6x Lower Roof Catwalk, 7.2x Lower Roof step Treads 300mm wide, 10.8x Lower Roof step Riser 150mm high, 43.4x 1mH HDG Catwalk Railing, 220.2x Upper Roof Catwalk, 8x Upper Roof step Tread 300mm wide, 9x Upper Roof step Riser 150mm high, 4.9x 1mH HDG Catwalk Railing, 12x 740mmW x 3000mmH HDG Catladder, 5x 740mmW x 6190mmH HDG Catladder, 12x 1000mmH HDG Safety Cage, 5x 4190mmH HDG Safety Cage, 5x 550mmW x 3000mmH SS316 Catladder, 2x 470mmW x 1800mmH SS316 Catladder, 1x 360mmW x 950mmH HDG Catladder, 9.8x HDG Cable trench grating, 1x Alum Chequered plate trap door, 1x SS316 Removable guardrail 900x900, 0.9x 900mm wide SS316 Removable Guardrail, 2x Aluminium Catladder, 4x Aluminium Handle fixed to wall, 107.4x HDG Green wall, 4x 4mL x 600mm W x 790mmH bench frame, 1x 3.55mL x 400mm W x 450mm H curved, 1x 3.67mL x 530mm W x 450mm H, 1x 7.49mL x 530mm W x 450mm H curved, 1x 2.72mL x 530mm W x 450mm H, 1x 4mL x 530mm W x 450mm H, 9.34x 1500mm H x 3mm thk SS316 Wall Protection, 1x PE fee to design, calculate and endorse catwalk structure and railings",
     "contractValue": 382799.8,
     "voValue": 0,
     "client": "",
@@ -6666,7 +6729,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 2,
@@ -6677,7 +6741,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 3,
@@ -6688,7 +6753,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 4,
@@ -6699,7 +6765,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 5,
@@ -6710,7 +6777,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 6,
@@ -6721,7 +6789,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 7,
@@ -6732,7 +6801,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 8,
@@ -6743,7 +6813,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 9,
@@ -6754,7 +6825,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 10,
@@ -6765,7 +6837,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 11,
@@ -6776,7 +6849,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 12,
@@ -6787,7 +6861,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 13,
@@ -6798,7 +6873,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 14,
@@ -6809,7 +6885,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 15,
@@ -6820,7 +6897,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 16,
@@ -6831,7 +6909,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 17,
@@ -6842,7 +6921,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 18,
@@ -6853,7 +6933,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 19,
@@ -6864,7 +6945,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 20,
@@ -6875,7 +6957,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       }
     ],
     "documents": [],
@@ -6889,10 +6972,590 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "Railing / Cat Walk Metal Works",
+        "item": "Railing RL01 SS316",
+        "qty": 4.2,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL04 SS316",
+        "qty": 54.5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL05 SS316",
+        "qty": 47.8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL08 HDG",
+        "qty": 4.4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL10 SS316",
+        "qty": 16.2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL10 SS316 (raking)",
+        "qty": 4.1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL10 SS316 (horizontal)",
+        "qty": 1.3,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL11 SS316 (raking)",
+        "qty": 3.6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL11 SS316 (horizontal fixed)",
+        "qty": 0.4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Railing RL11 SS316 (horizontal removable)",
+        "qty": 1.8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Grating Type D1 HDG",
+        "qty": 216.9,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Grating Type D3 HDG",
+        "qty": 19.2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Grating Type D3A HDG",
+        "qty": 16,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Vertical Grating HDG",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "150mmW SS316 Scupper drain grating",
+        "qty": 45.9,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "2m x 1.5m sump grating at domestic water overflow sump",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "2m x 1.5m sump grating at new water overflow sump",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1.5m x 1.5m sump grating at seepage drainage sump",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1.5m x 1.5m sump grating at seepage drainage sump 2",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "2m x 1.5m sump grating at sprinkler & hydrant overflow sump",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "2m x 1.5m sump grating at sump pit",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "800x800 perforated grating over landscape sump",
+        "qty": 9,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "400x400 SS316 drain grating",
+        "qty": 21,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "800x800 maintenance hatch door",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "2500x1000 maintenance hatch door",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "SS316 Maintenance Access Door 1.2x1.2",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "SS316 Maintenance Access Door 1x1",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "SS316 watertight access hatch 1.5x1.5",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "3mH Anti-Climb Fence",
+        "qty": 19.4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1.8x3mH DL Swing Gate",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "2.5mH Anti-Climb Fence",
+        "qty": 28.2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1.8x1mH SL Swing Gate",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": ".65x.65 SL gate",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1.2x1.2 metal platform",
+        "qty": 12,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1mH HDG Catwalk Railing",
+        "qty": 28.8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Lower Roof Catwalk",
+        "qty": 24.6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Lower Roof step Treads 300mm wide",
+        "qty": 7.2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Lower Roof step Riser 150mm high",
+        "qty": 10.8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1mH HDG Catwalk Railing",
+        "qty": 43.4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Upper Roof Catwalk",
+        "qty": 220.2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Upper Roof step Tread 300mm wide",
+        "qty": 8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Upper Roof step Riser 150mm high",
+        "qty": 9,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1mH HDG Catwalk Railing",
+        "qty": 4.9,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "740mmW x 3000mmH HDG Catladder",
+        "qty": 12,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "740mmW x 6190mmH HDG Catladder",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1000mmH HDG Safety Cage",
+        "qty": 12,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "4190mmH HDG Safety Cage",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "550mmW x 3000mmH SS316 Catladder",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "470mmW x 1800mmH SS316 Catladder",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "360mmW x 950mmH HDG Catladder",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "HDG Cable trench grating",
+        "qty": 9.8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Alum Chequered plate trap door",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "SS316 Removable guardrail 900x900",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "900mm wide SS316 Removable Guardrail",
+        "qty": 0.9,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Aluminium Catladder",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Aluminium Handle fixed to wall",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "HDG Green wall",
+        "qty": 107.4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "4mL x 600mm W x 790mmH bench frame",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "3.55mL x 400mm W x 450mm H curved",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "3.67mL x 530mm W x 450mm H",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "7.49mL x 530mm W x 450mm H curved",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "2.72mL x 530mm W x 450mm H",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "4mL x 530mm W x 450mm H",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "1500mm H x 3mm thk SS316 Wall Protection",
+        "qty": 9.34,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "PE fee to design, calculate and endorse catwalk structure and railings",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "scopeNotes": "",

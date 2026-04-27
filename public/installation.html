@@ -1366,16 +1366,30 @@ async function saveInstallLogEntry() {
 
     // 1b. Upload extra photos
     const extraPhotos = [];
+    let extraFailed = 0;
     for (let i = 1; i < _ilogFiles.length; i++) {
-      const extraBlob = await compressInstallImage(_ilogFiles[i]);
-      const extraId = 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-      const fd = new FormData();
-      fd.append('photo', extraBlob, 'install.jpg');
-      fd.append('logId', extraId);
-      const r = await fetch(`/api/projects/${pid}/installation/${idx}/log-photo`, { method: 'POST', body: fd });
-      if (r.ok) {
-        const d = await r.json();
-        extraPhotos.push(d.photoPath);
+      try {
+        const extraBlob = await compressInstallImage(_ilogFiles[i]);
+        const extraId = 'log_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        const fd = new FormData();
+        fd.append('photo', extraBlob, 'install.jpg');
+        fd.append('logId', extraId);
+        const r = await fetch(`/api/projects/${pid}/installation/${idx}/log-photo`, { method: 'POST', body: fd });
+        if (r.ok) {
+          const d = await r.json();
+          extraPhotos.push(d.photoPath);
+        } else {
+          extraFailed++;
+        }
+      } catch (e) {
+        extraFailed++;
+      }
+    }
+    if (extraFailed > 0) {
+      const proceed = confirm(`${extraFailed} of ${_ilogFiles.length - 1} extra photo(s) failed to upload. Continue saving the log without them?`);
+      if (!proceed) {
+        showMsg('Log not saved — retry uploads', 'error');
+        return;
       }
     }
 
@@ -1417,14 +1431,18 @@ async function deleteInstallLogEntry(pid, idx, logId) {
   const result = await confirmDelete('Delete this log entry?');
   if (!result) return;
   try {
-    const res = await fetch(`/api/projects/${pid}/installation/${idx}/logs/${logId}`, { method: 'DELETE' });
+    const res = await fetch(`/api/projects/${pid}/installation/${idx}/logs/${logId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason: result.reason }),
+    });
     if (!res.ok) throw new Error('Delete failed');
-    const result = await res.json();
+    const responseData = await res.json();
     const proj = projectData[pid];
     if (proj && proj.installation && proj.installation[idx]) {
       proj.installation[idx].logs = (proj.installation[idx].logs || []).filter(l => l.id !== logId);
-      proj.installation[idx].qtyDone = result.qtyDone;
-      if (result.status) proj.installation[idx].status = result.status;
+      proj.installation[idx].qtyDone = responseData.qtyDone;
+      if (responseData.status) proj.installation[idx].status = responseData.status;
     }
     buildItemsForCard(proj);
     showMsg('Log entry deleted', 'success');

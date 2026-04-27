@@ -1155,6 +1155,10 @@ function confirmDelete(title, itemName) {
       <div class="modal-section-label" style="margin-top:14px;">Procurement</div>
       <div class="view-edit-grid">
         <div class="field">
+          <label>PR Number</label>
+          <input type="text" id="vpr-prnumber" value="${escHtml(pr.prNumber || '')}" placeholder="e.g. PR26-001" maxlength="30">
+        </div>
+        <div class="field">
           <label>Supplier</label>
           <input type="text" id="vpr-supplier" list="vpr-supplier-list" value="${escHtml(pr.supplier || '')}" placeholder="Select or type supplier">
           <datalist id="vpr-supplier-list">${supplierOpts}</datalist>
@@ -1225,6 +1229,12 @@ function confirmDelete(title, itemName) {
     const supplier = (document.getElementById('vpr-supplier') || {}).value || '';
     const poNumber = (document.getElementById('vpr-po') || {}).value || '';
     const eta      = (document.getElementById('vpr-eta') || {}).value || '';
+    const prNumberRaw = (document.getElementById('vpr-prnumber') || {}).value || '';
+    const prNumber    = prNumberRaw.trim();
+    if (!prNumber) { toast('PR Number cannot be empty', false); _busy = false; return; }
+    if (prNumber !== pr.prNumber && allPRs.some(p => p.id !== pr.id && (p.prNumber || '').toLowerCase() === prNumber.toLowerCase())) {
+      toast(`PR Number "${prNumber}" already in use`, false); _busy = false; return;
+    }
 
     const items = (pr.items || []).map((item, i) => {
       const inp = document.querySelector(`.vpr-unit-price[data-idx="${i}"]`);
@@ -1241,14 +1251,23 @@ function confirmDelete(title, itemName) {
       if (pr.projectCode) formData.append('projectCode', pr.projectCode);
       try {
         const uploadRes = await fetch('/api/upload-po-doc', { method: 'POST', body: formData });
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json();
-          poDocPath = uploadData.filePath;
+        if (!uploadRes.ok) {
+          const errData = await uploadRes.json().catch(() => ({}));
+          toast(`PO document upload failed: ${errData.error || uploadRes.status} — PR not saved`, false);
+          _busy = false;
+          return;
         }
-      } catch {}
+        const uploadData = await uploadRes.json();
+        poDocPath = uploadData.filePath;
+      } catch (e) {
+        toast(`PO document upload failed: ${e.message || 'network error'} — PR not saved`, false);
+        _busy = false;
+        return;
+      }
     }
 
     const payload = { items };
+    if (prNumber !== pr.prNumber) payload.prNumber = prNumber;
     if (supplier) payload.supplier = supplier;
     if (poNumber) payload.poNumber = poNumber;
     if (eta)      payload.eta = eta;

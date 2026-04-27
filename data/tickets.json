@@ -1,38 +1,5 @@
 [
   {
-    "id": "mo80btmd7hod",
-    "title": "Put In PDF & Picture for Procurement",
-    "type": "Feature Request",
-    "description": "",
-    "submittedBy": "Lai Wei Xiang",
-    "submittedAt": "2026-04-21T02:31:07.189Z",
-    "status": "Done",
-    "priority": "Medium",
-    "notes": ""
-  },
-  {
-    "id": "mo8g7j8jwkvl",
-    "title": "Manpower not reflecting MC Status",
-    "type": "Bug",
-    "description": "",
-    "submittedBy": "Lai Wei Xiang",
-    "submittedAt": "2026-04-21T09:55:40.963Z",
-    "status": "Done",
-    "priority": "Medium",
-    "notes": ""
-  },
-  {
-    "id": "mo9cothqexv8",
-    "title": "EOD",
-    "type": "Feature Request",
-    "description": "Edit feature for EOD.",
-    "submittedBy": "Salve",
-    "submittedAt": "2026-04-22T01:04:55.118Z",
-    "status": "In Review",
-    "priority": "Medium",
-    "notes": ""
-  },
-  {
     "id": "mo9wjimdzwpc",
     "title": "LOG Photos",
     "type": "UI Feedback",
@@ -50,7 +17,7 @@
     "description": "",
     "submittedBy": "Lai Wei Xiang",
     "submittedAt": "2026-04-25T14:36:43.550Z",
-    "status": "New",
+    "status": "Done",
     "priority": "Medium",
     "notes": "",
     "attachments": [
@@ -70,7 +37,7 @@
     "description": "the PR number is fix , and cant manual input or edit",
     "submittedBy": "Chris",
     "submittedAt": "2026-04-27T02:33:02.282Z",
-    "status": "New",
+    "status": "Done",
     "priority": "High",
     "notes": "",
     "attachments": [
@@ -90,10 +57,18 @@
     "description": "current situation \r\nRemove name \r\n- Karupaiya Jaganathan \r\n-  Govindan Venkataswaran\r\n- Sekar Ganesh\r\n\r\nAdd in Name\r\n- Chelladurai\r\n- Sivaraj\r\n- Tai Jung Seng\r\n- Muthu",
     "submittedBy": "Chris",
     "submittedAt": "2026-04-27T02:42:33.312Z",
-    "status": "New",
+    "status": "Done",
     "priority": "High",
     "notes": "",
-    "attachments": []
+    "attachments": [],
+    "comments": [
+      {
+        "id": "moh87ujcv5yc",
+        "text": "Ensure in Manpower you also include the OT hours",
+        "author": "Lai Wei Xiang",
+        "createdAt": "2026-04-27T13:21:54.264Z"
+      }
+    ]
   },
   {
     "id": "moglqx6rxbrv",
@@ -102,7 +77,7 @@
     "description": "For the manpower planning - missing option for worker on leave",
     "submittedBy": "Chris",
     "submittedAt": "2026-04-27T02:52:52.995Z",
-    "status": "New",
+    "status": "Done",
     "priority": "High",
     "notes": "",
     "attachments": []

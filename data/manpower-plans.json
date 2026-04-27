@@ -616,7 +616,7 @@
           "projectId": "",
           "projectName": "",
           "location": "",
-          "notes": ""
+          "notes": "On Leave"
         }
       },
       "wi-rajagopal-mayakrishnan": {
@@ -869,13 +869,6 @@
         }
       },
       "supply-1776920267481": {
-        "mon": {
-          "type": "Installation",
-          "projectId": "",
-          "projectName": "",
-          "location": "",
-          "notes": ""
-        },
         "tue": {
           "type": "Installation",
           "projectId": "",
@@ -911,6 +904,13 @@
           "location": "",
           "notes": "",
           "otHours": 8
+        },
+        "mon": {
+          "type": "Installation",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": ""
         }
       },
       "supply-1776920283526": {
@@ -956,6 +956,15 @@
           "location": "",
           "notes": "",
           "otHours": 8
+        }
+      },
+      "wi-venkatakrishnapuram-palani": {
+        "mon": {
+          "type": "Maintenance",
+          "projectId": "",
+          "projectName": "",
+          "location": "",
+          "notes": "Blocker"
         }
       }
     },
@@ -1024,6 +1033,6 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-27T02:58:39.869Z"
+    "savedAt": "2026-04-27T14:41:36.766Z"
   }
 ]

@@ -152,7 +152,6 @@
       text-align: center; padding: 7px 6px;
       white-space: nowrap;
       border: 1px solid rgba(255,255,255,0.08);
-      position: sticky; top: 0; z-index: 2;
     }
     .th-worker { text-align: left !important; min-width: 155px; }
     .th-day { min-width: 105px; }
@@ -226,6 +225,7 @@
       border: 1px solid rgba(239,68,68,0.3); color: #dc2626;
     }
     .chip-off   { background: rgba(156,163,175,0.1); border: 1px solid rgba(156,163,175,0.2); color: #9ca3af; }
+    .chip-leave { background: rgba(6,182,212,0.13); border: 1px solid rgba(6,182,212,0.28); color: #0891b2; }
     .chip-title { font-size: 11px; font-weight: 700; }
     .chip-sub   {
       font-size: 10px; font-weight: 500; opacity: 0.85;
@@ -311,6 +311,7 @@
     .type-btn.sel-maint { color: #f97316; border-color: #f97316; background: rgba(249,115,22,0.12); }
     .type-btn.sel-maintenance { color: #a855f7; border-color: #a855f7; background: rgba(168,85,247,0.12); }
     .type-btn.sel-mc    { color: #dc2626; border-color: #ef4444; background: rgba(239,68,68,0.12); }
+    .type-btn.sel-leave { color: #0891b2; border-color: #06b6d4; background: rgba(6,182,212,0.12); }
     .type-btn.sel-clear { color: var(--text-muted); border-color: var(--border); }
     .popup-fields { display: none; flex-direction: column; gap: 8px; margin-bottom: 14px; }
     .popup-fields.vis { display: flex; }
@@ -623,6 +624,7 @@
       <button class="type-btn" data-type="Driver">🚚 Driver</button>
       <button class="type-btn" data-type="Maintenance">🛠 Maintenance</button>
       <button class="type-btn" data-type="MC">🤒 MC</button>
+      <button class="type-btn" data-type="Leave">🏖 Leave</button>
       <button class="type-btn" data-type="">✕ Clear</button>
     </div>
     <div class="popup-fields" id="popup-fields">
@@ -666,6 +668,7 @@
           <option value="Driver">🚚 Driver</option>
           <option value="Maintenance">🛠 Maintenance</option>
           <option value="MC">🤒 MC</option>
+          <option value="Leave">🏖 Leave</option>
           <option value="Off">🏠 Off</option>
         </select>
       </div>
@@ -918,7 +921,7 @@ async function applyAttendanceOverrides() {
     const r = await fetch('/api/attendance/week?weekStart=' + ws);
     if (!r.ok) return;
     const attWeek = await r.json(); // { workerId: { mon: {status,notes}, ... } }
-    const statusMap = { 'MC': 'MC', 'Off': 'Off', 'On Leave': 'Off', 'Absent': 'Off' };
+    const statusMap = { 'MC': 'MC', 'Off': 'Off', 'On Leave': 'Leave', 'Absent': 'Off' };
     Object.entries(attWeek).forEach(([wid, days]) => {
       Object.entries(days).forEach(([day, info]) => {
         const existing = (plan[wid] || {})[day];
@@ -1075,8 +1078,9 @@ function buildChip(data, workerId, day) {
   else if (t === 'Maintenance') cls += 'chip-maintenance';
   else if (t === 'MC')  cls += 'chip-mc';
   else if (t === 'Off') cls += 'chip-off';
+  else if (t === 'Leave') cls += 'chip-leave';
   div.className = cls;
-  const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Driver:'🚚 Driver', Maintenance:'🛠 Maint', MC:'🤒 MC', Off:'🏠 Off' }[t] || t;
+  const label = { Fabrication:'🏭 Factory', Installation:'🔧 Site', Driver:'🚚 Driver', Maintenance:'🛠 Maint', MC:'🤒 MC', Off:'🏠 Off', Leave:'🏖 Leave' }[t] || t;
   const sub = data._auto ? 'from attendance' : (data.projectName || data.location || data.notes || '');
   const otBadge = data.otHours ? `<span class="chip-ot">+${data.otHours}h OT</span>` : '';
   div.innerHTML =
@@ -1126,7 +1130,7 @@ function openPopup(worker, day) {
 }
 
 function applyTypeStyle(btn, type) {
-  const map = { Fabrication:'sel-fab', Installation:'sel-inst', Driver:'sel-maint', Maintenance:'sel-maintenance', MC:'sel-mc', '':'sel-clear' };
+  const map = { Fabrication:'sel-fab', Installation:'sel-inst', Driver:'sel-maint', Maintenance:'sel-maintenance', MC:'sel-mc', Leave:'sel-leave', '':'sel-clear' };
   btn.classList.add(map[type] || 'sel-clear');
 }
 
@@ -1142,7 +1146,7 @@ function showFields(type) {
   const fields = document.getElementById('popup-fields');
   const projW  = document.getElementById('proj-wrap');
   const otW    = document.getElementById('ot-wrap');
-  if (!type || type === 'MC') { fields.classList.remove('vis'); return; }
+  if (!type || type === 'MC' || type === 'Leave') { fields.classList.remove('vis'); return; }
   fields.classList.add('vis');
   projW.style.display = (type === 'Installation' || type === 'Fabrication' || type === 'Driver') ? '' : 'none';
   const isSupplyWorker = popupWorker && String(popupWorker.id).startsWith('supply-');
@@ -1187,6 +1191,8 @@ document.getElementById('popup-save').addEventListener('click', () => {
     delete plan[popupWorker.id][popupDay];
   } else if (type === 'MC') {
     plan[popupWorker.id][popupDay] = { type: 'MC', notes: 'MC' };
+  } else if (type === 'Leave') {
+    plan[popupWorker.id][popupDay] = { type: 'Leave', notes: 'On Leave' };
   } else {
     // projectId/projectName persist for Installation AND Fabrication — both need to
     // know which project the worker is assigned to. Transport/Off/other types leave blank.
@@ -1272,6 +1278,7 @@ async function removeSupplyWorker(id) {
   supplyWorkers = supplyWorkers.filter(w => w.id !== id);
   delete plan[id];
   render();
+  setTimeout(() => document.getElementById('save-btn') && document.getElementById('save-btn').click(), 100);
 }
 
 // ── Summary ────────────────────────────────────────────
@@ -1285,7 +1292,7 @@ function updateSummary() {
       else if (d.type === 'Installation') inst++;
       else if (d.type === 'Driver')  maint++;
       else if (d.type === 'Maintenance') maintenance++;
-      else if (d.type === 'MC' || d.type === 'Off') mc++;
+      else if (d.type === 'MC' || d.type === 'Off' || d.type === 'Leave') mc++;
     });
   });
   document.getElementById('stat-total').textContent = (workers.length + supplyWorkers.length) + ' workers';
@@ -1401,8 +1408,8 @@ function esc(s) {
     const t = selType.value;
     const needsProj = (t === 'Fabrication' || t === 'Installation' || t === 'Driver');
     projWrap.style.display = needsProj ? '' : 'none';
-    notesWrap.style.display = (t === 'MC' || t === 'Off') ? 'none' : '';
-    otWrap.style.display = (t === 'MC' || t === 'Off') ? 'none' : '';
+    notesWrap.style.display = (t === 'MC' || t === 'Off' || t === 'Leave') ? 'none' : '';
+    otWrap.style.display = (t === 'MC' || t === 'Off' || t === 'Leave') ? 'none' : '';
   }
 
   selType.addEventListener('change', updateFieldVisibility);
@@ -1460,6 +1467,8 @@ function esc(s) {
         plan[wid][day] = { type: 'MC', notes: 'MC' };
       } else if (type === 'Off') {
         plan[wid][day] = { type: 'Off', notes: 'Off' };
+      } else if (type === 'Leave') {
+        plan[wid][day] = { type: 'Leave', notes: 'On Leave' };
       } else {
         const keepsProject = (type === 'Fabrication' || type === 'Installation' || type === 'Driver');
         let dayOT = otHours;
@@ -1513,7 +1522,7 @@ async function loadTransport() {
     const siteGroups = {};
     allW.forEach(w => {
       const a = (plan[w.id] || {})[dayKey];
-      if (!a || !a.type || a.type === 'MC' || a.type === 'Off') return;
+      if (!a || !a.type || a.type === 'MC' || a.type === 'Off' || a.type === 'Leave') return;
       tpPresent.push({ workerId: w.id, workerName: w.name, name: w.name, type: a.type });
       // Group installation workers by project for trip suggestions
       if (a.type === 'Installation' && a.projectId) {
@@ -1586,7 +1595,7 @@ function createTripFromSuggestion(idx) {
   const s = tpSuggestedTrips[idx];
   if (!s) return;
   tpTrips.push({
-    id: 'trip-' + Date.now(),
+    id: tpNewId(),
     driver: '',
     vehicle: '',
     departureTime: '07:30',

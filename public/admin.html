@@ -304,10 +304,10 @@
       `;
       tr.querySelector('[data-action="edit"]').addEventListener('click', () => enterEditMode(tr, name, email, false));
       tr.querySelector('[data-action="delete"]').addEventListener('click', async () => {
-        const reason = await confirmDelete(`Remove "${name}" from staff list?`);
-        if (!reason) return;
+        const result = await confirmDelete(`Remove "${name}" from staff list?`);
+        if (!result) return;
         try {
-          await api('DELETE', `/api/staff/${encodeURIComponent(name)}`, withAuth({ reason }));
+          await api('DELETE', `/api/staff/${encodeURIComponent(name)}`, withAuth({ reason: result.reason }));
           showToast(`${name} removed.`, 'success');
           await loadStaff();
         } catch (err) { showToast(err.message, 'error'); }
@@ -423,10 +423,10 @@
       `;
       tr.querySelector('[data-action="edit-worker"]').addEventListener('click', () => enterWorkerEditMode(tr, w, false));
       tr.querySelector('[data-action="delete-worker"]').addEventListener('click', async () => {
-        const reason = await confirmDelete(`Remove worker "${w.name}"?`);
-        if (!reason) return;
+        const result = await confirmDelete(`Remove worker "${w.name}"?`);
+        if (!result) return;
         try {
-          await api('DELETE', `/api/workers/${encodeURIComponent(w.id)}`, withAuth({ reason }));
+          await api('DELETE', `/api/workers/${encodeURIComponent(w.id)}`, withAuth({ reason: result.reason }));
           showToast(`${w.name} removed.`, 'success');
           await loadWorkers();
         } catch (err) { showToast(err.message, 'error'); }

@@ -4,7 +4,7 @@
     "name": "Chin Poh Fatt",
     "nationality": "Malaysian",
     "code": "WM",
-    "role": "Worker",
+    "role": "Fabricator",
     "active": true
   },
   {
@@ -12,7 +12,7 @@
     "name": "Ee Kok Keong",
     "nationality": "Malaysian",
     "code": "WM",
-    "role": "Worker",
+    "role": "Fabricator",
     "active": true
   },
   {
@@ -20,7 +20,7 @@
     "name": "Pow Kin Pheng",
     "nationality": "Malaysian",
     "code": "WM",
-    "role": "Worker",
+    "role": "Fabricator",
     "active": true
   },
   {
@@ -28,7 +28,7 @@
     "name": "Tan Yock Wan",
     "nationality": "Malaysian",
     "code": "WM",
-    "role": "Worker",
+    "role": "Fabricator / Gate Lead Worker",
     "active": true
   },
   {
@@ -36,7 +36,7 @@
     "name": "Lin Chee Cheong",
     "nationality": "Malaysian",
     "code": "WM",
-    "role": "Worker",
+    "role": "Fabricator",
     "active": true
   },
   {
@@ -44,7 +44,7 @@
     "name": "Fangkaew Sarawut",
     "nationality": "Thai",
     "code": "WT",
-    "role": "Worker",
+    "role": "Lead Worker / Welder",
     "active": true
   },
   {
@@ -52,7 +52,7 @@
     "name": "Hoomphaeng Kritsana",
     "nationality": "Thai",
     "code": "WT",
-    "role": "Worker",
+    "role": "Lead Worker / Welder",
     "active": true
   },
   {
@@ -60,7 +60,7 @@
     "name": "Kannaiyan Jaishankar",
     "nationality": "Indian",
     "code": "WI",
-    "role": "Worker",
+    "role": "General Worker",
     "active": true
   },
   {
@@ -85,7 +85,7 @@
     "name": "Perumal Kamaraj",
     "nationality": "Indian",
     "code": "WI",
-    "role": "Worker",
+    "role": "Safety / Lifting Supervisor",
     "active": true,
     "startDate": "2025-05-20"
   },
@@ -121,7 +121,7 @@
     "nationality": "Indian",
     "code": "WI",
     "role": "Worker",
-    "active": true,
+    "active": false,
     "startDate": "2022-06-08"
   },
   {
@@ -139,7 +139,7 @@
     "name": "Rajagopal Mayakrishnan",
     "nationality": "Indian",
     "code": "WI",
-    "role": "Worker",
+    "role": "Site / Safety Supervisor",
     "active": true,
     "startDate": "2024-01-15"
   },
@@ -149,7 +149,7 @@
     "nationality": "Indian",
     "code": "WI",
     "role": "Worker",
-    "active": true
+    "active": false
   },
   {
     "id": "wi-venkatakrishnapuram-palani",
@@ -172,7 +172,7 @@
     "name": "Dhadikaran Muruganandam",
     "nationality": "Indian",
     "code": "WI",
-    "role": "Worker",
+    "role": "Safety Supervisor",
     "active": true
   },
   {
@@ -199,7 +199,7 @@
     "nationality": "Indian",
     "code": "WI",
     "role": "Worker",
-    "active": true,
+    "active": false,
     "startDate": "2025-04-19"
   },
   {
@@ -216,7 +216,7 @@
     "name": "Chang Mui Yam",
     "nationality": "Singaporean",
     "code": "SS",
-    "role": "Worker",
+    "role": "Driver / Worker",
     "active": true
   },
   {
@@ -224,7 +224,7 @@
     "name": "Chin Poh Hoon",
     "nationality": "Singaporean",
     "code": "SS",
-    "role": "Worker",
+    "role": "General Worker",
     "active": true
   },
   {
@@ -232,7 +232,7 @@
     "name": "Tai Nyur Hing",
     "nationality": "Singaporean",
     "code": "SS",
-    "role": "Worker",
+    "role": "Site Supervisor / Installer",
     "active": true
   },
   {
@@ -240,7 +240,51 @@
     "name": "Yap Teck Huat",
     "nationality": "Singaporean",
     "code": "SS",
-    "role": "Worker",
+    "role": "Lorry Crane Operator",
     "active": true
+  },
+  {
+    "id": "moh7kn0a0lat",
+    "name": "Panneerselvam Chelladurai",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Worker / Lifting Supervisor",
+    "active": true,
+    "startDate": "",
+    "notes": "",
+    "createdAt": "2026-04-27T13:03:51.418Z"
+  },
+  {
+    "id": "moh7lpnekn1e",
+    "name": "Palanisamy Sivaraj",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Safety Supervisor",
+    "active": true,
+    "startDate": "",
+    "notes": "",
+    "createdAt": "2026-04-27T13:04:41.498Z"
+  },
+  {
+    "id": "moh7myhotpm6",
+    "name": "Tan Jun Seng",
+    "nationality": "Malaysian",
+    "code": "WM",
+    "role": "Fabricator",
+    "active": true,
+    "startDate": "",
+    "notes": "",
+    "createdAt": "2026-04-27T13:05:39.612Z"
+  },
+  {
+    "id": "moh7pbisofjr",
+    "name": "Vengatachalam Angamuthu",
+    "nationality": "Indian",
+    "code": "WI",
+    "role": "Driver",
+    "active": true,
+    "startDate": "",
+    "notes": "",
+    "createdAt": "2026-04-27T13:07:29.812Z"
   }
 ]

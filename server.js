@@ -1112,6 +1112,7 @@ app.put('/api/tickets/:id', (req, res) => {
     const tickets = readTickets();
     const idx = tickets.findIndex(t => t.id === req.params.id);
     if (idx === -1) return res.status(404).json({ error: 'Ticket not found' });
+    const prevStatus = tickets[idx].status;
     const status   = req.body.status   != null ? sanitizeStr(req.body.status, 20)   : undefined;
     const priority = req.body.priority != null ? sanitizeStr(req.body.priority, 20) : undefined;
     const notes    = req.body.notes    != null ? sanitizeStr(req.body.notes, 2000)   : undefined;
@@ -1123,8 +1124,27 @@ app.put('/api/tickets/:id', (req, res) => {
     writeTickets(tickets);
     res.json(tickets[idx]);
 
-    // Clean up Claude memory file when ticket is resolved
-    if (status === 'Done') {
+    // Notify requestor when ticket is marked Done
+    if (status === 'Done' && prevStatus !== 'Done') {
+      const ticket = tickets[idx];
+      const creds  = readCredentials();
+      const reqEmail = Object.entries(creds).find(([, c]) => c.name === ticket.submittedBy)?.[0];
+      if (reqEmail) {
+        sendEmail(reqEmail, ticket.submittedBy,
+          `[Feedback Resolved] ${ticket.title}`,
+          emailWrap(`Hi ${escHtml((ticket.submittedBy || '').split(' ')[0])},`,
+            `<p style="margin:0 0 16px;">Your feedback has been marked as <strong>Done</strong>.</p>` +
+            emailTable([
+              ['Title', escHtml(ticket.title)],
+              ['Type', escHtml(ticket.type)],
+              ['Priority', escHtml(ticket.priority)],
+              ticket.notes ? ['Resolution Notes', escHtml(ticket.notes)] : null
+            ]),
+            'View Feedback', `${APP_URL}/feedback`)
+        ).catch(() => {});
+      }
+
+      // Clean up Claude memory file when ticket is resolved
       try {
         const memDir = path.join(__dirname, '..', '.claude', 'projects', '-home-ubuntu-ops-tracker', 'memory');
         const memFile = path.join(memDir, `feedback_${req.params.id}.md`);
@@ -1153,6 +1173,26 @@ app.post('/api/tickets/:id/comments', postRateLimit, (req, res) => {
     tickets[idx].comments.push(comment);
     writeTickets(tickets);
     res.status(201).json(comment);
+
+    // Notify requestor when someone else comments on their ticket
+    const ticket = tickets[idx];
+    if (ticket.submittedBy && ticket.submittedBy !== author) {
+      const creds = readCredentials();
+      const reqEmail = Object.entries(creds).find(([, c]) => c.name === ticket.submittedBy)?.[0];
+      if (reqEmail) {
+        sendEmail(reqEmail, ticket.submittedBy,
+          `[Feedback Comment] ${ticket.title}`,
+          emailWrap(`Hi ${escHtml((ticket.submittedBy || '').split(' ')[0])},`,
+            `<p style="margin:0 0 16px;"><strong>${escHtml(author)}</strong> added a comment on your feedback.</p>` +
+            emailTable([
+              ['Title', escHtml(ticket.title)],
+              ['Status', escHtml(ticket.status)],
+              ['Comment', escHtml(text)]
+            ]),
+            'View Feedback', `${APP_URL}/feedback`)
+        ).catch(() => {});
+      }
+    }
   } catch (e) { logError('route.post.ticket-comment', e); res.status(500).json({ error: 'Internal server error' }); }
 });
 
@@ -2214,6 +2254,8 @@ app.delete('/api/projects/:id', async (req, res) => {
 
     // Cascade cleanup: remove orphaned records referencing this project
     try {
+      const jobCode = deleted.jobCode || '';
+
       // Site requests
       const srs = readSiteRequests();
       const filteredSRs = srs.filter(sr => sr.projectId !== pid);
@@ -2223,6 +2265,56 @@ app.delete('/api/projects/:id', async (req, res) => {
       const tasks = readTasks();
       const filteredTasks = tasks.filter(t => t.projectId !== pid);
       if (filteredTasks.length < tasks.length) writeTasks(filteredTasks);
+
+      // Purchase Requisitions (linked by projectCode === jobCode)
+      const prs = readPRs();
+      const filteredPRs = jobCode ? prs.filter(p => p.projectCode !== jobCode) : prs;
+      if (filteredPRs.length < prs.length) writePRs(filteredPRs);
+
+      // Delivery Orders (linked by projectCode === jobCode)
+      const dos = readDOs();
+      const filteredDOs = jobCode ? dos.filter(d => d.projectCode !== jobCode) : dos;
+      if (filteredDOs.length < dos.length) writeDOs(filteredDOs);
+
+      // Manpower plans — scrub assignment cells with this projectId
+      const plans = readManpowerPlans();
+      let plansMutated = 0;
+      for (const plan of plans) {
+        if (!plan.assignments) continue;
+        for (const wid of Object.keys(plan.assignments)) {
+          const days = plan.assignments[wid] || {};
+          for (const day of Object.keys(days)) {
+            const cell = days[day];
+            if (cell && cell.projectId === pid) {
+              cell.projectId = '';
+              cell.projectName = '';
+              plansMutated++;
+            }
+          }
+        }
+      }
+      if (plansMutated > 0) writeManpowerPlans(plans);
+
+      // Transport trips — drop trips for this project
+      const trips = readTransport();
+      const filteredTrips = trips.filter(entry => {
+        if (!Array.isArray(entry.trips)) return true;
+        const before = entry.trips.length;
+        entry.trips = entry.trips.filter(t => t.projectId !== pid);
+        return entry.trips.length > 0 || before === 0;
+      });
+      writeTransport(filteredTrips);
+
+      // Sales opportunities — clear convertedProjectId (preserve the opp record)
+      const opps = readOpps();
+      let oppsMutated = 0;
+      for (const opp of opps) {
+        if (opp.convertedProjectId === pid) {
+          opp.convertedProjectId = null;
+          oppsMutated++;
+        }
+      }
+      if (oppsMutated > 0) writeOpps(opps);
 
       // Upload files on disk — project docs, fab-log photos, install-log photos
       const safePid = path.basename(pid);
@@ -2239,9 +2331,13 @@ app.delete('/api/projects/:id', async (req, res) => {
 
       logActivity('project.deleted.cascade', {
         projectId: pid,
-        jobCode: deleted.jobCode || '',
-        removedSRs: srs.length - filteredSRs.length,
-        removedTasks: tasks.length - filteredTasks.length
+        jobCode,
+        removedSRs:    srs.length - filteredSRs.length,
+        removedTasks:  tasks.length - filteredTasks.length,
+        removedPRs:    prs.length - filteredPRs.length,
+        removedDOs:    dos.length - filteredDOs.length,
+        plansMutated,
+        oppsMutated
       });
     } catch (cascadeErr) { logError('project.delete.cascade', cascadeErr); }
 
@@ -5051,13 +5147,57 @@ app.put('/api/workers/:id', async (req, res) => {
 app.delete('/api/workers/:id', async (req, res) => {
   try {
     if (!await requireAdminAuth(req, res)) return;
+    const wid = req.params.id;
     const workers = readWorkers();
-    const idx = workers.findIndex(w => w.id === req.params.id);
+    const idx = workers.findIndex(w => w.id === wid);
     if (idx === -1) return res.status(404).json({ error: 'Worker not found' });
     const deleted = workers[idx];
     workers.splice(idx, 1);
     writeWorkers(workers);
-    logActivity('worker.deleted', { workerId: req.params.id, name: deleted.name });
+
+    // Cascade cleanup: drop the worker's references in plans, attendance, transport
+    let plansMutated = 0, attMutated = 0, tripsMutated = 0;
+    try {
+      // Manpower plans — delete this workerId from assignments and supplyWorkers list
+      const plans = readManpowerPlans();
+      for (const plan of plans) {
+        if (plan.assignments && plan.assignments[wid]) {
+          delete plan.assignments[wid];
+          plansMutated++;
+        }
+        if (Array.isArray(plan.supplyWorkers)) {
+          const before = plan.supplyWorkers.length;
+          plan.supplyWorkers = plan.supplyWorkers.filter(sw => sw && sw.id !== wid);
+          if (plan.supplyWorkers.length < before) plansMutated++;
+        }
+      }
+      if (plansMutated > 0) writeManpowerPlans(plans);
+
+      // Attendance — drop records for this worker
+      const att = readAttendance();
+      for (const day of att) {
+        if (!Array.isArray(day.records)) continue;
+        const before = day.records.length;
+        day.records = day.records.filter(r => r.workerId !== wid);
+        if (day.records.length < before) attMutated++;
+      }
+      if (attMutated > 0) writeAttendance(att);
+
+      // Transport — drop this worker from any trip's worker list
+      const trips = readTransport();
+      for (const entry of trips) {
+        if (!Array.isArray(entry.trips)) continue;
+        for (const trip of entry.trips) {
+          if (!Array.isArray(trip.workers)) continue;
+          const before = trip.workers.length;
+          trip.workers = trip.workers.filter(w => (w.workerId || w.id) !== wid);
+          if (trip.workers.length < before) tripsMutated++;
+        }
+      }
+      if (tripsMutated > 0) writeTransport(trips);
+    } catch (cascadeErr) { logError('worker.delete.cascade', cascadeErr); }
+
+    logActivity('worker.deleted', { workerId: wid, name: deleted.name, plansMutated, attMutated, tripsMutated });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.workers', e); res.status(500).json({ error: 'Internal server error' }); }
 });
@@ -7185,7 +7325,26 @@ app.delete('/api/purchase-requisitions/:id', async (req, res) => {
         try { fs.unlinkSync(abs); filesUnlinked++; } catch (_) { /* tolerate */ }
       }
     }
-    logActivity('pr.deleted', { id: removed.id, prNumber: removed.prNumber, filesUnlinked });
+
+    // Cascade: remove DOs linked to this PR (and unlink their files)
+    let dosRemoved = 0;
+    try {
+      const dos = readDOs();
+      const keep = [];
+      for (const d of dos) {
+        if (d.prId !== removed.id) { keep.push(d); continue; }
+        dosRemoved++;
+        if (d.filename) {
+          const doAbs = path.resolve(path.join(UPLOADS_DIR, d.filename));
+          if (doAbs.startsWith(path.resolve(UPLOADS_DIR) + path.sep) && fs.existsSync(doAbs)) {
+            try { fs.unlinkSync(doAbs); filesUnlinked++; } catch (_) { /* tolerate */ }
+          }
+        }
+      }
+      if (dosRemoved > 0) writeDOs(keep);
+    } catch (cascadeErr) { logError('pr.delete.cascade', cascadeErr); }
+
+    logActivity('pr.deleted', { id: removed.id, prNumber: removed.prNumber, filesUnlinked, dosRemoved });
     res.json({ ok: true });
   } catch (e) { logError('route.delete.purchase-requisitions', e); res.status(500).json({ error: 'Internal server error' }); }
 });

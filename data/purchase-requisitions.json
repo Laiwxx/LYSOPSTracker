@@ -2,7 +2,7 @@
   {
     "id": "mogi5lfqdcae",
     "prNumber": "PR26-001",
-    "poNumber": null,
+    "poNumber": "0130/WK",
     "requestDate": "2026-04-27",
     "projectCode": "",
     "site": "1 Benoi Road",
@@ -11,21 +11,22 @@
         "description": "CO2 cylinder",
         "qty": 20,
         "unit": "",
-        "unitPrice": null,
+        "unitPrice": 20,
         "requiredDate": "2026-04-28",
         "qtyArrived": 0,
         "arriveDate": "2026-04-27",
         "outstanding": 20
       }
     ],
-    "status": "Pending",
-    "supplier": null,
-    "eta": null,
+    "status": "Ordered",
+    "supplier": "WKS Industrial Gas Pte Ltd",
+    "eta": "2026-04-28",
     "urgency": "Normal",
     "notes": "Collection for 15 Empty cylinder",
     "submittedBy": "Chris",
     "createdBy": "Chris",
     "createdAt": "2026-04-27T01:12:19.142Z",
-    "updatedAt": "2026-04-27T02:25:03.849Z"
+    "updatedAt": "2026-04-27T09:49:32.391Z",
+    "poDocPath": "/uploads/po-docs/1777283372296-PR26-0073-PL00725.pdf"
   }
 ]
