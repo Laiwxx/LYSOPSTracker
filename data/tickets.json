@@ -62,5 +62,49 @@
         "url": "/uploads/tickets/moeg0d5q06zq/moeg0d5o-kx27-Screenshot_2026-04-25_223119.png"
       }
     ]
+  },
+  {
+    "id": "mogl1efej8jy",
+    "title": "unable to edite RP number",
+    "type": "Bug",
+    "description": "the PR number is fix , and cant manual input or edit",
+    "submittedBy": "Chris",
+    "submittedAt": "2026-04-27T02:33:02.282Z",
+    "status": "New",
+    "priority": "High",
+    "notes": "",
+    "attachments": [
+      {
+        "filename": "mogl1efc-yod6-Screenshot_2026-04-27_102949.png",
+        "originalName": "Screenshot 2026-04-27 102949.png",
+        "mimetype": "image/png",
+        "size": 36618,
+        "url": "/uploads/tickets/mogl1efej8jy/mogl1efc-yod6-Screenshot_2026-04-27_102949.png"
+      }
+    ]
+  },
+  {
+    "id": "mogldn1ck4kw",
+    "title": "Manpower tab , some people already left company , some name is not avaliable",
+    "type": "Bug",
+    "description": "current situation \r\nRemove name \r\n- Karupaiya Jaganathan \r\n-  Govindan Venkataswaran\r\n- Sekar Ganesh\r\n\r\nAdd in Name\r\n- Chelladurai\r\n- Sivaraj\r\n- Tai Jung Seng\r\n- Muthu",
+    "submittedBy": "Chris",
+    "submittedAt": "2026-04-27T02:42:33.312Z",
+    "status": "New",
+    "priority": "High",
+    "notes": "",
+    "attachments": []
+  },
+  {
+    "id": "moglqx6rxbrv",
+    "title": "Assign Worker for manpower , missin on leave option",
+    "type": "Bug",
+    "description": "For the manpower planning - missing option for worker on leave",
+    "submittedBy": "Chris",
+    "submittedAt": "2026-04-27T02:52:52.995Z",
+    "status": "New",
+    "priority": "High",
+    "notes": "",
+    "attachments": []
   }
 ]

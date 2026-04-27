@@ -122,13 +122,19 @@
         "ts": "2026-04-23T14:08:28.497Z",
         "type": "attachment",
         "note": "📎 Fetched 1 file(s) from email: image001.png"
+      },
+      {
+        "ts": "2026-04-27T01:01:21.499Z",
+        "type": "auto-nudge",
+        "note": "24hr auto-nudge sent to meiyan.how@tateng.com.sg"
       }
     ],
     "createdBy": "Lai Wei Xiang",
     "createdAt": "2026-04-23T13:59:17.233Z",
     "_sourceEmailId": "AAMkAGYwNjkwNjBmLWJmNjQtNDZhMC05OWU5LTIyNWEzNTBkNjE2MQBGAAAAAADtUQaiQAHYS719gMdp1WEFBwD3t-g12QxDRqtVgpz1lLWDAAAAAAEMAAD3t-g12QxDRqtVgpz1lLWDAAUexIRHAAA=",
     "_sourceMailbox": "enquiry@laiyewseng.com.sg",
-    "updatedAt": "2026-04-23T14:08:28.497Z"
+    "updatedAt": "2026-04-23T14:08:28.497Z",
+    "_nudgeSentAt": "2026-04-27T01:01:21.499Z"
   },
   {
     "id": "opp-mobjsk4s9478",
@@ -170,13 +176,19 @@
         "ts": "2026-04-23T14:08:23.151Z",
         "type": "attachment",
         "note": "📎 Fetched 1 file(s) from email: C20260244Q-RR.pdf"
+      },
+      {
+        "ts": "2026-04-27T01:01:21.759Z",
+        "type": "auto-nudge",
+        "note": "24hr auto-nudge sent to coolnexionsales@gmail.com"
       }
     ],
     "createdBy": "Lai Wei Xiang",
     "createdAt": "2026-04-23T13:59:19.276Z",
     "_sourceEmailId": "AAMkAGYwNjkwNjBmLWJmNjQtNDZhMC05OWU5LTIyNWEzNTBkNjE2MQBGAAAAAADtUQaiQAHYS719gMdp1WEFBwD3t-g12QxDRqtVgpz1lLWDAAAAAAEMAAD3t-g12QxDRqtVgpz1lLWDAAUexIQ-AAA=",
     "_sourceMailbox": "enquiry@laiyewseng.com.sg",
-    "updatedAt": "2026-04-23T14:08:23.151Z"
+    "updatedAt": "2026-04-23T14:08:23.151Z",
+    "_nudgeSentAt": "2026-04-27T01:01:21.759Z"
   },
   {
     "id": "opp-mobkb4ecmkdz",
@@ -211,11 +223,17 @@
         "ts": "2026-04-23T14:13:45.348Z",
         "type": "created",
         "note": "Lead created from email: \"RFQ Biz@lert Notification for 2026/00233\" from SESAMiCustcare@sesami.com (enquiry@laiyewseng.com.sg)"
+      },
+      {
+        "ts": "2026-04-27T01:01:22.102Z",
+        "type": "auto-nudge",
+        "note": "24hr auto-nudge sent to SESAMiCustcare@sesami.com"
       }
     ],
     "createdBy": "Lai Wei Xiang",
     "createdAt": "2026-04-23T14:13:45.348Z",
     "_sourceEmailId": "AAMkAGYwNjkwNjBmLWJmNjQtNDZhMC05OWU5LTIyNWEzNTBkNjE2MQBGAAAAAADtUQaiQAHYS719gMdp1WEFBwD3t-g12QxDRqtVgpz1lLWDAAAAAAEMAAD3t-g12QxDRqtVgpz1lLWDAAUexIQ1AAA=",
-    "_sourceMailbox": "enquiry@laiyewseng.com.sg"
+    "_sourceMailbox": "enquiry@laiyewseng.com.sg",
+    "_nudgeSentAt": "2026-04-27T01:01:22.102Z"
   }
 ]

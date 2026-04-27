@@ -1361,14 +1361,14 @@
     "id": "bd-22724-poc-t232-woodland",
     "jobCode": "BD 22724 - POC (T232 Woodland)",
     "projectName": "T232 - Rapid Transit System",
-    "product": "730x SP30 Fixed Bollard",
+    "product": "612x ATG SP30 Fixed Bollard, 14x Cova Auto Bollard (1set of 14), 6x Cova Auto Bollard (1set of 6), 5x Cova Auto Bollard (1set of 5), 5x Cova Auto Bollard (1set of 5), 3x Cova Road Blocker (1set of 3m), 6x Admin Barrier with Boom Skirt, 13x Twist Removable Bollard, 4x Safetyflex Surface Mount Planter, 1x 5044mm c/c Streetscape Barrier, 1x 5300mm c/c Streetscape Barrier, 1x 6604mm c/c Streetscape Barrier, 1x 5948mm c/c Streetscape Barrier, 6x ATG Rapid Bollard, 35x ATG SP400 SM Fixed Bollard, 27x Engineered Bollard with Shear Studs, 130x LTA Bollard, 1x Chains",
     "contractValue": 2150000,
     "voValue": 0,
-    "client": "",
+    "client": "Land Transport Authority",
     "contact": "",
     "mainCon": "",
     "consultant": "",
-    "startDate": "",
+    "startDate": "2023-07-20",
     "endDate": "",
     "projectManager": "",
     "qs": "Salve",
@@ -1684,13 +1684,167 @@
     ],
     "productScope": [
       {
-        "item": "SP30 Fixed Bollard",
-        "qty": 730,
+        "item": "ATG SP30 Fixed Bollard",
+        "qty": 612,
         "unit": "units",
         "zoneLabel": "",
         "type": "Local Fabrication",
         "itemType": "Fixed",
-        "partsRequired": false
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 14)",
+        "qty": 14,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 6)",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 5)",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 5)",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Road Blocker (1set of 3m)",
+        "qty": 3,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Admin Barrier with Boom Skirt",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Twist Removable Bollard",
+        "qty": 13,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Safetyflex Surface Mount Planter",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "5044mm c/c Streetscape Barrier",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "5300mm c/c Streetscape Barrier",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "6604mm c/c Streetscape Barrier",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "5948mm c/c Streetscape Barrier",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG Rapid Bollard",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP400 SM Fixed Bollard",
+        "qty": 35,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Engineered Bollard with Shear Studs",
+        "qty": 27,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "LTA Bollard",
+        "qty": 130,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Chains",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "drawings": [],
@@ -4400,7 +4554,7 @@
     "id": "bd-25426-woh-hup-wcp",
     "jobCode": "BD 25426- WOH HUP (WCP)",
     "projectName": "Woodlands Check Point",
-    "product": "Crash Rated Fixed Bollard - 100 No's\r\nCrash Rated Road Blocker\r\nCrash Rated Auto Bollard\r\nSecurity Fence \r\nSecurity Gate",
+    "product": "254x CSG10840 Fixed Bollard, 254x 273.1mm dia x 3.4mmT SS Sleeve, 238x ATG SPK12 Fixed Bollard, 238x 323.9mm dia x 3.96mmT SS Sleeve, 3x Cova Auto Bollard (1set of 3), 4x Cova Auto Bollard (1set of 4), 5x Cova Auto Bollard (1set of 5), 6x Cova Auto Bollard (1set of 6), 24x Cova Auto Bollard (3sets of 8), 42x 235mm dia x 2mmT SS Sleeve, 2x ATG SP1000 Auto Bollard (1set of 2), 20x ATG SP1000 Auto Bollard (5sets of 4), 5x ATG SP1000 Auto Bollard (1set of 5), 6x ATG SP1000 Auto Bollard (1set of 6), 14x ATG SP1000 Auto Bollard (2sets of 7), 8x ATG SP1000 Auto Bollard (1set of 8)) 2, 18x ATG SP1000 Auto Bollard (2sets of 9), 10x ATG SP1000 Auto Bollard (1set of 10), 83x 323mm dia x 3.96mm T SS Sleeve, 1x Cova Road Blocker (1set of 1), 16x Cova Road Blocker (8sets of 2), 12x Cova Road Blocker (4sets of 3), 8x Cova Road Blocker (2sets of 4), 4x 4m wide 30Ton Road Blocker at 80kph, 2282x Type D1 fence, 578x Type D2 fence, 1147x Type D3 fence, 474x Type D4 fence, 608x Type D5 fence, 1x Type G1 DL Swing Gate 3.6mW x 3mH, 1x Type G1 DL Swing Gate 4.7mW x 3mH, 5x Type G1 DL Swing Gate 6.6mW x 3mH, 1x Type G1 DL Swing Gate 7mW x 3mH, 1x Type G1 DL Swing Gate 7.6mW x 3mH, 1x Type G2 DL Swing Gate 3mW x 3mH , 2x Type G2 DL Swing Gate 5.4mW x 3mH , 4x Type G2 DL Swing Gate 6.1mW x 3mH , 2x Type G2 DL Swing Gate 6.3mW x 3mH , 2x Type G2 DL Swing Gate 6.65mW x 3mH , 2x Type G2 DL Swing Gate 7mW x 3mH ",
     "contractValue": 7042720,
     "voValue": 0,
     "client": "",
@@ -4433,7 +4587,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 2,
@@ -4444,7 +4599,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 3,
@@ -4455,7 +4611,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 4,
@@ -4466,7 +4623,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 5,
@@ -4477,7 +4635,8 @@
         "done": "2026-04-19",
         "notes": "",
         "statusChangedAt": "2026-04-19T10:58:49.620Z",
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 6,
@@ -4488,7 +4647,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 7,
@@ -4499,7 +4659,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 8,
@@ -4510,7 +4671,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 9,
@@ -4521,7 +4683,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 10,
@@ -4532,7 +4695,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 11,
@@ -4543,7 +4707,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 12,
@@ -4554,7 +4719,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 13,
@@ -4565,7 +4731,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 14,
@@ -4576,7 +4743,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 15,
@@ -4587,7 +4755,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 16,
@@ -4598,7 +4767,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 17,
@@ -4609,7 +4779,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 18,
@@ -4620,7 +4791,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 19,
@@ -4631,7 +4803,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       },
       {
         "num": 20,
@@ -4642,7 +4815,8 @@
         "done": "",
         "notes": "",
         "statusChangedAt": null,
-        "fileName": ""
+        "fileName": "",
+        "refs": []
       }
     ],
     "documents": [],
@@ -4656,10 +4830,365 @@
     "drawings": [],
     "productScope": [
       {
-        "item": "Crash Rated Fixed Bollard - 100 No's\r\nCrash Rated Road Blocker\r\nCrash Rated Auto Bollard\r\nSecurity Fence \r\nSecurity Gate",
+        "item": "CSG10840 Fixed Bollard",
+        "qty": 254,
+        "unit": "units",
+        "zoneLabel": "",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "273.1mm dia x 3.4mmT SS Sleeve",
+        "qty": 254,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SPK12 Fixed Bollard",
+        "qty": 238,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "323.9mm dia x 3.96mmT SS Sleeve",
+        "qty": 238,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 3)",
+        "qty": 3,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 4)",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 5)",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (1set of 6)",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Auto Bollard (3sets of 8)",
+        "qty": 24,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "235mm dia x 2mmT SS Sleeve",
+        "qty": 42,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (1set of 2)",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (5sets of 4)",
+        "qty": 20,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (1set of 5)",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (1set of 6)",
+        "qty": 6,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (2sets of 7)",
+        "qty": 14,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (1set of 8)) 2",
+        "qty": 8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (2sets of 9)",
+        "qty": 18,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "ATG SP1000 Auto Bollard (1set of 10)",
+        "qty": 10,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "323mm dia x 3.96mm T SS Sleeve",
+        "qty": 83,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Road Blocker (1set of 1)",
         "qty": 1,
         "unit": "units",
-        "zoneLabel": ""
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Road Blocker (8sets of 2)",
+        "qty": 16,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Road Blocker (4sets of 3)",
+        "qty": 12,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Cova Road Blocker (2sets of 4)",
+        "qty": 8,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "4m wide 30Ton Road Blocker at 80kph",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type D1 fence",
+        "qty": 2282,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type D2 fence",
+        "qty": 578,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type D3 fence",
+        "qty": 1147,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type D4 fence",
+        "qty": 474,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type D5 fence",
+        "qty": 608,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G1 DL Swing Gate 3.6mW x 3mH",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G1 DL Swing Gate 4.7mW x 3mH",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G1 DL Swing Gate 6.6mW x 3mH",
+        "qty": 5,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G1 DL Swing Gate 7mW x 3mH",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G1 DL Swing Gate 7.6mW x 3mH",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 3mW x 3mH ",
+        "qty": 1,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 5.4mW x 3mH ",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 6.1mW x 3mH ",
+        "qty": 4,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 6.3mW x 3mH ",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 6.65mW x 3mH ",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
+      },
+      {
+        "item": "Type G2 DL Swing Gate 7mW x 3mH ",
+        "qty": 2,
+        "unit": "units",
+        "type": "Local Fabrication",
+        "itemType": "Fixed",
+        "partsRequired": false,
+        "parts": []
       }
     ],
     "scopeNotes": "",

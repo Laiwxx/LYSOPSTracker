@@ -54,3 +54,6 @@
 - [Factory redesign done](project_factory_redesign.md) — preview ported to live as of 2026-04-25. 5 follow-up enhancements (item drawer, camera-first mobile, forecast strip, search/filter, skeletons) deferred.
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
 - [Feedback: project in factory page issue](feedback_moeg0d5q06zq.md) — Bug by Lai Wei Xiang, Medium priority
+- [Feedback: unable to edite RP number](feedback_mogl1efej8jy.md) — Bug by Chris, High priority
+- [Feedback: Manpower tab , some people already left company , some name is not avaliable](feedback_mogldn1ck4kw.md) — Bug by Chris, High priority
+- [Feedback: Assign Worker for manpower , missin on leave option](feedback_moglqx6rxbrv.md) — Bug by Chris, High priority
