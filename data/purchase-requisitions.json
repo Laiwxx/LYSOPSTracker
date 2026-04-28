@@ -13,12 +13,12 @@
         "unit": "",
         "unitPrice": 20,
         "requiredDate": "2026-04-28",
-        "qtyArrived": 0,
-        "arriveDate": "2026-04-27",
-        "outstanding": 20
+        "qtyArrived": 20,
+        "arriveDate": "2026-04-28",
+        "outstanding": 0
       }
     ],
-    "status": "Ordered",
+    "status": "Delivered",
     "supplier": "WKS Industrial Gas Pte Ltd",
     "eta": "2026-04-28",
     "urgency": "Normal",
@@ -26,7 +26,7 @@
     "submittedBy": "Chris",
     "createdBy": "Chris",
     "createdAt": "2026-04-27T01:12:19.142Z",
-    "updatedAt": "2026-04-27T09:49:32.391Z",
+    "updatedAt": "2026-04-28T07:36:28.212Z",
     "poDocPath": "/uploads/po-docs/1777283372296-PR26-0073-PL00725.pdf"
   }
 ]

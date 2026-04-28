@@ -608,6 +608,13 @@
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
         }
       },
       "wi-jayabalan-ramesh": {
@@ -617,6 +624,13 @@
           "projectName": "",
           "location": "",
           "notes": "On Leave"
+        },
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "bd-22724-poc-t232-woodland",
+          "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": "Auto bollard"
         }
       },
       "wi-rajagopal-mayakrishnan": {
@@ -635,10 +649,24 @@
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
         }
       },
       "wi-dhadikaran-muruganandam": {
         "mon": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": ""
+        },
+        "tue": {
           "type": "Installation",
           "projectId": "bd-25626",
           "projectName": "China Con - Project Legend",
@@ -662,6 +690,13 @@
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Driver",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
         }
       },
       "wi-alugusamy-gunamoorti": {
@@ -671,10 +706,21 @@
           "projectName": "",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Leave",
+          "notes": "On Leave"
         }
       },
       "ss-chang-mui-yam": {
         "mon": {
+          "type": "Driver",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": ""
+        },
+        "tue": {
           "type": "Driver",
           "projectId": "bd-25626",
           "projectName": "China Con - Project Legend",
@@ -686,6 +732,13 @@
         "mon": {
           "type": "MC",
           "notes": "MC"
+        },
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
         }
       },
       "ss-tai-nyur-hing": {
@@ -695,6 +748,13 @@
           "projectName": "China Con - Project Legend",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "Boonlay",
+          "notes": ""
         }
       },
       "ss-yap-teck-huat": {
@@ -702,6 +762,13 @@
           "type": "Driver",
           "projectId": "bd-22724-poc-t232-woodland",
           "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": ""
+        },
+        "tue": {
+          "type": "Driver",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
           "notes": ""
         }
@@ -713,6 +780,13 @@
           "projectName": "T232 - Rapid Transit System",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Driver",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "",
+          "notes": ""
         }
       },
       "wi-kannaiyan-jaishankar": {
@@ -722,10 +796,24 @@
           "projectName": "T232 - Rapid Transit System",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "",
+          "notes": ""
         }
       },
       "wt-hoomphaeng-kritsana": {
         "mon": {
+          "type": "Installation",
+          "projectId": "bd-25626",
+          "projectName": "China Con - Project Legend",
+          "location": "",
+          "notes": ""
+        },
+        "tue": {
           "type": "Installation",
           "projectId": "bd-25626",
           "projectName": "China Con - Project Legend",
@@ -740,6 +828,13 @@
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
         }
       },
       "wm-lin-chee-cheong": {
@@ -749,10 +844,24 @@
           "projectName": "T232 - Rapid Transit System",
           "location": "",
           "notes": ""
+        },
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "bd-22724-poc-t232-woodland",
+          "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": "Auto bollard"
         }
       },
       "wm-tan-yock-wan": {
         "mon": {
+          "type": "Installation",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
+        },
+        "tue": {
           "type": "Installation",
           "projectId": "bd-25225-nakano-st-eng-dc",
           "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
@@ -767,10 +876,24 @@
           "projectName": "Development @ Neil Road",
           "location": "",
           "notes": "city gate"
+        },
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "City gate"
         }
       },
       "wm-ee-kok-keong": {
         "mon": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "Blocker"
+        },
+        "tue": {
           "type": "Fabrication",
           "projectId": "bd-21923-shimizu-dnr",
           "projectName": "Development @ Neil Road",
@@ -965,6 +1088,58 @@
           "projectName": "",
           "location": "",
           "notes": "Blocker"
+        },
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "bd-22724-poc-t232-woodland",
+          "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "wm-chin-poh-fatt": {
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "bd-21923-shimizu-dnr",
+          "projectName": "Development @ Neil Road",
+          "location": "",
+          "notes": "city gate"
+        }
+      },
+      "moh7kn0a0lat": {
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "Boonlay",
+          "notes": ""
+        }
+      },
+      "moh7lpnekn1e": {
+        "tue": {
+          "type": "Installation",
+          "projectId": "bd-24025-chiong-de189",
+          "projectName": "DE189",
+          "location": "Boonlay",
+          "notes": ""
+        }
+      },
+      "moh7myhotpm6": {
+        "tue": {
+          "type": "Fabrication",
+          "projectId": "bd-22724-poc-t232-woodland",
+          "projectName": "T232 - Rapid Transit System",
+          "location": "",
+          "notes": ""
+        }
+      },
+      "moh7pbisofjr": {
+        "tue": {
+          "type": "Driver",
+          "projectId": "bd-25225-nakano-st-eng-dc",
+          "projectName": "ST Engineering Data Center @ Jalan Boon Lay",
+          "location": "",
+          "notes": ""
         }
       }
     },
@@ -1033,6 +1208,6 @@
         "code": "EXT"
       }
     ],
-    "savedAt": "2026-04-27T14:41:36.766Z"
+    "savedAt": "2026-04-28T01:26:28.178Z"
   }
 ]

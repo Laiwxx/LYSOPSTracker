@@ -17,7 +17,7 @@
     "acknowledgedAt": "2026-04-23T11:44:01.193Z",
     "estimatedReadyDate": "2026-04-27",
     "factoryNotes": null,
-    "deliveredAt": "2026-04-27T02:54:45.298Z",
+    "deliveredAt": "2026-04-28T01:27:44.606Z",
     "issueReason": null
   },
   {
@@ -33,12 +33,12 @@
     "requestedBy": "Teo Meei Haw",
     "notes": "testing",
     "urgency": "Normal",
-    "status": "Delivered",
+    "status": "Ready",
     "createdAt": "2026-04-22T01:42:59.546Z",
     "acknowledgedAt": "2026-04-27T02:55:11.437Z",
     "estimatedReadyDate": "2026-05-04",
     "factoryNotes": null,
-    "deliveredAt": "2026-04-27T02:55:13.704Z",
+    "deliveredAt": null,
     "issueReason": null
   },
   {
@@ -75,13 +75,16 @@
     "requestedBy": "Lai Wei Xiang",
     "notes": "Please Ensure All Lifting Items and Equipment Is All Accounted For",
     "urgency": "Normal",
-    "status": "Delivered",
+    "status": "Received",
     "createdAt": "2026-04-23T07:18:49.783Z",
     "acknowledgedAt": "2026-04-23T10:22:44.753Z",
     "estimatedReadyDate": null,
     "factoryNotes": null,
     "deliveredAt": "2026-04-27T02:54:40.157Z",
-    "issueReason": null
+    "issueReason": null,
+    "receivedAt": "2026-04-27T15:47:55.280Z",
+    "receivedBy": "Lai Wei Xiang",
+    "receivedQty": 2
   },
   {
     "id": "mod0pbhqy94w",

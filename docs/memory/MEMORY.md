@@ -54,3 +54,6 @@
 - [Factory redesign done](project_factory_redesign.md) — preview ported to live as of 2026-04-25. 5 follow-up enhancements (item drawer, camera-first mobile, forecast strip, search/filter, skeletons) deferred.
 - Custom sub-agents live in `.claude/agents/` — debugger, ops-strategist, workflow-architect, senior-engineer, ui-designer, context-builder.
 - [Feedback: project in factory page issue](feedback_moeg0d5q06zq.md) — Bug by Lai Wei Xiang, Medium priority
+- [Feedback: Sales button for UIUX import exccel flow](feedback_mohdo0dqcbvz.md) — Feature Request by Lai Wei Xiang, Medium priority
+- [Feedback: Excel File](feedback_mohdz1cklqpy.md) — Feature Request by Lai Wei Xiang, Medium priority
+- [Feedback: Deal UIUX](feedback_mohe15gg3d64.md) — Feature Request by Lai Wei Xiang, Medium priority

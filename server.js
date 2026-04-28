@@ -370,8 +370,19 @@ const uploadTicketAttachment = multer({
     }
   }),
   fileFilter: (req, file, cb) => {
-    const ok = /^image\//.test(file.mimetype) || file.mimetype === 'application/pdf';
-    cb(ok ? null : new Error('Only images and PDFs allowed'), ok);
+    const allowed = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+      'application/vnd.ms-excel',                                          // .xls
+      'text/csv',
+      'application/csv',
+    ];
+    const ext = (file.originalname || '').toLowerCase();
+    const isImage = /^image\//.test(file.mimetype);
+    const isAllowedMime = allowed.includes(file.mimetype);
+    const isAllowedExt  = /\.(xlsx|xls|csv|pdf)$/i.test(ext);
+    const ok = isImage || isAllowedMime || isAllowedExt;
+    cb(ok ? null : new Error('Only images, PDFs, Excel (.xlsx/.xls) and CSV files allowed'), ok);
   },
   limits: { fileSize: 10 * 1024 * 1024, files: 5 }
 });
@@ -6238,7 +6249,28 @@ const SALES_READ = new Set([...SALES_ACCESS, ...((() => {
   if (staff['Finance'] && staff['Finance'].name) names.push(staff['Finance'].name);
   return names;
 })())]);
-const VALID_OPP_STAGES = ['New Lead', 'Discovery', 'Tender Review', 'Quotation', 'Presentation', 'Pending Tender', 'Tender Awarded', 'Won', 'Lost', 'No-Bid'];
+// Pipedrive stage names (verbatim) live alongside the original Janessa-spec
+// stages until the boss decides to consolidate. Both sets are accepted.
+const PIPEDRIVE_OPP_STAGES = [
+  'Qualify', 'Prepare Quotation', 'Appointment',
+  'Pending Tender To Be Awarded', 'Revise Quotation',
+  'Tender Awarded', 'Follow Up'
+];
+// Aliases for stage-name variants seen in Pipedrive exports — normalise to
+// the canonical 7 above. Original value is preserved on each opp via
+// pipedriveDates._originalStage.
+const PIPEDRIVE_STAGE_ALIASES = {
+  'Qualified':           'Qualify',
+  'Appointment Booked':  'Appointment',
+  'Revised Quotation':   'Revise Quotation',
+  'Pending LOA':         'Pending Tender To Be Awarded',
+  'Pending PO':          'Tender Awarded'
+};
+const VALID_OPP_STAGES = [
+  'New Lead', 'Discovery', 'Tender Review', 'Quotation', 'Presentation',
+  'Pending Tender', 'Tender Awarded', 'Won', 'Lost', 'No-Bid',
+  ...PIPEDRIVE_OPP_STAGES
+];
 
 function requireSalesAccess(req, res, readOnly) {
   const user = req.authUser || (req.session && req.session.user);
@@ -6249,6 +6281,101 @@ function requireSalesAccess(req, res, readOnly) {
   }
   return true;
 }
+
+// ── Sales import storage + helpers ──────────────────────────────────────────
+const SALES_IMPORTS_FILE = path.join(__dirname, 'data', 'sales-imports.json');
+function readSalesImports() {
+  if (!fs.existsSync(SALES_IMPORTS_FILE)) return [];
+  return safeReadJSON(SALES_IMPORTS_FILE);
+}
+function writeSalesImports(d) { safeWriteJSON(SALES_IMPORTS_FILE, d); }
+
+// Pipedrive value parser: "15,000.00 SGD" → 15000.  Returns NaN on bad input
+// so callers can flag the row to the error log instead of silently zeroing.
+function parsePipedriveValue(s) {
+  if (s == null || s === '') return null;
+  const cleaned = String(s).replace(/[A-Za-z$,\s]/g, '');
+  if (!cleaned) return null;
+  const n = parseFloat(cleaned);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+// Pipedrive dates come as "2024-11-06 02:42:30" or just "2024-11-06".
+// Normalize to ISO if datetime, else YYYY-MM-DD.  Empty → null.
+function parsePipedriveDate(s) {
+  if (!s || typeof s !== 'string') return null;
+  const t = s.trim();
+  if (!t) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return t;
+  const m = t.match(/^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2}:\d{2})/);
+  if (m) return m[1] + 'T' + m[2] + 'Z';
+  return null;
+}
+
+// Map Pipedrive owner string to a staff.json alias name.  Returns the matched
+// staff `name` field, or null if no match.  Caller flags unmapped owners.
+function mapPipedriveOwner(pipedriveOwnerName) {
+  if (!pipedriveOwnerName) return null;
+  const target = String(pipedriveOwnerName).trim().toLowerCase();
+  if (!target) return null;
+  const staff = readStaff();
+  for (const key of Object.keys(staff)) {
+    const entry = staff[key];
+    if (entry && entry.name && entry.name.toLowerCase() === target) return entry.name;
+    // Also match first-name only (Pipedrive often stores just "Wei Xiang" vs full "Lai Wei Xiang")
+    if (entry && entry.name) {
+      const parts = entry.name.toLowerCase().split(/\s+/);
+      if (parts.includes(target) || parts.slice(-2).join(' ') === target) return entry.name;
+    }
+  }
+  return null;
+}
+
+// Pipedrive Deal export header → our opportunity field.  null = skip.
+const PIPEDRIVE_HEADER_MAP = {
+  'Deal - ID':                            { field: 'externalId',    transform: v => v ? String(v).trim() : null },
+  'Deal - Title':                         { field: '_title',        transform: v => String(v || '').trim() },
+  'Deal - Scope':                         { field: '_scope',        transform: v => String(v || '').trim() },
+  'Deal - Organization':                  { field: 'clientName',    transform: v => String(v || '').trim().slice(0, 200) },
+  'Deal - Contact person':                { field: 'contactPerson', transform: v => String(v || '').trim().slice(0, 200) },
+  'Deal - Owner':                         { field: '_owner',        transform: v => String(v || '').trim() },
+  'Deal - Pipeline':                      { field: 'pipeline',      transform: v => String(v || '').trim() || null },
+  'Deal - Stage':                         { field: '_stageRaw',     transform: v => String(v || '').trim() },
+  'Deal - Status':                        { field: '_statusRaw',    transform: v => String(v || '').trim() },
+  'Deal - Value':                         { field: 'estimatedValue', transform: parsePipedriveValue },
+  'Deal - Note - Reference':              { field: 'quotationNo',   transform: v => String(v || '').trim().slice(0, 50) },
+  'Deal - Lost reason':                   { field: 'winLossReason', transform: v => String(v || '').trim().slice(0, 500) },
+  'Deal - Source origin':                 { field: 'source',        transform: v => String(v || '').trim().slice(0, 100) },
+  'Deal - Label':                         { field: '_label',        transform: v => String(v || '').trim() },
+  'Deal - Expected close date':           { field: '_expectedClose', transform: parsePipedriveDate },
+  'Deal - Quotation Completed Date':      { field: 'quoteDate',     transform: parsePipedriveDate },
+  'Deal - Full/combined address of Deal - Location': { field: 'siteAddress', transform: v => String(v || '').trim().slice(0, 500) },
+};
+// Date columns dumped into pipedriveDates sub-object verbatim (key = sanitized header)
+const PIPEDRIVE_DATE_COLUMNS = [
+  'Deal - Deal created', 'Deal - Update time', 'Deal - Last stage change',
+  'Deal - Won time', 'Deal - Lost time', 'Deal - Deal closed on',
+  'Deal - Last activity date', 'Deal - Next activity date',
+  'Deal - Discovery date', 'Deal - Appointment Booked Date',
+  'Deal - Quotation Completed Date', 'Deal - Tender Awarded Date',
+  'Deal - LOA Received Date', 'Deal - Expected close date',
+  'Deal - Activity - Due Date', 'Deal - Last email received', 'Deal - Last email sent'
+];
+
+// Multer for sales-import xlsx uploads: 25MB, .xlsx/.csv only, memory storage
+// (we parse in-memory with the xlsx package; nothing persists to disk).
+const uploadSalesImport = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    const ext = (file.originalname || '').toLowerCase();
+    const isXlsx = file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                || file.mimetype === 'application/vnd.ms-excel'
+                || /\.(xlsx|xls)$/i.test(ext);
+    const isCsv  = file.mimetype === 'text/csv' || file.mimetype === 'application/csv' || /\.csv$/i.test(ext);
+    cb(null, isXlsx || isCsv);
+  },
+  limits: { fileSize: 25 * 1024 * 1024, files: 1 }
+});
 
 // GET /api/sales/opportunities
 app.get('/api/sales/opportunities', (req, res) => {
@@ -7022,6 +7149,299 @@ app.post('/api/sales/opportunities/:id/fetch-attachments', postRateLimit, async 
 
     res.json({ fetched: saved.length, files: saved });
   } catch (e) { logError('route.post.sales.fetch-attachments', e); res.status(500).json({ error: 'Failed: ' + (e.message || 'unknown') }); }
+});
+
+// ── Sales: Excel import (Pipedrive deal export → opportunities) ─────────────
+//
+// POST /api/sales/import-excel
+//   Body: multipart with 'file' = .xlsx, plus optional form fields:
+//     statuses: comma-separated list of Pipedrive Status values to include
+//               (e.g. "Open,Won,Lost"). Default = all three.
+//     dryRun:   "1" → don't write, return preview + counts only
+//   Returns: { added: [oppId...], updated: [oppId...], skipped: [{row, reason}],
+//             errors: [{row, message}], preview: [first 5 mapped opps],
+//             unmappedOwners: [...], importId? }
+//
+function processPipedriveRow(row, statuses) {
+  const out = { _flags: [] };
+
+  // 1. Apply header map (handles core fields + transient _* helpers)
+  for (const header of Object.keys(PIPEDRIVE_HEADER_MAP)) {
+    const cfg = PIPEDRIVE_HEADER_MAP[header];
+    const raw = row[header];
+    if (cfg.transform) {
+      const v = cfg.transform(raw);
+      if (cfg.field === 'estimatedValue' && Number.isNaN(v)) {
+        out._flags.push('value-unparseable:' + raw);
+        out.estimatedValue = 0;
+      } else if (v != null && v !== '') {
+        out[cfg.field] = v;
+      }
+    }
+  }
+
+  // 2. Skip filters
+  if (!out.externalId) return { skip: true, reason: 'no Deal ID' };
+  if (!out.clientName) return { skip: true, reason: 'no organization' };
+  const status = out._statusRaw || 'Open';
+  if (statuses && statuses.length && !statuses.includes(status)) {
+    return { skip: true, reason: `status=${status} excluded by filter` };
+  }
+
+  // 3. Stage determination — Won/Lost overlays Stage; otherwise canonical
+  //    Pipedrive stage (with alias normalization).
+  let stage;
+  if (status === 'Won') stage = 'Won';
+  else if (status === 'Lost') stage = 'Lost';
+  else {
+    const raw = out._stageRaw || '';
+    const aliased = PIPEDRIVE_STAGE_ALIASES[raw];
+    if (aliased) stage = aliased;
+    else if (PIPEDRIVE_OPP_STAGES.includes(raw)) stage = raw;
+    else if (VALID_OPP_STAGES.includes(raw)) stage = raw;
+    else { stage = 'Qualify'; out._flags.push('stage-unmapped:' + (raw || '?')); }
+  }
+
+  // 4. Notes from Title + Scope (joined; Pipedrive splits them but our model
+  //    has one notes field).  Both can be empty.
+  const noteParts = [];
+  if (out._title) noteParts.push(out._title);
+  if (out._scope && out._scope !== out._title) noteParts.push(out._scope);
+  const notes = noteParts.join(' — ').slice(0, 2000);
+
+  // 5. Owner mapping
+  const ownerMapped = out._owner ? mapPipedriveOwner(out._owner) : null;
+  if (out._owner && !ownerMapped) out._flags.push('owner-unmapped:' + out._owner);
+
+  // 6. Pipedrive date sub-object (verbatim copy of the date columns + raw stage)
+  const pipedriveDates = { _originalStage: out._stageRaw || null, _originalStatus: status };
+  for (const col of PIPEDRIVE_DATE_COLUMNS) {
+    if (row[col] != null && row[col] !== '') {
+      const parsed = parsePipedriveDate(row[col]);
+      const key = col.replace(/^Deal - /, '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+      pipedriveDates[key] = parsed || String(row[col]).trim();
+    }
+  }
+
+  return {
+    skip: false,
+    opp: {
+      externalId:    out.externalId,
+      clientName:    out.clientName,
+      contactPerson: out.contactPerson || '',
+      siteAddress:   out.siteAddress || '',
+      productType:   '',
+      estimatedValue: typeof out.estimatedValue === 'number' ? out.estimatedValue : 0,
+      quotationNo:   out.quotationNo || '',
+      quoteDate:     out.quoteDate || null,
+      source:        out.source || 'pipedrive-import',
+      stage,
+      pipeline:      out.pipeline || null,
+      winLossReason: out.winLossReason || '',
+      notes,
+      assignedTo:    ownerMapped || '',
+      pipedriveDates
+    },
+    flags: out._flags
+  };
+}
+
+app.post('/api/sales/import-excel', uploadSalesImport.single('file'), (req, res) => {
+  if (!requireSalesAccess(req, res, false)) return;
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const dryRun = String(req.query.dryRun || req.body.dryRun || '') === '1';
+
+    // Parse statuses filter
+    const rawStatuses = String(req.body.statuses || 'Open,Won,Lost')
+      .split(',').map(s => s.trim()).filter(Boolean);
+    const statuses = rawStatuses.length ? rawStatuses : ['Open', 'Won', 'Lost'];
+
+    // Parse Excel
+    const XLSX = require('xlsx');
+    let wb;
+    try { wb = XLSX.read(req.file.buffer, { type: 'buffer' }); }
+    catch (parseErr) { return res.status(400).json({ error: 'Could not read Excel file: ' + parseErr.message }); }
+    if (!wb.SheetNames.length) return res.status(400).json({ error: 'Excel has no sheets' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { defval: '', raw: false });
+    if (!rows.length) return res.status(400).json({ error: 'Excel is empty' });
+
+    const opps = readOpps();
+    const byExternalId = {};
+    for (const o of opps) { if (o.externalId) byExternalId[o.externalId] = o; }
+
+    const importId = 'imp-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const importedAt = new Date().toISOString();
+    const importedBy = getAuthUser() || 'unknown';
+
+    const added = [], updated = [], skipped = [], errors = [];
+    const preview = [];
+    const unmappedOwners = new Set();
+    const flagsPerRow = [];
+
+    rows.forEach((row, idx) => {
+      try {
+        const result = processPipedriveRow(row, statuses);
+        if (result.skip) {
+          skipped.push({ row: idx + 2, reason: result.reason });
+          return;
+        }
+
+        const flags = result.flags || [];
+        flags.forEach(f => { if (f.startsWith('owner-unmapped:')) unmappedOwners.add(f.slice(15)); });
+        flagsPerRow.push({ row: idx + 2, flags });
+
+        const incoming = result.opp;
+        const existing = byExternalId[incoming.externalId];
+
+        if (existing) {
+          // Selective UPDATE — overwrite Pipedrive-sourced fields, preserve local
+          const merged = {
+            ...existing,
+            clientName:     incoming.clientName,
+            contactPerson:  incoming.contactPerson,
+            siteAddress:    incoming.siteAddress || existing.siteAddress,
+            estimatedValue: incoming.estimatedValue,
+            quotationNo:    incoming.quotationNo || existing.quotationNo,
+            quoteDate:      incoming.quoteDate    || existing.quoteDate,
+            source:         incoming.source       || existing.source,
+            stage:          incoming.stage,
+            pipeline:       incoming.pipeline,
+            winLossReason:  incoming.winLossReason || existing.winLossReason,
+            pipedriveDates: incoming.pipedriveDates,
+            updatedAt:      importedAt,
+            stageChangedAt: existing.stage !== incoming.stage ? importedAt : (existing.stageChangedAt || importedAt),
+            // Preserved: assignedTo, notes, followUpDate, _nudgeSentAt,
+            // convertedProjectId, activity, qsAssigned, tenderDocUrls,
+            // quotationFileUrl, followUps, nextFollowUpDate, fuSequence,
+            // afuSequence — all left as-is from existing.
+          };
+          merged.activity = (existing.activity || []).concat([{
+            ts: importedAt, type: 'imported', importId,
+            note: `Updated from Pipedrive import by ${importedBy}`
+          }]);
+          if (!dryRun) opps[opps.indexOf(existing)] = merged;
+          updated.push(existing.id);
+          if (preview.length < 5) preview.push({ action: 'update', opp: merged, flags });
+        } else {
+          // CREATE
+          const opp = {
+            id: 'opp-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + idx.toString(36),
+            ...incoming,
+            quoteExpiryDate: null,
+            stageChangedAt: importedAt,
+            followUpDate: null,
+            competitorInfo: '',
+            convertedProjectId: null,
+            followUps: [],
+            nextFollowUpDate: null,
+            fuSequence: 0,
+            afuSequence: 0,
+            qsAssigned: '',
+            tenderDocUrls: [],
+            quotationFileUrl: null,
+            importedAt,
+            importSource: 'pipedrive',
+            importId,
+            activity: [{
+              ts: importedAt, type: 'imported', importId,
+              note: `Imported from Pipedrive by ${importedBy}`
+            }],
+            createdBy: importedBy,
+            createdAt: importedAt
+          };
+          if (!dryRun) opps.push(opp);
+          added.push(opp.id);
+          if (preview.length < 5) preview.push({ action: 'create', opp, flags });
+        }
+      } catch (e) {
+        errors.push({ row: idx + 2, message: e.message || String(e) });
+      }
+    });
+
+    if (!dryRun) {
+      writeOpps(opps);
+      const importsLog = readSalesImports();
+      importsLog.push({
+        importId, importedAt, importedBy,
+        filename: req.file.originalname || 'import.xlsx',
+        rowCount: rows.length,
+        statuses,
+        added: added.slice(),
+        updated: updated.slice(),
+        skipped: skipped.length,
+        errors: errors.length,
+        unmappedOwners: [...unmappedOwners]
+      });
+      writeSalesImports(importsLog);
+      logActivity('sales.imported', { importId, added: added.length, updated: updated.length, skipped: skipped.length, errors: errors.length });
+    }
+
+    res.json({
+      importId: dryRun ? null : importId,
+      dryRun,
+      added,
+      updated,
+      skipped,
+      errors,
+      preview,
+      unmappedOwners: [...unmappedOwners],
+      summary: {
+        totalRows: rows.length,
+        added: added.length,
+        updated: updated.length,
+        skipped: skipped.length,
+        errors: errors.length
+      }
+    });
+  } catch (e) { logError('route.post.sales.import-excel', e); res.status(500).json({ error: 'Import failed: ' + (e.message || 'unknown') }); }
+});
+
+// GET /api/sales/imports — list past imports (newest first)
+app.get('/api/sales/imports', (req, res) => {
+  if (!requireSalesAccess(req, res, true)) return;
+  try {
+    const list = readSalesImports().slice().reverse();
+    res.json(list);
+  } catch (e) { logError('route.get.sales.imports', e); res.status(500).json({ error: 'Internal server error' }); }
+});
+
+// DELETE /api/sales/imports/:id — rollback an import (admin)
+app.delete('/api/sales/imports/:id', async (req, res) => {
+  try {
+    if (!await requireAdminAuth(req, res)) return;
+    if (!requireSalesAccess(req, res, false)) return;
+    const importId = req.params.id;
+    const importsLog = readSalesImports();
+    const entry = importsLog.find(i => i.importId === importId);
+    if (!entry) return res.status(404).json({ error: 'Import not found' });
+
+    const opps = readOpps();
+    const removeIds = new Set(entry.added || []);
+    const updateIds = new Set(entry.updated || []);
+    const before = opps.length;
+
+    // Remove created opps
+    const kept = opps.filter(o => !removeIds.has(o.id));
+    // Updated opps: cannot fully revert (we didn't snapshot the prior state),
+    // but we can drop the "imported" activity entry tied to this importId
+    // so the audit trail is clean.
+    for (const o of kept) {
+      if (updateIds.has(o.id) && Array.isArray(o.activity)) {
+        o.activity = o.activity.filter(a => !(a.type === 'imported' && a.importId === importId));
+      }
+    }
+    writeOpps(kept);
+
+    const newLog = importsLog.filter(i => i.importId !== importId);
+    writeSalesImports(newLog);
+    logActivity('sales.import.rollback', {
+      importId, removedCount: before - kept.length, updatedSweep: updateIds.size,
+      reason: sanitizeStr(req.body?.reason, 500) || ''
+    });
+    res.json({ ok: true, removed: before - kept.length, updatedRevertedActivity: updateIds.size });
+  } catch (e) { logError('route.delete.sales.import', e); res.status(500).json({ error: 'Rollback failed: ' + (e.message || 'unknown') }); }
 });
 
 // ── Historical PR Import ──────────────────────────────────────────────────────

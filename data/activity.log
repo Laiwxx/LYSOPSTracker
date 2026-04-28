@@ -4436,3 +4436,149 @@
 {"ts":"2026-04-27T14:14:05.424Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-27","type":"weekly"}
 {"ts":"2026-04-27T14:41:27.403Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-27","type":"weekly"}
 {"ts":"2026-04-27T14:41:36.767Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-27T15:21:52.397Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-27T15:22:01.491Z","event":"manpower-plan.saved","by":"Lai Wei Xiang","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-27T15:47:55.280Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mob5hiuv4etv","actor":"Lai Wei Xiang","previousStatus":"Delivered","newStatus":"Received","changes":{"status":{"from":"Delivered","to":"Received"}}}
+{"ts":"2026-04-27T15:48:31.140Z","event":"pr.updated","by":"Lai Wei Xiang","id":"mogi5lfqdcae","status":"Ordered"}
+{"ts":"2026-04-27T16:17:45.024Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-27T16:17:45.032Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777306664668","jobCode":"TEST-SCN"}
+{"ts":"2026-04-27T16:17:45.072Z","event":"site-request.created","by":"Scenario Tester","id":"mohehzlcqvrq","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-27T16:17:45.153Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777306664668","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1,"removedPRs":0,"removedDOs":0,"plansMutated":0,"oppsMutated":0}
+{"ts":"2026-04-27T16:17:45.190Z","event":"claim.created","by":"Scenario Tester","id":"mohehzomv86l","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-27T16:17:45.206Z","event":"pr.created","by":"Scenario Tester","id":"mohehzp2xetk","prNumber":"PR26-002","projectCode":"TEST"}
+{"ts":"2026-04-27T16:17:45.432Z","event":"task.deleted","by":"Scenario Tester","id":"mohehzv10o64","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-27T16:17:45.458Z","event":"task.deleted","by":"Scenario Tester","id":"mohehzvrjbmn","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-27T16:17:45.470Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mohehzw9b8q6","title":"Test\r\nInjected-Header: evil","reason":"test","filesUnlinked":0}
+{"ts":"2026-04-27T16:17:45.488Z","event":"task.deleted","by":"Scenario Tester","id":"mohehzwlan1x","title":"Proto test"}
+{"ts":"2026-04-27T16:17:45.591Z","event":"claim.deleted","by":"Scenario Tester","id":"mohehzomv86l","claimNumber":"TEST-CLM","projectId":"x"}
+{"ts":"2026-04-27T16:17:45.673Z","event":"pr.deleted","by":"Scenario Tester","id":"mohehzp2xetk","prNumber":"PR26-002","filesUnlinked":0,"dosRemoved":0}
+{"ts":"2026-04-27T16:17:45.679Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mohehzp8rjs1","title":"Test ticket","reason":"test","filesUnlinked":0}
+{"ts":"2026-04-27T16:22:06.542Z","event":"project.upload.deleted","by":"Scenario Tester","projectId":"test","filename":"../../../etc/passwd","fileDeleted":false}
+{"ts":"2026-04-27T16:22:06.551Z","event":"project.created","by":"Scenario Tester","id":"__test_scenario_1777306926184","jobCode":"TEST-SCN"}
+{"ts":"2026-04-27T16:22:06.587Z","event":"site-request.created","by":"Scenario Tester","id":"mohenldm4pcd","item":"Test beam","requestedBy":"Scenario Tester","fabIdx":null}
+{"ts":"2026-04-27T16:22:06.671Z","event":"project.deleted.cascade","by":"Scenario Tester","projectId":"__test_scenario_1777306926184","jobCode":"TEST-SCN","removedSRs":1,"removedTasks":1,"removedPRs":0,"removedDOs":0,"plansMutated":0,"oppsMutated":0}
+{"ts":"2026-04-27T16:22:06.707Z","event":"claim.created","by":"Scenario Tester","id":"mohenlgzzzex","projectId":"x","claimNumber":"TEST-CLM","amount":100}
+{"ts":"2026-04-27T16:22:06.725Z","event":"pr.created","by":"Scenario Tester","id":"mohenlhh2avh","prNumber":"PR26-002","projectCode":"TEST"}
+{"ts":"2026-04-27T16:22:06.969Z","event":"task.deleted","by":"Scenario Tester","id":"mohenlnz07uu","title":"<script>alert(\"xss\")</script>"}
+{"ts":"2026-04-27T16:22:06.994Z","event":"task.deleted","by":"Scenario Tester","id":"mohenloqmfp4","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+{"ts":"2026-04-27T16:22:07.008Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mohenlp60336","title":"Test\r\nInjected-Header: evil","reason":"test","filesUnlinked":0}
+{"ts":"2026-04-27T16:22:07.022Z","event":"task.deleted","by":"Scenario Tester","id":"mohenlpj47n2","title":"Proto test"}
+{"ts":"2026-04-27T16:22:07.114Z","event":"claim.deleted","by":"Scenario Tester","id":"mohenlgzzzex","claimNumber":"TEST-CLM","projectId":"x"}
+{"ts":"2026-04-27T16:22:07.193Z","event":"pr.deleted","by":"Scenario Tester","id":"mohenlhh2avh","prNumber":"PR26-002","filesUnlinked":0,"dosRemoved":0}
+{"ts":"2026-04-27T16:22:07.200Z","event":"ticket.deleted","by":"Scenario Tester","ticketId":"mohenlhm0fzn","title":"Test ticket","reason":"test","filesUnlinked":0}
+{"ts":"2026-04-27T16:43:54.965Z","event":"sales.imported","by":"System","importId":"imp-mohffmw40fab","added":804,"updated":0,"skipped":0,"errors":0}
+{"ts":"2026-04-27T16:44:09.167Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mohffmw8lzl625","stage":"Pending Tender"}
+{"ts":"2026-04-27T16:44:13.468Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mohffmwevrji67","stage":"Pending Tender"}
+{"ts":"2026-04-27T16:44:14.969Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mohffmw8lzl625","stage":"Tender Awarded"}
+{"ts":"2026-04-27T16:44:17.207Z","event":"sales.opportunity.updated","by":"Lai Wei Xiang","id":"opp-mohffmwevrji67","stage":"Tender Awarded"}
+{"ts":"2026-04-28T00:45:00.029Z","event":"recurring-tasks.created","by":"System","date":"2026-04-28","count":27,"roles":["Lai Wei Xiang","Chris","Rena","Alex Mac","Janessa","Alex Chew","Teo Meei Haw"]}
+{"ts":"2026-04-28T01:17:12.403Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:21:25.286Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:21:35.781Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:21:46.887Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:21:57.750Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:22:10.810Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:22:23.109Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:22:31.662Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:22:37.374Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:22:52.347Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:23:05.385Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:23:14.576Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:23:27.622Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:23:36.600Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:23:48.109Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:24:02.293Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:24:17.393Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:24:31.700Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:24:44.001Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:25:07.070Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:25:51.743Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:26:05.667Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:26:15.671Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:26:22.212Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:26:28.178Z","event":"manpower-plan.saved","by":"Chris","weekStart":"2026-04-27","type":"weekly"}
+{"ts":"2026-04-28T01:27:17.696Z","event":"site-request.updated","by":"Chris","id":"mo9dzd0x20ad","actor":"Chris","previousStatus":"Delivered","newStatus":"Acknowledged","changes":{"status":{"from":"Delivered","to":"Acknowledged"}}}
+{"ts":"2026-04-28T01:27:17.755Z","event":"notify.delivery-acknowledged","by":"Chris","requestedBy":"Teo Meei Haw","item":"gate 2 sliding gate","projectJobCode":"BD 25225- Nakano (ST Eng DC)"}
+{"ts":"2026-04-28T01:27:42.384Z","event":"site-request.updated","by":"Chris","id":"mo9e1s61w7uq","actor":"Chris","previousStatus":"Delivered","newStatus":"Acknowledged","changes":{"status":{"from":"Delivered","to":"Acknowledged"}}}
+{"ts":"2026-04-28T01:27:42.445Z","event":"notify.delivery-acknowledged","by":"Chris","requestedBy":"Teo Meei Haw","item":"SP30 Fixed Bollard","projectJobCode":"BD 22724 - POC (T232 Woodland)"}
+{"ts":"2026-04-28T01:27:43.475Z","event":"site-request.updated","by":"Chris","id":"mo9dzd0x20ad","actor":"Chris","previousStatus":"Acknowledged","newStatus":"In Fabrication","changes":{"status":{"from":"Acknowledged","to":"In Fabrication"}}}
+{"ts":"2026-04-28T01:27:44.050Z","event":"site-request.updated","by":"Chris","id":"mo9dzd0x20ad","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Ready","changes":{"status":{"from":"In Fabrication","to":"Ready"}}}
+{"ts":"2026-04-28T01:27:44.606Z","event":"site-request.updated","by":"Chris","id":"mo9dzd0x20ad","actor":"Chris","previousStatus":"Ready","newStatus":"Delivered","changes":{"status":{"from":"Ready","to":"Delivered"}}}
+{"ts":"2026-04-28T01:28:14.269Z","event":"site-request.updated","by":"Chris","id":"mob5hiuv4etv","actor":"Chris","previousStatus":"Received","newStatus":"Received","changes":{}}
+{"ts":"2026-04-28T01:34:12.115Z","event":"site-request.updated","by":"Chris","id":"mo9e1s61w7uq","actor":"Chris","previousStatus":"Acknowledged","newStatus":"In Fabrication","changes":{"status":{"from":"Acknowledged","to":"In Fabrication"}}}
+{"ts":"2026-04-28T02:21:08.317Z","event":"ticket.deleted","by":"Lai Wei Xiang","ticketId":"mohe15gg3d64","title":"Deal UIUX","reason":"Other","filesUnlinked":1}
+{"ts":"2026-04-28T02:21:13.377Z","event":"ticket.deleted","by":"Lai Wei Xiang","ticketId":"mohdz1cklqpy","title":"Excel File","reason":"Other","filesUnlinked":1}
+{"ts":"2026-04-28T02:21:18.122Z","event":"ticket.deleted","by":"Lai Wei Xiang","ticketId":"mohdo0dqcbvz","title":"Sales button for UIUX import exccel flow","reason":"Other","filesUnlinked":5}
+{"ts":"2026-04-28T04:13:21.876Z","event":"project.created","by":"Salve","id":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:40.867Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:41.165Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:41.823Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:42.993Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:43.956Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:45.196Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:47.366Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:48.619Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:49.375Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:50.470Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:51.156Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:51.915Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:52.813Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:53.371Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:54.613Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:56.067Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:56.571Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:13:57.316Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:03.762Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:04.083Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:05.039Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:05.617Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:06.641Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:07.189Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:08.312Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:09.975Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:11.287Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:13.556Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:14.001Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:14.494Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:19.614Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:20.410Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:21.129Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:22.072Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:22.679Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:23.659Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:24.199Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:25.947Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:27.093Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:28.144Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:29.667Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:29.986Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:30.308Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:31.165Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:32.107Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:32.668Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:33.903Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:34.222Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:35.064Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:41.650Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:42.650Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:44.692Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:45.593Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:47.281Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:48.418Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:14:49.038Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:23.935Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:24.492Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:25.277Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:26.000Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:26.613Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:28.719Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:33.972Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:16:34.574Z","event":"project.updated","by":"Salve","projectId":"pj-10225","jobCode":"PJ 10225"}
+{"ts":"2026-04-28T04:17:22.770Z","event":"task.updated","by":"Salve","id":"mo8697xf","title":"Please Update All Project Information of Products","status":"Done"}
+{"ts":"2026-04-28T04:17:31.952Z","event":"task.updated","by":"Salve","id":"mo8697xf","title":"Please Update All Project Information of Products","status":"Done"}
+{"ts":"2026-04-28T07:36:28.213Z","event":"pr.updated","by":"Rena","id":"mogi5lfqdcae","status":"Delivered"}
+{"ts":"2026-04-28T07:48:04.652Z","event":"site-request.updated","by":"Lai Wei Xiang","id":"mo9e1s61w7uq","actor":"Chris","previousStatus":"In Fabrication","newStatus":"Ready","changes":{"status":{"from":"In Fabrication","to":"Ready"}}}
+{"ts":"2026-04-28T10:03:40.597Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":5,"item":"CityScape Gate","changes":[{"field":"status","from":"Not Started","to":"In Progress"}]}
+{"ts":"2026-04-28T10:03:41.123Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":5,"item":"CityScape Gate","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
+{"ts":"2026-04-28T10:06:10.648Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":5,"logId":"log_moignzfqp8qn"}
+{"ts":"2026-04-28T10:06:10.755Z","event":"install.log.created","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":5,"item":"CityScape Gate","logId":"log_moignzfqp8qn","delta":1,"newTotal":1,"step":"City Scape Gate Foundation"}

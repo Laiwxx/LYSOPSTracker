@@ -551,14 +551,15 @@
         return;
       }
 
-      // ── Worker row (name on top, "BD#### - Site" below) ──────────────────────
+      // ── Worker row (name on top, "BD#### - Site" or absence label below) ─────
       function workerRow(w) {
         var hover = w.name + (w.projectName ? ' — ' + w.projectName : '') + (w.location ? ' @ ' + w.location : '') + (w.notes ? ' · ' + w.notes : '');
         var titleAttr = ' title="' + esc(hover) + '"';
         var href = w.projectId ? '/project.html?id=' + encodeURIComponent(w.projectId) : null;
         var nameLine = '<div style="font-size:12px;font-weight:600;color:var(--text);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(w.name) + '</div>';
-        var subLine = w.jobCode
-          ? '<div style="font-size:11px;font-weight:500;color:var(--text-muted);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(w.jobCode) + '</div>'
+        var subText = w.jobCode || w._otherTypeLabel || '';
+        var subLine = subText
+          ? '<div style="font-size:11px;font-weight:500;color:var(--text-muted);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(subText) + '</div>'
           : '';
         var wrapStyle = 'display:block;padding:3px 4px;margin-bottom:3px;text-decoration:none;';
         if (href) {
@@ -579,15 +580,25 @@
         '</div>';
       }
 
-      // ── Day card (segregated: Factory / Site / Other) ────────────────────────
+      // ── Day card (segregated: Factory / Site / Driver / Maintenance / Others) ─
       function dayCard(d) {
         var dc = DAY_CFG[d];
-        var factoryList = (summary[d].Fabrication || []).filter(function(w) { return w && w.name; });
-        var siteList    = (summary[d].Installation || []).filter(function(w) { return w && w.name; });
-        var otherList   = []
-          .concat(summary[d].Driver, summary[d].Maintenance, summary[d].MC, summary[d].Off, summary[d].Leave)
-          .filter(function(w) { return w && w.name; });
-        var total = factoryList.length + siteList.length + otherList.length;
+        var factoryList     = (summary[d].Fabrication  || []).filter(function(w) { return w && w.name; });
+        var siteList        = (summary[d].Installation || []).filter(function(w) { return w && w.name; });
+        var driverList      = (summary[d].Driver       || []).filter(function(w) { return w && w.name; });
+        var maintenanceList = (summary[d].Maintenance  || []).filter(function(w) { return w && w.name; });
+        var otherList       = []
+          .concat(summary[d].MC, summary[d].Off, summary[d].Leave)
+          .filter(function(w) { return w && w.name; })
+          .map(function(w) {
+            // Annotate with the absence type so user can tell MC vs Leave vs Off at a glance
+            var typeLabel = '';
+            if (summary[d].MC && summary[d].MC.indexOf(w) !== -1)         typeLabel = 'MC';
+            else if (summary[d].Leave && summary[d].Leave.indexOf(w) !== -1) typeLabel = 'Leave';
+            else if (summary[d].Off && summary[d].Off.indexOf(w) !== -1)   typeLabel = 'Off';
+            return Object.assign({}, w, { _otherTypeLabel: typeLabel });
+          });
+        var total = factoryList.length + siteList.length + driverList.length + maintenanceList.length + otherList.length;
         var today = (d === todayKey);
 
         // Empty day → ultra-compact label only
@@ -627,9 +638,11 @@
           '</div>';
 
         var body =
-          sectionBlock('Factory', factoryList, '#3b82f6', 'rgba(59,130,246,0.08)') +
-          sectionBlock('Site',    siteList,    '#22c55e', 'rgba(34,197,94,0.08)') +
-          sectionBlock('Other',   otherList,   '#f97316', 'rgba(249,115,22,0.06)');
+          sectionBlock('Factory',     factoryList,     '#3b82f6', 'rgba(59,130,246,0.08)') +
+          sectionBlock('Site',        siteList,        '#22c55e', 'rgba(34,197,94,0.08)') +
+          sectionBlock('Driver',      driverList,      '#f97316', 'rgba(249,115,22,0.08)') +
+          sectionBlock('Maintenance', maintenanceList, '#a855f7', 'rgba(168,85,247,0.08)') +
+          sectionBlock('Others',      otherList,       '#9ca3af', 'rgba(156,163,175,0.08)');
 
         return '<div style="' +
             'flex:1 1 0;min-width:160px;' +

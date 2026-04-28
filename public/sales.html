@@ -575,6 +575,7 @@
 <div class="topbar">
   <div class="topbar-title"><span>LYS</span> SALES</div>
   <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn-new-opp" id="btn-import" style="display:none;background:rgba(255,255,255,0.12);" title="Import opportunities from a Pipedrive Excel export">📊 Import Excel</button>
     <button class="btn-new-opp" id="btn-new" style="display:none;">+ New Opportunity</button>
   </div>
 </div>
@@ -886,6 +887,7 @@ async function loadSalesContent() {
   canEdit = (stats.salesUsers || []).includes(currentUser);
   document.getElementById('sales-content').style.display = '';
   document.getElementById('btn-new').style.display = canEdit ? '' : 'none';
+  document.getElementById('btn-import').style.display = canEdit ? '' : 'none';
 
   opps = await fetch('/api/sales/opportunities').then(r => r.json()).catch(() => []);
 
@@ -1932,5 +1934,366 @@ document.querySelectorAll('.sales-sidebar [data-sales-section]').forEach(link =>
 init();
 </script>
 <script src="/js/nav.js"></script>
+
+<!-- ─────────────────── Excel Import Wizard ─────────────────── -->
+<style>
+  .im-overlay {
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .im-box {
+    background: var(--bg2); color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px; max-width: 840px; width: 100%;
+    max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .im-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+  }
+  .im-header h3 { margin: 0; font-size: 15px; font-weight: 700; }
+  .im-close {
+    background: transparent; border: none; color: var(--text-muted);
+    font-size: 22px; cursor: pointer; line-height: 1;
+  }
+  .im-close:hover { color: var(--text); }
+  .im-body { padding: 18px; overflow: auto; }
+  .im-drop-zone {
+    border: 2px dashed var(--border); border-radius: 8px;
+    padding: 30px; text-align: center; color: var(--text-muted);
+    background: var(--bg3); margin: 10px 0 16px; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .im-drop-zone:hover, .im-drop-zone.drag {
+    border-color: var(--accent); background: rgba(27,150,255,0.05);
+  }
+  .im-drop-zone input[type=file] { display: none; }
+  .im-filters {
+    margin: 14px 0; padding: 12px; background: var(--bg3);
+    border-radius: 6px; border: 1px solid var(--border);
+  }
+  .im-filters strong { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .im-filters label {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; margin-right: 14px; cursor: pointer;
+  }
+  .im-actions {
+    display: flex; justify-content: flex-end; gap: 8px;
+    padding: 12px 18px; border-top: 1px solid var(--border); background: var(--bg3);
+  }
+  .im-actions button {
+    padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600;
+    cursor: pointer; font-family: inherit; border: 1px solid var(--border);
+    background: var(--bg2); color: var(--text);
+  }
+  .im-actions button:hover { background: var(--bg3); }
+  .im-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .im-actions .im-primary {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .im-actions .im-primary:hover:not(:disabled) { filter: brightness(1.1); }
+  .im-summary {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin: 8px 0 14px;
+  }
+  .im-summary-card {
+    padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg3); text-align: center;
+  }
+  .im-summary-card .n { font-size: 22px; font-weight: 800; line-height: 1; }
+  .im-summary-card .l { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .im-warn {
+    background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35);
+    color: #f59e0b; border-radius: 6px; padding: 10px 12px; font-size: 12px;
+    margin-bottom: 10px;
+  }
+  .im-preview-table {
+    width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px;
+  }
+  .im-preview-table th, .im-preview-table td {
+    padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: left;
+  }
+  .im-preview-table th { background: var(--bg3); font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--text-muted); }
+  .im-history-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px;
+  }
+  .im-history-row:last-child { border-bottom: none; }
+  .im-history-row .grow { flex: 1; }
+  .im-history-row button {
+    padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border); background: var(--bg3); color: var(--red);
+  }
+  .im-history-row button:hover { background: rgba(239,68,68,0.1); }
+</style>
+
+<div id="import-modal" class="im-overlay" style="display:none;">
+  <div class="im-box">
+    <div class="im-header">
+      <h3 id="im-title">Import Excel</h3>
+      <button class="im-close" onclick="closeImportModal()" aria-label="Close">×</button>
+    </div>
+
+    <div class="im-body">
+      <!-- Step 1: Upload -->
+      <div id="im-step-upload">
+        <p style="margin:0 0 6px;font-size:13px;color:var(--text-muted);">Drop a Pipedrive deal export (.xlsx) to import opportunities. Existing rows (matched by Pipedrive Deal ID) will update; new rows will be created. Local edits are preserved.</p>
+        <label class="im-drop-zone" id="im-drop">
+          <input type="file" id="im-file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv">
+          <div id="im-drop-text" style="font-size:13px;font-weight:600;">📊 Click to choose or drop a file here</div>
+          <div id="im-file-name" style="font-size:11px;margin-top:6px;color:var(--accent);"></div>
+        </label>
+        <div class="im-filters">
+          <strong>Include which deals</strong>
+          <label><input type="checkbox" class="im-status" value="Open" checked> Open</label>
+          <label><input type="checkbox" class="im-status" value="Won" checked> Won</label>
+          <label><input type="checkbox" class="im-status" value="Lost" checked> Lost</label>
+        </div>
+        <details id="im-history-section" style="margin-top:14px;">
+          <summary style="cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);">Past imports</summary>
+          <div id="im-history-list" style="margin-top:10px;font-size:12px;color:var(--text-muted);">Loading…</div>
+        </details>
+      </div>
+
+      <!-- Step 2: Preview -->
+      <div id="im-step-preview" style="display:none;">
+        <h4 style="margin:0 0 10px;font-size:13px;font-weight:700;">Preview</h4>
+        <div class="im-summary">
+          <div class="im-summary-card"><div class="n" id="im-n-total">0</div><div class="l">Rows in file</div></div>
+          <div class="im-summary-card"><div class="n" id="im-n-added" style="color:#22c55e;">0</div><div class="l">New</div></div>
+          <div class="im-summary-card"><div class="n" id="im-n-updated" style="color:#3b82f6;">0</div><div class="l">Update existing</div></div>
+          <div class="im-summary-card"><div class="n" id="im-n-skipped" style="color:#f59e0b;">0</div><div class="l">Skipped</div></div>
+        </div>
+        <div id="im-warnings"></div>
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin:10px 0 4px;">First 5 rows mapped:</div>
+        <table class="im-preview-table" id="im-preview-table">
+          <thead><tr><th>Action</th><th>Client</th><th>Value</th><th>Stage</th><th>Pipeline</th><th>Owner</th></tr></thead>
+          <tbody id="im-preview-body"></tbody>
+        </table>
+      </div>
+
+      <!-- Step 3: Done -->
+      <div id="im-step-done" style="display:none;">
+        <div id="im-result"></div>
+      </div>
+    </div>
+
+    <div class="im-actions">
+      <button id="im-cancel-btn" onclick="closeImportModal()">Cancel</button>
+      <button id="im-back-btn" onclick="importBackToUpload()" style="display:none;">← Back</button>
+      <button class="im-primary" id="im-preview-btn" disabled>Preview →</button>
+      <button class="im-primary" id="im-confirm-btn" style="display:none;">Import</button>
+      <button class="im-primary" id="im-finish-btn" style="display:none;" onclick="closeImportModalAndReload()">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const modal = document.getElementById('import-modal');
+  const fileInput = document.getElementById('im-file');
+  const dropZone = document.getElementById('im-drop');
+  const fileName = document.getElementById('im-file-name');
+  const previewBtn = document.getElementById('im-preview-btn');
+  const confirmBtn = document.getElementById('im-confirm-btn');
+  const finishBtn = document.getElementById('im-finish-btn');
+  const backBtn = document.getElementById('im-back-btn');
+  const cancelBtn = document.getElementById('im-cancel-btn');
+
+  let pickedFile = null;
+
+  function showStep(name) {
+    ['upload','preview','done'].forEach(s => {
+      document.getElementById('im-step-' + s).style.display = (s === name) ? '' : 'none';
+    });
+    previewBtn.style.display = (name === 'upload') ? '' : 'none';
+    confirmBtn.style.display = (name === 'preview') ? '' : 'none';
+    finishBtn.style.display  = (name === 'done')    ? '' : 'none';
+    backBtn.style.display    = (name === 'preview') ? '' : 'none';
+    cancelBtn.style.display  = (name === 'done')    ? 'none' : '';
+  }
+
+  function pickFile(f) {
+    pickedFile = f;
+    fileName.textContent = f ? f.name + ' (' + Math.round(f.size / 1024) + ' KB)' : '';
+    previewBtn.disabled = !f;
+  }
+
+  fileInput.addEventListener('change', e => pickFile(e.target.files[0] || null));
+
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag');
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      pickFile(e.dataTransfer.files[0]);
+    }
+  });
+
+  function getStatuses() {
+    return Array.from(document.querySelectorAll('.im-status:checked')).map(c => c.value);
+  }
+
+  async function postImport(dryRun) {
+    if (!pickedFile) { alert('Pick a file first'); return null; }
+    const statuses = getStatuses();
+    if (!statuses.length) { alert('Select at least one status to include.'); return null; }
+    const fd = new FormData();
+    fd.append('file', pickedFile);
+    fd.append('statuses', statuses.join(','));
+    const url = '/api/sales/import-excel' + (dryRun ? '?dryRun=1' : '');
+    const res = await fetch(url, { method: 'POST', body: fd });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert('Import failed: ' + (err.error || res.status));
+      return null;
+    }
+    return res.json();
+  }
+
+  function escIm(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function renderPreview(data) {
+    document.getElementById('im-n-total').textContent   = data.summary.totalRows;
+    document.getElementById('im-n-added').textContent   = data.summary.added;
+    document.getElementById('im-n-updated').textContent = data.summary.updated;
+    document.getElementById('im-n-skipped').textContent = data.summary.skipped;
+
+    const warnings = [];
+    if (data.unmappedOwners && data.unmappedOwners.length) {
+      warnings.push('⚠ Unmapped owners (will land as unassigned): ' + data.unmappedOwners.map(escIm).join(', '));
+    }
+    if (data.errors && data.errors.length) {
+      warnings.push('⚠ ' + data.errors.length + ' row error(s): ' + data.errors.slice(0, 3).map(e => `row ${e.row}: ${escIm(e.message)}`).join('; ') + (data.errors.length > 3 ? ' …' : ''));
+    }
+    document.getElementById('im-warnings').innerHTML = warnings.length
+      ? warnings.map(w => `<div class="im-warn">${w}</div>`).join('')
+      : '';
+
+    document.getElementById('im-preview-body').innerHTML = (data.preview || []).map(p => {
+      const o = p.opp;
+      return `<tr>
+        <td><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:${p.action === 'create' ? '#22c55e' : '#3b82f6'};">${p.action}</span></td>
+        <td>${escIm(o.clientName)}</td>
+        <td style="text-align:right;">${o.estimatedValue ? '$' + o.estimatedValue.toLocaleString() : '—'}</td>
+        <td>${escIm(o.stage)}</td>
+        <td>${escIm(o.pipeline || '—')}</td>
+        <td>${escIm(o.assignedTo || '<unassigned>')}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:14px;">No rows match the selected filters.</td></tr>';
+  }
+
+  previewBtn.addEventListener('click', async () => {
+    previewBtn.disabled = true; previewBtn.textContent = 'Parsing…';
+    try {
+      const data = await postImport(true);
+      if (!data) return;
+      renderPreview(data);
+      showStep('preview');
+      confirmBtn.disabled = (data.summary.added + data.summary.updated) === 0;
+    } finally {
+      previewBtn.disabled = !pickedFile; previewBtn.textContent = 'Preview →';
+    }
+  });
+
+  confirmBtn.addEventListener('click', async () => {
+    if (confirmBtn.disabled) return;
+    confirmBtn.disabled = true; confirmBtn.textContent = 'Importing…';
+    try {
+      const data = await postImport(false);
+      if (!data) { confirmBtn.disabled = false; confirmBtn.textContent = 'Import'; return; }
+      const html = `
+        <div style="text-align:center;padding:14px 0;">
+          <div style="font-size:36px;color:#22c55e;">✓</div>
+          <h3 style="margin:6px 0;">Import complete</h3>
+          <div style="font-size:13px;color:var(--text-muted);">
+            ${data.summary.added} created · ${data.summary.updated} updated · ${data.summary.skipped} skipped · ${data.summary.errors} errors
+          </div>
+          <div style="font-size:11px;margin-top:10px;color:var(--text-muted);">Import ID: ${escIm(data.importId)}</div>
+        </div>`;
+      document.getElementById('im-result').innerHTML = html;
+      showStep('done');
+    } catch (e) {
+      alert('Import failed: ' + (e.message || e));
+      confirmBtn.disabled = false; confirmBtn.textContent = 'Import';
+    }
+  });
+
+  window.importBackToUpload = function() { showStep('upload'); };
+
+  window.openImportModal = async function() {
+    pickFile(null);
+    fileInput.value = '';
+    showStep('upload');
+    modal.style.display = '';
+    loadImportHistory();
+  };
+  window.closeImportModal = function() { modal.style.display = 'none'; };
+  window.closeImportModalAndReload = function() {
+    modal.style.display = 'none';
+    if (typeof opps !== 'undefined' && typeof loadOpps === 'function') {
+      loadOpps();
+    } else {
+      window.location.reload();
+    }
+  };
+
+  async function loadImportHistory() {
+    const list = document.getElementById('im-history-list');
+    list.textContent = 'Loading…';
+    try {
+      const items = await fetch('/api/sales/imports').then(r => r.json()).catch(() => []);
+      if (!Array.isArray(items) || !items.length) {
+        list.innerHTML = '<div style="font-style:italic;color:var(--text-muted);">No previous imports.</div>';
+        return;
+      }
+      list.innerHTML = items.slice(0, 10).map(i => {
+        const ts = i.importedAt ? new Date(i.importedAt).toLocaleString() : '?';
+        const counts = (i.added ? i.added.length : 0) + ' new, ' +
+                       (i.updated ? i.updated.length : 0) + ' updated';
+        return `<div class="im-history-row">
+          <div class="grow">
+            <div style="font-weight:600;color:var(--text);">${escIm(i.filename)}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${escIm(ts)} · ${counts} · by ${escIm(i.importedBy)}</div>
+          </div>
+          <button onclick="rollbackImport('${escIm(i.importId)}')" title="Remove the records added by this import">Rollback</button>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      list.innerHTML = '<div style="color:var(--red);">Could not load: ' + escIm(e.message) + '</div>';
+    }
+  }
+
+  window.rollbackImport = async function(id) {
+    const ok = confirm('Rollback this import? Records added by this import will be deleted. (Updates to existing records cannot be reverted automatically.)');
+    if (!ok) return;
+    const pin = prompt('Admin password:');
+    if (!pin) return;
+    const reason = prompt('Reason for rollback (for audit log):') || 'no reason';
+    const res = await fetch('/api/sales/imports/' + encodeURIComponent(id), {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin, reason })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert('Rollback failed: ' + (err.error || res.status));
+      return;
+    }
+    const data = await res.json();
+    alert('Rolled back: ' + data.removed + ' records removed.');
+    loadImportHistory();
+    if (typeof loadOpps === 'function') loadOpps();
+  };
+
+  // Wire the topbar button (visibility set by the page's main init based on canEdit)
+  const btnImport = document.getElementById('btn-import');
+  if (btnImport) btnImport.addEventListener('click', openImportModal);
+})();
+</script>
+
 </body>
 </html>
