@@ -3346,10 +3346,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-27T00:45:00.014Z",
     "dueDate": "2026-04-27",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:46:55.189Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -3375,10 +3375,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-27T00:45:00.014Z",
     "dueDate": "2026-04-27",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:46:57.970Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -3404,10 +3404,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-27T00:45:00.014Z",
     "dueDate": "2026-04-27",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:47:53.060Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -3433,10 +3433,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-27T00:45:00.015Z",
     "dueDate": "2026-04-27",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:47:46.158Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -4375,10 +4375,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-28T00:45:00.024Z",
     "dueDate": "2026-04-28",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:47:49.354Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -4404,10 +4404,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-28T00:45:00.024Z",
     "dueDate": "2026-04-28",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:47:55.406Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -4433,10 +4433,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-28T00:45:00.025Z",
     "dueDate": "2026-04-28",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:47:57.733Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -4462,10 +4462,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-28T00:45:00.025Z",
     "dueDate": "2026-04-28",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:48:00.449Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -4491,10 +4491,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-28T00:45:00.025Z",
     "dueDate": "2026-04-28",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:48:02.770Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"
@@ -4520,10 +4520,10 @@
     "createdBy": "System",
     "createdAt": "2026-04-28T00:45:00.025Z",
     "dueDate": "2026-04-28",
-    "status": "Pending",
+    "status": "Done",
     "priority": "Normal",
     "hoursLogged": [],
-    "completedAt": null,
+    "completedAt": "2026-04-29T14:48:06.201Z",
     "linkedMeetingNoteIdx": null,
     "tags": [
       "recurring"

@@ -4583,3 +4583,13 @@
 {"ts":"2026-04-28T10:06:10.648Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":5,"logId":"log_moignzfqp8qn"}
 {"ts":"2026-04-28T10:06:10.755Z","event":"install.log.created","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":5,"item":"CityScape Gate","logId":"log_moignzfqp8qn","delta":1,"newTotal":1,"step":"City Scape Gate Foundation"}
 {"ts":"2026-04-29T00:45:00.023Z","event":"recurring-tasks.created","by":"System","date":"2026-04-29","count":27,"roles":["Lai Wei Xiang","Chris","Rena","Alex Mac","Janessa","Alex Chew","Teo Meei Haw"]}
+{"ts":"2026-04-29T14:46:55.199Z","event":"task.updated","by":"Chris","id":"mogh6goe5on","title":"Take attendance — mark MC/absent workers","status":"Done"}
+{"ts":"2026-04-29T14:46:57.979Z","event":"task.updated","by":"Chris","id":"mogh6goe60i","title":"Review today's fabrication priorities across all projects","status":"Done"}
+{"ts":"2026-04-29T14:47:46.162Z","event":"task.updated","by":"Chris","id":"mogh6gof87o","title":"Assign workers to projects and plan transport","status":"Done"}
+{"ts":"2026-04-29T14:47:49.355Z","event":"task.updated","by":"Chris","id":"mohwmbco4c1","title":"Take attendance — mark MC/absent workers","status":"Done"}
+{"ts":"2026-04-29T14:47:53.060Z","event":"task.updated","by":"Chris","id":"mogh6goe7lk","title":"Check site requests inbox — acknowledge within 2 hours","status":"Done"}
+{"ts":"2026-04-29T14:47:55.407Z","event":"task.updated","by":"Chris","id":"mohwmbco5i0","title":"Review today's fabrication priorities across all projects","status":"Done"}
+{"ts":"2026-04-29T14:47:57.734Z","event":"task.updated","by":"Chris","id":"mohwmbcp6fm","title":"Check site requests inbox — acknowledge within 2 hours","status":"Done"}
+{"ts":"2026-04-29T14:48:00.449Z","event":"task.updated","by":"Chris","id":"mohwmbcp7i2","title":"Assign workers to projects and plan transport","status":"Done"}
+{"ts":"2026-04-29T14:48:02.771Z","event":"task.updated","by":"Chris","id":"mohwmbcp8y7","title":"Update FAB progress on all active items","status":"Done"}
+{"ts":"2026-04-29T14:48:06.201Z","event":"task.updated","by":"Chris","id":"mohwmbcp9ga","title":"Confirm next-day material and delivery readiness","status":"Done"}
