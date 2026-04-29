@@ -4582,3 +4582,4 @@
 {"ts":"2026-04-28T10:03:41.123Z","event":"install.updated","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","itemIndex":5,"item":"CityScape Gate","changes":[{"field":"status","from":"In Progress","to":"Installed"}]}
 {"ts":"2026-04-28T10:06:10.648Z","event":"install.log.photo.uploaded","by":"System","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":5,"logId":"log_moignzfqp8qn"}
 {"ts":"2026-04-28T10:06:10.755Z","event":"install.log.created","by":"Lai Wei Xiang","projectId":"bd-19121-rbss-dnr","jobCode":"BD 19121- RBSS (DNR)","idx":5,"item":"CityScape Gate","logId":"log_moignzfqp8qn","delta":1,"newTotal":1,"step":"City Scape Gate Foundation"}
+{"ts":"2026-04-29T00:45:00.023Z","event":"recurring-tasks.created","by":"System","date":"2026-04-29","count":27,"roles":["Lai Wei Xiang","Chris","Rena","Alex Mac","Janessa","Alex Chew","Teo Meei Haw"]}
